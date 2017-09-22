@@ -11,7 +11,7 @@ Kubernetes is constructed using several components:
     + Read and store the configuration
     + Command line interface
 
-![master](../imgs/kubernetes_master.png)
+![master](./imgs/kubernetes_master.png)
 
     + kube-apiserver: the hub between Kubernetes components such as kubectl,
       scheduler, replication controller (replica sets), etd datastore,
@@ -46,7 +46,7 @@ Kubernetes is constructed using several components:
     # curl -L "http://10.0.0.1:2379/v2/keys/coreos.com/network/config"
     ```
 
-![overview](../imgs/kubernetes_overview.png)
+![overview](./imgs/kubernetes_overview.png)
 
 - *Kubernetes master* connect to *etd* via HTTP/HTTPS to store data and connect to
   *flannel* to access the container application.
