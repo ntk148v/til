@@ -48,9 +48,9 @@ Kubernetes is constructed using several components:
 
 ![overview](./imgs/kubernetes_overview.png)
 
-- *Kubernetes master* connect to *etd* via HTTP/HTTPS to store data and connect to
-  *flannel* to access the container application.
-- *Kubernetes nodes* connect to the *Kubernetes master* via HTTP/HTTPS to get a
+- **Kubernetes master** connect to **etd** via HTTP/HTTPS to store data and connect to
+  **flannel** to access the container application.
+- **Kubernetes nodes** connect to the **Kubernetes master** via HTTP/HTTPS to get a
   command and report the status.
-- *Kubernetes nodes* use an overlay network (*flannel*) to make a connection of
+- **Kubernetes nodes** use an overlay network (**flannel**) to make a connection of
   their container applications.
