@@ -99,7 +99,7 @@ Kubernetes is constructed using several components:
   with Replica Set. This is because RS are meant to be used as the backend for
   Deployments.
 
-### Service
+### 5. Service
 
 - It is an abstraction which defines a logical set of Pods and a policy by
   which to access them - sometimes called a micro-service. The set of Pods
@@ -113,7 +113,7 @@ Kubernetes is constructed using several components:
 
 ![Services](./imgs/Services.png)
 
-### Volume
+### 6. Volume
 
 - Volume lives with a pod across container restarts.
 - It supports the following different types of network disks:
@@ -129,6 +129,21 @@ Kubernetes is constructed using several components:
     + gcePersistentDisk
     + secret
     + downwardAPI
+
+### 7. Secrets
+
+### 8. Namespaces
+
+- The name of a resource is a unique identifier with a namespace in the
+  Kubernetes cluster. Using a Kubernetes namepsace could isolate namespaces
+  for different environments in the same cluster.
+- Pods, services, replication controllers (replica sets) are contained in a
+  certain namespace. Some resources, such as nodes and PVs, do not belong to
+  any namespace.
+
+### 9. Label & Selector
+
+- Labels are a set of key/value pairs, which are attached to object metadata.
 
 ## Installation
 
