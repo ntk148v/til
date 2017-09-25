@@ -1,6 +1,6 @@
 # Kubernetes overview
 
-## 1. Introduction
+## Introduction
 
 Kubernetes is constructed using several components:
 - *Kubernetes master*
@@ -46,6 +46,10 @@ Kubernetes is constructed using several components:
     # curl -L "http://10.0.0.1:2379/v2/keys/coreos.com/network/config"
     ```
 
+    + More details can refer [1]
+
+![Flannel architecture](http://chunqi.li/images/flannel-01.png)
+
 ![overview](./imgs/kubernetes_overview.png)
 
 - **Kubernetes master** connect to **etd** via HTTP/HTTPS to store data and connect to
@@ -54,3 +58,80 @@ Kubernetes is constructed using several components:
   command and report the status.
 - **Kubernetes nodes** use an overlay network (**flannel**) to make a connection of
   their container applications.
+
+## Concepts
+
+### 1. Pods
+
+- The pod is a group of 1 or more containers and the smallest deployable unit
+  in Kubernetes. Pods are always co-located and co-scheduled and run in a
+  shared context. Each pod is isolated by the following Linux namespaces:
+  + PID namespace
+  + Network namespace
+  + Interprocess Commnunication (IPC) namespace
+  + Unix Time Sharing (UTS) namespace
+
+#### 2. Replication controller
+
+- A term for API objects in Kubernetes that refers to pod replicas.
+- To be able to control a set of pod's behaviors.
+- Ensures that the pods, in a user-specified number, are running all the time.
+  If some pods in the replication controller crash and terminate, the system
+  will recreate pods with the original configurations on healthy nodes
+  automactically, and keep a certain amount of processes continously running.
+- This concept is outdated. Kubernetes official documentation recommends: A
+  Deployment that configures a ReplicaSet is now the recommended way to set up
+  replication.
+
+### 3. Replica Sets
+
+- ReplicaSet is the next-generation Replication Controller. The only between
+  them right now is the selector support. ReplicaSet supports the new
+  set-based selector requirements whereas a RC only supports equality-based
+  selector requirements (Official Documenation)
+
+### 4. Deployment
+
+- Deployments are intented to replace Replication Controllers. They provide
+  the same replication functions (through Replica Sets) and also the ability
+  to rollout changes and roll them back if necessary.
+- `rolling-update` command works with Replication Controllers, but won't work
+  with Replica Set. This is because RS are meant to be used as the backend for
+  Deployments.
+
+### Service
+
+- It is an abstraction which defines a logical set of Pods and a policy by
+  which to access them - sometimes called a micro-service. The set of Pods
+  targeted by a Service is (usually) determined by Label Selector.
+
+    + ClusterIP: Exposes the service on a cluster-internal IP.
+    + NodePort: Exposes the service on each Node's IP at a static port.
+    + LoadBalancer: Exposes the service externally using a cloud provider's
+      load balancer.
+    + ExternalName: Maps the service to the contents of the externalName.
+
+![Services](./imgs/Services.png)
+
+### Volume
+
+- Volume lives with a pod across container restarts.
+- It supports the following different types of network disks:
+    + emptyDir
+    + hostPath
+    + nfs
+    + iscsi
+    + flocker
+    + glusterfs
+    + rbd
+    + gitRepo
+    + awsElasticBlockStore
+    + gcePersistentDisk
+    + secret
+    + downwardAPI
+
+## Installation
+
+## Refs
+
+[1] [Flannel for Docker Overlay Network](http://chunqi.li/2015/10/10/Flannel-for-Docker-Overlay-Network/)
