@@ -144,6 +144,11 @@ Kubernetes is constructed using several components:
 ### 9. Label & Selector
 
 - Labels are a set of key/value pairs, which are attached to object metadata.
+- Use labels to select, organize and group objects.
+- Unlike name and UIDs, labels don't provide identify a set of objects. Via a
+  label selector, the client/user can identify a set of objects. The label
+  selector is the core grouping primitive in Kubernetes.
+- 2 types of selector: equality-based and set-based.
 
 ## Installation
 
