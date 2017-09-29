@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-centos-pod
+spec:
+  containers:
+  - name: nginx-1
+    image: nginx
+  - name: centos-1
+    image: centos
+    command: ["/bin/sh", "-c", "while : ;do curl http://localhost:80/; sleep 3; done"]
