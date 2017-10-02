@@ -150,6 +150,33 @@ Kubernetes is constructed using several components:
   selector is the core grouping primitive in Kubernetes.
 - 2 types of selector: equality-based and set-based.
 
+## 10. Ingress.
+
+- Typically, services and pods have IPs only routable by the cluster network.
+
+```
+internet
+   |
+--------
+[ Services ]
+```
+- An Ingress is a collection of rules that allow inbound connections to reach
+  the cluster services.
+
+```
+internet
+   |
+[ Ingress ]
+---|---|---
+[ Services ]
+```
+
+- It can be configured to give services externally-reachable URLs, load
+  balance traffic, terminate SSL... User request ingress by POSTing the
+  Ingress resource to the API server.
+
+[More](https://medium.com/@cashisclay/kubernetes-ingress-82aa960f658e)
+
 ## Installation
 
 ## Refs
