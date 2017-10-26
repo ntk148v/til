@@ -38,3 +38,28 @@ docker ps
 kubectl create -f templates/nginx-deployment.yaml
 kubectl get po
 kubectl get deployment
+
+#
+# Working with Service
+#
+# check the status of the service kube-proxy
+systemctl status kube-proxy.service / docker ps
+# Creating a service for a pod
+kubectl run nginx-pod --image=nginx --port=80 --port=80 --restart="Never" --labels="app=nginx"
+kubectl expose pod nginx-pod --port=8000 --target-port=80 --name="service-pod"
+kubectl get svc service-pod
+# Creating a service for the replication controller and adding an external IP
+# kubectl run nginx-rc --image=nginx --port=80 --replicas=2
+kubectl expose deployment nginx-deployment --name="service-deployment" --external-ip="<USER_SPECIFIED_IP>"
+kubectl get svc service-deployment
+kubectl describe svc service-deployment
+# Creating a no-selector service for an endpoint
+# create an nginx server on another instance with IP address
+docker run -d -p 80:80 nginx
+docker ps
+cat templates/nginx-ep.json
+kubectl create -f templates/nginx-ep.json
+kubectl get ep service-foreign-ep
+cat templates/service-ep.json
+kubectl create -f templates/service-ep.json
+kubectl describe svc service-foreign-ep
