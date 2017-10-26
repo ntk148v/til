@@ -1,3 +1,17 @@
+# We also have to unset other variables that might impact LC_ALL
+# taking effect.
+unset LANG
+unset LANGUAGE
+LC_ALL=en_US.utf8
+export LC_ALL
+
+# Make sure umask is sane
+umask 022
+
+# Save trace setting
+XTRACE=$(set +o | grep xtrace)
+set -o xtrace
+
 #
 # Working with pods example
 #
@@ -63,3 +77,6 @@ kubectl get ep service-foreign-ep
 cat templates/service-ep.json
 kubectl create -f templates/service-ep.json
 kubectl describe svc service-foreign-ep
+
+# Restore xtrace
+$XTRACE
