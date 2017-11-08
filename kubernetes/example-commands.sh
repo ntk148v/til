@@ -93,6 +93,13 @@ kubectl get pods -l "project=pilot,environment=production"
 
 # Linking service with a replication controller/deployment by using label selectors
 
+# Working with Jobs
+cat templates/countdown-job.yaml
+kubectl create -f templates/countdown-job.yaml
+kubectl describe jobs countdown
+pods=$(kubectl get pods  --show-all --selector=job-name=countdown --output=jsonpath={.items..metadata.name})
+echo $pods
+kubectl logs $pods
 
 # Restore xtrace
 $XTRACE
