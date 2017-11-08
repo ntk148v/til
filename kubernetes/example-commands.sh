@@ -59,12 +59,15 @@ kubectl get deployment
 # check the status of the service kube-proxy
 systemctl status kube-proxy.service / docker ps
 # Creating a service for a pod
-kubectl run nginx-pod --image=nginx --port=80 --port=80 --restart="Never" --labels="app=nginx"
-kubectl expose pod nginx-pod --port=8000 --target-port=80 --name="service-pod"
+kubectl run nginx-pod --image=nginx --port=80 --port=80 \
+    --restart="Never" --labels="app=nginx"
+kubectl expose pod nginx-pod --port=8000 --target-port=80 \
+    --name="service-pod"
 kubectl get svc service-pod
 # Creating a service for the replication controller and adding an external IP
 # kubectl run nginx-rc --image=nginx --port=80 --replicas=2
-kubectl expose deployment nginx-deployment --name="service-deployment" --external-ip="<USER_SPECIFIED_IP>"
+kubectl expose deployment nginx-deployment --name="service-deployment" \
+    --external-ip="<USER_SPECIFIED_IP>"
 kubectl get svc service-deployment
 kubectl describe svc service-deployment
 # Creating a no-selector service for an endpoint
@@ -77,6 +80,19 @@ kubectl get ep service-foreign-ep
 cat templates/service-ep.json
 kubectl create -f templates/service-ep.json
 kubectl describe svc service-foreign-ep
+
+#
+# Working with label & selector
+#
+kubectl create -f templates/staging-nginx.yaml
+kubectl describe pod nginx
+kubectl run nginx-prod --image=nginx --replicas=2 --port=80 \
+    --labels="environment=production,project=pilot,tier=frontend"
+kubectl get pods
+kubectl get pods -l "project=pilot,environment=production"
+
+# Linking service with a replication controller/deployment by using label selectors
+
 
 # Restore xtrace
 $XTRACE
