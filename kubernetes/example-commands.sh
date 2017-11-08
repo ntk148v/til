@@ -54,6 +54,21 @@ kubectl get po
 kubectl get deployment
 
 #
+# Working with Deployment and upgrade/rollout
+#
+kubectl create -f templates/deployments-v09.yaml
+kubectl get deploy -l app=simple
+kubectl get rs -l app=simple
+kubectl get pods -l app=simple
+kubectl apply -f templates/deployments-v10.yaml
+kubectl get deploy -l app=simple
+kubectl get rs -l app=simple
+kubectl get pods -l app=simple
+# A history of all deployment is available via
+kubectl rollout history deployment simple-deploy
+kubectl rollout undo deployment simple-deploy --to-revision=1
+
+#
 # Working with Service
 #
 # check the status of the service kube-proxy
