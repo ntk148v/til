@@ -1,3 +1,6 @@
 [submodule "git/awesome-git"]
 	path = git/awesome-git
 	url = https://github.com/dictcp/awesome-git
+[submodule "git/github-cheat-sheet"]
+	path = git/github-cheat-sheet
+	url = https://github.com/tiimgreen/github-cheat-sheet
