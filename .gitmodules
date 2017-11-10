@@ -4,3 +4,6 @@
 [submodule "git/github-cheat-sheet"]
 	path = git/github-cheat-sheet
 	url = https://github.com/tiimgreen/github-cheat-sheet
+[submodule "git/git-flight-rules"]
+	path = git/git-flight-rules
+	url = https://github.com/k88hudson/git-flight-rules
