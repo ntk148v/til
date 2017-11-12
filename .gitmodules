@@ -10,3 +10,6 @@
 [submodule "deep-learning/awesome-deep-learning"]
 	path = deep-learning/awesome-deep-learning
 	url = https://github.com/ChristosChristofidis/awesome-deep-learning
+[submodule "deep-learning/awesome-deep-learning-papers"]
+	path = deep-learning/awesome-deep-learning-papers
+	url = https://github.com/terryum/awesome-deep-learning-papers
