@@ -13,6 +13,7 @@
 
 - No more feature engineering!
 
+```
 +--------------+           +----------------+        +-----------------+
 |              |           |   Feature      |        |   Traditional   |
 |  Input Data  +----------->   Engineering  +-------->   Learning      |
@@ -24,6 +25,7 @@
 |   Input Data  +----------------------------------->  Algorithms      |
 |               |                                   |                  |
 +---------------+                                   +------------------+
+```
 
 ### Archicture
 
@@ -59,6 +61,7 @@
 
 ### Training Process
 
+```
                                      +----------------------+
 +------------------+                 |  Forward it through  |
 |  Sample labeled  +----------------->  the network to get  |
@@ -72,6 +75,8 @@
 +---------------------+               |    the errors       |
                                       |                     |
                                       +---------------------+
+
+```
 
 - Learns by generating an error signal that measures the difference between
   the predictions of the network and the desired values and then `using this
