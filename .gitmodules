@@ -7,3 +7,6 @@
 [submodule "git/git-flight-rules"]
 	path = git/git-flight-rules
 	url = https://github.com/k88hudson/git-flight-rules
+[submodule "deep-learning/awesome-deep-learning"]
+	path = deep-learning/awesome-deep-learning
+	url = https://github.com/ChristosChristofidis/awesome-deep-learning
