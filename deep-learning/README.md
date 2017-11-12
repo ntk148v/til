@@ -110,3 +110,6 @@
 
 ![cnn](./images/cnn.png)
 
+- Every layer of a CNN `takes a 3D volume of numbers and outputs a 3D volume
+  of numbers`. E.g Image is a 224\*224\*3 (RGB) cube and will be transformed
+  to 1\*1000 vectir if probabilities.
