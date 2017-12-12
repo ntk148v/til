@@ -7,3 +7,4 @@
 3. [Convolutional Neural Networks Tutorial in Tensorflow ](http://adventuresinmachinelearning.com/convolutional-neural-networks-tutorial-tensorflow/)
 4. [TensorFlow examples](https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/3_NeuralNetworks/convolutional_network.py)
 5. [Mustknown tips&tricks](http://lamda.nju.edu.cn/weixs/project/CNNTricks/CNNTricks.html)
+6. [Adit Deshpande's Blog](https://adeshpande3.github.io/)
