@@ -43,6 +43,7 @@
 - [LibreNMS](http://www.librenms.org/)(https://github.com/librenms/librenms)
 - [Rackspace Cloud Monitoring](https://github.com/rcbops/rpc-maas)
 - [OpenNMS](https://www.opennms.org/en)
+- [Shinken](http://www.shinken-monitoring.org)(https://github.com/naparuba/shinken)
 ...
 
 ## Comprasion
