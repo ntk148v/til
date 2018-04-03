@@ -13,3 +13,21 @@
 [submodule "deep-learning/awesome-deep-learning-papers"]
 	path = deep-learning/awesome-deep-learning-papers
 	url = https://github.com/terryum/awesome-deep-learning-papers
+[submodule "prometheus/prometheus-example-queries"]
+	path = prometheus/prometheus-example-queries
+	url = https://github.com/infinityworks/prometheus-example-queries
+[submodule "prometheus/alertmanager-bot"]
+	path = prometheus/alertmanager-bot
+	url = https://github.com/metalmatze/alertmanager-bot
+[submodule "prometheus/prompose"]
+	path = prometheus/prompose
+	url = https://github.com/ntk148v/prompose
+[submodule "prometheus/dockprom"]
+	path = prometheus/dockprom
+	url = https://github.com/stefanprodan/dockprom
+[submodule "prometheus/prometheus-openstack-exporter"]
+	path = prometheus/prometheus-openstack-exporter
+	url = https://github.com/CanonicalLtd/prometheus-openstack-exporter
+[submodule "prometheus/prometheus"]
+	path = prometheus/prometheus
+	url = https://github.com/vegasbrianc/prometheus
