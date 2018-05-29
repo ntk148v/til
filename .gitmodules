@@ -34,3 +34,6 @@
 [submodule "prometheus/docker-swarm-prometheus"]
 	path = prometheus/docker-swarm-prometheus
 	url = https://github.com/chmod666org/docker-swarm-prometheus
+[submodule "cloud-native-slides-share"]
+	path = cloud-native-slides-share
+	url = https://github.com/rootsongjc/cloud-native-slides-share.git
