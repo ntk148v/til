@@ -28,10 +28,10 @@ resources:
       adjustment_type: change_in_capacity
       cooldown: 300
       auto_scaling_group_id: { get_resource: scale_group }
-      adjustment_type: -1
+      scaling_adjustment: -1
 
   cpu_alarm_high:
-    type: OS::Aodh::GnocchiAggregationByResourceAlarm
+    type: OS::Aodh::GnocchiAggregationByResourcesAlarm
     properties:
       description: Scale up if CPU > 88% for 5 minutes
       metric: cpu_util
@@ -53,7 +53,7 @@ resources:
             stack_id: { get_param: "OS::stack_id" }
 
   cpu_alarm_low:
-    type: OS::Aodh::GnocchiAggregationByResourceAlarm
+    type: OS::Aodh::GnocchiAggregationByResourcesAlarm
     properties:
       description: Scale down if CPU < 30% for 5 minutes
       metric: cpu_util

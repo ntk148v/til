@@ -26,12 +26,19 @@ parameters:
     constraints:
       - custom_constraint: nova.keypair
         description: Must be a keypair known to Nova
-  network:
+  internal_network:
     type: string
-    description: network to attach instance to
+    description: Internal network to attach instance to
     default: mgmt-net
     constraints:
       - custom_constraint: neutron.network # Need to choose internal network
+
+  external_network:
+    type: string
+    description: External network used for floating ips
+    default: mgmt-net
+    constraints:
+      - custom_constraint: neutron.network # Need to choose external network
 
 resources:
   server:
@@ -50,9 +57,20 @@ resources:
   port:
     type: OS::Neutron::Port
     properties:
-      network: { get_param: network }
+      network: { get_param: internal_network }
       security_groups:
         - default
+
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: external_network }
+
+  floating_ip_assoc:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: { get_resource: port }
 
   volume:
     type: OS::Cinder::Volume
