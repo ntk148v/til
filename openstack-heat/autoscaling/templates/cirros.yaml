@@ -1,0 +1,78 @@
+heat_template_version: queens
+
+description: Template to spawn an cirros instance
+
+parameters:
+  metadata:
+    type: json
+  image:
+    type: string
+    description: Name/ID of the image to use for the instance to be created
+    default: cirros
+    constraints:
+      - custom_constraint: glance.image
+        description: Must be a image name/id known to Glance.
+  flavor:
+    type: string
+    description: Flavor for the instance to be created.
+    default: m1.nano
+    constraints:
+      - custom_constraint: nova.flavor
+        description: Must be a flavor known to Nova.
+  key_name:
+    type: string
+    description: keypair to be used
+    default: master-keypair
+    constraints:
+      - custom_constraint: nova.keypair
+        description: Must be a keypair known to Nova
+  internal_network:
+    type: string
+    description: Internal network to attach instance to
+    default: int-net
+    constraints:
+      - custom_constraint: neutron.network # Need to choose internal network
+
+  external_network:
+    type: string
+    description: External network used for floating ips
+    default: ext-net
+    constraints:
+      - custom_constraint: neutron.network # Need to choose external network
+
+resources:
+  server:
+    type: OS::Nova::Server
+    properties:
+      block_device_mapping:
+        - device_name: vda
+          delete_on_termination: true
+          volume_id: { get_resource: volume }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key_name }
+      networks:
+        - ports: { get_resource: port }
+
+  port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: internal_network }
+      security_groups:
+        - default
+
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: external_network }
+
+  floating_ip_assoc:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: { get_resource: port }
+
+  volume:
+    type: OS::Cinder::Volume
+    properties:
+      image: { get_param: image }
+      size: 1

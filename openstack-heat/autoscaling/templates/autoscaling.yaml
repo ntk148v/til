@@ -1,0 +1,82 @@
+heat_template_version: queens
+description: Auto scale group, policy and alarm
+
+resources:
+  scale_group:
+    type: OS::Heat::AutoScalingGroup
+    properties:
+      cooldown: 300 # The minimum amount of time (in seconds) between autoscaling operations permitted on this group
+      desired_capacity: 1 # Desire initial number of resources
+      max_size: 3
+      min_size: 1
+      resource:
+        type: OS::Nova::Server::Cirros
+        properties:
+          metadata: {"metering.server_group": { get_param: "OS::stack_id" } }
+
+  scaleup_policy:
+    type: OS::Heat::ScalingPolicy
+    properties:
+      adjustment_type: change_in_capacity # Type of adjustment
+      auto_scaling_group_id: { get_resource: scale_group }
+      cooldown: 300 # The minimum amount of time (in seconds) between allowable executions of this policy
+      scaling_adjustment: 1
+
+  scaledown_policy:
+    type: OS::Heat::ScalingPolicy
+    properties:
+      adjustment_type: change_in_capacity
+      cooldown: 300
+      auto_scaling_group_id: { get_resource: scale_group }
+      adjustment_type: -1
+
+  cpu_alarm_high:
+    type: OS::Aodh::GnocchiAggregationByResourceAlarm
+    properties:
+      description: Scale up if CPU > 88% for 5 minutes
+      metric: cpu_util
+      aggregation_method: mean
+      granularity: 300
+      evaluation_periods: 1 # Number of periods to evaluate over
+      threshold: 88
+      resource_type: instance
+      comparison_operator: gt # Operator used to compare specified statistic with threshold
+      alarm_actions: # A list of URLs (webhooks) to invoke when state transitions to alarm
+        - str_replace:
+            template: trust+url
+            params:
+              url: { get_attr: [scaleup_policy, signal_url] }
+      query:
+        str_replace:
+          template: '{"=": {"server_group": "stack_id"}}'
+          params:
+            stack_id: { get_param: "OS::stack_id" }
+
+  cpu_alarm_low:
+    type: OS::Aodh::GnocchiAggregationByResourceAlarm
+    properties:
+      description: Scale down if CPU < 30% for 5 minutes
+      metric: cpu_util
+      aggregation_method: mean
+      granularity: 300
+      evaluation_periods: 1
+      threshold: 30
+      resource_type: instance
+      comparison_operator: lt
+      alarm_actions:
+        - str_replace:
+            template: trust+url
+            params:
+              url: { get_attr: [scaledown_policy, signal_url ]}
+      query:
+        str_replace:
+          template: '{"=": {"server_group": "stack_id"}}'
+          params:
+            stack_id: { get_param: "OS::stack_id" }
+
+outputs:
+  scaleup_policy_signal_url:
+    value: { get_attr: [scaleup_policy, signal_url] }
+
+  scaledown_policy_signal_url:
+    value: { get_attr: [scaledown_policy, signal_url] }
