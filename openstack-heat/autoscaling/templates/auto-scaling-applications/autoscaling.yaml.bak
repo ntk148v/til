@@ -4,7 +4,7 @@ parameters:
   image:
     type: string
     description: Image used for servers
-    default: ubuntu-flask-as
+    default: ubuntu-cloud-docker
   key:
     type: string
     description: SSH key to connect to the servers
@@ -13,21 +13,13 @@ parameters:
     type: string
     description: flavor used by the web servers
     default: m1.mini2
-  lb_network:
-    type: string
-    description: Network used by the lb server
-    default: vlan135
-  asg_network:
+  network:
     type: string
     description: Network used by the server
     default: vlan136-LBNetwork
-  lb_subnet_id:
+  subnet_id:
     type: string
     description: subnet on which the load balancer will be located
-    default: dcc7d13b-74b2-4463-ae63-412640187cf9
-  asg_subnet_id:
-    type: string
-    description: subnet on which the asg instance will be located
     default: 4407e64d-36f3-44e0-b0c1-73a3f0292856
   external_network_id:
     type: string
@@ -45,10 +37,12 @@ resources:
           flavor: {get_param: flavor}
           image: {get_param: image}
           key_name: {get_param: key}
-          network: {get_param: asg_network}
-          subnet: {get_param: asg_subnet_id}
+          network: {get_param: network}
+          subnet: {get_param: subnet_id}
           pool_id: {get_resource: pool}
           metadata: {"metering.server_group": {get_param: "OS::stack_id"}}
+          user_data:
+            get_file: flask_app.sh
   web_server_scaleup_policy:
     type: OS::Heat::ScalingPolicy
     properties:
@@ -106,7 +100,7 @@ resources:
   lb:
     type: OS::Octavia::LoadBalancer
     properties:
-      vip_subnet: { get_param: lb_subnet_id }
+      vip_subnet: { get_param: subnet_id }
   listener:
     type: OS::Octavia::Listener
     properties:

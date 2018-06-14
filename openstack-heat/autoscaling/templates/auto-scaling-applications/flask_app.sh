@@ -1,4 +1,9 @@
 #!/bin/bash -v
+cat >>/home/cloud/.bashrc <<EOF
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+EOF
+source /home/cloud/.bashrc
 export http_proxy="http://10.61.2.237:3128"
 export https_proxy="http://10.61.2.237:3128"
 cat >/etc/apt/apt.conf <<EOF
@@ -31,7 +36,7 @@ def index():
     return "Hello from {0}!" . format(hostname)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
 EOF
 
 # create virtualenv and install dependencies
@@ -44,7 +49,7 @@ chown -R cloud:cloud app.py
 # configure supervisor to run a private gunicorn web server, and
 # to autostart it on boot and when it crashes
 # stdout and stderr logs from the server will go to /var/log/cloud
-mkdir /var/log/cloud
+# mkdir /var/log/cloud
 cat >/etc/supervisor/conf.d/cloud.conf <<EOF
 [program:cloud]
 command=/home/cloud/venv/bin/gunicorn -b 127.0.0.1:8000 -w 4 --chdir /home/cloud --log-file - app:app
@@ -56,6 +61,8 @@ stdout_logfile=/var/log/cloud/stdout.log
 EOF
 supervisorctl reread
 supervisorctl update
+systemctl restart supervisor
+systemctl enable supervisor
 
 # configure nginx as the front-end web server with a reverse proxy
 # rule to the gunicorn server
