@@ -91,7 +91,7 @@ resources:
       aggregation_method: mean
       granularity: 60
       evaluation_periods: 1
-      threshold: 30
+      threshold: 15
       resource_type: instance
       comparison_operator: lt
       alarm_actions:
