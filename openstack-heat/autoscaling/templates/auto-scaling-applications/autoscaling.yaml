@@ -162,7 +162,7 @@ outputs:
           host: { get_attr: [lb_floating, floating_ip_address] }
     description: >
       This URL is the "external" URL that can be used to access the
-      Wordpress site.
+      Flask app.
   gnocchi_query:
     value:
       str_replace:
