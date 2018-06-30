@@ -20,19 +20,19 @@ parameters:
   asg_network:
     type: string
     description: Network used by the server
-    default: vlan136-LBNetwork
+    default: vlan134-net
   lb_subnet_id:
     type: string
     description: subnet on which the load balancer will be located
-    default: dcc7d13b-74b2-4463-ae63-412640187cf9
+    default: 4407e64d-36f3-44e0-b0c1-73a3f0292856
   asg_subnet_id:
     type: string
     description: subnet on which the asg instance will be located
-    default: 4407e64d-36f3-44e0-b0c1-73a3f0292856
+    default: 028ae0cb-b207-4e98-bd1b-3373931674ec
   external_network_id:
     type: string
     description: UUID of a Neutron external network
-    default: dc16b505-5a54-4b07-aef1-0b2cbdd66fd2
+    default: f034514b-c49f-497b-9a0d-06de20b452fc
 resources:
   asg:
     type: OS::Heat::AutoScalingGroup
