@@ -66,10 +66,10 @@ resources:
   cpu_alarm_high:
     type: OS::Aodh::GnocchiAggregationByResourcesAlarm
     properties:
-      description: Scale up if CPU > 80% for 1 minute
+      description: Scale up if CPU > 80% for 5 minutes
       metric: cpu_util
       aggregation_method: mean
-      granularity: 60
+      granularity: 300
       evaluation_periods: 1
       threshold: 80
       resource_type: instance
@@ -86,10 +86,10 @@ resources:
   cpu_alarm_low:
     type: OS::Aodh::GnocchiAggregationByResourcesAlarm
     properties:
-      description: Scale down if CPU < 15% for 1 minute
+      description: Scale down if CPU < 15% for 5 minutes
       metric: cpu_util
       aggregation_method: mean
-      granularity: 60
+      granularity: 300
       evaluation_periods: 1
       threshold: 15
       resource_type: instance
