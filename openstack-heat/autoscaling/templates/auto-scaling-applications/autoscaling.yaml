@@ -82,7 +82,7 @@ resources:
       query:
         list_join:
           - ''
-          - - {'=': {metering.server_group: {get_param: "OS::stack_id"}}}
+          - - {'=': {server_group: {get_param: "OS::stack_id"}}}
   cpu_alarm_low:
     type: OS::Aodh::GnocchiAggregationByResourcesAlarm
     properties:
@@ -102,7 +102,7 @@ resources:
       query:
         list_join:
           - ''
-          - - {'=': {metering.server_group: {get_param: "OS::stack_id"}}}
+          - - {'=': {server_group: {get_param: "OS::stack_id"}}}
   lb:
     type: OS::Octavia::LoadBalancer
     properties:
@@ -168,7 +168,7 @@ outputs:
       str_replace:
         template: >
           gnocchi measures aggregation --resource-type instance
-          --query 'metering.server_group="stackval"'
+          --query 'server_group="stackval"'
           --granularity 60 --aggregation mean -m cpu_util
         params:
           stackval: { get_param: "OS::stack_id" }
