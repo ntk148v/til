@@ -15,7 +15,7 @@ parameters:
   flavor:
     type: string
     description: Flavor for the instance to be created.
-    default: m1.nano
+    default: tiny-baby
     constraints:
       - custom_constraint: nova.flavor
         description: Must be a flavor known to Nova.
@@ -29,7 +29,7 @@ parameters:
   network:
     type: string
     description: network to attach instance to
-    default: mgmt-net
+    default: mgnt-net-194
     constraints:
       - custom_constraint: neutron.network # Need to choose internal network
 
