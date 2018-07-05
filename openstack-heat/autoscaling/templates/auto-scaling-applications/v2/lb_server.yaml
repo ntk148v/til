@@ -1,0 +1,84 @@
+heat_template_version: queens
+description: A load-balancer server
+parameters:
+  image:
+    type: string
+    description: Image used for servers
+  key_name:
+    type: string
+    description: SSH key to connect to the servers
+  flavor:
+    type: string
+    description: flavor used by the servers
+  pool_id:
+    type: string
+    description: Pool to contact
+  metadata:
+    type: json
+  network:
+    type: string
+    description: Network used by the server
+  subnet:
+    type: string
+    description: Subnet used by the server
+
+resources:
+  server:
+    type: OS::Nova::Server
+    properties:
+      flavor: {get_param: flavor}
+      image: {get_param: image}
+      key_name: {get_param: key_name}
+      metadata: {get_param: metadata}
+      networks: [{network: {get_param: network} }]
+      user_data_format: SOFTWARE_CONFIG
+      user_data: {get_resource: flask_app_init}
+  flask_app_init:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+        - config: {get_resource: config_lc}
+        - config: {get_resource: config_proxy}
+        - config: {get_resource: install_config_flask}
+        - config: {get_resource: config_supervisor}
+        - config: {get_resource: config_nginx}
+  config_lc:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: {get_file: config_lc.sh}
+  config_proxy:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: {get_file: config_proxy.sh}
+  install_config_flask:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: {get_file: install_config_flask.sh}
+  config_supervisor:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: {get_file: config_supervisor.sh}
+  config_nginx:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: {get_file: config_nginx.sh}
+  member:
+    type: OS::Octavia::PoolMember
+    properties:
+      pool: {get_param: pool_id}
+      address: {get_attr: [server, first_address]}
+      protocol_port: 80
+      subnet: {get_param: subnet}
+
+outputs:
+  server_ip:
+    description: IP Address of the load-balanced server.
+    value: { get_attr: [server, first_address] }
+  lb_member:
+    description: LB member details.
+    value: { get_attr: [member, show] }
