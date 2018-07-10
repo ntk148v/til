@@ -80,9 +80,33 @@ https://12factor.net/
 > Maximize robustness with fast startup and graceful shutdown
 
 * Twelve-factor app processes are disposable (start and stop at a moment's notice).
+* Minize startup time.
+* Shutdown gracefully.
 
 ## Dev/prod parity
 
+> Keep development, staging, and production as similar as possible
+
+* Gaps between development and production:
+    * The time gap: A developer may work on code that takes days, weeks or even months to ggo into production. -> a developer may write code and have it deployed.
+    * The personnel gap: Developers write code, ops engineers deploy it. -> developers who wrote code are closely involved in deploying it and watching its behavior in production.
+    * The tools gap: Developers may be using a stack like Nginx, SQLite... while the production deploy use Apache, MySQL, Linux. -> Keep development and production as similar as possible.
+* Design for continuous deployment by keeping the gap between development and production small.
+* Tools: Chef, Docker, Vagrant...
+
 ## Logs
 
+> Treat logs as event streams
+
+* Never concerns itself with routing or storage of its output stream.
+* ~~logfile~~, each running process writes its event stream, unbuffered to `stdout`.
+    * Local development: developer will view stream in the foreground.
+    * Staging or production deploys: each process's stream will be captured by the execution environment, collated together with all other streams from the app, and routed to one or more final destinations for viewing and long-term archival -> Fluentd, Logstash...
+* The stream can be sent to a log indexing and analysis system -> ELK for e.x
+
 ## Admin processes
+
+> Run admin/management tasks as one-off processes
+
+* One-off administrative or maintenance tasks: db migrations, console, one-time scripts commited into the app's repo.
+* Run in an identical environment as the regular long-running processes of the app - run against a release, using the same codebase and config.
