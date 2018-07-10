@@ -1,4 +1,4 @@
-# The Twelve-factor app
+# The ~~Twelve~~Fifteen-factor app
 
 https://12factor.net/
 
@@ -110,3 +110,24 @@ https://12factor.net/
 
 * One-off administrative or maintenance tasks: db migrations, console, one-time scripts commited into the app's repo.
 * Run in an identical environment as the regular long-running processes of the app - run against a release, using the same codebase and config.
+
+## API First
+
+* API as first-class artifact
+* API first -> easy collaboration
+* Mobile first
+
+## Telemetry
+
+> APM, tracing, events, metrics, monitoring, logging
+
+* Application performance monitoring: Prometheus, Jaeger,...
+* Domain-specific telemetry
+* Health and system logs
+
+## AuthN & AuthZ
+
+> Cloud-native application has to be a secure application
+
+* Role-based access control (RBAC)
+* OAuth2, OpenID, SSO
