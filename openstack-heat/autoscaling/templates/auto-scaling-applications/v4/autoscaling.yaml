@@ -122,7 +122,7 @@ resources:
       lb_algorithm: ROUND_ROBIN
       protocol: HTTP
       session_persistence:
-      type: SOURCE_IP
+        type: SOURCE_IP
   pool_2:
     type: OS::Octavia::Pool
     properties:
@@ -131,16 +131,24 @@ resources:
       lb_algorithm: ROUND_ROBIN
       protocol: HTTP
       session_persistence:
-      type: SOURCE_IP
-  monitor:
+        type: SOURCE_IP
+  monitor_1:
     type: OS::Octavia::HealthMonitor
     properties:
-      pool: { get_resource: pool }
+      pool: { get_resource: pool_1 }
       type: TCP
       delay: 5
       max_retries: 5
       timeout: 5
-  # assign a floating ip address to the load balancer
+  monitor_2:
+    type: OS::Octavia::HealthMonitor
+    properties:
+      pool: { get_resource: pool_2 }
+      type: TCP
+      delay: 5
+      max_retries: 5
+      timeout: 5
+ # assign a floating ip address to the load balancer
   # pool.
   lb_floating:
     type: OS::Neutron::FloatingIP
