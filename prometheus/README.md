@@ -6,6 +6,8 @@
 
 * [Alertmanager High Availability](./alertmanager-ha.md)
 
+* [Collect Docker metrics with Prometheus](./collect-docker-metrics.md)
+
 ## Refs
 
 * [RobustPerception](https://www.robustperception.io/)
