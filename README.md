@@ -1,2 +1,3 @@
-# A repo that contains everything I've learnt, investigated about.
+# TIL
 
+> Today I learned
