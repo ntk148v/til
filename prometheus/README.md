@@ -15,3 +15,5 @@
 * [Prometheus official documentation](https://prometheus.io/docs/)
 
 * [YunLong's Blog](http://ylzheng.com/categories/Prometheus/). Give that man some credits!
+
+* [Wikitech Prometheus](https://wikitech.wikimedia.org/wiki/Prometheus)
