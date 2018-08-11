@@ -71,6 +71,12 @@ threshold:
     # Threshold to evaluate against
     # Number value expected
     # Can be updated without replacement
+granularity
+    # The time range in seconds
+    # Integer value expected
+    # Can be updated without replacement
+    # NOTE: The alarm granularity must match the granularities of the 
+    # metric configured in Gnocchi. Should be careful when set its value.
 ```
 
 
