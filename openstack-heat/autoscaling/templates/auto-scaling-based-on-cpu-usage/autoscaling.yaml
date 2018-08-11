@@ -5,7 +5,7 @@ resources:
   scale_group:
     type: OS::Heat::AutoScalingGroup
     properties:
-      cooldown: 300 # The minimum amount of time (in seconds) between autoscaling operations permitted on this group
+      cooldown: 300 # The minimum amount of time (in seconds) between autoscaling operations permitted on this group - an interval during which the cluster will remain ignorant to scaling requests
       desired_capacity: 1 # Desire initial number of resources
       max_size: 3
       min_size: 1
