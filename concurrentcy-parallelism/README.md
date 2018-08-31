@@ -3,6 +3,8 @@
 These two terms always make me confuse a lot and I know that I'm not the only one.
 Let's make it clear.
 
+Rob Pike (Unix, Golang, UTF-8 and Plan 9 Software Engineer) explains this well in this [video](https://www.youtube.com/watch?v=cN_DpYBzKso). You might want to take a look at this, a lot of articles point to it as refer and I'm not an exception.
+
 ## Concurrency
 
 * Programming as the composition of independently executing processes.
