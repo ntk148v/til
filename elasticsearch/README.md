@@ -1,5 +1,48 @@
 # Elasticsearch
 
+## Basic Concepts
+
+There are a few concepts that are core to Elasticsearch. Understanding these concepts from the outset will tremendously help ease the learning process.
+
+### Near Realtime (NRT)
+
+Elasticsearch is a near real time search platform -> slight latency (~1 second) from the time you index a document until the time it becomes searchable.
+
+### Cluster
+
+ * A cluster is a collection of one or more nodes (servers) that together holds your entire data and pprovides federated indexing and search capabilities across all nodes.
+ * A cluster is identified by a **unique** name which by default is "elasticsearch".
+
+### Node
+
+* A node is a single server that is part of your cluster, stores your data, and participates in the cluster's indexing and search capabilities.
+* A node is identified by a name which by default is a random Universally Unique IDentifier (UUID) that is assigned to the node at the startup.
+
+### Index
+
+* An index is a collection of documents that have somewhat similar characterisitics.
+* An index is identified by a name (that must be all lowercase) and this name is sued to refer to the index when performing indexing search, update, and delete operations against the documents in it.
+
+### Document
+
+* A document is a basic unit of information that can be indexed.
+* The document is expressed in JSON.
+* Within an index, you can store as many documents as you want.
+
+### Shards & Replicas
+
+* An index can potentially store a large amount of data that can exceed the hardware limits of a single node.
+* To solve this problem, Elasticsearch provides the ability to subdivide your index into multiple pieces called **shards**. When you create an index, you can simply define the number of shards that you want. Each shard is in itself a fully-functional and independent "index" that be hosted on any node in the cluster.
+* Sharding is important for two primary reasons:
+    * It allows you to horizontally split/scale your content volume.
+    * It allows you to distribute and parallelize operations across shards (potentially on multiple nodes) thus increasing performance/throughput.
+* Failover mechanism in case a shard/node somehow goes offline or disappears for whatever reasons: Make one/more copies of index's shards into what are called replica shards or replicas for short.
+* Replication is important for two primary reasons:
+    * It provides high availability in case a shard/node fails. A replica shard is never allocated on the same node as the original/primary shard that it was copied from.
+    * It allows you to scale out your search volume/throughput since searches can be executed on all replicas in parallel.
+* To summarize, each index can be split into multiple shards. An index can also be replicated zero  (meaning no replicas) or more times. Once replicated, each index will have primary shards (the original shards that were replicated from) and replica shards.
+* By default, each index is allocated 5 primary shards and 1 replica (2 nodes -> index - 5 primary shards and another 5 replica shards (1 complete replica) -> 10 shards/index)
+
 ## Limiting Memory Usage
 
 * Once analyzed strings have been loaded into fielddata -> sit there until evicted (or node crashed) -> **Check memory usage**
