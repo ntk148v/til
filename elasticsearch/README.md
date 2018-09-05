@@ -43,6 +43,56 @@ Elasticsearch is a near real time search platform -> slight latency (~1 second) 
 * To summarize, each index can be split into multiple shards. An index can also be replicated zero  (meaning no replicas) or more times. Once replicated, each index will have primary shards (the original shards that were replicated from) and replica shards.
 * By default, each index is allocated 5 primary shards and 1 replica (2 nodes -> index - 5 primary shards and another 5 replica shards (1 complete replica) -> 10 shards/index)
 
+## Dive deep into Shard - Shard Primer
+
+* Elasticsearch is built on top of Lucene, which is a data storage and retrieval engine. What are called "shards" in Elasticsearch parlance are technically Lucene instances.
+
+![shard](https://files.readme.io/qNFuyoeARFmlzsQfu4Ox_reduce-shards09.jpg)
+
+* Elasticsearch index is created -> will be composed of one or more shards.
+* Shards play one of two roles: primary or replica.
+* The number of primary shards can not be changed after an index has been created, but replica can.
+* Replica shards are not only capable of serving search traffic, but they also provide a level of protection against data loss. If a node hosting a primary shard is taken offline for some reason, Elasticsearch will promote its replica to a primary role.
+* Replicas are a multiplier on the primary shards, and the total is calculated as `primary * (1+replicas)`.
+
+![replicas](https://files.readme.io/f5yajUc0QmaFq8b1gnYr_reduce-shards07.png)
+
+* Measure your cluster's index and shard usage"
+
+```
+$ curl -XGET http://<elasticsearch>/_cat/shards?v
+
+index  shard pri rep state   docs store ip              node
+```
+
+## Reducing Shard Usage
+
+* Deleting Unneeded Indices
+* Use a Different sharding scheme.
+	* Reduce replication
+	* Data collocation
+
+* How to change the default amount of shards and replicas of indices?
+	* Option 1: Change in `elasticsearch.yml` file:
+
+```
+index.number_of_shards: 7
+index.number_of_replicas: 2
+```
+
+	* Option 2: Use index template
+
+```
+PUT _template/all
+{
+  "template": "*",
+    "settings": {
+        "number_of_shards": 7,
+        "number_of_replicas": 2
+    }
+}
+```
+
 ## Limiting Memory Usage
 
 * Once analyzed strings have been loaded into fielddata -> sit there until evicted (or node crashed) -> **Check memory usage**
