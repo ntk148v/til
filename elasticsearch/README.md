@@ -75,23 +75,23 @@ index  shard pri rep state   docs store ip              node
 * How to change the default amount of shards and replicas of indices?
 	* Option 1: Change in `elasticsearch.yml` file:
 
-```
-index.number_of_shards: 7
-index.number_of_replicas: 2
-```
+    ```
+    index.number_of_shards: 7
+    index.number_of_replicas: 2
+    ```
 
 	* Option 2: Use index template
 
-```
-PUT _template/all
-{
-  "template": "*",
-    "settings": {
-        "number_of_shards": 7,
-        "number_of_replicas": 2
+    ```
+    PUT _template/all
+    {
+      "template": "*",
+        "settings": {
+            "number_of_shards": 7,
+            "number_of_replicas": 2
+        }
     }
-}
-```
+    ```
 
 ## Limiting Memory Usage
 
