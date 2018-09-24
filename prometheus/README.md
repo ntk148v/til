@@ -8,6 +8,8 @@
 
 * [Collect Docker metrics with Prometheus](./collect-docker-metrics.md)
 
+* [Labels and relabel](./labels.md)
+
 ## Refs
 
 * [RobustPerception](https://www.robustperception.io/)
