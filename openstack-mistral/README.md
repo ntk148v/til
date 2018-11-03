@@ -188,3 +188,28 @@ create_vm_and_send_email:
 ### Join
 
 * Join flow control allows to synchronize multiple parellel workflow branches and aggregate their data.
+* **Full join (join: all)** When a task has property "join" assigned with value "all" the task will run only if all upstream tasks (ones that lead to this task - Task A has B mentioned in any of its "on-success", "on-error" & "on-complete" clauses) are completed and corresponding conditions have triggered.
+* **Partial join (join: X)** When a task has a numeric value assigned to the property "join", then the task will run once at least this number of upstream tasks are completed and the correspoinding conditions have triggered.
+* **Discriminator (join: one)** Discriminator is the special case of Partial Join where the "join" property has the value 1.
+
+### Processing collections (with-items)
+
+* Use the *with-items* keyword that associates an action or a workflow with a task run multiple times.
+* The values of the *with-items* task property contains an expression in the form: **<variable\__name> in <% YAQL\__expression %>**.
+
+### Execution expiration policy
+
+* By default Mistral will store all exections indefinitely and over time the number stored will accumulate.
+* By default this feature is disabled.
+
+```ini
+# Enable this feature
+[execution_expiration_policy]
+evaluation_interval = 120  # 2 hours
+older_than = 10080  # 1 week
+max_finished_executions = 500
+```
+
+* This policy defines:
+    * The maximum age of an execution since the last updated (in minutes).
+    * The maximum number of finished executions.
