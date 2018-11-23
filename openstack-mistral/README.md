@@ -135,6 +135,10 @@ create_vm_and_send_email:
 
     ![async-action](https://docs.openstack.org/mistral/latest/_images/Mistral_actions.png)
 
+* Action defines what exactly needs to be done when task starts. Action is similar to a regular function in general purpose programming language like Python.
+    * System actions
+    * Ad-hoc actions
+
 ### Execution
 
 * Executions are runtime objects and they reflect the information about the progress and state of concrete execution type.
