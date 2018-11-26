@@ -139,6 +139,10 @@ create_vm_and_send_email:
     * System actions
     * Ad-hoc actions
 
+* System actions
+    * [std actions](https://docs.openstack.org/mistral/latest/user/wf_lang_v2.html#system-actions)
+    * [openstack actions](./mapping.json)
+
 ### Execution
 
 * Executions are runtime objects and they reflect the information about the progress and state of concrete execution type.

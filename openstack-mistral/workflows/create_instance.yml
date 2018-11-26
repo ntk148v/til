@@ -1,0 +1,50 @@
+---
+version: '2.0'
+
+std.create_instance:
+  type: direct
+
+  description: |
+    Creates VM and waits till VM OS is up and running.
+
+  input:
+    - name
+    - image_id
+    - flavor_id
+    - ssh_username: null
+    - ssh_password: null
+
+    # Name of previously created keypair to inject into the instance.
+    # Either ssh credentials or keypair must be provided.
+    - key_name: null
+
+    # Security_groups: A list of security group names
+    - security_groups: null
+
+    # Network's id
+    - net_id
+
+  output:
+    id: <% $.vm_id %>
+
+  tasks:
+    create_vm:
+      description: Initial request to create a VM.
+      action: nova.servers_create name=<% $.name %> image=<% $.image_id %> flavor=<% $.flavor_id %>
+      input:
+        key_name: <% $.key_name %>
+        security_groups: <% $.security_groups %>
+        nics: [{"net-id": <% $.net_id %>}]
+      publish:
+        vm_id: <% task(create_vm).result.id %>
+      on-success:
+        - wait_vm_active
+
+    wait_vm_active:
+      description: Waits till VM is ACTIVE.
+      action: nova.servers_find id=<% $.vm_id %> status="ACTIVE"
+      retry:
+        count: 10
+        delay: 10
+      publish:
+        status: <% task(wait_vm_active).result.status %>
