@@ -36,6 +36,7 @@ Mistral is OpenStack workflow service. The main aim of the project is to provide
 ### Workbooks
 
 * Combine multiple entities of any type (workflows and actions) into one document.
+* Unlike Mistral Workflow language v1, v2 assumes that all entities that Mistral works with like workflows and actions are completely independent in terms of how the're referenced and accessed through API. Workbook, the entity that can combine workflows and actions still exists in the language but only for namespacing and convenience purposes.
 * Upload to Mistral service.
 * Mistral will parse it and saves its workflows and actions as independent objects which will be accessible via their own API endpoints.
 * Namespacing: Mistral uses workbook name as a prefix for generating final names of workflows and actions included into the workflow.
@@ -58,6 +59,33 @@ actions: # Dictionary containting ad-hoc action definitions. Optional
 ### Workflows
 
 * Workflow represents a process that can be described in a various number of ways and that can do some jobs. Each workflows consists of tasks (at least one) describing what exact steps should be made during workflow execution.
+
+* Common workflow attributes
+    * **type**: Workflow type ('direct'/'reverse').
+    * **description**: Arbitrary text containing workflow description.
+    * **input**: List defining required input parameter names and optionally their default values.
+    * **output**: Any data structure arbitrarily containing YAQL/Jinja2 expressions that defines workflow output. May be nested.
+    * **output-on-error**: Similar with output that defines output of workflow to be returned if it error state.
+    * **task-defaults**: Default settings for some of task attributes defined at workflow level. Corresponding attribute defined for a specific task always takes precedence.
+        * on-error: List of tasks which will run after the task has completed with an error (*direct workflow only*).
+        * on-success: List of tasks which will run after the task has completed successfully (*direct workflow only*).
+        * on-complete: List of tasks which will run after the task has completed regardless of whether it is successful or not (*direct workflow only*).
+
+        ```python
+        try:
+            action()
+            # on-success
+        except:
+            # on-error
+        finally:
+            # on-complete
+        ```
+
+        * requires: List of tasks that a task depends on (*reverse workflow only*).
+        * pause-before, wait-before, wait-after, timeout, retry, concurrency, safe-return: Configures X policy.
+
+    * **tasks**: Dictionay containing workflow tasks.
+
 * **Direct workflow**: consists of tasks combined in a graph where every next task after another one depending on produced result. Direct workflow is considered to be completed if there aren't any transitions left that could be used to jump to next tasks.
 
 ![direct-workflow](https://docs.openstack.org/mistral/latest/_images/Mistral_direct_workflow.png)
@@ -136,12 +164,42 @@ create_vm_and_send_email:
     ![async-action](https://docs.openstack.org/mistral/latest/_images/Mistral_actions.png)
 
 * Action defines what exactly needs to be done when task starts. Action is similar to a regular function in general purpose programming language like Python.
-    * System actions
-    * Ad-hoc actions
+    * System actions: are provided by Mistral out of the box and can be used by anyone.
+    * Ad-hoc actions: A special type of action that can be created by user. Ad-hoc action is always created as a wrapper around any other existing system action and its main gola to simplify using same actions many times with simialar pattern.
 
 * System actions
     * [std actions](https://docs.openstack.org/mistral/latest/user/wf_lang_v2.html#system-actions)
     * [openstack actions](./mapping.json)
+
+* Ad-hoc actions
+
+```yaml
+---
+version: '2.0'
+
+std.wait_ssh:
+  description: Simple SSH command.
+  base: std.ssh
+  base-input:
+    host: <% $.host %>
+    username: <% $.username %>
+    password: <% $.password %>
+    cmd: 'ls -la'
+  input:
+    - host
+    - username
+    - password
+```
+
+    * base: Name of bnase action that this action is built on top of. Required.
+    * base-input: Actual input of parameters provided to base action. Look at the example above. Optional.
+    * input: List of declared action parameters which should be specified as corresponding task input. This attribute is optional and used only for documenting purposes. Mistral now does not enforce actual input parameters to exactly correspond to this list.
+    * output: Any data structure defining how to calculate output of this action based output of base action. It can optionally have expressions to access properties of base action output through expression context.
+
+### Predefined values/functions in execution data context
+
+* Openstack context: `$.openstack`. it contains `auth_token, project_id, user_id, service_catalog, user_name, project_name, roles, is_admin` properties.
+* Task result:
 
 ### Execution
 
@@ -197,7 +255,7 @@ create_vm_and_send_email:
 
 * Join flow control allows to synchronize multiple parellel workflow branches and aggregate their data.
 * **Full join (join: all)** When a task has property "join" assigned with value "all" the task will run only if all upstream tasks (ones that lead to this task - Task A has B mentioned in any of its "on-success", "on-error" & "on-complete" clauses) are completed and corresponding conditions have triggered.
-* **Partial join (join: X)** When a task has a numeric value assigned to the property "join", then the task will run once at least this number of upstream tasks are completed and the correspoinding conditions have triggered.
+* **Partial join (join: X)** When a task has a numeric value assigned to the property "join", then the task will run once at least this number of upstream tasks are completed and the corresponding conditions have triggered.
 * **Discriminator (join: one)** Discriminator is the special case of Partial Join where the "join" property has the value 1.
 
 ### Processing collections (with-items)
