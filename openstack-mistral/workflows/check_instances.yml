@@ -1,0 +1,64 @@
+---
+version: '2.0'
+
+check_instances_state:
+  type: direct
+
+  description: |
+    List all instances with a given metadata. Recreate if
+    there is not enough instances.
+
+  input:
+    # Vm name
+    - name: dm-mistral
+    # Network ID
+    - net_id
+    - flavor_id
+    - image_id
+    - security_groups: null
+    # Minimum number of running instances needed.
+    - min_vms: 2
+    - key_name: null
+
+  tasks:
+    count_vms:
+      description: List all running instances with a given tag.
+      action: nova.servers_list
+      input:
+        search_opts:
+          status: "ACTIVE"
+      publish:
+        num_vms: <% len(task(count_vms).result.where($.metadata.get("test") = "1")) %>
+      keep-result: false
+      on-success:
+        - create_more_vms: <% $.num_vms < int($.min_vms) %>
+        - ignore_vm_creation: <% $.num_vms >= int($.min_vms) %>
+
+    create_more_vms:
+      description: Create more vms if needed.
+      action: nova.servers_create image=<% $.image_id %> flavor=<% $.flavor_id %>
+      input:
+        name: <% concat($.name, "-", str(random())) %>
+        key_name: <% $.key_name %>
+        security_groups: <% $.security_groups %>
+        nics: [{"net-id": <% $.net_id %>}]
+        max_count: <% int($.min_vms) - $.num_vms %>
+        meta:
+          test: "1"
+      on-success:
+        - wait_vms_active
+
+    ignore_vm_creation:
+      description: Ignore instance creation, just echo thing.
+      action: std.echo output="That's enough!"
+
+    wait_vms_active:
+      description: Wait till VMs is ACTIVE
+      action: nova.servers_list
+      input:
+        search_opts:
+          status: "ACTIVE"
+      retry:
+        count: 10
+        delay: 10
+        break-on: <% len(task(wait_vms_active).result.where($.metadata.get("test") = "1")) = int($.min_vms) %>
