@@ -10,6 +10,8 @@
 
 * [Labels and relabel](./labels.md)
 
+* [Silence Alerts](./alertmanager-silence.md)
+
 ## Refs
 
 * [RobustPerception](https://www.robustperception.io/)
