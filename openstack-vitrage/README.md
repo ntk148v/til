@@ -79,3 +79,14 @@ More details
     * `mark_down`: Mark a host as down.
     * `execute_mistral`: Execute a Mistral workflow.
     * `add_causal_relationship`: Connect two alarms in the graph to indicate one cause other (RCA).
+
+* Relationship type:
+    * `on`
+    * `contains`
+    * `causes`
+    * `attached`
+    * `attached_public`
+    * `attached_private`
+    * `connect`
+    * `managed_by`
+    * `comprised`

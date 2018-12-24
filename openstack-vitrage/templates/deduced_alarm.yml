@@ -1,0 +1,38 @@
+metadata:
+  name: no_alarm_on_instance_that_contained_in_host
+  description: when host contains vm that has no alarm on it, show implications on the host.
+definitions:
+  entities:
+    - entity:
+        category: ALARM
+        type: instance_mem_performance_problem
+        template_id: instance_alarm
+    - entity:
+        category: RESOURCE
+        type: nova.host
+        template_id: host
+    - entity:
+        category: RESOURCE
+        type: nova.instance
+        template_id: instance
+  relationships:
+    - relationship:
+        source: instance_alarm
+        target: instance
+        relationship_type: on
+        template_id: alarm_on_instance
+    - relationship:
+        source: host
+        target: instance
+        relationship_type: contains
+        template_id: host_contains_instance
+scenarios:
+  - scenario:
+      condition: host_contains_instance and not alarm_on_instance
+      actions:
+        - action:
+            action_type: set_state
+            properties:
+              state: available
+            action_target:
+              target: host

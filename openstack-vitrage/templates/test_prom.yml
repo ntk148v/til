@@ -1,0 +1,38 @@
+metadata:
+  name: rca_prometheus
+  description: Test Vitrage with Prometheus
+  type: standard
+definitions:
+  entities:
+    - entity:
+        category: ALARM
+        type: prometheus
+        name: monitorServiceDown
+        template_id: prometheus_alarm
+    - entity:
+        category: RESOURCE
+        type: nova.instance
+        template_id: nova_instance
+  relationships:
+    - relationship:
+        source: prometheus_alarm
+        target: nova_instance
+        relationship_type: on
+        template_id: alarm_on_host
+scenarios:
+  - scenario:
+      condition: alarm_on_host
+      actions:
+        - action:
+            action_type: raise_alarm
+            action_target:
+              target: nova_instance
+            properties:
+              alarm_name: host_error_vc
+              severity: critical
+        - action:
+            action_type: set_state
+            properties:
+              state: suboptimal
+            action_target:
+              target: nova_instance
