@@ -29,6 +29,7 @@ metadata:
   description: <what this template does>
 # Contains the atomic definitions referenced later on, for entities and relationships
 # **mandatory** unless an include section is specified.
+# Condition building-blocks
 definitions:
   # describe the resources and alarms which are relevant to the template scenario
   entities:
@@ -44,6 +45,7 @@ includes:
   - name: <name as stated in the metadata of a definition template>
   - name: ...
 # A list of if-then scenarios to consider
+# Action defined based on the building blocks
 scenarios:
   - scenario:
     # the condition to be met
@@ -51,6 +53,34 @@ scenarios:
     # a list of actions to execute when the condition is met
     actions:
       - action: ...
+```
+
+* Example:
+
+```yaml
+metadata:
+  version: 2
+  type: standard
+  name: raise_alarm_for_host_errors
+  description: host in error raises alarm
+definitions:
+  entities:
+    - entity:
+        category: RESOURCE
+        type: nova.host
+        state: ERROR
+        template_id: host_in_error
+scenarios:
+  scenario:
+    condition: host_in_error  # uses template_id
+    actions:
+      - action:
+          type: raise_alarm
+          target:
+            target: host_in_error # uses template_ids
+            properties:
+              alarm_type: host_malfunctioning   # any string
+              severity: critical
 ```
 
 ### Definition template structure
