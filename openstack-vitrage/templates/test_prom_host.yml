@@ -1,0 +1,39 @@
+metadata:
+  name: rca_prometheus_host
+  description: Test Vitrage with Prometheus
+  type: standard
+  version: 2
+definitions:
+  entities:
+    - entity:
+        category: ALARM
+        type: prometheus
+        name: monitor_service_down
+        template_id: prometheus_alarm
+    - entity:
+        category: RESOURCE
+        type: nova.host
+        template_id: nova_host
+  relationships:
+    - relationship:
+        source: prometheus_alarm
+        target: nova_host
+        relationship_type: on
+        template_id: alarm_on_host
+scenarios:
+  - scenario:
+      condition: alarm_on_host
+      actions:
+        - action:
+            action_type: raise_alarm
+            action_target:
+              target: nova_host
+            properties:
+              alarm_name: Host Nay Bi Loi
+              severity: critical
+        - action:
+            action_type: set_state
+            properties:
+              state: SUBOPTIMAL
+            action_target:
+              target: nova_host
