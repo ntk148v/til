@@ -29,7 +29,7 @@ scenarios:
             action_target:
               target: nova_host
             properties:
-              alarm_name: Host Nay Bi Loi
+              alarm_name: HostNayBiLoi
               severity: critical
         - action:
             action_type: set_state

@@ -29,7 +29,7 @@ scenarios:
             action_target:
               target: nova_instance
             properties:
-              alarm_name: Instance Nay Bi Loi
+              alarm_name: InstanceNayBiLoi
               severity: critical
         - action:
             action_type: set_state
