@@ -49,6 +49,7 @@ includes:
 scenarios:
   - scenario:
     # the condition to be met
+    # condition can be relationship or template_id!
     condition: <if statement true do the action>
     # a list of actions to execute when the condition is met
     actions:
@@ -105,9 +106,43 @@ More details
 
 * Action:
     * `set_state`: Set (deduced) state.
+
+    ```yaml
+    actions:
+      - action:
+          action_type: set_state
+          action_target:
+            target: nova_host # A template id of resource nova.host
+          properties:
+            state: SUBOPTIMAL
+    ```
+
     * `raise_alarm`: Raise a Vitrage (deduced) alarm.
+
+    ```
+    actions:
+      - action:
+          action_type: raise_alarm
+          action_target:
+            target: nova_host # A template id of resource nova.host
+          properties:
+            alarm_name: HostNayBiLoiNe
+            severity: critical
+    ```
+
     * `mark_down`: Mark a host as down.
     * `execute_mistral`: Execute a Mistral workflow.
+
+    ```yaml
+    actions:
+      - action:
+          action_type: execute_mistral
+          properties:
+            workflow: demo_wf # The name or id of created Mistral workflow
+            input:
+              host_name: host-name-ne
+    ```
+
     * `add_causal_relationship`: Connect two alarms in the graph to indicate one cause other (RCA).
 
 * Relationship type:
@@ -120,3 +155,44 @@ More details
     * `connect`
     * `managed_by`
     * `comprised`
+
+* TODO:
+    * List all alarm severities.
+    * List all states.
+    * How do relationship type work?
+
+### Useful information you should know
+
+* `get_attr`
+
+```python
+def get_attr(match, *args):
+    """Get the runtime value of an attribute of a template entity
+
+    Usage: get_attr(template_id, attr_name)
+
+    Example:
+
+    scenario:
+     condition: alarm_on_host_1
+     actions:
+       action:
+         action_type: execute_mistral
+         properties:
+           workflow: demo_workflow
+           input:
+             host_name: get_attr(host_1,name)
+             retries: 5
+
+    get_attr(host_1, name) will return the name of the host that was matched
+    by the evaluator to host_1
+
+    :param match: The evaluator's match structure. A dictionary of
+    {template_id, Vertex}
+    :param args: The arguments of the function. For get_attr, the expected
+    arguments are:
+    - template_id: The internal template id of the entity
+    - attr_name: The name of the wanted attribute
+    :return: The wanted attribute if found, or None
+    """
+```
