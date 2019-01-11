@@ -119,7 +119,7 @@ More details
 
     * `raise_alarm`: Raise a Vitrage (deduced) alarm.
 
-    ```
+    ```yaml
     actions:
       - action:
           action_type: raise_alarm
@@ -145,21 +145,73 @@ More details
 
     * `add_causal_relationship`: Connect two alarms in the graph to indicate one cause other (RCA).
 
+    ```yaml
+    actions:
+      - action:
+          action_type: add_causal_relationship
+          action_target:
+            source: alarm1
+            source: alarm2
+    ```
+
 * Relationship type:
-    * `on`
-    * `contains`
-    * `causes`
-    * `attached`
-    * `attached_public`
-    * `attached_private`
-    * `connect`
-    * `managed_by`
-    * `comprised`
+    * `on`: common case - alarm *on* resource.
+
+    ```yaml
+    relationships:
+      - relationship:
+          source: alarm1
+          target: host
+          relationship_type: on
+          template_id: alarm_on_host
+    ```
+
+    * `contains`: common case - resource A that contains other resources, for example, nova.host resource will contain nova.instance resource.
+
+    ```yaml
+    relationships:
+      - relationship:
+          source: host
+          target: instance
+          relationship_type: contains
+          template_id: host_contains_instance
+    ```
+
+    * `causes`: no example, no clue (update later after dive into code)
+    * `attached`: common case - volume is attached to an instance. static switch that is attached to a router. The Switch is attached a Host that contains a Vm.
+
+    ```yaml
+    relationships:
+      - relationship:
+         source: volume1
+         relationship_type: attached
+         target: instance1
+         template_id : volume_attached_instance1
+    ```
+
+    * `attached_public`: same as `caused`.
+    * `attached_private`: same as `caused`.
+    * `connect`: common case - Check if there is any edges between two resources.
+    * `managed_by`: same as `caused`.
+    * `comprised`: common case - Heat stack comprises an instance, K8s cluster comprises host. (comprised != contains? -> not know yet).
+
+    ```yaml
+     relationships:
+      - relationship:
+         source: heat_stack
+         relationship_type: comprised
+         target: instance
+         template_id : heat_comprised_instance
+      - relationship:
+         source: k8s_cluster
+         relationship_type: comprised
+         target: host
+         template_id : k8s_cluster_comprised_host
+    ```
 
 * TODO:
     * List all alarm severities.
     * List all states.
-    * How do relationship type work?
 
 ### Useful information you should know
 
