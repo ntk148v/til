@@ -25,7 +25,7 @@
 metadata:
   version: <template version>
   name: <unique template identifier>
-  type: <one of: standard, definition, equivalence>
+  type: <one of: standard, definition, equivalence> # Don't know what is difference between these type.
   description: <what this template does>
 # Contains the atomic definitions referenced later on, for entities and relationships
 # **mandatory** unless an include section is specified.
@@ -105,7 +105,7 @@ Here is the update & more complete version of Common parameters section in [Usag
 More details
 
 * Action:
-    * `set_state`: Set (deduced) state.
+    * `set_state`: Set state of specified entity. This will directly affect the state as seen in Vitrage, but will not impact the state at the relevant datasource of this entity.
 
     ```yaml
     actions:
@@ -117,7 +117,7 @@ More details
             state: SUBOPTIMAL
     ```
 
-    * `raise_alarm`: Raise a Vitrage (deduced) alarm.
+    * `raise_alarm`: Raise a Vitrage (deduced) alarm on a target entity.
 
     ```yaml
     actions:
@@ -130,8 +130,16 @@ More details
             severity: critical
     ```
 
-    * `mark_down`: Mark a host as down.
-    * `execute_mistral`: Execute a Mistral workflow.
+    * `mark_down`: Set an entity marked_down field. This can be used along with nova notifier to call force_down for a  host.
+
+    ```yaml
+    action:
+     action_type : mark_down
+         action_target:
+             target: host # mandatory. entity (from the definitions section, only host) to be marked as down
+    ```
+
+    * `execute_mistral`: Execute a Mistral workflow. If the Mistral notifier is used, the specified workflow will be executed with its parameters.
 
     ```yaml
     actions:
@@ -143,7 +151,7 @@ More details
               host_name: host-name-ne
     ```
 
-    * `add_causal_relationship`: Connect two alarms in the graph to indicate one cause other (RCA).
+    * `add_causal_relationship`: Add a causual relationship between alarms. Connect two alarms in the graph to indicate one cause other (RCA).
 
     ```yaml
     actions:
@@ -215,36 +223,23 @@ More details
 
 ### Useful information you should know
 
-* `get_attr`
+* `get_attr`: This function retrieves the value of an attribute of an entity that is defined in the template. It is supported only for `execute_mistral` action.
 
-```python
-def get_attr(match, *args):
-    """Get the runtime value of an attribute of a template entity
-
-    Usage: get_attr(template_id, attr_name)
-
-    Example:
-
-    scenario:
-     condition: alarm_on_host_1
-     actions:
-       action:
-         action_type: execute_mistral
-         properties:
-           workflow: demo_workflow
-           input:
-             host_name: get_attr(host_1,name)
-             retries: 5
-
-    get_attr(host_1, name) will return the name of the host that was matched
-    by the evaluator to host_1
-
-    :param match: The evaluator's match structure. A dictionary of
-    {template_id, Vertex}
-    :param args: The arguments of the function. For get_attr, the expected
-    arguments are:
-    - template_id: The internal template id of the entity
-    - attr_name: The name of the wanted attribute
-    :return: The wanted attribute if found, or None
-    """
+```yaml
+scenario:
+  condition: alarm_on_host_1
+  actions:
+    action:
+      action_type: execute_mistral
+      properties:
+        workflow: demo_workflow
+        input:
+          host_name: get_attr(host_1,name)
+          retries: 5
 ```
+
+* Condition Format: The condition which needs to be met will be phrased using the entities and relationships previously defined. An expression is either a single entity, or some logical combination of relationships. Expression can be combined using the following logical operators:
+    * “and” - indicates both expressions must be satisfied in order for the condition to be met.
+    * “or” - indicates at least one expression must be satisfied in order for the condition to be met (non-exclusive or).
+    * “not” - indicates that the expression must not be satisfied in order for the condition to be met.
+    * parentheses “()” - clause indicating the scope of an expression.
