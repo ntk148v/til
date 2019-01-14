@@ -1,4 +1,17 @@
-# OpenStack Vitrage
+# OpenStack Vitrage- [OpenStack Vitrage](#openstack-vitrage)
+
+- [OpenStack Vitrage- OpenStack Vitrage](#openstack-vitrage--openstack-vitrage)
+  - [High Level Architecture](#high-level-architecture)
+  - [Templates Format & Usage](#templates-format--usage)
+    - [General template structure](#general-template-structure)
+    - [Definition template structure](#definition-template-structure)
+    - [Usage](#usage)
+    - [Common parameters and acceptable values - for writing templates](#common-parameters-and-acceptable-values---for-writing-templates)
+    - [Useful information you should know](#useful-information-you-should-know)
+  - [Datasource configuration](#datasource-configuration)
+    - [Nagios Plugin Configuration](#nagios-plugin-configuration)
+    - [Zabbix-Vitrage Gateway](#zabbix-vitrage-gateway)
+    - [Prometheus-Vitrage Configuration](#prometheus-vitrage-configuration)
 
 **Root Cause Analysis service** for:
 * Organizing OpenStack alarms & events.
@@ -242,3 +255,36 @@ scenario:
     * “or” - indicates at least one expression must be satisfied in order for the condition to be met (non-exclusive or).
     * “not” - indicates that the expression must not be satisfied in order for the condition to be met.
     * parentheses “()” - clause indicating the scope of an expression.
+
+## Datasource configuration
+
+### [Nagios Plugin Configuration](https://docs.openstack.org/vitrage/rocky/contributor/nagios-config.html)
+
+### [Zabbix-Vitrage Gateway](https://docs.openstack.org/vitrage/rocky/contributor/zabbix_vitrage.html)
+
+### Prometheus-Vitrage Configuration
+
+* Enable Prometheus datasource in vitrage.conf
+
+```ini
+[datasources]
+types = nova.host,nova.instance,nova.zone,static,static_physical,neutron.network,neutron.port,prometheus
+```
+
+* In Prometheus alertmanager config file, you should have a receiver for Vitrage. Please verify that it includes `send_resolved: true`. This is required for Prometheus to notify Vitrage when an alarm is resolved.
+
+```yaml
+- name: <receiver name>
+  webhook_configs:
+    - url: <vitrage event url>  # example: 'http://127.0.0.1:8999/v1/event'
+      send_resolved: true
+      http_config:
+        basic_auth:
+          username: <an admin user known to keystone >
+          password: <user’s password>
+```
+
+> NOTE:
+* [Discussion](http://openstack.10931.n7.nabble.com/vitrage-I-have-some-problems-with-Prometheus-alarms-in-vitrage-td155306.html)
+* This guide will be outdated soon. Check the [spec](https://specs.openstack.org/openstack/vitrage-specs/specs/stein/approved/prometheus-datasource.html).
+* Related bugs. Number [1](https://review.openstack.org/#/c/629765/).
