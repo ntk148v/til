@@ -220,9 +220,6 @@ Here is the update & more complete version of Common parameters section in [Usag
          template_id : k8s_cluster_comprised_host
     ```
 
-* TODO:
-    * List all alarm severities.
-
 ### Useful information you should know
 
 * `get_attr`: This function retrieves the value of an attribute of an entity that is defined in the template. It is supported only for `execute_mistral` action.
