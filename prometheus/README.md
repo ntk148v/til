@@ -12,6 +12,8 @@
 
 * [Silence Alerts](./alertmanager-silence.md)
 
+* [Custom metrics](./prometheus-metrics.md)
+
 ## Refs
 
 * [RobustPerception](https://www.robustperception.io/)
