@@ -86,7 +86,7 @@ Check [Prometheus relabeling tricks](https://medium.com/quiq-blog/prometheus-rel
 
 ### Real-world use case
 
-* **Scenario**: You have OpenStack cluster and you want to monitor its instance metrics dynamically. Prometheus already provided `openstack_sd_configs` (per project, not support all tenants yet. Check this [pull request](https://github.com/prometheus/prometheus/pull/4449) for more details.). Ok, assume you got all instance (per project) metrics but endpoint (and instance) was something like `10.240.203.210:9100/...`. You are unable to know which instance when look at this. So let's change this to instance name.
+* **Scenario**: You have OpenStack cluster and you want to monitor its instance metrics dynamically. Ok, assume you got all instance (per project) metrics but endpoint (and instance) was something like `10.240.203.210:9100/...`. You are unable to know which instance when look at this. So let's change this to instance name.
 
 ```
 - job_name: 'openstack-node-exporter'
@@ -100,6 +100,7 @@ Check [Prometheus relabeling tricks](https://medium.com/quiq-blog/prometheus-rel
         refresh_interval: 20s
         region: '...'
         project_name: '...'
+        all_tenants: true
 
     relabel_configs:
       # keep only acgive instances
