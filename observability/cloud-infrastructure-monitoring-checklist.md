@@ -28,8 +28,16 @@ With increasingly complex environments of today's applications, ease of implemen
 
 ## How does the solution handle performance baselining for ultra-dynamic environments?
 
-* 
+* Setting up performance baselines is another tricky part in cloud infrastructure monitoring. It can involve a lot of time-consuming and potentially error-prone manual effort with traditional APM-especially because most of them rely on averages and transaction samples to determine normal performance.
+* Effectively baseline -> A tool that uses percentiles based on 100% gap-free data.
 
 ## Does it offer built-in log monitoring, or needs additional tool?
 
+* Being able to monitor application performance and analyze related process log files using the same tool helps their DevOps, Development, and QA teams to perform their jobs quickly and efficientlybenelli 302s.
+
 ## Will the monitoring solution scale with your business needs?
+
+* Modern cloud environments run thousands of nodes with hunderds of technologies, distributed across datacenters around the globe.
+    * How far will this scale?
+    * How long until I'll need a newer, faster, biggesr one?
+* Picking a monitoring solution that gives you real-time insights into your cloud components is important, but ensuring that it will not crash and burn as you expand your environment is crucial.
