@@ -24,6 +24,16 @@ StackStorm plugs into the environment via the extensible set of adapters contain
 
 ## Automation basics
 
+> StackStorm - IFTTT for DevOps (IF THIS THEN THAT)
+
+Quick views:
+
+![stackstorm-action](./stackstorm-action.png)
+
+![stackstorm-workflow](./stackstorm-workflow.png)
+
+![stackstorm-openstack](./stackstorm-openstack.png)
+
 ### Actions
 
 * Perform arbitrary automation or remendiation tasks in your environment.
@@ -134,3 +144,95 @@ class SamplePollingSensor(PollingSensor):
     * `get_value(name, local=True, decrypt=False)`: Allows to retrive a single value from the datastore.
     * `set_value(name, value, ttl=None), local=True, encrypt=False)`: Allows to store (set_) a value in the datastore.
     * `delete_value(name, local=True)`: Allows to delete an existing value from the datastore.
+
+### Rules
+
+* StackStorm uses rules and workflows to capture operational patterns as automation. Rules map triggers to actions (or workflows), apply matching criteria and map trigger payloads to action inputs.
+* Rule Structure:
+
+```yaml
+---
+    name: "rule_name"                      # required
+    pack: "examples"                       # optional
+    description: "Rule description."       # optional
+    enabled: true                          # required
+
+    trigger:                               # required
+        type: "trigger_type_ref"
+
+    criteria:                              # optional
+        trigger.payload_parameter_name1:
+            type: "regex"
+            pattern : "^value$"
+        trigger.payload_parameter_name2:
+            type: "iequals"
+            pattern : "watchevent"
+
+    action:                                # required
+        ref: "action_ref"
+        parameters:                        # optional
+            foo: "bar"
+            baz: "{{ trigger.payload_parameter_1 }}"
+```
+
+* Trigger in a rule specifics which incoming events should be inspected for potential match against this rule.
+* Criteria are the rule(s) needed to be matched against (logical `AND`). You can achieve logical `OR` behavior by creating multiple independent rules (one per criteria expression).
+* Action: subsequent action/workflow to be executed on succesful match of a trigger and an optional set of criteria.
+* The rules engine is able to interpolate variables by leveraging *Jinja templating syntax*.
+* Rule Location: `/opt/stackstorm/packs/<pack-name>/rules`
+* Test with `st2-rule-tester`.
+* Timers allow running a particular action repeatedly based on a defined time interval, or at one particular date and time.
+    * `core.st2.IntervalTimer`.
+    * `core.st2.DateTimer`.
+    * `core.st2.CronTimer`.
+
+### Workflows
+
+* A workflow strings atomic actions into a higher level automation, and orchestrates their executions by calling the right action, at the right time, with the right input. It keeps state, passes data between actions, and provides reliability and transparency to the execution.
+
+* Workflow runners:
+    * `ActionChain`: StackStorm's internal no-frills workflow runner. **Use ActionChain when you want speed and simplicity**.
+    * `Mistral`: a dedicated workflow service, originated in OpenStack, intergrated and bundled with StackStorm. **Use Mistral when need power and resilience**.
+    * `Orquesta`: a new workflow engine, designed specifically for StackStorm (public beta). **Use Orquesta to test-drive the future of workflows**.
+
+### Packs
+
+* A Pack is the unit of deployment for integrations and automations that extend StackStorm.
+* A pack can contain Actions, Workflows, Rules, Sensors, and Aliases
+* *Integration packs* - packs extend StackStorm to integrate it with external systems. Integration packs can be shared and reused by anyone who uses the service that pack is built for.
+* *Automation packs* - packs capture automation patterns - they contain workflows, rules, and actions for a specific automation process. Automation packs are often very site-specific and have a little use outside of a particular team or company.
+
+### Webhooks
+
+* Webhooks allow you to integrate external systems with StackStorm using HTTP webhooks. Unlike sensors which use a "pull" approach, webhook use a "push" approach. They push triggers directly to the StackStorm API using HTTP POST requests.
+
+### Datastore
+
+* The goal of the datastore service is to allow users to store common paramters and their values within StackStorm for reuse in the definition of sensors, actions and rules. The datastore service stores the data as a key-value pair.
+* From the sensor and action plugins, since they are implemented in Python, the key-value pairs are accessed from the StackStorm Python client. For rule definitions in YAML/JSON, the key-value pairs are referenced with a specific string substitution syntax and the references are resolved on rule evaluation.
+* TTL -> expire.
+
+### ChatOps
+
+* ChatOps is a new operational paradigm - work that is already happening in the background today is brought into a common chatroom. By doing this, you are unifying the communication about what work should get done with the actual history of the work being done.
+
+![stackstorm-chatops-architecture](https://docs.stackstorm.com/_images/chatops_architecture.png)
+
+* StackStorm's goal with ChatOps is to take common patterns and make them consumable by teams of all makeups.
+* Features:
+    * History and Audit.
+    * Workflow.
+    * Bring user's favorite tools.
+* Action aliases are simplified and more human readable representation of actions in StackStorm.
+
+```yaml
+---
+name: "remote_shell_cmd"
+pack: "examples"
+action_ref: "core.remote"
+description: "Execute a command on a remote host via SSH."
+formats:
+  - "run {{cmd}} on {{hosts}}"
+```
+
+* Notifications require an action that is registered  with StackStorm and a notification rule to go with it. Notifications are implemented as triggers, rules and actions.
