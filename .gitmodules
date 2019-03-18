@@ -37,3 +37,6 @@
 [submodule "golang"]
 	path = golang
 	url = https://github.com/ntk148v/lets-go
+[submodule "elasticsearch/compose-files/elastic-stack-docker"]
+	path = elasticsearch/compose-files/elastic-stack-docker
+	url = https://github.com/elastic/stack-docker

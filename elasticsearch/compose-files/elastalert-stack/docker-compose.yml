@@ -1,13 +1,41 @@
 version: '2.2'
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${TAG:-6.6.2}
+    container_name: elasticsearch
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${TAG:-6.6.2}
+    container_name: elasticsearch
+    ports:
+      - 5601:5601
+    networks:
+      - esnet
+    depends_on:
+      - elasticsearch
+
   elastalert:
     image: bitsensor/elastalert:latest
+    container_name: elasticsearch
     container_name: elastalert
     volumes:
       - ./config/elastalert.yaml:/opt/elastalert/config.yaml
       - ./rules:/opt/elastalert/rules
     ports:
       - 3030:3030
+    depends_on:
+      - elasticsearch
     networks:
       - esnet
 

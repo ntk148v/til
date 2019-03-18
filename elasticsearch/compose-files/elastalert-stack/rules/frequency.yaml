@@ -1,0 +1,12 @@
+name: Test frequency rule
+type: frequency
+index: flog-*
+num_events: 50
+timeframe:
+  hours: 4
+alert:
+- "email"
+email:
+- "email@example.com"
+smtp_host: smtp.example.com
+smtp_port: 465
