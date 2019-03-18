@@ -1,0 +1,19 @@
+version: '2.2'
+services:
+  elastalert:
+    image: bitsensor/elastalert:latest
+    container_name: elastalert
+    volumes:
+      - ./config/elastalert.yaml:/opt/elastalert/config.yaml
+      - ./rules:/opt/elastalert/rules
+    ports:
+      - 3030:3030
+    networks:
+      - esnet
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  esnet:
