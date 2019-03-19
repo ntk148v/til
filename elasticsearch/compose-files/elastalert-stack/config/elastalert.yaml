@@ -1,6 +1,7 @@
 # This is the folder that contains the rule yaml files
 # Any .yaml file will be loaded as a rule
 # rules_folder: example_rules
+rules_folder: rules
 
 # How often ElastAlert will query Elasticsearch
 # The unit can be anything from weeks to seconds
@@ -14,10 +15,10 @@ buffer_time:
 
 # The Elasticsearch hostname for metadata writeback
 # Note that every rule can have its own Elasticsearch host
-  es_host: ${ELASTICSEARCH_HOST:-localhost}
+es_host: elasticsearch
 
 # The Elasticsearch port
-es_port: ${ELASTICSEARCH_PORT:-9200}
+es_port: 9200
 
 # The AWS region to use. Set this when using AWS-managed elasticsearch
 #aws_region: us-east-1
@@ -31,10 +32,12 @@ es_port: ${ELASTICSEARCH_PORT:-9200}
 #es_url_prefix: elasticsearch
 
 # Connect with TLS to Elasticsearch
-#use_ssl: True
+use_ssl: False
 
 # Verify TLS certificates
-#verify_certs: True
+verify_certs: False
+
+es_conn_timeout: 100
 
 # GET request with body is the default option for Elasticsearch.
 # If it fails for some reason, you can pass 'GET', 'POST' or 'source'.
@@ -43,15 +46,15 @@ es_port: ${ELASTICSEARCH_PORT:-9200}
 #es_send_get_body_as: GET
 
 # Option basic-auth username and password for Elasticsearch
-#es_username: someusername
-#es_password: somepassword
+#es_username: admin
+#es_password: admin
 
 # Use SSL authentication with client certificates client_cert must be
 # a pem file containing both cert and key for client
-#verify_certs: True
-#ca_certs: /path/to/cacert.pem
-#client_cert: /path/to/client_cert.pem
-#client_key: /path/to/client_key.key
+# verify_certs: False
+#ca_certs: certs/root-ca.pem
+#client_cert: certs/esnode.pem
+#client_key: certs/esnode-key.pem
 
 # The index on es_host which is used for metadata storage
 # This can be a unmapped index, but it is recommended that you run
