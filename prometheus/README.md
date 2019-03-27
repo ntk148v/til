@@ -14,6 +14,8 @@
 
 * [Custom metrics](./prometheus-metrics.md)
 
+* [Service discovery](./service-discovery.md)
+
 ## Refs
 
 * [RobustPerception](https://www.robustperception.io/)
