@@ -8,7 +8,7 @@
 
 * [Collect Docker metrics with Prometheus](./collect-docker-metrics.md)
 
-* [Labels and relabel](./labels.md)
+* [Labels and relabel](./prometheus-labels-relabel.md)
 
 * [Silence Alerts](./alertmanager-silence.md)
 
