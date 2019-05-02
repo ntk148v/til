@@ -16,6 +16,8 @@
 
 * [Service discovery](./service-discovery.md)
 
+* [Alertmanager configuration options](./alertmanager-group-configuration-opts.md)
+
 ## Refs
 
 * [RobustPerception](https://www.robustperception.io/)
