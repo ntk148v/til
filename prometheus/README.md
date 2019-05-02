@@ -18,6 +18,8 @@
 
 * [Alertmanager configuration options](./alertmanager-group-configuration-opts.md)
 
+* [Tips](./tips.md)
+
 ## Refs
 
 * [RobustPerception](https://www.robustperception.io/)
