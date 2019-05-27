@@ -18,6 +18,8 @@
 
 * [Alertmanager configuration options](./alertmanager-group-configuration-opts.md)
 
+* [Pushgateway](./pushgateway.md)
+
 * [Tips](./tips.md)
 
 ## Refs
