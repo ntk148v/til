@@ -20,6 +20,8 @@
 
 * [Pushgateway](./pushgateway.md)
 
+* [Prometheus Self Monitoring](./prometheus-self-monitoring.md)
+
 * [Tips](./tips.md)
 
 ## Refs
