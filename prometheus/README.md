@@ -22,6 +22,8 @@
 
 * [Prometheus Self Monitoring](./prometheus-self-monitoring.md)
 
+* [Prometheus Federation](./prometheus-federation.md)
+
 * [Tips](./tips.md)
 
 ## Refs
