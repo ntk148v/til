@@ -89,3 +89,25 @@ groups:
     annotations:
       summary: "Instance {{ $labels.instance }}'s metric is {{ $value }}"
 ```
+
+## Running Prometheus notes
+
+### Hardware
+
+Storage space. To estimate how much you'll need you have to know how much data you will be ingesting. For an existing Prometheus you can run a PromQL query to report the samples ingested per second:
+
+```
+rate(prometheus_tsdb_head_samples_appended_total[5m])
+```
+
+While Prometheus can achieve compression of 1.3 bytes per sample in production -> 2 bytes per sample to be conservative. The deafault rentention for Prometheus is 15 days, so 100.000 samples per second would be around 240GB over 15 days.
+
+How much RAM you will need? The storage in Prometheus 2.x works in blocks that are written out every two hours and subsequently into larger time ranges. The storage engine does no internal caching, rather it uses your kernel's page cache. So you will need:
+
+```
+RAM to hold a block + overheads + RAM used during queries
+```
+
+Prometheus is relatively light on CPU.
+
+Network bandwidth is another consideration. Prometheus usually uses compression when scraping, so it uses somewhere around 20 bytes of network traffic to transfer a sample.
