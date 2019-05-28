@@ -24,6 +24,8 @@
 
 * [Prometheus Federation](./prometheus-federation.md)
 
+* [Prometheus Manage Performance](./prometheus-manage-performance.md)
+
 * [Tips](./tips.md)
 
 ## Refs
