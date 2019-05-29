@@ -111,3 +111,11 @@ RAM to hold a block + overheads + RAM used during queries
 Prometheus is relatively light on CPU.
 
 Network bandwidth is another consideration. Prometheus usually uses compression when scraping, so it uses somewhere around 20 bytes of network traffic to transfer a sample.
+
+## Performance tunning
+
+## --query.max-samples
+
+* Default value: 50000000
+* Description: Maximum number of samples a single query can load into memory. Note that queries will fail if they would load more samples than this into memory, so this also limits the number of samples a query can return
+* Each sample uses 16 bytes of memory, however keep in mind there's more than just active samples in memory for a query.
