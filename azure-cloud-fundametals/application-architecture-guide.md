@@ -4,6 +4,19 @@ Architecture styles
 
 An *architecture style* is a family of architectures that share certain characteristics.
 
+An architecture style places constraints on the design, including the set of elements that can appear and the allowed relationships between those elements.
+
+The following table summarizes how each style manages dependencies, and the types of domain that are best suited for each.
+
+| Architecture style         | Dependency management                                        | Domain type                                                  |
+| :------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| N-tier                     | Horizontal tiers divided by subnet                           | Traditional business domain. Frequency of updates is low.    |
+| Web-Queue-Worker           | Front and backend jobs, decoupled by async messaging.        | Relatively simple domain with some resource intensive tasks. |
+| Microservices              | Vertically (functionally) decomposed services that call each other through APIs. | Complicated domain. Frequent updates.                        |
+| Event-driven architecture. | Producer/consumer. Independent view per sub-system.          | IoT and real-time systems                                    |
+| Big data                   | Divide a huge dataset into small chunks. Parallel processing on local datasets. | Batch and real-time data analysis. Predictive analysis using ML. |
+| Big compute                | Data allocation to thousands of cores.                       | Compute intensive domains such as simulation.                |
+
 ## N-tier
 
 An N-tier architecture divides an application into *logical layers* and *physical tiers*.
