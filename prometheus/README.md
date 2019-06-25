@@ -26,6 +26,8 @@
 
 * [Prometheus Manage Performance](./prometheus-manage-performance.md)
 
+* [Prometheus Instrumentation](./prometheus-instrumentation.md)
+
 * [Tips](./tips.md)
 
 ## Refs
