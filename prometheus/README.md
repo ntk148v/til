@@ -28,6 +28,8 @@
 
 * [Prometheus Instrumentation](./prometheus-instrumentation.md)
 
+* [Prometheus Capacity Planning](./prometheus-capacity-planning.md)
+
 * [Tips](./tips.md)
 
 ## Refs
