@@ -34,6 +34,8 @@
 
 * [Tips](./tips.md)
 
+* [Tools](./tools.md)
+
 ## Refs
 
 * [RobustPerception](https://www.robustperception.io/)
