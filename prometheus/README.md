@@ -30,6 +30,8 @@
 
 * [Prometheus Capacity Planning](./prometheus-capacity-planning.md)
 
+* [Prometheus Alert rules collection](./prometheus-alert-rules.md)
+
 * [Tips](./tips.md)
 
 ## Refs
@@ -41,3 +43,4 @@
 * [YunLong's Blog](http://ylzheng.com/categories/Prometheus/). Give that man some credits!
 
 * [Wikitech Prometheus](https://wikitech.wikimedia.org/wiki/Prometheus)
+* [Awesome-prometheus](https://github.com/roaldnefs/awesome-prometheus)
