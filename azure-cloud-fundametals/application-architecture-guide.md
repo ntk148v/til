@@ -1,4 +1,4 @@
-Architecture styles
+# Architecture styles
 
 [Source](https://docs.microsoft.com/en-us/azure/architecture/guide/architecture-styles/)
 
