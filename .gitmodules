@@ -22,9 +22,6 @@
 [submodule "prometheus/prompose"]
 	path = prometheus/prompose
 	url = https://github.com/ntk148v/prompose
-[submodule "prometheus/dockprom"]
-	path = prometheus/dockprom
-	url = https://github.com/stefanprodan/dockprom
 [submodule "prometheus/prometheus-openstack-exporter"]
 	path = prometheus/prometheus-openstack-exporter
 	url = https://github.com/CanonicalLtd/prometheus-openstack-exporter
