@@ -32,6 +32,8 @@
 
 * [Prometheus Alert rules collection](./prometheus-alert-rules.md)
 
+* [Prometheus Remote APIs](./prometheus-remote-apis.md)
+
 * [Tips](./tips.md)
 
 * [Tools](./tools.md)
