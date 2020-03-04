@@ -119,3 +119,15 @@ Network bandwidth is another consideration. Prometheus usually uses compression 
 * Default value: 50000000
 * Description: Maximum number of samples a single query can load into memory. Note that queries will fail if they would load more samples than this into memory, so this also limits the number of samples a query can return
 * Each sample uses 16 bytes of memory, however keep in mind there's more than just active samples in memory for a query.
+
+## When does CPU matter?
+
+https://giedrius.blog/2018/12/16/capacity-planning-of-prometheus-2-4-2-thanos-sidecar-0-1-0/
+
+Prometheus is relatively light on CPU, the CPU usage is deeply impacted by the actual content of the PromQL queries that are being executed. To be even more exact, what matters is what kind of (if any) aggregation operators or math functions you are using in the queries --> `CPU - calculation`.
+
+* Functions such as `time()` do not cost a lot since you only the Unix timestamp of the current time.
+* Functions which use a range vector use more CPU time than those which take an instant vector.
+
+To avoid recalculating the same thing over and over, you can use `recording rules`.
+
