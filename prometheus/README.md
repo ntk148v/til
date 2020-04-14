@@ -34,6 +34,8 @@
 
 * [Prometheus Remote APIs](./prometheus-remote-apis.md)
 
+* [Prometheus WAL size](./prometheus-wal.md)
+
 * [Tips](./tips.md)
 
 * [Tools](./tools.md)
