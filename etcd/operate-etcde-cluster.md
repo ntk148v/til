@@ -1,0 +1,1 @@
+/home/kiennt/Documents/blog/content/posts/operate-etcd-cluster.md
