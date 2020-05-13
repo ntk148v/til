@@ -36,6 +36,8 @@
 
 * [Prometheus WAL size](./prometheus-wal.md)
 
+* [Prometheus join](./prometheus-promql-join.md)
+
 * [Tips](./tips.md)
 
 * [Tools](./tools.md)
