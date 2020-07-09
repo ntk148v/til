@@ -102,7 +102,9 @@ madvise(0xcb527ee000, 8192, MADV_FREE)  = 0
 madvise(0xcb527ec000, 8192, MADV_FREE)  = 0
 ```
 
-<iframe src="https://giphy.com/embed/WRQBXSCnEFJIuxktnw" width="480" height="307" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/math-lady-meme-WRQBXSCnEFJIuxktnw">via GIPHY</a></p>
+![](https://i.pinimg.com/originals/95/02/20/950220f35e72e2b772b81e04a948173a.jpg)
+
+![](https://i.ytimg.com/vi/rClNZLXSKA8/maxresdefault.jpg)
 
 - I get stuck right there, but at least it explains everything - why Prometheus memory usage doesn't go down.
 
