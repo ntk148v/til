@@ -1,6 +1,6 @@
 # Prometheus sucks?
 
-*Huh, really?*
+_Huh, really?_
 
 ![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk26SiCrYdFmDMs2o4YD4MuwEnP8rHSR1hAyymXTKVUg2UJuUqaQ)
 
@@ -8,13 +8,13 @@ Ok ok, calm down, the title is completely a clickbait. Prometheus is still a ver
 
 This post is my personal opinion, so if you are disagree, [leave some comments](https://ntk148v.github.io/blog/posts/lets-comment/).
 
-- [Prometheus sucks?](#Prometheus-sucks)
-  - [1. Doesn't support TLS or authentication](#1-Doesnt-support-TLS-or-authentication)
-  - [2. Plain Configuration](#2-Plain-Configuration)
-  - [3. Doesn't have RBAC (Role-based access control)](#3-Doesnt-have-RBAC-Role-based-access-control)
-  - [4. High-availability](#4-High-availability)
-  - [5. The lack of documentation](#5-The-lack-of-documentation)
-  - [Conclusion](#Conclusion)
+- [Prometheus sucks?](#prometheus-sucks)
+  - [1. Doesn't support TLS or authentication](#1-doesnt-support-tls-or-authentication)
+  - [2. Plain Configuration](#2-plain-configuration)
+  - [3. Doesn't have RBAC (Role-based access control)](#3-doesnt-have-rbac-role-based-access-control)
+  - [4. High-availability](#4-high-availability)
+  - [5. The lack of documentation](#5-the-lack-of-documentation)
+  - [Conclusion](#conclusion)
 
 ## 1. Doesn't support TLS or authentication
 
@@ -24,7 +24,7 @@ Ok, look at [FAQ](https://prometheus.io/docs/introduction/faq/#why-dont-the-prom
 While TLS and authentication are frequently requested features, we have intentionally not implemented them in any of Prometheus's server-side components.
 ```
 
-IMO, there should be a built-in feature rather than using 3rd-party components like a reverse proxy. Nicely, the Prometheus team has changed their stance (*Thanks!!!* :bow:) on this during its development summit on August 11, 2018, and support for TLS and authentication in serving endpoints is now on [the project's roadmap](https://prometheus.io/docs/introduction/faq/#why-dont-the-prometheus-server-components-support-tls-or-authentication-can-i-add-those). TLS and authentication aren't available now, so let's list it as a drawback, right.
+IMO, there should be a built-in feature rather than using 3rd-party components like a reverse proxy. Nicely, the Prometheus team has changed their stance (_Thanks!!!_ :bow:) on this during its development summit on August 11, 2018, and support for TLS and authentication in serving endpoints is now on [the project's roadmap](https://prometheus.io/docs/introduction/faq/#why-dont-the-prometheus-server-components-support-tls-or-authentication-can-i-add-those). TLS and authentication aren't available now, so let's list it as a drawback, right.
 
 ## 2. Plain Configuration
 
@@ -46,7 +46,7 @@ Even me, sometimes I wish that Prometheus provides an user interface to update i
 
 ## 3. Doesn't have RBAC (Role-based access control)
 
-Prometheus doesn't have user, project, group, role and permission concepts. In production, the number of targets keeps increasing rapidly, I couldn't handle them all. I want to share Prometheus configuration with someone else, so they can update it for me. But at the same time, I don't want they change other set of targets. "Please don't touch anything rather than your targets!" and no guarantee that my configuration won't be changed suddenly. You know, *Humans are all curious creatures*.
+Prometheus doesn't have user, project, group, role and permission concepts. In production, the number of targets keeps increasing rapidly, I couldn't handle them all. I want to share Prometheus configuration with someone else, so they can update it for me. But at the same time, I don't want they change other set of targets. "Please don't touch anything rather than your targets!" and no guarantee that my configuration won't be changed suddenly. You know, _Humans are all curious creatures_.
 
 In my expectation, Prometheus could has an user/project management with RBAC.
 

@@ -13,4 +13,4 @@
 ## Main function
 
 * Initializes and run alls other Prometheus server components + connect interdependent components to each other.
-* 1st: `main()` defines and parses the 
+* 1st: `main()` defines and parses the

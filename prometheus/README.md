@@ -1,56 +1,60 @@
 # Prometheus
 
-## Contents
+- [Prometheus](#prometheus)
+  - [1. Contents](#1-contents)
+  - [2. Refs](#2-refs)
 
-* [Internal Architecture](./internal-architecture.md)
+## 1. Contents
 
-* [Alertmanager High Availability](./alertmanager-ha.md)
+- [Internal Architecture](./internal-architecture.md)
 
-* [Collect Docker metrics with Prometheus](./collect-docker-metrics.md)
+- [Alertmanager High Availability](./alertmanager-ha.md)
 
-* [Labels and relabel](./prometheus-labels-relabel.md)
+- [Collect Docker metrics with Prometheus](./collect-docker-metrics.md)
 
-* [Silence Alerts](./alertmanager-silence.md)
+- [Labels and relabel](./prometheus-labels-relabel.md)
 
-* [Custom metrics](./prometheus-metrics.md)
+- [Silence Alerts](./alertmanager-silence.md)
 
-* [Service discovery](./service-discovery.md)
+- [Custom metrics](./prometheus-metrics.md)
 
-* [Alertmanager configuration options](./alertmanager-group-configuration-opts.md)
+- [Service discovery](./service-discovery.md)
 
-* [Pushgateway](./pushgateway.md)
+- [Alertmanager configuration options](./alertmanager-group-configuration-opts.md)
 
-* [Prometheus Self Monitoring](./prometheus-self-monitoring.md)
+- [Pushgateway](./pushgateway.md)
 
-* [Prometheus Federation](./prometheus-federation.md)
+- [Prometheus Self Monitoring](./prometheus-self-monitoring.md)
 
-* [Prometheus Manage Performance](./prometheus-manage-performance.md)
+- [Prometheus Federation](./prometheus-federation.md)
 
-* [Prometheus Instrumentation](./prometheus-instrumentation.md)
+- [Prometheus Manage Performance](./prometheus-manage-performance.md)
 
-* [Prometheus Capacity Planning](./prometheus-capacity-planning.md)
+- [Prometheus Instrumentation](./prometheus-instrumentation.md)
 
-* [Prometheus Alert rules collection](./prometheus-alert-rules.md)
+- [Prometheus Capacity Planning](./prometheus-capacity-planning.md)
 
-* [Prometheus Remote APIs](./prometheus-remote-apis.md)
+- [Prometheus Alert rules collection](./prometheus-alert-rules.md)
 
-* [Prometheus WAL size](./prometheus-wal.md)
+- [Prometheus Remote APIs](./prometheus-remote-apis.md)
 
-* [Prometheus join](./prometheus-promql-join.md)
+- [Prometheus WAL size](./prometheus-wal.md)
 
-* [Prometheus memory leak troubleshooting](./prometheus-golang-memory-monitoring.md)
+- [Prometheus join](./prometheus-promql-join.md)
 
-* [Tips](./tips.md)
+- [Prometheus memory leak troubleshooting](./prometheus-golang-memory-monitoring.md)
 
-* [Tools](./tools.md)
+- [Tips](./tips.md)
 
-## Refs
+- [Tools](./tools.md)
 
-* [RobustPerception](https://www.robustperception.io/)
+## 2. Refs
 
-* [Prometheus official documentation](https://prometheus.io/docs/)
+- [RobustPerception](https://www.robustperception.io/)
 
-* [YunLong's Blog](http://ylzheng.com/categories/Prometheus/). Give that man some credits!
+- [Prometheus official documentation](https://prometheus.io/docs/)
 
-* [Wikitech Prometheus](https://wikitech.wikimedia.org/wiki/Prometheus)
-* [Awesome-prometheus](https://github.com/roaldnefs/awesome-prometheus)
+- [YunLong's Blog](http://ylzheng.com/categories/Prometheus/). Give that man some credits!
+
+- [Wikitech Prometheus](https://wikitech.wikimedia.org/wiki/Prometheus)
+- [Awesome-prometheus](https://github.com/roaldnefs/awesome-prometheus)

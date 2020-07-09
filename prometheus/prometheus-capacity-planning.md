@@ -2,9 +2,9 @@
 
 ## Storage
 
-* The best disk for time series database is SSD.
+- The best disk for time series database is SSD.
 
-* The rough formula:
+- The rough formula:
 
 ```
 needed_disk_space = retention_time_seconds * ingested_samples_per_second * bytes_per_sample

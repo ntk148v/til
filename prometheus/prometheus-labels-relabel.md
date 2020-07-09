@@ -1,39 +1,39 @@
 # Prometheus labels
 
-### Labels
+## Labels
 
-* Labels are a key part of Prometheus. and one of the things that make it powerful.
-* Labels are key-value pairs associated with time series that in addition to the metric name uniquely identify them.
-* Labels come from two sources, *instrumentation labels* and *target labels*.
-* Instrumentation labels as the name indicates come from your instrumentation. They are about things that are known inside your application or library, such as the type HTTP requests it receives, which databases it talks to and other internals.
-* Target labels identify a specific monitoring target, that is a target that Prometheus scrapes. They relate more to your architecture and may include which application it is, what datacenter it lives in, if it is in a development or production environment.
-* Target labels come from service discovery and relabeling.
+- Labels are a key part of Prometheus. and one of the things that make it powerful.
+- Labels are key-value pairs associated with time series that in addition to the metric name uniquely identify them.
+- Labels come from two sources, _instrumentation labels_ and _target labels_.
+- Instrumentation labels as the name indicates come from your instrumentation. They are about things that are known inside your application or library, such as the type HTTP requests it receives, which databases it talks to and other internals.
+- Target labels identify a specific monitoring target, that is a target that Prometheus scrapes. They relate more to your architecture and may include which application it is, what datacenter it lives in, if it is in a development or production environment.
+- Target labels come from service discovery and relabeling.
 
 ## Relabeling
 
 > NOTE: These two following pictures was gotten from [Life of label](https://www.robustperception.io/life-of-a-label). These one may be out-dated, based on Prometheus 0.17.0.
 
-### relabel\_configs
+### relabel_configs
 
 ![relabel_configs](https://www.robustperception.io/wp-content/uploads/2016/03/Life-of-a-Label-Target-Labels-495x640.png)
 
-### metric\_relabel\_configs
+### metric_relabel_configs
 
 ![metrics_relabel_configs](https://www.robustperception.io/wp-content/uploads/2016/03/Life-of-a-Label-Scraping-445x640.png)
 
-### relabel\_configs vs metric\_relabel\_configs
+### relabel_configs vs metric_relabel_configs
 
-* Prometheus needs to know what to scrape, and that's the where service discovery and `relabel_configs` come in. Relabel configs allow you to select which targets you want to scraped, and what the target labels will be. So if you want to say scrape this type of machine but not that one, use `relabel_configs`.
+- Prometheus needs to know what to scrape, and that's the where service discovery and `relabel_configs` come in. Relabel configs allow you to select which targets you want to scraped, and what the target labels will be. So if you want to say scrape this type of machine but not that one, use `relabel_configs`.
 
-* `metrics_relabel_configs` by contrast are applied after the scrape has happened, but before the data is ingested by the storage system. So if there are some expensive metrics you want to drop, or labels coming from the scrape itself that you want to manipulate that's where `metrics_relabel_configs` applies.
+- `metrics_relabel_configs` by contrast are applied after the scrape has happened, but before the data is ingested by the storage system. So if there are some expensive metrics you want to drop, or labels coming from the scrape itself that you want to manipulate that's where `metrics_relabel_configs` applies.
 
-* So as a simple rule of thumb: `relabel_configs` happens before the scrape, `metrics_relabel_configs` happens after the scrape. And if one doesn't work you can always try the other!
+- So as a simple rule of thumb: `relabel_configs` happens before the scrape, `metrics_relabel_configs` happens after the scrape. And if one doesn't work you can always try the other!
 
 ### Use cases
 
 Check [Prometheus relabeling tricks](https://medium.com/quiq-blog/prometheus-relabeling-tricks-6ae62c56cbda)
 
-* Drop unnecessary metrics
+- Drop unnecessary metrics
 
 ```
 - job_name: cadvisor
@@ -44,7 +44,7 @@ Check [Prometheus relabeling tricks](https://medium.com/quiq-blog/prometheus-rel
     action: drop
 ```
 
-* Drop unnecessary time-series
+- Drop unnecessary time-series
 
 ```
 - job_name: cadvisor
@@ -58,7 +58,7 @@ Check [Prometheus relabeling tricks](https://medium.com/quiq-blog/prometheus-rel
     action: drop
 ```
 
-* Drop sensitive or unwanted labels from metrics
+- Drop sensitive or unwanted labels from metrics
 
 ```
 - job_name: cadvisor
@@ -68,7 +68,7 @@ Check [Prometheus relabeling tricks](https://medium.com/quiq-blog/prometheus-rel
     action: labeldrop
 ```
 
-* Amend label format of the final metrics
+- Amend label format of the final metrics
 
 ```
 - job_name: cadvisor
@@ -86,7 +86,7 @@ Check [Prometheus relabeling tricks](https://medium.com/quiq-blog/prometheus-rel
 
 ### Real-world use case
 
-* **Scenario**: You have OpenStack cluster and you want to monitor its instance metrics dynamically. Ok, assume you got all instance (per project) metrics but endpoint (and instance) was something like `10.240.203.210:9100/...`. You are unable to know which instance when look at this. So let's change this to instance name.
+- **Scenario**: You have OpenStack cluster and you want to monitor its instance metrics dynamically. Ok, assume you got all instance (per project) metrics but endpoint (and instance) was something like `10.240.203.210:9100/...`. You are unable to know which instance when look at this. So let's change this to instance name.
 
 ```
 - job_name: 'openstack-node-exporter'

@@ -1,6 +1,7 @@
 # Join in PromQL
 
 Sources:
+
 - https://www.robustperception.io/left-joins-in-promql
 - https://www.robustperception.io/using-group_left-to-calculate-label-proportions
 
@@ -23,7 +24,7 @@ FROM a JOIN b ON (a.foo = b.foo AND a.bar == b.bar)
 - A left join, but won't catch where the right hand side doesn't have a value to go with the left.
 
 ```
-a * on (foo, bar) group_left(baz) b 
+a * on (foo, bar) group_left(baz) b
 or on (foo, bar) a
 |
 |
@@ -33,7 +34,7 @@ SELECT a.value * COALESCE(b.value, 1), a.*, b.baz
 FROM a LEFT OUTER JOIN b ON (a.foo == b.foo AND a.bar == b.bar)
 ```
 
-## Use case: Using group\_left to add hostname label to a query result
+## Use case: Using group_left to add hostname label to a query result
 
 Sometimes, the `instance` in Prometheus metric doesn't make any sense and we need something else to provide more information. A hostname for example, and our answer exist inside the `node_uname_info`. We just need to take the hostname from this metric and add the final value.
 

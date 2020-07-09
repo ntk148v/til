@@ -182,7 +182,7 @@ scrape_configs:
          replacement: monitor
          target_label: team
          action: replace
-         
+
 ```
 
 * Using a replace relabel action to remove a trailing from the team label.
@@ -323,7 +323,7 @@ scrape_configs:
      password: specialSecret
 ```
 
-### metric\_label\_configs 
+### metric\_label\_configs
 
 * Check [labels](./labels.md)
 * `labeldrop` and `labelkeep`: relabel actions that are unlikely to be ever required for target relabelling, but that can come up in metric relabelling.

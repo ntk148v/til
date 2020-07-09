@@ -15,13 +15,14 @@ Output:
 ![](./imgs/heap12.svg)
 
 Useful metrics:
-* `process_resident_memory_bytes`: the amount of memory the Prometheus process is using from the kernel.
-* `go_memstats_alloc_bytes`: how much Go is using from that. A large difference between these two could indicate spiky memory usage, or fragmentation issues.
+
+- `process_resident_memory_bytes`: the amount of memory the Prometheus process is using from the kernel.
+- `go_memstats_alloc_bytes`: how much Go is using from that. A large difference between these two could indicate spiky memory usage, or fragmentation issues.
 
 ## Using tsdb analyze to investigate churn and cardinality
 
-* How many time series you have?
-* How often the set of time series changes?
+- How many time series you have?
+- How often the set of time series changes?
 
 Usage:
 

@@ -11,6 +11,7 @@ WAL files are stored in the `wal` directory in 128MB segments. These files conta
 WAL format is composed of varous types of record.
 
 - Each sample record represents one scrape or one recording rule output.
+
   - Each sample size (ignore the 23 bytes of overhead for simplicity)
 
     ```
@@ -19,9 +20,9 @@ WAL format is composed of varous types of record.
 
 - The series record are all the new time series from one scrape or recording rule.
 
-    ```
-    9 bytes (overhread) + size of all labels (a label <= 127 bytes)
-    ```
+  ```
+  9 bytes (overhread) + size of all labels (a label <= 127 bytes)
+  ```
 
 - Tombstone records: ignore.
 
@@ -29,11 +30,11 @@ Concrette example numbers:
 
 - Prometheus: ingests 100k samples/s & churns 1M series/2 hours with 100 bytes for series labels.
 - `100000 * 13 = 1.3MB per second` for samples.
-- `1000000  / 3600 / 2 * 100 = 13.8kB per second` for series.
+- `1000000 / 3600 / 2 * 100 = 13.8kB per second` for series.
 
 Checkpoints which summarise older WAL entries down to just the series creations that may still be relevant.
 
-> I am not really understand  this paragraph.
+> I am not really understand this paragraph.
 
 ```
 The checkpointing logic runs every two hours after head compaction, and will checkpoint the oldest third of segments. So summing the geometric series with a constant of 2 hours and a ratio of 2/3, we get about 4 hours worth of segments that will be kept around. Add then the 2 hours of WAL that'll build up until the next checkpoint, for 6 hours in total.
