@@ -38,6 +38,8 @@
 
 * [Prometheus join](./prometheus-promql-join.md)
 
+* [Prometheus memory leak troubleshooting](./prometheus-golang-memory-monitoring.md)
+
 * [Tips](./tips.md)
 
 * [Tools](./tools.md)
