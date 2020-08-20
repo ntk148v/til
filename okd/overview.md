@@ -4,6 +4,7 @@
   - [1. What is OKD?](#1-what-is-okd)
   - [2. Features](#2-features)
   - [3. Lifecycle](#3-lifecycle)
+  - [4. Architecture](#4-architecture)
 
 ## 1. What is OKD?
 
@@ -19,6 +20,7 @@ OpenShift  <-----> RHOS
 
 - Hybrid cloud deployments.
 - Custom operating system - Fedora CoreOS (FCOS):
+
   - CoreOS + [Red Hat Atomic Host](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_atomic_host/7/html/installation_and_configuration_guide/introduction_to_atomic_host)
   - Includes: Ignition (firstboot system configuratin) + CRI-O (Kubernetes native container runtime) + Kubelet (Kuberenetes node agent)
 
@@ -34,3 +36,7 @@ The following figure illustrates the basic OKD lifecycle:
 - Managing the cluster
 - Developing and deploying applications
 - Scaling up applications
+
+## 4. Architecture
+
+![](./imgs/arch1.png)

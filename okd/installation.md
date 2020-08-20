@@ -1,6 +1,9 @@
 # Installation
 
-Source: https://docs.okd.io/latest/architecture/architecture-installation.html
+Source:
+
+- https://docs.okd.io/latest/architecture/architecture-installation.html
+- https://www.openshift-anwender.de/wp-content/uploads/2020/02/OpenShift_Installation_Deep_Dive_Robert_Bohne.pdf
 
 - [Installation](#installation)
   - [1. Overview](#1-overview)
@@ -18,6 +21,7 @@ Source: https://docs.okd.io/latest/architecture/architecture-installation.html
 ## 1. Overview
 
 - There are 2 basic types of OKD clusters:
+
   - installer-provisioned infrastructure clusters (IPI).
   - user-provisioned infrastructure clusters (UPI).
 
@@ -100,14 +104,19 @@ https://github.com/coreos/ignition
 
 ## 3. Installation Experiences
 
-WIP
-
 ### 3.1. Full stack automated (IPI)
 
 - Simplified opinionated "Best Practices" for cluster provisioning
 - Fully automated installation and updates including host container OS
 
+![](./imgs/install4.png)
+
 ### 3.2. Pre-existing Infrastructure (UPI)
 
 - Customer managed resources and infrastructure provisioning
 - Plug into existing DNS and security boundaries
+- Note: what mean **Bare metal**?
+  - Installation on physical hardware.
+  - Installation on virtual machine WITHOUT any guest tool/cloud integration.
+
+![](./imgs/install5.png)
