@@ -17,6 +17,7 @@ Source:
   - [3. Installation Experiences](#3-installation-experiences)
     - [3.1. Full stack automated (IPI)](#31-full-stack-automated-ipi)
     - [3.2. Pre-existing Infrastructure (UPI)](#32-pre-existing-infrastructure-upi)
+  - [4. Installation process](#4-installation-process)
 
 ## 1. Overview
 
@@ -120,3 +121,15 @@ https://github.com/coreos/ignition
   - Installation on virtual machine WITHOUT any guest tool/cloud integration.
 
 ![](./imgs/install5.png)
+
+## 4. Installation process
+
+- The [installation program](https://github.com/openshift/installer) is a Go binary file that performs a series of file transformations on a set of assets.
+  - IPI: Installation program does bootstrapping and provisioning.
+  - UPI: User must provide all of the cluster infrastructure and resources, including bootstrap machine, networking, load balancer, storage & individual cluster machines. Cannot use the advanced machine management & scaling capabilities.
+- 3 sets of files:
+  - Installation configuration file - `install-config.yaml`
+  - Kubernetes manifests.
+  - Ignition config files.
+
+![](./imgs/installation-files-relationship.png)
