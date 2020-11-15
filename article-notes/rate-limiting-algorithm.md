@@ -97,8 +97,13 @@ Rate limiting protectes APIs from overuse by limiting how often each user can ca
 ![](https://2tjosk2rxzc21medji3nfn1g-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/06-2-rate-limit-kong.png)
 
 - Use **lock** -> performance bottleneck.
-- **set-and-get**!
+- **set-and-get** relying on atomic operators that implement locks in a very performant fashion.
 
 ### 2.3. Optimizing for performance
 
-...
+- Checks locally in memory: Use eventually consistent model.
+  - Each node <-- sync --> centralized data store.
+  - Push increment/<consumer + window> --> datastore --> update the values.
+  - The node retrieve the updated to value --> memory.
+
+![](https://2tjosk2rxzc21medji3nfn1g-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/07-rate-limit-kong.png)
