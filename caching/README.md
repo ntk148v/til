@@ -7,3 +7,4 @@
 ## Articles
 
 1. [Redis vs Memcached note](./redis-vs-memcached.md)
+2. [Redis cluster](../redis/redis-cluster.md)
