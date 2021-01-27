@@ -1,5 +1,7 @@
 # Concurrency is not Parallelism
 
+![](https://go101.org/article/res/concurrent-vs-parallel.png)
+
 These two terms always make me confuse a lot and I know that I'm not the only one.
 Let's make it clear.
 
