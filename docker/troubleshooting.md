@@ -1,5 +1,26 @@
 # Docker Troubleshooting Guideline
 
+- [Docker Troubleshooting Guideline](#docker-troubleshooting-guideline)
+  - [Troubleshoot Docker container](#troubleshoot-docker-container)
+  - [Swarm Troubleshooting Methodology](#swarm-troubleshooting-methodology)
+    - [Viewing Software as a Stack](#viewing-software-as-a-stack)
+    - [Viewing Software as an Onion](#viewing-software-as-an-onion)
+  - [Viewing Software as a Flow](#viewing-software-as-a-flow)
+    - [Docker Troubleshooting Best Practices](#docker-troubleshooting-best-practices)
+      - [Troubleshooting from the Service Inward](#troubleshooting-from-the-service-inward)
+      - [docker service ls](#docker-service-ls)
+        - [What to Look For](#what-to-look-for)
+      - [docker service inspect](#docker-service-inspect)
+        - [What to Look For](#what-to-look-for-1)
+      - [docker service ps](#docker-service-ps)
+        - [What to Look For](#what-to-look-for-2)
+      - [docker inspect](#docker-inspect)
+      - [`docker inspect <container>`](#docker-inspect-container)
+        - [Container State](#container-state)
+        - [Node](#node)
+        - [Network Settings](#network-settings)
+  - [Netshoot - a Docker + Kubernetes network trouble-shooting swiss-army container](#netshoot---a-docker--kubernetes-network-trouble-shooting-swiss-army-container)
+
 ## Troubleshoot Docker container
 
 1. **docker logs <container_id>** Hopefully you’ve already tried this, but if not, start here. This’ll give you the full STDOUT and STDERR from the command that was run initially in your container.
@@ -277,3 +298,9 @@ $ docker inspect 90cbc98062c8 | jq '.[].NetworkSettings'
 - `IPAddress` indicates the IP address of the primary interface of the container.
 - `Ports` lists all of the ports that are exposed for this container.
 - `Networks` lists all of the networks that this container is attached to.
+
+## Netshoot - a Docker + Kubernetes network trouble-shooting swiss-army container
+
+https://github.com/nicolaka/netshoot
+
+![](https://camo.githubusercontent.com/e03999a859bd13b7d1a3cf049210aceba9e531f2505eb4f06317aa0732a489a5/687474703a2f2f7777772e6272656e64616e67726567672e636f6d2f506572662f6c696e75785f6f62736572766162696c6974795f746f6f6c732e706e67)
