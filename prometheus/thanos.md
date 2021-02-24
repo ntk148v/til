@@ -37,6 +37,8 @@ Thanos is built from a handful of components, each with a dedicated role within 
 
 ## 2. How downsampling works?
 
+https://speakerdeck.com/bwplotka/thanos-deep-dive-look-into-distributed-system
+
 - Goal of downsampling: ~~save disk space~~. It provides a way to quicky evaluate queries with large time intervals, like months or years.
   - Downsampling doesn't save you any space but, instead, adds two new blocks for each raw block. These are slightly smaller than, or close to the size of raw blocks. This means that downsampling slightly increases the amount of storage space used, but it provides a massive performance and bandwidth use advantage when querying long intervals.
 - 3 levels of granularity:
@@ -59,3 +61,20 @@ Thanos is built from a handful of components, each with a dedicated role within 
 ![](https://banzaicloud.com/img/blog/multi-cluster-monitoring/life_of_a_query.png)
 
 ## 4. How deduplication works?
+
+- It is typical for identical Prometheus servers to be set up as HA pairs. This approach eliminates the problems that arise from a single Prometheus instance failing. However, to make the Prometheus querying seamless, Thanos provides query time deduplication.
+
+```
+Prometheus + sidecar “A”: cluster=1,env=2,replica=A
+Prometheus + sidecar “B”: cluster=1,env=2,replica=B
+Prometheus + sidecar “A” in different cluster: cluster=2,env=2,replica=A
+
+# Without deduplication
+up{job="prometheus",env="2",cluster="1",replica="A"} 1
+up{job="prometheus",env="2",cluster="1",replica="B"} 1
+up{job="prometheus",env="2",cluster="2",replica="A"} 1
+
+# With deduplication
+up{job="prometheus",env="2",cluster="1"} 1
+up{job="prometheus",env="2",cluster="2"} 1
+```
