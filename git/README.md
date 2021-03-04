@@ -6,3 +6,4 @@
 4. [github-cheatsheet](https://github.com/tiimgreen/github-cheat-sheet/)
 5. [git-dot](./git-dotted-range-notations.md)
 6. [git-remove-sensitive-data](./git-remove-sensitive-data.md)
+7. [git-tips-tricks](./git-tips-tricks.md)

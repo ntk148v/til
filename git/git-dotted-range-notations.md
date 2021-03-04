@@ -5,6 +5,7 @@ Source: https://stackoverflow.com/questions/462974/what-are-the-differences-betw
 ## Concepts
 
 From [man gitrevisions](https://git-scm.com/docs/gitrevisions#_dotted_range_notations):
+
 - **The .. (two-dot) range notation**: The `^r1 r2` set operation appears so often that there is a shorthand for it. When you have two commits `r1` and `r2` (named according to the syntax explained in SPECIFYING REVISIONS above), you can ask for commits that are reachable from r2 excluding those that are reachable from r1 by `^r1 r2` and it can be written as `r1..r2`.
 
 - **The ... (three-dot) range notation**: A similar `r1..r2` is called synmmetric difference of `r1` and `r2` and is defined as `r1 r2 --not $(git merge-base --all r1 r2)`. It is the set of commits that are reachable from either one of `r1` (left side) and `r2` (right side) but not from both.
