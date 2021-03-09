@@ -7,4 +7,5 @@
 3. [Monitoring](./monitoring.md)
 4. [Capacity planning](./capacity-planning.md)
 5. [Reduce shard usage](./reduce-shard-usage.md)
-6. [References](./refs.md)
+6. [Mapping](./mapping.md)
+7. [References](./refs.md)
