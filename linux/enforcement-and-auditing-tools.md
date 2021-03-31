@@ -190,7 +190,7 @@ func main() {
 ```
 
 ```bash
-github.com/ntk148v/testing/golang/seccomp-bpf  master ⇡$? via 🐹 v1.12.7 go run main.go 
+github.com/ntk148v/testing/golang/seccomp-bpf  master ⇡$? via 🐹 v1.12.7 go run main.go
 [+] Whitelisting: write
 [+] Whitelisting: mmap
 [+] Whitelisting: rt_sigaction
@@ -227,7 +227,7 @@ I just created a folder
 ```
 
 ```bash
-github.com/ntk148v/testing/golang/seccomp-bpf  master ⇡$? via 🐹 v1.12.7 go run main.go 
+github.com/ntk148v/testing/golang/seccomp-bpf  master ⇡$? via 🐹 v1.12.7 go run main.go
 [+] Whitelisting: write
 [+] Whitelisting: mmap
 [+] Whitelisting: rt_sigaction
@@ -256,4 +256,4 @@ exit status 2
 ## Resources:
 
 1. Sysdig: https://sysdig.com/blog/selinux-seccomp-falco-technical-discussion/
-2. Heroku: https://blog.heroku.com/applying-seccomp-filters-on-go-binaries<Paste>
+2. Heroku: https://blog.heroku.com/applying-seccomp-filters-on-go-binaries
