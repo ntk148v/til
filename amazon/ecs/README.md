@@ -28,6 +28,6 @@ ECS terminology:
 
 1. FreeCodeCamp: https://www.freecodecamp.org/news/amazon-ecs-terms-and-architecture-807d8c4960fd/
 
-2. Medium: https://medium.com/boltops/gentle-introduction-to-how-aws-ecs-works-with-example-tutorial-cea3d27ce63d<Paste>
+2. Medium: https://medium.com/boltops/gentle-introduction-to-how-aws-ecs-works-with-example-tutorial-cea3d27ce63d
 
 3. Official Doc: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html
