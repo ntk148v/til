@@ -22,6 +22,8 @@
 
 - [Alertmanager configuration options](./alertmanager-group-configuration-opts.md)
 
+- [Alertmanager time-based alert](./alertmanager-time-based-alert.md)
+
 - [Pushgateway](./pushgateway.md)
 
 - [Prometheus Self Monitoring](./prometheus-self-monitoring.md)
