@@ -2,6 +2,16 @@
 
 Source: https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
 
+- [Set](#set)
+  - [1. Intro](#1-intro)
+  - [2. List currently configured shell options](#2-list-currently-configured-shell-options)
+  - [3. Enable an option](#3-enable-an-option)
+  - [4. Disable an option](#4-disable-an-option)
+  - [5. Print a trace of simple commands (print each command to stdout before executing it)](#5-print-a-trace-of-simple-commands-print-each-command-to-stdout-before-executing-it)
+  - [6. Prevent overwriting of files by redirection](#6-prevent-overwriting-of-files-by-redirection)
+  - [7. Do not resolve symbolic links when performing commands](#7-do-not-resolve-symbolic-links-when-performing-commands)
+  - [8. Abort script at first error, when a command exits with non-zero status](#8-abort-script-at-first-error-when-a-command-exits-with-non-zero-status)
+
 ## 1. Intro
 
 [set](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html) command changes value of a shell option and set the positional parameters, or display the names and values of shell variables.
