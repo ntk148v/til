@@ -14,7 +14,7 @@ Source: https://www.mongodb.com/nosql-explained/data-modeling
 ## NoSQL Data Modeling
 
 - Each of the 4 main types of NoSQL databases is based on a specific way of storing data.
-- Document databases stores data in the document data type, which is similar to a JSON document or object. Queries are used to retrieve field values.
-- Key-value database, the simplest type of database. Data is retrieved using the direct request method rather than through the use of a query language.
-- Wide-column stores use a table form but in a flexible and scalable way. Data is retrieved using a query language.
-- Graph databases consist nodes connected by edges. Node and relationship information is retrieved using specialized query language.
+- Document Store: Data and metadata are stored hierarchically in JSON-based documents inside the database. (query language)
+- Key Value Store: The simplest of the NoSQL databases, data is represented as a collection of key-value pairs. (direct request method)
+- Wide-Column Store: Related data is stored as a set of nested-key/value pairs within a single column. (direct language)
+- Graph Store: Data is stored in a graph structure as node, edge, and data properties. (specialized query language)
