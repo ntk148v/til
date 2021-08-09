@@ -128,3 +128,7 @@ frontend website
     http-request deny deny_status 429 if !has_token or exceeds_limit
     default_backend servers
 ```
+
+## More
+
+https://gist.github.com/procrastinatio/6b6579230d99be5bfa26d04acd788e7a
