@@ -73,4 +73,58 @@ $ echo "clear table website" | sudo socat stdio /run/haproxy.sock
 
 ## Rate Limit by URL
 
+- Some pages require more processing time than others -> stricter rate limit.
+- Create a map file `/etc/haproxy/rates.map`:
+
+```
+/urla  10
+/urlb  20
+/urlc  30
+```
+
+```
+
+frontend website
+    bind :80
+    stick-table  type binary  len 20  size 100k  expire 10s  store http_req_rate(10s)
+
+    # Track client by base32+src (Host header + URL path + src IP)
+    # use as stick-table key
+    http-request track-sc0 base32+src
+
+    # Check map file to get rate limit for path
+    http-request set-var(req.rate_limit)  path,map_beg(/etc/haproxy/rates.map,20)
+
+    # Client's request rate is tracked
+    http-request set-var(req.request_rate)  base32+src,table_http_req_rate()
+
+    # Subtract the current request rate from the limit
+    # If less than zero, set rate_abuse to true
+    acl rate_abuse var(req.rate_limit),sub(req.request_rate) lt 0
+
+    # Deny if rate abuse
+    http-request deny deny_status 429 if rate_abuse
+    default_backend servers
+```
+
 ## Rate Limit by URL Parameter
+
+```
+frontend website
+    bind :80
+    stick-table type string size 100k expire 24h store http_req_rate(24h)
+
+    # check for token parameter
+    acl has_token url_param(token) -m found
+
+    # check if exceeds limit
+    acl exceeds_limit url_param(token),table_http_req_rate() gt 1000
+
+    # start tracking based on token parameter
+    # store token as the key in stick-table
+    http-request track-sc0 url_param(token) unless exceeds_limit
+
+    # Deny if missing token or exceeds limit
+    http-request deny deny_status 429 if !has_token or exceeds_limit
+    default_backend servers
+```
