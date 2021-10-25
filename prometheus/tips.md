@@ -1,5 +1,17 @@
 # Prometheus tips
 
+- [Prometheus tips](#prometheus-tips)
+  - [`avg_over_time`](#avg_over_time)
+  - [Alerting on approach open file limits](#alerting-on-approach-open-file-limits)
+  - [Absent alerting for Jobs](#absent-alerting-for-jobs)
+  - [Absent alerting for Scraped metrics](#absent-alerting-for-scraped-metrics)
+  - [Don't put the value in alert labels](#dont-put-the-value-in-alert-labels)
+  - [Hardware](#hardware)
+  - [--query.max-samples](#--querymax-samples)
+  - [When does CPU matter?](#when-does-cpu-matter)
+  - [By/Without and Ignoring/On](#bywithout-and-ignoringon)
+  - [Authentication and encryption for Prometheus and its exporters](#authentication-and-encryption-for-prometheus-and-its-exporters)
+
 ## `avg_over_time`
 
 Make use of the query function `avg_over_time` to discover for what percentage of time a given service was up or down for. Using `avg_over_time` in our alerting rules allows us to negate the issues described above by tracking how a particular time series appears over time rather than just the last known value of that time series. This way gaps in our data resulting from failed scrapes and flaky time series will no longer result in false positives or negatives in our alerting.
@@ -90,9 +102,7 @@ groups:
       summary: "Instance {{ $labels.instance }}'s metric is {{ $value }}"
 ```
 
-## Running Prometheus notes
-
-### Hardware
+## Hardware
 
 Storage space. To estimate how much you'll need you have to know how much data you will be ingesting. For an existing Prometheus you can run a PromQL query to report the samples ingested per second:
 
@@ -111,8 +121,6 @@ RAM to hold a block + overheads + RAM used during queries
 Prometheus is relatively light on CPU.
 
 Network bandwidth is another consideration. Prometheus usually uses compression when scraping, so it uses somewhere around 20 bytes of network traffic to transfer a sample.
-
-## Performance tunning
 
 ## --query.max-samples
 
@@ -147,3 +155,8 @@ To avoid recalculating the same thing over and over, you can use `recording rule
 <aggr-op> [without|by (<label list>)] ([parameter,] <vector expression>)
 <aggr-op>([parameter,] <vector expression>) [without|by (<label list>)]
 ```
+
+
+## Authentication and encryption for Prometheus and its exporters
+
+Source: https://0x63.me/tls-between-prometheus-and-its-exporters/
