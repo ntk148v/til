@@ -5,7 +5,7 @@
   - [2. Enterprise Architecture Framework (EA Framework)](#2-enterprise-architecture-framework-ea-framework)
     - [2.1. Overview](#21-overview)
     - [2.2. EA framework topics](#22-ea-framework-topics)
-    - [2.3. Types](#23-types)
+    - [2.3. Type](#23-type)
       - [2.3.1. The Open Group Architecture Framework](#231-the-open-group-architecture-framework)
       - [2.3.2. The Zachman Framework](#232-the-zachman-framework)
       - [2.3.3. Federal Enterprise Architectural Framework](#233-federal-enterprise-architectural-framework)
@@ -48,6 +48,8 @@ Sources:
 
 ### 2.2. EA framework topics
 
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Layers_of_the_Enterprise_Architecture.jpg/320px-Layers_of_the_Enterprise_Architecture.jpg)
+
 - Architecture domains ([Enterprise Architecture Planning](https://en.wikipedia.org/wiki/Enterprise_Architecture_Planning)):
   - Business architecture
   - Data architecture
@@ -60,9 +62,7 @@ Sources:
   - Information System Layer
   - Technology Layer
 
-### 2.3. Types
-
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Layers_of_the_Enterprise_Architecture.jpg/320px-Layers_of_the_Enterprise_Architecture.jpg)
+### 2.3. Type
 
 - EA frameworks typically fall into the following categories/ types:
   - Developed by consortiums and industry standards bodies (TOGAF, ArchiMate, BIAN, Zachman)
