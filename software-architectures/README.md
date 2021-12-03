@@ -12,10 +12,18 @@
     - [4.2. Models](#42-models)
     - [4.3. Benefits of event-driven architecture](#43-benefits-of-event-driven-architecture)
   - [5. Microservices](#5-microservices)
+    - [5.1. Overview](#51-overview)
+    - [5.2. Decomposition](#52-decomposition)
+    - [5.3. Problems/Concerns](#53-problemsconcerns)
 
 Source:
 
 - <https://www.redhat.com/en/topics/cloud-native-apps/what-is-an-application-architecture>
+- <https://docs.microsoft.com/vi-vn/dotnet/architecture/microservices/architect-microservice-container-applications/service-oriented-architecture>
+- <https://www.redhat.com/en/topics/cloud-native-apps/what-is-service-oriented-architecture>
+- <https://martinfowler.com/articles/microservices.html>
+- <https://martinfowler.com/microservices/>
+- <https://www.cio.com/article/2434865/top-10-reasons-why-people-are-making-soa-fail.html>
 
 - An application architecture describes the patterns and techniques used to design and build an application. The architecture gives you a roadmap and best practices to follow when building an application, so that you end up with a well-structured app.
 - Choosing an application
@@ -60,6 +68,8 @@ Source:
   - *Service provider* works in conjunction with the service registry, debating the whys and hows of the services being offered, such as security, availability, what to charge, and more. This role also determines the service category and if there need to be any trading agreements.
   - *Service registry/broker/repository* makes information regarding the service available to those requesting it. The scope of the broker is determined by whoever implements it.
   - *Service consumer* locates entries in the broker registry and then binds them to the service provider. They may or may not be able to access multiple services; that depends on the capability of the service requester.
+- SOA was an overused term and has meant different things to different people. But as a common denominator, SOA means that *you structure your application by decomposing it into multiple services (most commonly as HTTP services) that can be classified as different types like subsystems or tiers*. Those services can now be deployed as Docker containers, which solves deployment issues, because all the dependencies are included in the container image --> scale up issue if you're deploying based on single Docker host --> Docker clustering software/an orchestrator.
+- Microservices derive from SOA, but SOA is different from microservices architecture. Features like large central broker, central orchestrators at the organization level, and the Enterprise Service Bus are typical in SOA but in most cases, there are anti-patterns in the microservice community.
 
 ### 3.2. How it works?
 
@@ -113,4 +123,38 @@ Source:
 
 ## 5. Microservices
 
-> WIP
+### 5.1. Overview
+
+- A variant of SOA structural style - arranges an application as a collection of loosely-coupled services.
+  - Highly maintainable and testable
+  - Loosely coupled
+  - Independently deployable
+  - Organized around business capabilities
+  - Owned by a small team
+- Advantages:
+  - Strong module boundaries.
+  - Independent deployment.
+  - Technology diveristy.
+- Disadvantages:
+  - Distribution.
+  - Eventual consistency.
+  - Operational complexity.
+
+### 5.2. Decomposition
+
+According to [microservices.io](https://microservices.io/patterns/microservices.html) and [amazon](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decomposing-patterns.html), there are multiple patterns to decompose a monolith.
+
+- Decompose by **business capability** and define services corresponding to business capabilities.
+- Decompose by **domain-driven design subdomain**.
+- Decompose by **verb or use case** and define services that are responsible for particular actions. e.g. a Shipping Service that’s responsible for shipping complete orders.
+- Decompose by **by nouns or resource**s by defining a service that is responsible for all operations on entities/resources of a given type. e.g. an Account Service that is responsible for managing user accounts.
+
+### 5.3. Problems/Concerns
+
+- *How big is a microservice?* Or how do I scope my microservice?
+- *How do I decompose our application?* Althought I have read multiple patterns, in the actual case, sometimes it isn't simple and clear as the guide.
+- *SOA and Microservice*: You can check section 3.3. This is IBM's classification. But some others consider [SOA is just a concept, about arraging an application as a collection of sub services. And microservices is a one form of it as well as ESB](https://herbertograca.com/2017/11/09/service-oriented-architecture-soa/).
+- *Microservice? Or Miniservices?*:
+  - Check out this [article](https://thenewstack.io/miniservices-a-realistic-alternative-to-microservices/).
+  - Miniservices is all about performing one function as a service.
+- *Shared Database*: A shared database is considered an anti-pattern. Althought, it's debatable. The point is that when using a shared database, the microservices lose their core properties: scalability, resilience, and independence. Therefore, a shared database is rarely used with microservices.
