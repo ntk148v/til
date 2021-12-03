@@ -4,7 +4,7 @@
   - [1. Introduction](#1-introduction)
   - [2. Enterprise Architecture Framework (EA Framework)](#2-enterprise-architecture-framework-ea-framework)
     - [2.1. Overview](#21-overview)
-    - [2.2. EA framework topics](#22-ea-framework-topics)
+    - [2.2. Topics](#22-topics)
     - [2.3. Type](#23-type)
       - [2.3.1. The Open Group Architecture Framework](#231-the-open-group-architecture-framework)
       - [2.3.2. The Zachman Framework](#232-the-zachman-framework)
@@ -24,6 +24,9 @@ Sources:
 - <https://pdfs.semanticscholar.org/04a8/c5d8535fc58e5ad55dd3f9288bc78567d0c4.pdf>
 - <https://www.terrafirma.com.au/our-thinking/top-10-enterprise-architecture-frameworks/>
 - <https://www.youtube.com/watch?v=WiNeuRZaaZs>
+- <https://www.forbes.com/sites/steveandriole/2020/09/18/why-no-one-understands-enterprise-architecture--why-technology-abstractions-always-fail/>
+- <https://medium.com/the-internal-startup/how-to-draw-useful-technical-architecture-diagrams-2d20c9fda90d>
+- <https://enterprise-architecture.org/docs>
 
 ## 1. Introduction
 
@@ -46,15 +49,15 @@ Sources:
   - Methods for desigining architecture.
   - Organization of architects.
 
-### 2.2. EA framework topics
+### 2.2. Topics
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Layers_of_the_Enterprise_Architecture.jpg/320px-Layers_of_the_Enterprise_Architecture.jpg)
 
 - Architecture domains ([Enterprise Architecture Planning](https://en.wikipedia.org/wiki/Enterprise_Architecture_Planning)):
-  - Business architecture
-  - Data architecture
-  - Applications architecture
-  - Technology architecture
+  - Business architecture: defines business strategy and organization, key business processes, and goverance and standards.
+  - Application architecture: provides a blueprint for deploying individual systems, including the interactions among application systems as well as their relationships to essential business processes.
+  - Data architecture: documents the structure of logical. and physical data assets and any related data management resources.
+  - Technology architecture: describes the hardware, software, and network infrastructure necessary to support the deployment of mission-critical applications.
 - Layers of the EA: The view of architecture domains as layers.
   - Environment
   - Business Layer
