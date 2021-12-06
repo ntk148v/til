@@ -14,7 +14,19 @@
   - [5. Microservices](#5-microservices)
     - [5.1. Overview](#51-overview)
     - [5.2. Decomposition](#52-decomposition)
-    - [5.3. Problems/Concerns](#53-problemsconcerns)
+    - [5.3. Best practices](#53-best-practices)
+      - [5.3.1. Domain driven design](#531-domain-driven-design)
+      - [5.3.2. Database per microservice](#532-database-per-microservice)
+      - [5.3.3. Micro frontends](#533-micro-frontends)
+      - [5.3.4. Continuous Delivery](#534-continuous-delivery)
+      - [5.3.5. Observability](#535-observability)
+      - [5.3.6. Unified Tech Stack](#536-unified-tech-stack)
+      - [5.3.7. Asynchronous Communication](#537-asynchronous-communication)
+      - [5.3.8. Microservice First](#538-microservice-first)
+      - [5.3.9. Infrastructure over Libraries](#539-infrastructure-over-libraries)
+      - [5.3.10. Organizational Considerations](#5310-organizational-considerations)
+    - [5.4. Design Patterns](#54-design-patterns)
+    - [5.5. Concerns?](#55-concerns)
 
 Source:
 
@@ -24,6 +36,7 @@ Source:
 - <https://martinfowler.com/articles/microservices.html>
 - <https://martinfowler.com/microservices/>
 - <https://www.cio.com/article/2434865/top-10-reasons-why-people-are-making-soa-fail.html>
+- <https://towardsdatascience.com/microservice-architecture-a-brief-overview-and-why-you-should-use-it-in-your-next-project-a17b6e19adfd>
 
 - An application architecture describes the patterns and techniques used to design and build an application. The architecture gives you a roadmap and best practices to follow when building an application, so that you end up with a well-structured app.
 - Choosing an application
@@ -125,6 +138,7 @@ Source:
 
 ### 5.1. Overview
 
+- Microservice Architecture is about decomposing a Software System into autonomus Modules which are independently deployable and which communicates via lightweight, language agnostic way and together they fulfill the business goal.
 - A variant of SOA structural style - arranges an application as a collection of loosely-coupled services.
   - Highly maintainable and testable
   - Loosely coupled
@@ -132,13 +146,21 @@ Source:
   - Organized around business capabilities
   - Owned by a small team
 - Advantages:
-  - Strong module boundaries.
-  - Independent deployment.
-  - Technology diveristy.
+  - Application scaling.
+  - Development speed.
+  - Development scaling.
+  - Release cycle.
+  - Modularization.
+  - Modernization.
 - Disadvantages:
-  - Distribution.
-  - Eventual consistency.
+  - Design complexity.
+  - Distributed systems complexity.
   - Operational complexity.
+  - Security.
+  - Data sharing and data consistency.
+  - Communication complexities.
+
+![](https://miro.medium.com/max/700/1*MrDMARKuvUCZliIvT5XtGg.png)
 
 ### 5.2. Decomposition
 
@@ -149,7 +171,238 @@ According to [microservices.io](https://microservices.io/patterns/microservices.
 - Decompose by **verb or use case** and define services that are responsible for particular actions. e.g. a Shipping Service that’s responsible for shipping complete orders.
 - Decompose by **by nouns or resource**s by defining a service that is responsible for all operations on entities/resources of a given type. e.g. an Account Service that is responsible for managing user accounts.
 
-### 5.3. Problems/Concerns
+### 5.3. Best practices
+
+Source: <https://towardsdatascience.com/effective-microservices-10-best-practices-c6e4ba0c6ee2>
+
+#### 5.3.1. Domain driven design
+
+- The foremost challenge to develop Microservices is to split a large, complex and application into small, autonomous, independently deployable Modules.
+- Split wrong way -> tighly coupled Microservices (Monolith's disadavantages and Microserivces's complexities).
+- Book [Domain Driven Design: Tackling Complexity in the Heart of Software](http://dddcommunity.org/book/evans_2003/):
+  - The software development team should work in close co-operation with the Business department or Domain Experts.
+  - The Architects/Developers and Domain Experts should first make the Strategic Design: Finding the Bounded Context and related Core Domain and Ubiquitous Language, Subdomains, Context Maps.
+  - The Architects/Developers should then make the Tactical Design to decompose the Core Domain into fine-grained Building blocks: Entity, Value Object, Aggregate, Aggregate Root
+
+#### 5.3.2. Database per microservice
+
+- Shall we share database among Microservices or not?
+- Sharing database among microservices -> strong coupling (changes -> synchronization among teams, manage transaction and locking of a database).
+- Every microservice has own database/private tables -> exchaging data between microservices -> challenges.
+
+#### 5.3.3. Micro frontends
+
+- There are many ways to develop SPA based microfrontends: with iFrame, Web Components or via Elements.
+
+#### 5.3.4. Continuous Delivery
+
+- Each microservice can be deployed independently.
+- To take full advantage of this Microservice feature, one needs CI/CD and DevOps.
+
+#### 5.3.5. Observability
+
+- Monitoring + Logging + Tracing
+
+#### 5.3.6. Unified Tech Stack
+
+- Using different programming languages/frameworks without any solid reason can lead to too many programming languages and frameworks without any real benefit.
+
+#### 5.3.7. Asynchronous Communication
+
+- How will the services communicate and share data among themselves?  (when each microservice has its own data storage).
+- The easiest and most common way to communicate between microservices is via Synchronous REST API -> latency adds up + failure cascading + tight coupling between microservices.
+- Microservices should communicate Asynchronous (Message Queue or asynchronous REST or CQRS).
+
+#### 5.3.8. Microservice First
+
+- Start with Microservices if there is a plan to use Microservice Architecture eventually.
+
+#### 5.3.9. Infrastructure over Libraries
+
+- Instead of investing heavily in a language-specific library (e.g. Java based Netflix OSS), it is wiser to use frameworks (e.g. Service Meshes, API gateway).
+
+#### 5.3.10. Organizational Considerations
+
+- Almost 50 years ago (1967), Melvin Conway gave an observation that the Software Architecture of a company is limited by Organizational Structure (Conway’s Law).
+- If an organization plans to develop Microservice Architecture, then it should make the team size accordingly (two “American” Pizza team: 7±2 person).
+- Also, the team should be cross-functional and ideally will have Frontend/Backend Developer, Ops Engineering and Tester.
+
+### 5.4. Design Patterns
+
+<table>
+    <thead>
+        <tr>
+            <th>Pattern</th>
+            <th>Diagram</th>
+            <th>Pros</th>
+            <th>Cons</th>
+            <th>When to use</th>
+            <th>When not to use</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>Database per microservices</td>
+            <td><img src="https://miro.medium.com/max/661/1*WWJQH50jxgrqh-ABFRQuzQ.jpeg"
+                    srcset="https://miro.medium.com/max/276/1*WWJQH50jxgrqh-ABFRQuzQ.jpeg 276w, https://miro.medium.com/max/552/1*WWJQH50jxgrqh-ABFRQuzQ.jpeg 552w, https://miro.medium.com/max/640/1*WWJQH50jxgrqh-ABFRQuzQ.jpeg 640w, https://miro.medium.com/max/661/1*WWJQH50jxgrqh-ABFRQuzQ.jpeg 661w"
+                    sizes="661px" width="661" height="410"></td>
+            <td>Complete ownership of Data to a Service.Loose coupling among teams developing the services.</td>
+            <td>Sharing data among services becomes challenging.Giving application-wide ACID transactional guarantee
+                becomes a lot harder.Decomposing the Monolith database to smaller parts need careful design and is a
+                challenging task.</td>
+            <td>In large-scale enterprise applications.When the team needs complete ownership of their Microservices for
+                development scaling and development velocity.</td>
+            <td>In small-scale applications.If one team develops all the Microservices.</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Event sourcing</td>
+            <td><img src="https://miro.medium.com/max/700/1*tRDaroNg_GnGdCZDFxLFKQ.jpeg"
+                    srcset="https://miro.medium.com/max/276/1*tRDaroNg_GnGdCZDFxLFKQ.jpeg 276w, https://miro.medium.com/max/552/1*tRDaroNg_GnGdCZDFxLFKQ.jpeg 552w, https://miro.medium.com/max/640/1*tRDaroNg_GnGdCZDFxLFKQ.jpeg 640w, https://miro.medium.com/max/700/1*tRDaroNg_GnGdCZDFxLFKQ.jpeg 700w"
+                    sizes="700px" width="700" height="180"></td>
+            <td>Provide atomicity to highly scalable systems.Automatic history of the entities, including time travel
+                functionality.Loosely coupled and event-driven Microservices.</td>
+            <td>Reading entities from the Event store becomes challenging and usually need an additional data store
+                (CQRS pattern)The overall complexity of the system increases and usually need Domain-Driven Design.The
+                system needs to handle duplicate events (idempotent) or missing events.Migrating the Schema of events
+                becomes challenging.</td>
+            <td>Highly scalable transactional systems with SQL Databases.Transactional systems with NoSQL
+                Databases.Highly scalable and resilient Microservice Architecture.Typical Message Driven or Event-Driven
+                systems (e-commerce, booking, and reservation systems).</td>
+            <td>Lowly scalable transactional systems with SQL Databases.In simple Microservice Architecture where
+                Microservices can exchange data synchronously (e.g., via API).</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Command Query Responsibilityu Segregation (CQRS)</td>
+            <td>
+                <img src="https://miro.medium.com/max/341/1*l8GFDOUlyR_Km0dqg1VTgw.jpeg"
+                    srcset="https://miro.medium.com/max/276/1*l8GFDOUlyR_Km0dqg1VTgw.jpeg 276w, https://miro.medium.com/max/341/1*l8GFDOUlyR_Km0dqg1VTgw.jpeg 341w"
+                    sizes="341px" width="341" height="511">
+                <img src="https://miro.medium.com/max/435/1*wCrXIQ7MD_20yKmZIBxHvQ.jpeg"
+                    srcset="https://miro.medium.com/max/276/1*wCrXIQ7MD_20yKmZIBxHvQ.jpeg 276w, https://miro.medium.com/max/435/1*wCrXIQ7MD_20yKmZIBxHvQ.jpeg 435w"
+                    sizes="435px" width="435" height="505">
+            </td>
+            <td>Faster reading of data in Event-driven Microservices.High availability of the data.Read and write
+                systems can scale independently.</td>
+            <td>Read data store is weakly consistent (eventual consistency)The overall complexity of the system
+                increases. Cargo culting CQRS can significantly jeopardize the complete project.</td>
+            <td>In highly scalable Microservice Architecture where event sourcing is used.In a complex domain model
+                where reading data needs query into multiple Data Store.In systems where read and write operations have
+                a different load.</td>
+            <td>In Microservice Architecture, where the volume of events is insignificant, taking the Event Store
+                snapshot to compute the Entity state is a better choice.In systems where read and write operations have
+                a similar load.</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Saga</td>
+            <td><img src="https://miro.medium.com/max/661/1*-Ro9jCnA7e0PnjnjEa0FWA.jpeg"
+                    srcset="https://miro.medium.com/max/276/1*-Ro9jCnA7e0PnjnjEa0FWA.jpeg 276w, https://miro.medium.com/max/552/1*-Ro9jCnA7e0PnjnjEa0FWA.jpeg 552w, https://miro.medium.com/max/640/1*-Ro9jCnA7e0PnjnjEa0FWA.jpeg 640w, https://miro.medium.com/max/661/1*-Ro9jCnA7e0PnjnjEa0FWA.jpeg 661w"
+                    sizes="661px" width="661" height="291"></td>
+            <td>Provide consistency via transactions in a highly scalable or loosely coupled, event-driven Microservice
+                Architecture.Provide consistency via transactions in Microservice Architecture where NoSQL databases
+                without 2PC support are used.</td>
+            <td>Need to handle transient failures and should provide idempotency.Hard to debug, and the complexity grows
+                as the number of Microservices increase.</td>
+            <td>In highly scalable, loosely coupled Microservice Architecture where event sourcing is used.In systems
+                where distributed NoSQL databases are used.</td>
+            <td>Lowly scalable transactional systems with SQL Databases.In systems where cyclic dependency exists among
+                services.</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Backends for Frontends (BFF)</td>
+            <td><img src="https://miro.medium.com/max/661/1*FCZRcAuSLhrNOjcq1zYXDw.jpeg"
+                    srcset="https://miro.medium.com/max/276/1*FCZRcAuSLhrNOjcq1zYXDw.jpeg 276w, https://miro.medium.com/max/552/1*FCZRcAuSLhrNOjcq1zYXDw.jpeg 552w, https://miro.medium.com/max/640/1*FCZRcAuSLhrNOjcq1zYXDw.jpeg 640w, https://miro.medium.com/max/661/1*FCZRcAuSLhrNOjcq1zYXDw.jpeg 661w"
+                    sizes="661px" width="661" height="704"></td>
+            <td>Separation of Concern between the BFF’s. We can optimize them for a specific UI.Provide higher
+                security.Provide less chatty communication between the UI’s and downstream Microservices.</td>
+            <td>Code duplication among BFF’s.The proliferation of BFF’s in case many other UI’s are used (e.g., Smart
+                TV, Web, Mobile, Desktop).Need careful design and implementation as BFF’s should not contain any
+                business logic and should only contain client-specific logic and behavior.</td>
+            <td>If the application has multiple UIs with different API requirements.If an extra layer is needed between
+                the UI and Downstream Microservices for Security reasons.If Micro-frontends are used in UI development.
+            </td>
+            <td>If the application has multiple UI, but they consume the same API.If Core Microservices are not deployed
+                in DMZ.</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>API Gateway</td>
+            <td><img src="https://miro.medium.com/max/700/1*e3p0KRmyiqgEx9kYH1e0Hg.jpeg"
+                    srcset="https://miro.medium.com/max/276/1*e3p0KRmyiqgEx9kYH1e0Hg.jpeg 276w, https://miro.medium.com/max/552/1*e3p0KRmyiqgEx9kYH1e0Hg.jpeg 552w, https://miro.medium.com/max/640/1*e3p0KRmyiqgEx9kYH1e0Hg.jpeg 640w, https://miro.medium.com/max/700/1*e3p0KRmyiqgEx9kYH1e0Hg.jpeg 700w"
+                    sizes="700px" width="700" height="694"></td>
+            <td>Offer loose coupling between Frontend and backend Microservices.Reduce the number of round trip calls
+                between Client and Microservices.High security via SSL termination, Authentication, and
+                Authorization.Centrally managed cross-cutting concerns, e.g., Logging and Monitoring, Throttling, Load
+                balancing.</td>
+            <td>Can lead to a single point of failure in Microservice Architecture.Increased latency due to the extra
+                network call.If it is not scaled, they can easily become the bottleneck to the whole
+                Enterprise.Additional maintenance and development cost.</td>
+            <td>In complex Microservice Architecture, it is almost mandatory.In large Corporations, API Gateway is
+                compulsory to centralize security and cross-cutting concerns.</td>
+            <td>In private projects or small companies where security and central management is not the highest
+                priority.If the number of Microservices is fairly small.</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Strangler</td>
+            <td><img src="https://miro.medium.com/max/700/1*4cO7G9QFc9OjQgmSTwQP1Q.jpeg"
+                    srcset="https://miro.medium.com/max/276/1*4cO7G9QFc9OjQgmSTwQP1Q.jpeg 276w, https://miro.medium.com/max/552/1*4cO7G9QFc9OjQgmSTwQP1Q.jpeg 552w, https://miro.medium.com/max/640/1*4cO7G9QFc9OjQgmSTwQP1Q.jpeg 640w, https://miro.medium.com/max/700/1*4cO7G9QFc9OjQgmSTwQP1Q.jpeg 700w"
+                    sizes="700px" width="700" height="446"></td>
+            <td>Safe migration of Monolithic application to Microservices.The migration and new functionality
+                development can go in parallel.The migration process can have its own pace.</td>
+            <td>Sharing Data Store between the existing Monolith and new Microservices becomes challenging.Adding a
+                Facade (API Gateway) will increase the system latency.End-to-end testing becomes difficult.</td>
+            <td>Incremental migration of a large Backend Monolithic application to Microservices.</td>
+            <td>If the Backend Monolith is small, then wholesale replacement is a better option.If the client request to
+                the legacy Monolithic application cannot be intercepted.</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Circuit Breaker</td>
+            <td><img src="https://miro.medium.com/max/700/1*Olh9J1L3JSDi-PUa9CGa_A.jpeg"
+                    srcset="https://miro.medium.com/max/276/1*Olh9J1L3JSDi-PUa9CGa_A.jpeg 276w, https://miro.medium.com/max/552/1*Olh9J1L3JSDi-PUa9CGa_A.jpeg 552w, https://miro.medium.com/max/640/1*Olh9J1L3JSDi-PUa9CGa_A.jpeg 640w, https://miro.medium.com/max/700/1*Olh9J1L3JSDi-PUa9CGa_A.jpeg 700w"
+                    sizes="700px" width="700" height="395"></td>
+            <td>Improve the fault-tolerance and resilience of the Microservice Architecture.Stops the cascading of
+                failure to other Microservices.</td>
+            <td>Need sophisticated Exception handling.Logging and Monitoring.Should support manual reset.</td>
+            <td>In tightly coupled Microservice Architecture where Microservices communicates Synchronously.If one
+                Microservice has a dependency on multiple other Microservices.</td>
+            <td>Loosely coupled, event-driven Microservice Architecture.If a Microservice has no dependency on other
+                Microservices.</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Externalizaed Configuration</td>
+            <td></td>
+            <td>Production configurations are not part of the Codebase and thus minimize security
+                vulnerability.Configuration parameters can be changed without a new build.</td>
+            <td>We need to choose a framework that supports the Externalized Configuration.</td>
+            <td>Any serious production application must use Externalized Configuration.</td>
+            <td>In proof of concept development.</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>Consumer-Driven Contract Testing</td>
+            <td></td>
+            <td>If the Provider changes the API or Message unexpectedly, it is found autonomously in a short time.Less
+                surprise and more robustness, especially an enterprise application containing lots of
+                Microservices.Improved team autonomy.</td>
+            <td>Need extra work to develop and integrate Contract tests in Provider Microservice as they may use
+                completely different test tools.If the Contract test does not match real Service consumption, it may
+                lead to production failure.</td>
+            <td>In large-scale enterprise business applications, where typically, different teams develop different
+                services.</td>
+            <td>Relative simpler, smaller applications where one team develops all the Microservices.If the Provider
+                Microservices are relatively stable and not under active development.</td>
+        </tr>
+    </tbody>
+</table>
+
+### 5.5. Concerns?
 
 - *How big is a microservice?* Or how do I scope my microservice?
 - *How do I decompose our application?* Althought I have read multiple patterns, in the actual case, sometimes it isn't simple and clear as the guide.
