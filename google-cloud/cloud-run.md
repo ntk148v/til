@@ -13,9 +13,9 @@
 
 ## 2. Cloud Run platforms
 
-!{}(https://cloud.google.com/run/docs/images/choose-platform.svg)
+![](https://cloud.google.com/anthos/run/docs/images/choose-platform.svg)
 
-- Cloud Run (full managed) platform you to deploy stateles containers without having to worry about the underlying infrastructure.
+- Cloud Run (full managed) platform you to deploy stateless containers without having to worry about the underlying infrastructure.
 - Cloud Run for Anthos abstracts away complex Kubernetes concepts, allowing developers to easily eleverage the benefits of Kubernetes and serverless together.
 
 ## 3. Knative
