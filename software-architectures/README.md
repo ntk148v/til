@@ -171,6 +171,8 @@ According to [microservices.io](https://microservices.io/patterns/microservices.
 - Decompose by **verb or use case** and define services that are responsible for particular actions. e.g. a Shipping Service that’s responsible for shipping complete orders.
 - Decompose by **by nouns or resource**s by defining a service that is responsible for all operations on entities/resources of a given type. e.g. an Account Service that is responsible for managing user accounts.
 
+https://docs.microsoft.com/en-us/learn/modules/microservices-architecture/5-analyze-decompose
+
 ### 5.3. Best practices
 
 Source: <https://towardsdatascience.com/effective-microservices-10-best-practices-c6e4ba0c6ee2>
