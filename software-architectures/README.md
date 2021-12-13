@@ -404,7 +404,20 @@ Source: <https://towardsdatascience.com/effective-microservices-10-best-practice
     </tbody>
 </table>
 
-### 5.5. Concerns?
+### 5.5. Domain modeling for microservices
+
+#### 5.5.1. Introduction
+
+- Domain-driven design (DDD) provides a framework that can get you most of the way to a set of well-designed microservices.
+- DDD has 2 distinct phases:
+  - Strategic: define the large-scale structure of the system.
+  - Tatical: provide a set of design patterns (entities, aggregates, domain services) that you can use to create the domain model.
+
+![](https://docs.microsoft.com/en-us/azure/architecture/microservices/images/ddd-process.png)
+
+#### 5.5.2. Analyze the domain
+
+### 5.6. Concerns?
 
 - *How big is a microservice?* Or how do I scope my microservice?
 - *How do I decompose our application?* Althought I have read multiple patterns, in the actual case, sometimes it isn't simple and clear as the guide.
