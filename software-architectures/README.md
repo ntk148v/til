@@ -37,6 +37,7 @@ Source:
 - <https://martinfowler.com/microservices/>
 - <https://www.cio.com/article/2434865/top-10-reasons-why-people-are-making-soa-fail.html>
 - <https://towardsdatascience.com/microservice-architecture-a-brief-overview-and-why-you-should-use-it-in-your-next-project-a17b6e19adfd>
+- https://johanlouwers.blogspot.com/2017/02/functional-decomposition-for.html
 
 - An application architecture describes the patterns and techniques used to design and build an application. The architecture gives you a roadmap and best practices to follow when building an application, so that you end up with a well-structured app.
 - Choosing an application
