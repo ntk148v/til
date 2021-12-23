@@ -19,6 +19,7 @@
 ## Introduction
 
 Kubernetes is constructed using several components:
+
 - *Kubernetes master*
   - Authorization and authetication
   - RESTful API entry point
@@ -50,16 +51,16 @@ Kubernetes is constructed using several components:
   - Main datastore.
   - Explore the Kubernetes configuration and status in etcd:
 
-    ```
-    # curl -L "http://10.0.0.1:2379/v2/keys/registry"
+    ```bash
+    curl -L "http://10.0.0.1:2379/v2/keys/registry"
     ```
 
 - *overlay network (flannel)*:
   - Network communicate - multihost.
   - Flannel also uses etcd to configure the settings and store the status.
 
-    ```
-    # curl -L "http://10.0.0.1:2379/v2/keys/coreos.com/network/config"
+    ```bash
+    curl -L "http://10.0.0.1:2379/v2/keys/coreos.com/network/config"
     ```
 
   - More details can refer [1]
@@ -170,23 +171,23 @@ Kubernetes is constructed using several components:
 
 - Typically, services and pods have IPs only routable by the cluster network.
 
-```
-internet
-   |
---------
-[ Services ]
-```
+  ```
+    internet
+      |
+  --------
+  [ Services ]
+  ```
 
 - An Ingress is a collection of rules that allow inbound connections to reach
   the cluster services.
 
-```
-internet
-   |
-[ Ingress ]
----|---|---
-[ Services ]
-```
+  ```
+    internet
+      |
+  [ Ingress ]
+  ---|---|---
+  [ Services ]
+  ```
 
 - It can be configured to give services externally-reachable URLs, load
   balance traffic, terminate SSL... User request ingress by POSTing the
