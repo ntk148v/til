@@ -7,7 +7,10 @@
     - [3.1. Load balacing network topology](#31-load-balacing-network-topology)
     - [3.2. Load balacing failure scenario](#32-load-balacing-failure-scenario)
 
-Source: <https://engineering.fb.com/2018/05/22/open-source/open-sourcing-katran-a-scalable-network-load-balancer>
+Source:
+
+- <https://engineering.fb.com/2018/05/22/open-source/open-sourcing-katran-a-scalable-network-load-balancer>
+- <https://www.youtube.com/watch?v=da9Qw7v5qLM>
 
 ## 1. Introduction
 
