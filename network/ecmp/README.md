@@ -19,6 +19,8 @@ Source:
 hash(5tuple) % number of paths
 ```
 
+![](https://cdn.haproxy.com/wp-content/uploads/2020/02/4.-Equal-cost-multi-path-routing.png)
+
 - Pros
   - Easy to scale out
 - Cons
