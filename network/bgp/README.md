@@ -18,3 +18,4 @@ Source:
 
 - The structure of the internet is constantly changing -> Every AS must be kept up to date with information regarding new routes as well as obsolete routes -> Peering sessions where each AS connects to neighboring ASes with a TCP/IP connection for the purpose of sharing routing information.
 - Routes are exchanged and traffic is transmitted over the Internet using external BGP (eBGP). Autonomous systems can also use an internal version of BGP to route through their internal networks, which is known as internal BGP (iBGP).
+- [Comparing Opensource BGP](https://elegantnetwork.github.io/posts/comparing-open-source-bgp-stacks/)
