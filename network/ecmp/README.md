@@ -44,5 +44,50 @@ hash(5tuple) % number of paths
   - Bundling the links at the Ethernet level, using IEEE 802.3ad or **EtherChannel**.
   - With one BGP session oever mutiple links using loopback addresses
   - With a separate BGP session over each of the parallel links
-- EtherChannel is a proprietary Cisco mechanism to allow multiple Ethernet ports to be used as if it's a single, higher-bandwidth port. In 2000, the IEEE standardized a very similar mechanism under the name 802.3ad (Link Aggregation Control Protocol (LACP), with negotiates the bundling of Ethernet ports. By foregoing LACP and  grouping the ports statically, it's usually possible to make different implementations like 802.3ad and EtherChannel and other link bundling mechanisms from other vendors work together.
-- Bundled ports are a single interface with a single IP address. So BGP can simply be configured as usual and the traffic is distributed over the ports using the ECMP algorithm.
+- 1st: EtherChannel is a proprietary Cisco mechanism to allow multiple Ethernet ports to be used as if it's a single, higher-bandwidth port. In 2000, the IEEE standardized a very similar mechanism under the name 802.3ad (Link Aggregation Control Protocol (LACP), with negotiates the bundling of Ethernet ports. By foregoing LACP and  grouping the ports statically, it's usually possible to make different implementations like 802.3ad and EtherChannel and other link bundling mechanisms from other vendors work together.
+  - Bundled ports are a single interface with a single IP address. So BGP can simply be configured as usual and the traffic is distributed over the ports using the ECMP algorithm.
+- 2nd: an alternative is to configure each port with its own IP subnet, but then still run a single BGP session over the collection of ports.
+  - 2 GE interfaces have subnets 10.0.1.0/30 and 10.0.2.0/30.
+  - The local router also has IP address 192.168.0.1/32 configured on its loopback interface.
+  - Address 172.16.31.2 is the loopback interface of the router at the other end of both Gigabit Ethernet links.
+  - To make sure the BGP updates use the loopback address on our end, we configure *update-source loopback0*
+  - We also need *ebgp-multihop 2* because the extra level of indirection may lead the router to think there's an extra router on the path.
+  - BGP session will come up and prefixes learned over the session will have as their  next hop addres 172.16.31.2. This address points to both of the GE ports, so packets will be load balanced over both ports using ECMP
+
+```
+!
+interface GigabitEthernet0/1
+ip address 10.0.1.1 255.255.255.252
+interface GigabitEthernet0/2
+ip address 10.0.2.1 255.255.255.252
+interface loopback0
+ip address 192.168.0.1 255.255.255.255
+!
+ip route 172.16.31.2 255.255.255.255 10.0.1.2
+ip route 172.16.31.2 255.255.255.255 10.0.2.2
+!
+router bgp 123
+neighbor 172.16.31.2 remote-as 456
+neighbor 172.16.31.2 update-source loopback0
+neighbor 172.16.31.2 ebgp-multihop 2
+!
+```
+
+- 3rd: Run BGP over multiple links is to simply configure a BGP session over each link:
+  - BGP would now have two copies of each prefix: one learned from neighbor 10.0.1.2 and one from neighbor 10.0.2.2 and then try to figure out which of these is best. Eventually this will come down to the tie breaker rules and one will win.
+  - With *maximum-paths 2* in effect, the router will install two copies of a route in the main routing table, which will trigger ECMP between the two routes.
+
+```
+!
+interface GigabitEthernet0/1
+ip address 10.0.1.1 255.255.255.252
+!
+interface GigabitEthernet0/2
+ip address 10.0.2.1 255.255.255.252
+!
+router bgp 123
+neighbor 10.0.1.2 remote-as 456
+neighbor 10.0.2.2 remote-as 456
+maximum-paths 2
+!
+```
