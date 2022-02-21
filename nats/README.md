@@ -3,6 +3,12 @@
 Source:
 - <https://docs.nats.io/nats-concepts/overview>
 
+- [NATS](#nats)
+  - [1. Overview](#1-overview)
+  - [2. Subject-Based Messaging](#2-subject-based-messaging)
+  - [3. Core NATS](#3-core-nats)
+  - [4. JetStream](#4-jetstream)
+
 ## 1. Overview
 
 - NATS is a connective technology (addressing, discovery and exchanging of messages; asking and answering questions; making and processing statements, or stream processing) that powers modern distributed systems.
@@ -68,6 +74,42 @@ time.us.east.atlanta
 ![](https://683899388-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LqMYcZML1bsXrN3Ezg0%2Fuploads%2Fgit-blob-22d59af386038cc2717176561ffc95c63c295926%2Fpubsub.svg?alt=media)
 
 - Request-Reply:
-  - A request is published on a given subject using a reply subject.
-  - Responers listen on that subject and send responsess to the reply subject.
-- Queue Groups
+  - A request is published on a given subject using a reply subject (inbox). Responders listen on that subject and send responsess to the reply subject.
+  - Multiple NATS responders can form dynamic queue groups.
+  - NATS applications "drain before exiting" (processing buffered messages before closing the connection) -> scale down.
+  - Allow multiple responses, when the 1st response is utilized and the system efficiently discards the additional ones.
+
+![](https://683899388-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LqMYcZML1bsXrN3Ezg0%2Fuploads%2Fgit-blob-dc10798d4afca301adba55c1e85c599b25a2ae24%2Freqrepl.svg?alt=media)]
+
+- Queue Groups:
+  - NATS provides a built-in load balancing feature called distributed queues.
+  - To create a queue subscription, subscribers register a queue name. All subscribers with the same queue name form the queue group (queue groups are defined by the application and their queue subscribers, not on the server configuration)
+  - Although queue groups have multiple subscribers, each message is consumed by only one.
+  - "No responder": When a request is made to a service (request/reply) and the NATS server knows there are no services avaiable (there are no client applications currently subscribing the subject in a queue-group) the server will short circuit the request -> send a "no responder" protocol message to the requesting client.
+
+## 4. JetStream
+
+- Built-in distributed system called **JetStream**.
+- Functionalities:
+  - **Streaming**: temporal decoupling between publishers and subscribers.
+    - Streams capture and store messages published on one (or more) subject and allow client applications to create 'subscribers' (JetStream consumers) at any time to 'replay' (or consume) all or some of the messages stored in the stream.
+    - Replay policies: *all* (*instant*, *original*), *last*, *sequence number*, and *start time*.
+    - Limits:Maximum message age, maximum total stream size, maximum number of messages in the stream,...
+    - Retention policy: *limits*, *interest* and *work queue*.
+
+  ![](https://683899388-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LqMYcZML1bsXrN3Ezg0%2Fuploads%2Fgit-blob-dedcc17f082fa1e39497c54ed8191b6424ee7792%2Fstreams-and-consumers-75p.png?alt=media)
+
+  - **Persistent distributed storage**:
+    - Memory storage
+    - File storage
+    - Replication (1 (none), 2, 3) between nats servers for Fault Tolerance
+  - **De-coupled flow control**: Flow control is not 'end-to-end' where the publisher(s) are limited to publish no faster than the slowest of all the consumers can receive, but is instead happening individually between each client application and nats server.
+  - **Exactly once message delivery**:
+    - For publishing side it relies on the publishing application attaching a unique message or publication id in a message header and on the server keeping track of those ids for a configurable rolling period of time in order to detect the publisher publishing the same message twice.
+    - For the subscribers a *double ack* mechanism is used to avoid a message being erroneouslyh re-sent to a subscriber by the server after  some kinds of failures.
+  - **Consumers**:
+    - 'Views' on a stream, subscribe to (or pulled) by client applications to receive copies of (or to consume) messages stored in the stream.
+    - Client applications can choose to use un-ack `push` (ordered) consumers to receive messages as fast as possible (for the selected replay policy) on a specified delivery subject or to an inbox.
+    - Horizontally scalable pull consumers with batching.
+    - Consumer ack.
+  - **K/V store**: the ability to store, retrieve and delete value messages associated with a key, to watch (listen) for changes happening to that key and even to retrieve a history of the values (and deletions) that have happened on a particular key.
