@@ -28,6 +28,8 @@
     - [5.4. Design Patterns](#54-design-patterns)
     - [5.5. Concerns?](#55-concerns)
 
+![](./overview.svg)
+
 Source:
 
 - <https://www.redhat.com/en/topics/cloud-native-apps/what-is-an-application-architecture>
