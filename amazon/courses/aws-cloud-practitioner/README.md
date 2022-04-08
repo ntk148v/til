@@ -165,3 +165,27 @@
 - IAM policies:
   - An IAM policy is a document that allows or denies permissions to AWS services and resources
   - Follow the security principle of least privilege when granting permissions
+  - Example:
+
+![](https://assets.skillbuilder.aws/files/a/w/aws_prod1_docebosaas_com/1649419200/Eg2lO02vy-5QqmhWJupcbg/tincan/31d9c0cca79c54bdceaf3e938fd424e97c98c7e8/assets/4PUOpE714WIQyBUs_wwEWNhiDL7wyp00S.png)
+
+- IAM groups:
+  - An IAM group is a collection of IAM users.
+  - Assign an IAM policy to a group, all users in the group are granted permissions specified by the policy
+- IAM roles:
+  - An IAM role is an identity that you can assume to gain temporary access to permissions
+  - IAM roles are ideal for situations in which access to services or resources needs to be granted temporarily, instead of long-term
+- Multi-factor authentication:
+- AWS Organizations:
+  - When create an organization, AWS Organizations automatically creates a root, which is the parent container for all the accounts in organization
+  - Control permissions for the accounts in organization by using service control policies (SCPs)
+- Organizational units (OU):
+  - When apply a policy to an OU, all the accounts in the OU automatically inherit the permisions specified in the policy
+- AWS Artifact: A service that provides on-demand access to AWS security and compliance reports and select online agreements
+- Denial-of-service attacks - AWS Shield
+- AWS Key Management Service (AWS KMS): Enables user to perform encryption operations through the use of cryptographic keys
+- AWS WAF:
+  - Web application firewall that lets you monitor network requests that come into web applications
+  - Works together with Amazon CloudFront and an Application Load Balancer
+- Amazon Inspector: helps to improve the security and compliance of applications by running automated security assessments. It checks applications for security vulnerabilities and deviations from security best practices, such as open access to Amazon EC2 instances and installations of vulnerable software versions
+- Amazon GuardDuty: a service that provides intelligent threat detection for your AWS infrastructure and resources. It identifies threats by continuously monitoring the network activity and account behavior within your AWS environment.
