@@ -7,6 +7,9 @@
   - [4. Networking](#4-networking)
   - [5. Storage and database](#5-storage-and-database)
   - [6. Security](#6-security)
+  - [7. Monitoring and analytics](#7-monitoring-and-analytics)
+  - [8. Pricing and support](#8-pricing-and-support)
+  - [9. Migration and innovation](#9-migration-and-innovation)
 
 ## 1. Introduction
 
@@ -189,3 +192,34 @@
   - Works together with Amazon CloudFront and an Application Load Balancer
 - Amazon Inspector: helps to improve the security and compliance of applications by running automated security assessments. It checks applications for security vulnerabilities and deviations from security best practices, such as open access to Amazon EC2 instances and installations of vulnerable software versions
 - Amazon GuardDuty: a service that provides intelligent threat detection for your AWS infrastructure and resources. It identifies threats by continuously monitoring the network activity and account behavior within your AWS environment.
+
+## 7. Monitoring and analytics
+
+- Amazon CloudWatch: a web service that enables you to monitor and manage various metrics and configure alarm actions based on data from those metrics
+- Amazon CloudTrail: records API calls for your account. The recorded information includes the identity of the APi caller, the time of the API call, the source IP address of the APi caller, and more.
+  - CloudTrail Insights: allow CloudTrail to automatically detect unusual API activities
+- AWS Trusted Advisor: a web service that inspects AWS environment and provides real-time recommendations in accordance with AWS best practices (cost optimization, performance, security, fault tolerance, and service limits)
+
+## 8. Pricing and support
+
+- AWS Free tier: 3 types of offers are available:
+  - Always free
+  - 12 months free
+  - Trials
+- AWS Pricing concepts:
+  - Pay for what you use
+  - Pay less when you reserve
+  - Pay less with volume-based discounts when you use more
+- AWS Pricing calculator
+- AWS Budgets: create budgets to plan service usage, service costs, and instance reservations
+- AWS Cost exploxer: a tool that enables you to visualize, understand, and manage AWS costs and usage over time
+- AWS Support offers 4 different Support plan:
+  - Basic
+  - Developer
+  - Business
+  - Enterprise
+- AWS Marketplace: a digital catalog that includes thousands of software listings from independent software vendors
+
+## 9. Migration and innovation
+
+- AWS Cloud adoption framework (AWS CAF):
