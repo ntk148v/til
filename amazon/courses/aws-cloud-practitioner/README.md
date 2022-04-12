@@ -10,6 +10,7 @@
   - [7. Monitoring and analytics](#7-monitoring-and-analytics)
   - [8. Pricing and support](#8-pricing-and-support)
   - [9. Migration and innovation](#9-migration-and-innovation)
+  - [10. The cloud journey](#10-the-cloud-journey)
 
 ## 1. Introduction
 
@@ -222,4 +223,20 @@
 
 ## 9. Migration and innovation
 
-- AWS Cloud adoption framework (AWS CAF):
+- AWS Cloud adoption framework (AWS CAF)
+- Migration strategies
+- AWS Snow family: a collection of physical devices that help to physically transport up to exabytes of data into and out of AWS.
+  - AWS Snowcone: a small, rugged, and secure edge computing and data transfer device
+  - AWS Snowball: offers 2 types of devices:
+    - Snowball edge storage optimized
+    - Snowball edge compute optimized
+  - AWS Snowmobile: an exabyte-scale data transfer service used to move large amounts of data to AWS
+
+## 10. The cloud journey
+
+- AWS Well-architected framework helps you understand how to design and operate reliable, secure, efficient, and cost-effective systems in the AWS Cloud. 5 pillars:
+  - Operational excellence
+  - Security
+  - Reliability
+  - Performance efficiency
+  - Cost optimization
