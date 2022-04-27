@@ -56,7 +56,7 @@ docker_gwbridge   8000.0242358d533d   no              veth571cae6
 virbr0            8000.52540011765c   yes             virbr0-nic
 ```
 
-## 3. Deep dive - How can containers transfer data to the kernetl, and from there, to outside world?
+## 3. Deep dive - How can containers transfer data to the kernel, and from there, to outside world?
 
 - Port forwarding - forwards traffic on a **specific** port from a container to the kernel.
 - Host networking - disables the **network namepspace stack** isolation from the Docker host.
