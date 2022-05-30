@@ -11,8 +11,10 @@
 Source:
 
 - <http://www.linuxvirtualserver.org/about.html>
+- <http://www.linuxvirtualserver.org/Documents.html>
 - <https://programmer.group/lvs-load-balancing.html>
 - <https://www.codetd.com/en/article/9370382>
+- <http://www.austintek.com/LVS/LVS-HOWTO/>
 
 ## 1. Introduction
 
