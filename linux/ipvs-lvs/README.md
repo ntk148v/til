@@ -43,6 +43,7 @@ Source:
   - weighted round robin scheduling (WRR)
   - source hash scheduling (SH)
   - destination hash (TH)
+  - maglev hash (MH): Check [here](https://blog.acolyer.org/2016/03/21/maglev-a-fast-and-reliable-software-network-load-balancer/)
 - Dynamic algorithm scheduling
   - least connection scheduling (LC)
   - weighted least connection scheduling (WLC)
