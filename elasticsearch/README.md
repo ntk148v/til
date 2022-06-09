@@ -9,4 +9,5 @@
 5. [Reduce shard usage](./reduce-shard-usage.md)
 6. [Mapping](./mapping.md)
 7. [Garbage collector](./garbage-collector.md)
-8. [References](./refs.md)
+8. [Resolve unassigned shards](./resolve-unassigned-shards.md)
+9. [References](./refs.md)
