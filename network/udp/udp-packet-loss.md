@@ -109,3 +109,12 @@ $ sudo sysctl -w net.core.netdev_max_backlog=2000
 ## 6. Tool
 
 - Check out [dropwatch](https://github.com/nhorman/dropwatch) (You have to install it from source).
+- Install dropwatch ubuntu
+
+```bash
+# Ubuntu 20.04
+sudo apt install binutils-dev libreadline-dev libnl-3-dev libnl-genl-3-dev libpcap-dev -y
+git clone https://github.com/nhorman/dropwatch
+cd dropwatch/
+./autogen.sh && ./configure && make && sudo make install
+```
