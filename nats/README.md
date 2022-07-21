@@ -1,6 +1,7 @@
 # NATS
 
 Source:
+
 - <https://docs.nats.io/nats-concepts/overview>
 
 - [NATS](#nats)
@@ -8,6 +9,7 @@ Source:
   - [2. Subject-Based Messaging](#2-subject-based-messaging)
   - [3. Core NATS](#3-core-nats)
   - [4. JetStream](#4-jetstream)
+  - [4. Choose between JetStream and Core NATS](#4-choose-between-jetstream-and-core-nats)
 
 ## 1. Overview
 
@@ -36,7 +38,7 @@ Source:
 
 ![](https://683899388-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LqMYcZML1bsXrN3Ezg0%2Fuploads%2Fgit-blob-19a2ced7956b0b0681a8d97c2684d8669120eaec%2Fintro.svg?alt=media)
 
-- Quality of service (QoS): NATS offers multiple qualities of service, depending on whether the application uses just the *Core NATS* functionality or also leverages the added functionalities enabled by *NATS JetStream*
+- Quality of service (QoS): NATS offers multiple qualities of service, depending on whether the application uses just the _Core NATS_ functionality or also leverages the added functionalities enabled by _NATS JetStream_
   - At most once QoS (Core NATS): If a subscriber is not listening on the subject, or is not active when the message is sent, the message is not received. This is the same level of guarantee that TCP/IP provides. Core NATS is a fire-and-forget messaging system.
   - At-least/exactly once QoS (NATS JetStream): Higher qualities of service, or functionalities such as persistent streaming, de-coupled flow control, and Key/Value Store.
 
@@ -59,13 +61,13 @@ time.us.east.atlanta
 
 ![](https://683899388-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LqMYcZML1bsXrN3Ezg0%2Fuploads%2Fgit-blob-b70adb26feafc88e119d7455639c57bb82bba9a4%2Fsubjects2.svg?alt=media)
 
-  - Matching multiple tokens (`>` wildcard): match one or more tokens, and can only appear at the end of the subject.
+- Matching multiple tokens (`>` wildcard): match one or more tokens, and can only appear at the end of the subject.
 
 ![](https://683899388-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LqMYcZML1bsXrN3Ezg0%2Fuploads%2Fgit-blob-e73c731e2444069e3aedf8e14a6cd6bb8aced13d%2Fsubjects3.svg?alt=media)
 
 ## 3. Core NATS
 
-- *Core NATS* functionalities are publish/subscribe with subject-based-addressing and queuing.
+- _Core NATS_ functionalities are publish/subscribe with subject-based-addressing and queuing.
 - Publish-Subscribe:
   - One-to-many communications (fan-out).
   - A publisher sends a message on a subject and any active subscriber listening on that subject receives the message
@@ -91,11 +93,12 @@ time.us.east.atlanta
 
 - Built-in distributed system called **JetStream**.
 - Functionalities:
+
   - **Streaming**: temporal decoupling between publishers and subscribers.
     - Streams capture and store messages published on one (or more) subject and allow client applications to create 'subscribers' (JetStream consumers) at any time to 'replay' (or consume) all or some of the messages stored in the stream.
-    - Replay policies: *all* (*instant*, *original*), *last*, *sequence number*, and *start time*.
+    - Replay policies: _all_ (_instant_, _original_), _last_, _sequence number_, and _start time_.
     - Limits:Maximum message age, maximum total stream size, maximum number of messages in the stream,...
-    - Retention policy: *limits*, *interest* and *work queue*.
+    - Retention policy: _limits_, _interest_ and _work queue_.
 
   ![](https://683899388-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LqMYcZML1bsXrN3Ezg0%2Fuploads%2Fgit-blob-dedcc17f082fa1e39497c54ed8191b6424ee7792%2Fstreams-and-consumers-75p.png?alt=media)
 
@@ -106,10 +109,34 @@ time.us.east.atlanta
   - **De-coupled flow control**: Flow control is not 'end-to-end' where the publisher(s) are limited to publish no faster than the slowest of all the consumers can receive, but is instead happening individually between each client application and nats server.
   - **Exactly once message delivery**:
     - For publishing side it relies on the publishing application attaching a unique message or publication id in a message header and on the server keeping track of those ids for a configurable rolling period of time in order to detect the publisher publishing the same message twice.
-    - For the subscribers a *double ack* mechanism is used to avoid a message being erroneouslyh re-sent to a subscriber by the server after  some kinds of failures.
+    - For the subscribers a _double ack_ mechanism is used to avoid a message being erroneouslyh re-sent to a subscriber by the server after some kinds of failures.
   - **Consumers**:
     - 'Views' on a stream, subscribe to (or pulled) by client applications to receive copies of (or to consume) messages stored in the stream.
     - Client applications can choose to use un-ack `push` (ordered) consumers to receive messages as fast as possible (for the selected replay policy) on a specified delivery subject or to an inbox.
     - Horizontally scalable pull consumers with batching.
     - Consumer ack.
   - **K/V store**: the ability to store, retrieve and delete value messages associated with a key, to watch (listen) for changes happening to that key and even to retrieve a history of the values (and deletions) that have happened on a particular key.
+
+- With JetStream a stream can also used as a queue, check out example [here](https://github.com/ntk148v/testing/tree/master/golang/nats/nats-jetstream).
+  - Set the retention policy to `WorkQueuePolicy` and leveraging `pull consumers` to get easy horizontal scalability of the processing.
+  - Use an explicit ack `push consumer` with a queue group of subscribers.
+
+![](https://683899388-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LqMYcZML1bsXrN3Ezg0%2Fuploads%2Fgit-blob-62652b3e6dd556e3cb1c3bb474ec10038334c600%2Fqueue.svg?alt=media)
+
+## 4. Choose between JetStream and Core NATS
+
+- When to use streaming: Streaming is ideal when:
+  - A historical record of a stream is required. This is when a replay of data is required by consumer.
+  - The last message produced on a stream is required for initalization and the producer may be offline.
+  - A-priori knowledge of consumers is not available, but consumers must receive messages. This is often a false assumption.
+  - **Data producers and consumers are high decoupled**. They may be online at different times and consumers must receive messages.
+  - The data in messages being sent have a lifespan beyond that of the intended application lifespan.
+  - Applications need to consume data at their own pace.
+  - You want de-coupled flow control between the publishers and the consumers of the stream.
+  - You need `exactly-once` quality of service with de-duplication of publications and double-acknowledged consumption.
+- When to use Core: Core is ideal for the fast request path for scalable services where there is toleranace for message loss or when applications them selves handle message delivery guarantees.
+  - Service patterns where there is tightly coupled request-reply.
+  - Where only the last message received is important and new messages will be received frequently enough for applications to tolerate a lost message.
+  - Message TTL is low, where the value of the data being transmitted degrades or expires quickly.
+  - The exptected consumer set for a message is available a-priori and consumers are expected to be live. The request-reply pattern works well here or consumers can send an application level acknowledgement.
+  - Control plane messages.
