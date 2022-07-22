@@ -10,6 +10,7 @@ Source:
   - [3. Core NATS](#3-core-nats)
   - [4. JetStream](#4-jetstream)
   - [4. Choose between JetStream and Core NATS](#4-choose-between-jetstream-and-core-nats)
+  - [5. NATS vs X](#5-nats-vs-x)
 
 ## 1. Overview
 
@@ -140,3 +141,7 @@ time.us.east.atlanta
   - Message TTL is low, where the value of the data being transmitted degrades or expires quickly.
   - The exptected consumer set for a message is available a-priori and consumers are expected to be live. The request-reply pattern works well here or consumers can send an application level acknowledgement.
   - Control plane messages.
+
+## 5. NATS vs X
+
+- Apache Kafka and NATS: https://www.quora.com/What-is-the-difference-between-Apache-Kafka-and-NATS
