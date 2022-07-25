@@ -51,3 +51,4 @@ resource "aws_vpc" "main" {
 - [Gaia](https://github.com/gaia-app/gaia) - a Terraform UI.
 - [Stack-Lifecycle-deployment](https://github.com/D10S0VSkY-OSS/Stack-Lifecycle-Deployment)
 - [Rover](https://github.com/im2nguyen/rover) - Interactive Terraform visualization. State and configuration explorer.
+- [blast-radius](https://github.com/28mm/blast-radius) - Interactive visualizations of Terraform dependency graphs using d3.js
