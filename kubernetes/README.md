@@ -4,18 +4,19 @@
   - [1. Introduction](#1-introduction)
   - [2. Basic](#2-basic)
     - [2.1. Architecture](#21-architecture)
-    - [2.2. Concepts](#22-concepts)
-      - [2.2.1. Pods](#221-pods)
-      - [2.2.2. Replication controller](#222-replication-controller)
-      - [2.2.3. Replica Sets](#223-replica-sets)
-      - [2.2.4. Deployment](#224-deployment)
-      - [2.2.5. Service](#225-service)
-      - [2.2.6. Label & Selector](#226-label--selector)
-      - [2.2.7. Volume](#227-volume)
-      - [2.2.8. Secrets](#228-secrets)
-      - [2.2.9. Namespaces](#229-namespaces)
-      - [2.2.10. Ingress](#2210-ingress)
-    - [2.2.11. ConfigMap](#2211-configmap)
+    - [2.2. How Kubernetes runs an application](#22-how-kubernetes-runs-an-application)
+    - [2.3. Concepts](#23-concepts)
+      - [2.3.1. Pods](#231-pods)
+      - [2.3.2. Replication controller](#232-replication-controller)
+      - [2.3.3. Replica Sets](#233-replica-sets)
+      - [2.3.4. Deployment](#234-deployment)
+      - [2.3.5. Service](#235-service)
+      - [2.3.6. Label & Selector](#236-label--selector)
+      - [2.3.7. Volume](#237-volume)
+      - [2.3.8. Secrets](#238-secrets)
+      - [2.3.9. Namespaces](#239-namespaces)
+      - [2.3.10. Ingress](#2310-ingress)
+    - [2.3.11. ConfigMap](#2311-configmap)
 
 
 ## 1. Introduction
@@ -30,23 +31,19 @@
   - Secret and configuration management
 - Refs:
   - [100DaysOfKubernetes](https://devops.anaisurl.com/kubernetes)
+  - [Kubernetes In Action 2nd Edition](https://www.manning.com/books/kubernetes-in-action-second-edition): access the MEAP [here](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition).
 
 ## 2. Basic
 
 ### 2.1. Architecture
 
 - Cluster: a set of work machines - called `nodes`, that run containerized applications.
-  - Node hosts the Pods that are the components of the application workload.
-  - Control plane manages the work nodes and the Pods in the cluster. In the production environments, the control plane usually run across multiple hosts.
+  - Workload Plane: Node hosts the Pods that are the components of the application workload.
+  - Control plane: manages the work nodes and the Pods in the cluster. In the production environments, the control plane usually run across multiple hosts.
 
 ![](https://d33wubrfki0l68.cloudfront.net/2475489eaf20163ec0f54ddc1d92aa8d4c87c96b/e7c81/images/docs/components-of-kubernetes.svg)
 
-![overview](./imgs/kubernetes_overview.png)
-  
-- Check check:
-  - **Kubernetes master/control plane** connect to **etd** via HTTP/HTTPS to store data and connect to **flannel** to access the container application.
-  - **Kubernetes nodes** connect to the **Kubernetes master** via HTTP/HTTPS to get a command and report the status.
-  - **Kubernetes nodes** use an overlay network (**flannel**) to make a connection of their container applications.
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.11.png)
 
 - Control plane components:
   - Features:
@@ -70,6 +67,9 @@
     - Each controller is a separate process (logically).
     - Some types of these controller: Node controller, Job controller, Endpoints controller, Service account & token controllers.
   - `cloud-controller-manager:` embeds cloud-specific control logic, links cluster into cloud provider's API, and separates out the components that interact with that cloud platform from components that only interact with cluster.
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.12.png)
+
 - Node components:
   - Features: Maintaining running pods and providing the Kubernetes runtime environment.
   - `kubelet`: an agent that makes sure that containers are running a Pod.
@@ -78,7 +78,11 @@
     - Use the OS packet filtering layer if there is one and it's available (iptables...)
     - Forward traffic itself.
   - `Container runtime`: [containerd](https://containerd.io/docs/), [CRI-O](https://cri-o.io/#what-is-cri-o), and any other implementation of the [Kubernets CRI](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/container-runtime-interface.md).
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.13.png)
+
 - Others:
+  - Add-on components
   - overlay network (Flannel):
     - Read more [here](https://chunqi.li/2015/10/10/Flannel-for-Docker-Overlay-Network/)
     - Network communicate - multihost.
@@ -103,9 +107,22 @@
       - Plain HTTP connections.
     - SSH tunnels: to protect the control plane to nodes communication paths.
 
-### 2.2. Concepts
+### 2.2. How Kubernetes runs an application
 
-#### 2.2.1. Pods
+- Define application: Everything in Kubernetes is represented by an object. These objects are usually defined in one or more manifest files in either YAML or JSON format.
+- Actions:
+  - Submit the application manifest to Kubernetes API. API Server writes the objects defined in the manifest to etd.
+  - Controller notices the newly created objects and creates several new objects - one for each application instance.
+  - Scheduler assigns a node to each instance.
+  - Kubelet notices that an instance is assigned to the Kubelet's node. It runs the application instance via the Container runtime.
+  - Kube-proxy notices that the application instances are ready to accept connections from clients and configures a LB for them.
+  - Kublets and the Controllers monitor the system and keep the applications running.
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.14.png)
+
+### 2.3. Concepts
+
+#### 2.3.1. Pods
 
 - The **Pod** is a group of 1 or more containers and the smallest deployable unit
   in Kubernetes. Pods are always co-located and co-scheduled and run in a
@@ -114,16 +131,27 @@
   - Network namespace
   - Interprocess Commnunication (IPC) namespace
   - Unix Time Sharing (UTS) namespace
-- **Pod State**
+- **Pod State**:
+  - Pods have a status field (`kubectl get pods`).
+  - Valid statuses:
+    - **running**: pods has been bound to a node + all containers have been created +_ at least one container is still running/starting/restarting.
+    - **pending**: pods has been accepted but is not running.
+    - **succeeded**: all containers within this pod have been terminated successfully and will not be restarted.
+    - **failed**: all containers within this pod have been Terminated + at least one container returned a failure code.
+    - **unknown**: network error might have been occurred.
+  - Check using `kubectl describe pod <podname>`.
+- **Pod Lifecycle**:
 
-#### 2.2.2. Replication controller
+![](imgs/pod-lifecycle.png)
+
+#### 2.3.2. Replication controller
 
 - A term for API objects in Kubernetes that refers to pod replicas.
 - To be able to control a set of pod's behaviors.
 - Ensures that the pods, in a user-specified number, are running all the time. If some pods in the replication controller crash and terminate, the system will recreate pods with the original configurations on healthy nodes automactically, and keep a certain amount of processes continously running.
 - This concept is outdated. Kubernetes official documentation recommends: A **Deployment** that configures a ReplicaSet is now the recommended way to set up replication.
 
-#### 2.2.3. Replica Sets
+#### 2.3.3. Replica Sets
 
 - **Replica Set** is the next-generation Replication Controller. The only between them right now is the selector support.
 - It supports a new selector that can do selection based on **filtering** according a **set of values**, whereas a RC only supports equality-based selector requirements.
@@ -132,7 +160,7 @@
     - e.g. "environment" == "dev"
 - This **Replica Set**, rather than the Replication Controller, is used by the Deployment object.
 
-#### 2.2.4. Deployment
+#### 2.3.4. Deployment
 
 - A deployment declaration allows you to do app **deployments** and **updates**.
 - Deployments are intented to replace Replication Controllers.
@@ -165,7 +193,7 @@ spec:
     - containerPort: 3000
 ```
 
-#### 2.2.5. Service
+#### 2.3.5. Service
 
 - **Pods** are very **dynamic**, they come and go on the Kubernetes cluster.
   - When using a **Replication Controller**, pods are **terminated** and created during scaling operations.
@@ -199,7 +227,7 @@ spec:
   type: NodePort
 ```
 
-#### 2.2.6. Label & Selector
+#### 2.3.6. Label & Selector
 
 - Labels are a set of key/value pairs, which are attached to object metadata.
   - Labels are like **tags** in AWS or other cloud providers, used to tag resources.
@@ -241,7 +269,7 @@ spec:
   hardware: high-spec
 ```
 
-#### 2.2.7. Volume
+#### 2.3.7. Volume
 
 - Volume lives with a pod across container restarts.
 - It supports the following different types of network disks:
@@ -258,7 +286,7 @@ spec:
   - secret
   - downwardAPI
 
-#### 2.2.8. Secrets
+#### 2.3.8. Secrets
 
 - Secrets provides a way in Kubernetes to distribute **sensitive data** to the pods.
 - There are still other ways container  can get its secrets: using an external vault services.
@@ -269,32 +297,32 @@ spec:
 - Generate  secrets:
   - Using files.
 
-```bash
-echo -n "root" > ./username.txt
-echo -n "password" > ./password.txt
-kubectl create secret generic db-user-pass --from-file=./username.txt —from-file=./password.txt secret "db-user-pass" created
-# SSH key
-kubectl create secret generic ssl-certificate --from-file=ssh-privatekey=~/.ssh/id_rsa --ssl-cert-=ssl-cert=mysslcert.crt
-```
+  ```bash
+  echo -n "root" > ./username.txt
+  echo -n "password" > ./password.txt
+  kubectl create secret generic db-user-pass --from-file=./username.txt —from-file=./password.txt secret "db-user-pass" created
+  # SSH key
+  kubectl create secret generic ssl-certificate --from-file=ssh-privatekey=~/.ssh/id_rsa --ssl-cert-=ssl-cert=mysslcert.crt
+  ```
 
   - Using yaml definitions.
 
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: db-secret
-type: Opaque
-data:
-  password: cm9vdA== # echo -n 'root' | base64
-  username: cGFzc3dvcmQ= # echo -n "password" | base64
-```
+  ```yaml
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: db-secret
+  type: Opaque
+  data:
+    password: cm9vdA== # echo -n 'root' | base64
+    username: cGFzc3dvcmQ= # echo -n "password" | base64
+  ```
 
-```bash
-kubectl create -f secrets-db-secret.yml
-```
+  ```bash
+  kubectl create -f secrets-db-secret.yml
+  ```
 
-#### 2.2.9. Namespaces
+#### 2.3.9. Namespaces
 
 - The name of a resource is a unique identifier with a namespace in the
   Kubernetes cluster. Using a Kubernetes namepsace could isolate namespaces
@@ -303,7 +331,7 @@ kubectl create -f secrets-db-secret.yml
   certain namespace. Some resources, such as nodes and PVs, do not belong to
   any namespace.
 
-#### 2.2.10. Ingress
+#### 2.3.10. Ingress
 
 - Typically, services and pods have IPs only routable by the cluster network.
 
@@ -330,4 +358,4 @@ kubectl create -f secrets-db-secret.yml
   Ingress resource to the API server.
 - Read [more](https://medium.com/@cashisclay/kubernetes-ingress-82aa960f658e).
 
-### 2.2.11. ConfigMap
+### 2.3.11. ConfigMap
