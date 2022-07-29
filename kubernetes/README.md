@@ -16,7 +16,7 @@
       - [2.3.8. Secrets](#238-secrets)
       - [2.3.9. Namespaces](#239-namespaces)
       - [2.3.10. Ingress](#2310-ingress)
-    - [2.3.11. ConfigMap](#2311-configmap)
+      - [2.2.11. ConfigMap](#2211-configmap)
 
 
 ## 1. Introduction
@@ -358,4 +358,4 @@ spec:
   Ingress resource to the API server.
 - Read [more](https://medium.com/@cashisclay/kubernetes-ingress-82aa960f658e).
 
-### 2.3.11. ConfigMap
+#### 2.2.11. ConfigMap
