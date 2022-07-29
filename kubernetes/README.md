@@ -16,7 +16,7 @@
       - [2.3.8. Secrets](#238-secrets)
       - [2.3.9. Namespaces](#239-namespaces)
       - [2.3.10. Ingress](#2310-ingress)
-      - [2.2.11. ConfigMap](#2211-configmap)
+      - [2.3.11. ConfigMap](#2311-configmap)
 
 
 ## 1. Introduction
@@ -342,7 +342,7 @@ spec:
   [ Services ]
   ```
 
-- An Ingress is a collection of rules that allow inbound connections to reach
+- An Ingress is a collection of rules that allow **inbound connections** to reach
   the cluster services.
 
   ```
@@ -353,9 +353,78 @@ spec:
   [ Services ]
   ```
 
-- It can be configured to give services externally-reachable URLs, load
-  balance traffic, terminate SSL... User request ingress by POSTing the
-  Ingress resource to the API server.
-- Read [more](https://medium.com/@cashisclay/kubernetes-ingress-82aa960f658e).
+- It's an alternative to the exernal **LoadBalancer** and **NodePort**:
+  - Ingress allows you to **easily expose services** that need to be accessible from **outside** to the **cluster**.
+- With ingress you can run **Ingress Controller** (basically a LoadBalancer) within the Kubernetes cluster.
 
-#### 2.2.11. ConfigMap
+![](imgs/ingress.png)
+
+- It can be configured to give services externally-reachable URLs, load balance traffic, terminate SSL... User request ingress by POSTing the Ingress resource to the API server.
+- Read [more](https://medium.com/@cashisclay/kubernetes-ingress-82aa960f658e).
+- Example:
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld-rules
+spec:
+  rules:
+    - host: helloworld-v1.example.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: helloworld-v1
+              servicePort: 80
+    - host: helloworld-v2.example.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: helloworld-v2
+              servicePort: 80
+```
+
+#### 2.3.11. ConfigMap
+
+- Configuration parameters that are not secret -> put in **ConfigMap**.
+- The **ConfigMap** key-value pairs can then be read by the app using:
+  - **Environment** variables.
+  - **Container commandline arguments** in the Pod configuration.
+  - Using **volumes**.
+- To generate configmap using files:
+
+```bash
+cat <<EOF > app.properties
+driver=jdbc
+database=postgres
+lookandfeel=1
+otherparams=xyz
+param.with.hierarchy=xyz
+EOF
+
+kubectl create configmap app-config —from-file=app.properties
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodehelloworld.example.com
+  labels:
+    app: helloworld
+spec:
+  containers:
+    - name: k8s-demo
+      image: wardviaene/k8s-demo
+      ports:
+        - containerPort: 3000
+      volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config # /etc/config/driver /etc/config/param/with/hierachy
+  volumes:
+    - name: config-volume
+      configMap:
+        name: app-config
+```
