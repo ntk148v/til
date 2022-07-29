@@ -15,7 +15,7 @@
       - [2.2.8. Secrets](#228-secrets)
       - [2.2.9. Namespaces](#229-namespaces)
       - [2.2.10. Ingress](#2210-ingress)
-    - [2.2.11. ConfigMap](#2211-configmap)
+      - [2.2.11. ConfigMap](#2211-configmap)
 
 
 ## 1. Introduction
@@ -330,4 +330,4 @@ kubectl create -f secrets-db-secret.yml
   Ingress resource to the API server.
 - Read [more](https://medium.com/@cashisclay/kubernetes-ingress-82aa960f658e).
 
-### 2.2.11. ConfigMap
+#### 2.2.11. ConfigMap
