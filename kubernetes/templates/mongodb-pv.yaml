@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-pv # The name of persistent volume
+spec:
+  capacity: # The storage capacity of this volume
+    storage: 1Gi
+  accessModes: # Whether a single node or many nodes can access this volume in read/write or read-only mode.
+    - ReadWriteOnce
+    - ReadOnlyMany
+  gcePersistentDisk: #This persistent volume uses the GCE Persistent Disk
+    pdName: mongodb
+    fsType: ext4
+  # hostPath: # Local directory on the host node
+  #   path: /tmp/mongodb

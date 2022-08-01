@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true" # This marks the storage class as default
+  name: standard # The name of storage class
+# ...
+provisioner: rancher.io/local-path # The name of provisioner that gets called to provision persistent volumes of this class
+reclaimPolicy: Delete # The reclaim policy for persistent volumes of this class
+volumeBindingMode: WaitForFirstConsumer # How volumes of this class are provisioned and bound
+# provisioner: kubernetes.io/gce-pd       #A
+# parameters:                             #B
+#   type: pd-standard                     #B
+# volumeBindingMode: Immediate
+# allowVolumeExpansion: true
+# reclaimPolicy: Delete

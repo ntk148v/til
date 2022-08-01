@@ -4,19 +4,20 @@
   - [1. Introduction](#1-introduction)
   - [2. Basic](#2-basic)
     - [2.1. Architecture](#21-architecture)
-    - [2.2. How Kubernetes runs an application](#22-how-kubernetes-runs-an-application)
-    - [2.3. Concepts](#23-concepts)
-      - [2.3.1. Pods](#231-pods)
-      - [2.3.2. Replication controller](#232-replication-controller)
-      - [2.3.3. Replica Sets](#233-replica-sets)
-      - [2.3.4. Deployment](#234-deployment)
-      - [2.3.5. Service](#235-service)
-      - [2.3.6. Label & Selector](#236-label--selector)
-      - [2.3.7. Volume](#237-volume)
-      - [2.3.8. Secrets](#238-secrets)
-      - [2.3.9. Namespaces](#239-namespaces)
-      - [2.3.10. Ingress](#2310-ingress)
-      - [2.3.11. ConfigMap](#2311-configmap)
+    - [2.2. Kubernetes API](#22-kubernetes-api)
+    - [2.3. How Kubernetes runs an application](#23-how-kubernetes-runs-an-application)
+    - [2.4. Concepts](#24-concepts)
+      - [2.4.1. Pods](#241-pods)
+      - [2.4.2. Replication controller](#242-replication-controller)
+      - [2.4.3. Replica Sets](#243-replica-sets)
+      - [2.4.4. Deployment](#244-deployment)
+      - [2.4.5. Service](#245-service)
+      - [2.4.6. Label & Selector](#246-label--selector)
+      - [2.4.7. Persistent Volume](#247-persistent-volume)
+      - [2.4.8. Secrets](#248-secrets)
+      - [2.4.9. Namespaces](#249-namespaces)
+      - [2.4.10. Ingress](#2410-ingress)
+      - [2.4.11. ConfigMap](#2411-configmap)
 
 
 ## 1. Introduction
@@ -31,7 +32,7 @@
   - Secret and configuration management
 - Refs:
   - [100DaysOfKubernetes](https://devops.anaisurl.com/kubernetes)
-  - [Kubernetes In Action 2nd Edition](https://www.manning.com/books/kubernetes-in-action-second-edition): access the MEAP [here](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition).
+  - [Kubernetes In Action 2nd Edition](https://www.manning.com/books/kubernetes-in-action-second-edition): This is a really good book for beginner. Access the MEAP [here](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition), I take a lot of pictures from this site.
 
 ## 2. Basic
 
@@ -106,8 +107,47 @@
     - API server to nodes, pods, and services:
       - Plain HTTP connections.
     - SSH tunnels: to protect the control plane to nodes communication paths.
+  
+### 2.2. Kubernetes API
 
-### 2.2. How Kubernetes runs an application
+- Both user and Kubernetes components interact with the cluster by manipulating objects through the Kubenetes APIs.
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/4.1.png)
+
+- HTTP-based RESTFul API where the state is represented by **resources** on which you perform CRUD operations.
+- Each **resource** is assigned a URI that uniquely identifies.
+- E.g. **deployment** resource. The collection of all deployments in the cluster is a REST resource exposed at `/api/v1/deployments`.
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/4.2.png)
+
+- An **object** can therefore be exposed through more than one resources.
+- Objects are represented in structured text form (JSON/YAML).
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/4.3.png)
+
+- Controllers manage the objects. Each controller is usually only responsible for one object type. For example, the Deployment controller manages Deployment objects.
+  - The task of a controller is to read the desired object state from the the object's Spec section
+  - Perform the actions required to achieve this state
+  - Report back the actual state of the object by writing to its Status section
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/4.4.png)
+
+- As controllers perform their task of reconciling the actual state of an object with the desired state, as specified in the object’s spec field, they generate events to reveal what they have done. Two types of events exist: Nomarl and Warning.
+  - Events are represented by Event objects.
+  - Each Event object is deleted one hour after its creation to reduce the burden on etcd.
+
+```bash
+# Listing events
+kubectl get ev
+# -o wide: display additional information
+kubectl get ev -o wide
+# Filter only Warning events
+kubectl get ev --field-selector type=Warning
+```
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/4.7.png)
+
+### 2.3. How Kubernetes runs an application
 
 - Define application: Everything in Kubernetes is represented by an object. These objects are usually defined in one or more manifest files in either YAML or JSON format.
 - Actions:
@@ -120,9 +160,9 @@
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.14.png)
 
-### 2.3. Concepts
+### 2.4. Concepts
 
-#### 2.3.1. Pods
+#### 2.4.1. Pods
 
 - The **Pod** is a group of 1 or more containers and the smallest deployable unit
   in Kubernetes. Pods are always co-located and co-scheduled and run in a
@@ -140,18 +180,25 @@
     - **failed**: all containers within this pod have been Terminated + at least one container returned a failure code.
     - **unknown**: network error might have been occurred.
   - Check using `kubectl describe pod <podname>`.
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/6.1.png)
+
+- **Pod conditions**:
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/6.2.png)
+
 - **Pod Lifecycle**:
 
 ![](imgs/pod-lifecycle.png)
 
-#### 2.3.2. Replication controller
+#### 2.4.2. Replication controller
 
 - A term for API objects in Kubernetes that refers to pod replicas.
 - To be able to control a set of pod's behaviors.
 - Ensures that the pods, in a user-specified number, are running all the time. If some pods in the replication controller crash and terminate, the system will recreate pods with the original configurations on healthy nodes automactically, and keep a certain amount of processes continously running.
 - This concept is outdated. Kubernetes official documentation recommends: A **Deployment** that configures a ReplicaSet is now the recommended way to set up replication.
 
-#### 2.3.3. Replica Sets
+#### 2.4.3. Replica Sets
 
 - **Replica Set** is the next-generation Replication Controller. The only between them right now is the selector support.
 - It supports a new selector that can do selection based on **filtering** according a **set of values**, whereas a RC only supports equality-based selector requirements.
@@ -160,7 +207,7 @@
     - e.g. "environment" == "dev"
 - This **Replica Set**, rather than the Replication Controller, is used by the Deployment object.
 
-#### 2.3.4. Deployment
+#### 2.4.4. Deployment
 
 - A deployment declaration allows you to do app **deployments** and **updates**.
 - Deployments are intented to replace Replication Controllers.
@@ -193,7 +240,7 @@ spec:
     - containerPort: 3000
 ```
 
-#### 2.3.5. Service
+#### 2.4.5. Service
 
 - **Pods** are very **dynamic**, they come and go on the Kubernetes cluster.
   - When using a **Replication Controller**, pods are **terminated** and created during scaling operations.
@@ -227,7 +274,7 @@ spec:
   type: NodePort
 ```
 
-#### 2.3.6. Label & Selector
+#### 2.4.6. Label & Selector
 
 - Labels are a set of key/value pairs, which are attached to object metadata.
   - Labels are like **tags** in AWS or other cloud providers, used to tag resources.
@@ -269,7 +316,7 @@ spec:
   hardware: high-spec
 ```
 
-#### 2.3.7. Volume
+#### 2.4.7. Persistent Volume
 
 - Volume lives with a pod across container restarts.
 - It supports the following different types of network disks:
@@ -285,8 +332,108 @@ spec:
   - gcePersistentDisk
   - secret
   - downwardAPI
+- A **PersistentVolume** object represents a storage volume available in the clsuter that can be used to persist application data.
+- A pod transitively references a persistent volume and its underlying storage by referring to a **PersistentVolumeClaim** object that references the **PersistentVolume** object, which then references the underlying storage. This allows the ownership of the persistent volume to be decoupled from the lifecyle of the pod.
+  - A **PersistentVolumeClaim** represents a user's claim on the persistent volume.
 
-#### 2.3.8. Secrets
+  ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/8.4.png)
+
+- Benefits of using persistent volumes and claims:
+  - The infrastructure-specific details are now decoupled from the application represents by the pod.
+- Example:
+  - Create PersistentVolume:
+
+  ```yaml
+  apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    name: mongodb-pv # The name of persistent volume
+  spec:
+    capacity: # The storage capacity of this volume
+      storage: 1Gi
+    accessModes: # Whether a single node or many nodes can access this volume in read/write or read-only mode.
+      - ReadWriteOnce
+      - ReadOnlyMany
+    gcePersistentDisk: #This persistent volume uses the GCE Persistent Disk
+      pdName: mongodb
+      fsType: ext4
+    # hostPath: # Local directory on the host node
+    #   path: /tmp/mongodb
+  ```
+
+  ```bash
+  kubectl get pv
+  ```
+
+  - Create PersistentVolumeClaim:
+
+  ```yaml
+  apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: mongodb-pvc # This name of this claim
+  spec:
+    resources:
+      requests: # The volume must provide at least 1GiB of storage space
+        storage: 1Gi
+    accessModes: # The volume must support mounting by a single node for both reading and writing
+      - ReadWriteOnce
+    storageClassName: "" # Empty to disable dynamic provisioning
+  ```
+
+  ```bash
+  kubectl get pvc
+  ```
+  
+  - Use a persistent volume in a pod
+
+  ```yaml
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: mongodb
+  spec:
+    volumes:
+      - name: mongodb-data # The internal name of the volume
+        persistentVolumeClaim: # The volume points to a PersistentVolumeClaim named mongodb-pvc
+          claimName: mongodb-pvc
+    containers:
+      - image: mongo
+        name: mongodb
+        volumeMounts: # The volume is mounted
+          - name: mongodb-data
+            mountPath: /data/db
+  ```
+
+- The lifecycle of manually provisioned persistent volumes and claims:
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/8.7.png)
+
+- Dynamic provisioning of persistent volumes: instead of provisioning persistent volumes in advance (and manually), the cluster admin deploys a persistent volume provisioner to automate the just-in-time provisioning process.
+  - A **StorageClass** object represents a class of storage that can be dynamically provisioned.
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/8.8.png)
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/8.9.png)
+
+```bash
+kubectl get sc
+```
+
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true" # This marks the storage class as default
+  name: standard # The name of storage class
+# ...
+provisioner: rancher.io/local-path # The name of provisioner that gets called to provision persistent volumes of this class
+reclaimPolicy: Delete # The reclaim policy for persistent volumes of this class
+volumeBindingMode: WaitForFirstConsumer # How volumes of this class are provisioned and bound
+```
+
+#### 2.4.8. Secrets
 
 - Secrets provides a way in Kubernetes to distribute **sensitive data** to the pods.
 - There are still other ways container  can get its secrets: using an external vault services.
@@ -322,16 +469,46 @@ spec:
   kubectl create -f secrets-db-secret.yml
   ```
 
-#### 2.3.9. Namespaces
+#### 2.4.9. Namespaces
 
-- The name of a resource is a unique identifier with a namespace in the
-  Kubernetes cluster. Using a Kubernetes namepsace could isolate namespaces
-  for different environments in the same cluster.
-- Pods, services, replication controllers (replica sets) are contained in a
-  certain namespace. Some resources, such as nodes and PVs, do not belong to
-  any namespace.
+- The name of a resource is a unique identifier with a namespace in the Kubernetes cluster. Using a Kubernetes namepsace could isolate namespaces for different environments in the same cluster.
 
-#### 2.3.10. Ingress
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/10.1.png)
+
+- Pods, services, replication controllers (replica sets) are contained in a certain namespace. Some resources, such as nodes and PVs, do not belong to any namespace.
+
+![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/10.2.png)
+
+- Some useful commands:
+
+```bash
+# Listing namespaces
+kubectl get namespaces
+# Listing objects in a specific namespace
+kubectl get po --namespace kube-system
+# Listing objects across all namespaces
+kubectl get cm --all-namespaces
+# Creating a namespace
+kubectl create namespace ns-test1
+# Creating a namespace from a manifest file
+cat <<EOF > ns-test2.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-test2
+EOF
+kubectl apply -f ns-test2.yaml
+```
+
+- Understanding the (lack of) isolation between namespaces:
+  - When two pods created in different namespaces are scheduled to the same cluster node, they both run in the same OS kernel -> an application that break out of its container or consumes too much of the node's resources can ffect the operation of the other application.
+
+  ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/10.3.png)
+
+  - Kubernetes doesn't provide network isolation between applications running in pods in different namespaces (by default) -> Can use the NetworkPolicy object to configure which applications in which namespaces can connect to which applications in other namespaces.
+  - Should not use namespaces to split a single physical cluster into production, staging, and development environments.
+
+#### 2.4.10. Ingress
 
 - Typically, services and pods have IPs only routable by the cluster network.
 
@@ -386,7 +563,7 @@ spec:
               servicePort: 80
 ```
 
-#### 2.3.11. ConfigMap
+#### 2.4.11. ConfigMap
 
 - Configuration parameters that are not secret -> put in **ConfigMap**.
 - The **ConfigMap** key-value pairs can then be read by the app using:

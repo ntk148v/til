@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc # This name of this claim
+spec:
+  resources:
+    requests: # The volume must provide at least 1GiB of storage space
+      storage: 1Gi
+  accessModes: # The volume must support mounting by a single node for both reading and writing
+    - ReadWriteOnce
+  storageClassName: "" # Empty to disable dynamic provisioning

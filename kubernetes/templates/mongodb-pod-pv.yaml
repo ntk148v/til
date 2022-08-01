@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mongodb
+spec:
+  volumes:
+    - name: mongodb-data # The internal name of the volume
+      persistentVolumeClaim: # The volume points to a PersistentVolumeClaim named mongodb-pvc
+        claimName: mongodb-pvc
+  containers:
+    - image: mongo
+      name: mongodb
+      volumeMounts: # The volume is mounted
+        - name: mongodb-data
+          mountPath: /data/db
