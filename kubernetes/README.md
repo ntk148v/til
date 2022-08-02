@@ -2,22 +2,27 @@
 
 - [Kubernetes](#kubernetes)
   - [1. Introduction](#1-introduction)
-  - [2. Basic](#2-basic)
-    - [2.1. Architecture](#21-architecture)
-    - [2.2. Kubernetes API](#22-kubernetes-api)
-    - [2.3. How Kubernetes runs an application](#23-how-kubernetes-runs-an-application)
-    - [2.4. Concepts](#24-concepts)
-      - [2.4.1. Pods](#241-pods)
-      - [2.4.2. Replication controller](#242-replication-controller)
-      - [2.4.3. Replica Sets](#243-replica-sets)
-      - [2.4.4. Deployment](#244-deployment)
-      - [2.4.5. Service](#245-service)
-      - [2.4.6. Label & Selector](#246-label--selector)
-      - [2.4.7. Persistent Volume](#247-persistent-volume)
-      - [2.4.8. Secrets](#248-secrets)
-      - [2.4.9. Namespaces](#249-namespaces)
-      - [2.4.10. Ingress](#2410-ingress)
-      - [2.4.11. ConfigMap](#2411-configmap)
+  - [2. Architecture & internals](#2-architecture--internals)
+    - [2.1. Control plane](#21-control-plane)
+    - [2.2. Workload plane](#22-workload-plane)
+    - [2.3. Add-ons](#23-add-ons)
+    - [2.4. Communications](#24-communications)
+    - [2.5. How controllers cooperate](#25-how-controllers-cooperate)
+    - [2.6. Kubernetes API](#26-kubernetes-api)
+    - [2.7. How Kubernetes runs an application](#27-how-kubernetes-runs-an-application)
+    - [2.8. Networking](#28-networking)
+  - [3. Concepts](#3-concepts)
+    - [3.1. Pods](#31-pods)
+    - [3.2. Replication controller](#32-replication-controller)
+    - [3.3. Replica Sets](#33-replica-sets)
+    - [3.4. Deployment](#34-deployment)
+    - [3.5. Service](#35-service)
+    - [3.6. Label & Selector](#36-label--selector)
+    - [3.7. Persistent Volume](#37-persistent-volume)
+    - [3.8. Secrets](#38-secrets)
+    - [3.9. Namespaces](#39-namespaces)
+    - [3.10. Ingress](#310-ingress)
+    - [3.11. ConfigMap](#311-configmap)
 
 
 ## 1. Introduction
@@ -34,9 +39,7 @@
   - [100DaysOfKubernetes](https://devops.anaisurl.com/kubernetes)
   - [Kubernetes In Action 2nd Edition](https://www.manning.com/books/kubernetes-in-action-second-edition): This is a really good book for beginner. Access the MEAP [here](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition), I take a lot of pictures from this site.
 
-## 2. Basic
-
-### 2.1. Architecture
+## 2. Architecture & internals
 
 - Cluster: a set of work machines - called `nodes`, that run containerized applications.
   - Workload Plane: Node hosts the Pods that are the components of the application workload.
@@ -46,69 +49,104 @@
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.11.png)
 
-- Control plane components:
-  - Features:
-    - Authorization and authetication
-    - RESTful API entry point
-    - Container deployment scheduler to the Kubernetes nodes
-    - Scaling and replicating the controller
-    - Read and store the configuration
-    - Command line interface
-  - `kube-api-server`: exposes the Kubernetes API. The API is the front end for the Kubernetes control plane.
-  - `etcd`: Consistent and highly-available key-value store used as Kubernetes's backing store for all cluster data.
-    - Explore the Kubernetes configuration and status in etcd:
+### 2.1. Control plane
 
-    ```bash
-    curl -L "http://10.0.0.1:2379/v2/keys/registry"
-    ```
+- Features:
+  - Authorization and authetication
+  - RESTful API entry point
+  - Container deployment scheduler to the Kubernetes nodes
+  - Scaling and replicating the controller
+  - Read and store the configuration
+  - Command line interface
+- `kube-api-server`: exposes the Kubernetes API.
+  - The API is the front end for the Kubernetes control plane.
+  - Kubernetes system components communicate only with the API server. API server is the only component that communicates with etcd.
+  - Flow:
 
-  - `kube-scheduler`: watches for newly created Pods with no assigned node, and selects a node for them to run on.
-  - `kube-controller-manager`: runs controller processes.
-    - A controller is a control loop that watches the shared state of the cluster through the apiserver and makes changes attempting to move the current state towards the desired state.
-    - Each controller is a separate process (logically).
-    - Some types of these controller: Node controller, Job controller, Endpoints controller, Service account & token controllers.
-  - `cloud-controller-manager:` embeds cloud-specific control logic, links cluster into cloud provider's API, and separates out the components that interact with that cloud platform from components that only interact with cluster.
+  ```bash
+  kubectl -> HTTP POST request -> Authentication plugins -> Authorization plugins -> Admission control plugins -> Resource validation -> etcd
+  ```
+
+- `etcd`: Consistent and highly-available key-value store used as Kubernetes's backing store for all cluster data.
+  - Explore the Kubernetes configuration and status in etcd:
+
+  ```bash
+  curl -L "http://10.0.0.1:2379/v2/keys/registry"
+  ```
+
+  - Kubernetes stores all its data in etcd under /registry.
+
+  ```bash
+  # Top-level entries stored in etcd
+  etcdctl get /registry --prefix=true
+  etcdctl get /registry/pods --prefix=true
+  ``` 
+
+- `kube-scheduler`: watches for newly created Pods with no assigned node, and selects a node for them to run on.
+- `kube-controller-manager`: runs controller processes.
+  - A controller is a control loop that watches the shared state of the cluster through the apiserver and makes changes attempting to move the current state towards the desired state.
+  - Each controller is a separate process (logically).
+  - Some types of these controller: Node controller, Job controller, Endpoints controller, Service account & token controllers.
+- `cloud-controller-manager:` embeds cloud-specific control logic, links cluster into cloud provider's API, and separates out the components that interact with that cloud platform from components that only interact with cluster.
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.12.png)
 
-- Node components:
-  - Features: Maintaining running pods and providing the Kubernetes runtime environment.
-  - `kubelet`: an agent that makes sure that containers are running a Pod.
-  - `kube-proxy`: a network proxy, implementing part of the Kubernetes Service concept.
-    - Maintain network rules on nodes. These network rules allow network communication to Pods from network sessions inside or outside of cluster.
-    - Use the OS packet filtering layer if there is one and it's available (iptables...)
-    - Forward traffic itself.
-  - `Container runtime`: [containerd](https://containerd.io/docs/), [CRI-O](https://cri-o.io/#what-is-cri-o), and any other implementation of the [Kubernets CRI](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/container-runtime-interface.md).
+- Components of the Control plane can easily be split across multiple servers.
+  - `api-server` and `etcd`: multiple instances + perform jobs in the parallel.
+  - `scheduler` and `controller-manager`: only one instance active at a given time (active-standby).
+- Components can be deployed on the system directly or they can run as pods.
+- Useful commands:
+
+```bash
+kubectl get componentstatuses
+```
+
+### 2.2. Workload plane
+
+- Features: Maintaining running pods and providing the Kubernetes runtime environment.
+- `kubelet`:
+  - The component responsible for everything running on a worker node.
+  - Register the node it's running on by createing a Node resource in the API server.
+  - Continuously monitor the API server  for Pods that have been scheduled to the node, and start the pod's containers (via container runtime)
+  - Monitor running containers and report their status, events, and resource consumption to the API server.
+  - Running static pods without the API server: put the pod manifest into the Kubelet's manifest directory.
+- `kube-proxy`: a network proxy, implementing part of the Kubernetes Service concept.
+  - Maintain network rules on nodes. These network rules allow network communication to Pods from network sessions inside or outside of cluster.
+  - Use the OS packet filtering layer if there is one and it's available (iptables...)
+  - Forward traffic itself.
+- `Container runtime`: [containerd](https://containerd.io/docs/), [CRI-O](https://cri-o.io/#what-is-cri-o), and any other implementation of the [Kubernets CRI](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/container-runtime-interface.md).
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.13.png)
 
-- Others:
-  - Add-on components
-  - overlay network (Flannel):
-    - Read more [here](https://chunqi.li/2015/10/10/Flannel-for-Docker-Overlay-Network/)
-    - Network communicate - multihost.
-    - Flannel also uses etcd to configure the settings and store the status.
+### 2.3. Add-ons
 
-    ```bash
-    curl -L "http://10.0.0.1:2379/v2/keys/coreos.com/network/config"
-    ```
+- Check out [Add-ons](https://kubernetes.io/docs/concepts/cluster-administration/addons/).
 
-![](https://chunqi.li/images/flannel-01.png)
+### 2.4. Communications
 
-- Communications:
-  - Node to control plane:
-    - "hub-and-spoke" API pattern.
-    - All API usage from nodes (or the pods they run) terminates at the API server.
-    - Secure.
-  - Control plane to node:
-    - API server to kubelet:
-      - Connections: fetching logs, attaching to running pods, providing the kubelet's port-fowarding.
-      - HTTPS - unsafe, API server doesn't verify kubelet's serving certificate.
-    - API server to nodes, pods, and services:
-      - Plain HTTP connections.
-    - SSH tunnels: to protect the control plane to nodes communication paths.
+- Node to control plane:
+  - "hub-and-spoke" API pattern.
+  - All API usage from nodes (or the pods they run) terminates at the API server.
+  - Secure.
+- Control plane to node:
+  - API server to kubelet:
+    - Connections: fetching logs, attaching to running pods, providing the kubelet's port-fowarding.
+    - HTTPS - unsafe, API server doesn't verify kubelet's serving certificate.
+  - API server to nodes, pods, and services:
+    - Plain HTTP connections.
+  - SSH tunnels: to protect the control plane to nodes communication paths.
+
+### 2.5. How controllers cooperate
+
+- The controllers, the Scheduler, and the Kubelet are watching the API server for changes to their respective resource types.
+- Flow:
+  - kubectl send **Create Deployment resource** request to API server Deployments endpoint.
+  - Controller Manager - Deployment controller gets notification through watch API server, then sends **Create ReplicaSet** request to API server ReplicaSets endpoint.
+  - ReplicaSet controller gets notification through watch API server, then sends **Create Pod** request to API server Pods endpoint.
+  - Scheduler gets notification through watch API server, then assigns pod to node.
+  - Kubelet gets notification through watch API server, creates containers.
   
-### 2.2. Kubernetes API
+### 2.6. Kubernetes API
 
 - Both user and Kubernetes components interact with the cluster by manipulating objects through the Kubenetes APIs.
 
@@ -147,7 +185,7 @@ kubectl get ev --field-selector type=Warning
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/4.7.png)
 
-### 2.3. How Kubernetes runs an application
+### 2.7. How Kubernetes runs an application
 
 - Define application: Everything in Kubernetes is represented by an object. These objects are usually defined in one or more manifest files in either YAML or JSON format.
 - Actions:
@@ -160,9 +198,26 @@ kubectl get ev --field-selector type=Warning
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.14.png)
 
-### 2.4. Concepts
+### 2.8. Networking
 
-#### 2.4.1. Pods
+![](https://chunqi.li/images/flannel-01.png)
+
+- Each pods gets its own unique IP address and can communicate with all other pods through a flat, NAT-less network.
+- The network is set up by the system administrator or by a Container Network Interface (CNI) plugin, not by Kubernetes itself.
+- For example, CNI Flannel:
+  - Read more [here](https://chunqi.li/2015/10/10/Flannel-for-Docker-Overlay-Network/)
+  - Network communicate - multihost.
+  - Flannel also uses etcd to configure the settings and store the status.
+
+  ```bash
+  curl -L "http://10.0.0.1:2379/v2/keys/coreos.com/network/config"
+  ```
+
+![](https://chunqi.li/images/flannel-01.png)
+
+## 3. Concepts
+
+### 3.1. Pods
 
 - The **Pod** is a group of 1 or more containers and the smallest deployable unit
   in Kubernetes. Pods are always co-located and co-scheduled and run in a
@@ -191,14 +246,14 @@ kubectl get ev --field-selector type=Warning
 
 ![](imgs/pod-lifecycle.png)
 
-#### 2.4.2. Replication controller
+### 3.2. Replication controller
 
 - A term for API objects in Kubernetes that refers to pod replicas.
 - To be able to control a set of pod's behaviors.
 - Ensures that the pods, in a user-specified number, are running all the time. If some pods in the replication controller crash and terminate, the system will recreate pods with the original configurations on healthy nodes automactically, and keep a certain amount of processes continously running.
 - This concept is outdated. Kubernetes official documentation recommends: A **Deployment** that configures a ReplicaSet is now the recommended way to set up replication.
 
-#### 2.4.3. Replica Sets
+### 3.3. Replica Sets
 
 - **Replica Set** is the next-generation Replication Controller. The only between them right now is the selector support.
 - It supports a new selector that can do selection based on **filtering** according a **set of values**, whereas a RC only supports equality-based selector requirements.
@@ -207,7 +262,7 @@ kubectl get ev --field-selector type=Warning
     - e.g. "environment" == "dev"
 - This **Replica Set**, rather than the Replication Controller, is used by the Deployment object.
 
-#### 2.4.4. Deployment
+### 3.4. Deployment
 
 - A deployment declaration allows you to do app **deployments** and **updates**.
 - Deployments are intented to replace Replication Controllers.
@@ -240,7 +295,7 @@ spec:
     - containerPort: 3000
 ```
 
-#### 2.4.5. Service
+### 3.5. Service
 
 - **Pods** are very **dynamic**, they come and go on the Kubernetes cluster.
   - When using a **Replication Controller**, pods are **terminated** and created during scaling operations.
@@ -274,7 +329,7 @@ spec:
   type: NodePort
 ```
 
-#### 2.4.6. Label & Selector
+### 3.6. Label & Selector
 
 - Labels are a set of key/value pairs, which are attached to object metadata.
   - Labels are like **tags** in AWS or other cloud providers, used to tag resources.
@@ -316,7 +371,7 @@ spec:
   hardware: high-spec
 ```
 
-#### 2.4.7. Persistent Volume
+### 3.7. Persistent Volume
 
 - Volume lives with a pod across container restarts.
 - It supports the following different types of network disks:
@@ -433,7 +488,7 @@ reclaimPolicy: Delete # The reclaim policy for persistent volumes of this class
 volumeBindingMode: WaitForFirstConsumer # How volumes of this class are provisioned and bound
 ```
 
-#### 2.4.8. Secrets
+### 3.8. Secrets
 
 - Secrets provides a way in Kubernetes to distribute **sensitive data** to the pods.
 - There are still other ways container  can get its secrets: using an external vault services.
@@ -469,7 +524,7 @@ volumeBindingMode: WaitForFirstConsumer # How volumes of this class are provisio
   kubectl create -f secrets-db-secret.yml
   ```
 
-#### 2.4.9. Namespaces
+### 3.9. Namespaces
 
 - The name of a resource is a unique identifier with a namespace in the Kubernetes cluster. Using a Kubernetes namepsace could isolate namespaces for different environments in the same cluster.
 
@@ -508,7 +563,7 @@ kubectl apply -f ns-test2.yaml
   - Kubernetes doesn't provide network isolation between applications running in pods in different namespaces (by default) -> Can use the NetworkPolicy object to configure which applications in which namespaces can connect to which applications in other namespaces.
   - Should not use namespaces to split a single physical cluster into production, staging, and development environments.
 
-#### 2.4.10. Ingress
+### 3.10. Ingress
 
 - Typically, services and pods have IPs only routable by the cluster network.
 
@@ -563,7 +618,7 @@ spec:
               servicePort: 80
 ```
 
-#### 2.4.11. ConfigMap
+### 3.11. ConfigMap
 
 - Configuration parameters that are not secret -> put in **ConfigMap**.
 - The **ConfigMap** key-value pairs can then be read by the app using:
