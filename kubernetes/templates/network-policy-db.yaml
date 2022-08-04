@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: database # secure access to pods with app=database label
+  ingress:
+    - from:
+        - podSelector: # It allows incoming connections only from pods with app=webserver label
+            matchLabels:
+              app: webserver
+      ports:
+        - port: 5432

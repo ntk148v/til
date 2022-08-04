@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-security-context
+spec:
+  containers:
+    - name: main
+      image: alpine
+      command: ["/bin/sleep", "999999"]
+      securityContext:
+        runAsNonRoot: true # run as non Root
+        runAsUser: 405 # Run guestUser
+        privileged: true # privileged mode - use protected system devices or other kernel features
+        capabilities: # more fine-grained permission system through kernel capabilities
+          add:
+            - SYS_TIME
+          drop:
+            - CHOWN # not allow this container to change file ownership
+        readOnlyRootFileSystem: true # prevent processes from writing to the container's filesystem

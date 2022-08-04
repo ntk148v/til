@@ -23,6 +23,9 @@
     - [3.9. Namespaces](#39-namespaces)
     - [3.10. Ingress](#310-ingress)
     - [3.11. ConfigMap](#311-configmap)
+  - [4. Security](#4-security)
+    - [4.1. Kubernetes API Server Control access](#41-kubernetes-api-server-control-access)
+    - [4.2. Secure Pod and Container](#42-secure-pod-and-container)
 
 
 ## 1. Introduction
@@ -660,3 +663,204 @@ spec:
       configMap:
         name: app-config
 ```
+
+## 4. Security
+
+### 4.1. Kubernetes API Server Control access
+
+- API server can be configured with one or more authentication plugins (and the same is true for authorization plugins).
+
+![](https://d33wubrfki0l68.cloudfront.net/673dbafd771491a080c02c6de3fdd41b09623c90/50100/images/docs/admin/access-control-overview.svg)
+
+- An authentication plugin returns the username and group(s) of the authenticated user.
+- Kubernetes distinguishes between 2 kinds of clients connecting to the API server.
+  - Actual human (users): be managed by an external system.
+  - Pods: mechanism called *service account* - created and stored in **ServiceAcount** resources.
+- Built-in groups:
+  - *system:unauthenticated*: unauthenticated user.
+  - *system:authenticated*: user was authenticated successfully -> assign
+  - *system:serviceaccounts*: all ServiceAccounts  in the system.
+  - *system:serviceaccounts:\<namespace\>*: includes all ServiceAccounts in a specific namespace.
+- ServiceAccounts:
+  - Every Pod is associated with a ServiceAccount, which represents the identity of the app running in the pod.
+  - Token file: `/var/run/secrets/kubernetes.io/serviceaccount/token`.
+  - ServiceAccount's username: *system:serviceaccount:\<namespace\>:\<service account name\>*
+  - A default ServiceAccount is automatically created for each namespace. A pod can only use a ServiceAccount from the same namespace, if not assign use default ServiceAccount.
+
+  ```bash
+  kubectl get sa
+  kubectl create sa foo
+  # Inspecting a ServiceAccount
+  kubectl describe sa foo
+  # Inspecting the custom ServiceAccount's Secret - get from the above command
+  kubectl describe secret foo-token-asd7s
+  ```
+
+  - Use ServiceAccount to enforce mountable Secrets or to provide image pull Secrets through the ServiceAccount.
+- Authorization plugin - Role-based access control:
+  - Use user roles as the key factor in determining whether the user may perform the action or not. A subject is associated with one or more roles and each role is allowed to perform certain verbs on certain resources.
+  - RBAC authorization rules are configured through 4 resources, which can be grouped into 2 groups:
+    - **Role** and **ClusterRoles**, which specify which verbs can be performed on which resources.
+    - **RoleBinding** and **ClusterRoleBinding**, which bind the above roles to specific users, groups, or ServiceAccounts.
+  - Roles grant permissions, whereas RoleBindings bind Roles to subjects.
+  - RoleBindings and Roles are namespaced; ClusterRoles and ClusterRoleBindings aren't.
+
+  ![](https://kublr.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-13-at-10.58.16-AM.png)
+
+  - Create **Role**.
+
+  ```yaml
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    namespace: foo
+    name: service-reader
+  rules:
+    - apiGroups: [""] # "" indicates the core API group
+      resources: ["services"]
+      verbs: ["get", "list"]
+  ```
+
+  ```bash
+  kubectl create -f service-reader.yaml -n foo # foo namespace
+  kubectl create role service-reader --verb=get --verb=list --resource=services -n bar # bar namespace
+  ```
+
+  - Bind a **Role** to a **ServiceAccount**.
+
+  ```bash
+  kubectl create rolebinding test --role=service-reader --serviceaccount=foo:deafult -n foo
+  ```
+
+  ```
+  ServiceAccount:default --> RoleBinding: test --> Role: service-reader --get,list-> Services
+  ```
+
+  - A **ClusterRole** is a cluster-level resource for allowing access to non-namespaced resources or non-resource URLs or used as a common role to be bound inside individual namespace.
+
+  ```bash
+  kubectl create clusterrole pv-reader --verb=get,list --resource=persistentvolumes
+  ```
+
+  - A **ClusterRole** and **ClusterRoleBinding** must be used to grant access to cluster-level resources.
+
+  ```bash
+  kubectl create clusterrolebinding pv=test --clusterrole=pv-reader --serviceaccount=foo:default
+  # List all ClusterRoleBindings and ClusterRoles
+  kubectl get clusterrolebindings
+  kubectl get clusterroles
+  ```
+
+### 4.2. Secure Pod and Container
+
+- Each pod has its own network namespace, but certain pods (usually system pods) might need to operate in the host's default namespaces, allowing them to see and manipulate node-level resources and devices -> use `hostNetwrok` property in the pod spec.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-host-network
+spec:
+  hostNetwork: true
+  containers:
+    - name: main
+      image: alpine
+      command: ["/bin/sleep", "9999999"]
+```
+
+```bash
+kubectl exec pod-with-host-network ifconfig
+```
+
+- Binding to a host port without using the host's network namespace.
+  - **NodePort** vs **hostPort**: **hostPort** a connection to the node's port is forwarded directly to the pod running on that node, whereas with a Nodeport service, a connection to the node's port is forwarded to a randomly selected pod.
+
+  ![](https://t1.daumcdn.net/cfile/tistory/99F6953F5F1FB6001A)
+
+  ![](https://t1.daumcdn.net/cfile/tistory/999DA53E5F1FB61E1A)
+
+  - Only one instance of the pod can be scheduled to each node.
+- Container's security context.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-run-security-context
+spec:
+  containers:
+    - name: main
+      image: alpine
+      command: ["/bin/sleep", "999999"]
+      securityContext:
+        runAsNonRoot: true # run as non Root
+        runAsUser: 405 # Run guestUser
+        privileged: true # privileged mode - use protected system devices or other kernel features
+        capabilities: # more fine-grained permission system through kernel capabilities
+          add:
+            - SYS_TIME
+          drop:
+            - CHOWN # not allow this container to change file ownership
+        readOnlyRootFileSystem: true # prevent processes from writing to the container's filesystem
+```
+
+- Security-related features in pods:
+  - **PodSecurityPolicy** is a cluster-level resource, which defines what security-related features users can or can't use in their pods.
+  - **PodSecurityPolicy** resource defines things:
+    - Whether a pod can use the host's IPC, PID, or Network namespaces.
+    - Which host ports a pod can bind to.
+    - What user IDs a container can run as.
+    - Whether a pod with privileged containers can be created.
+    - Which kernel capabilities are allowed/added/dropped.
+    - What SELinux labels a container can use.
+    - Whether a container can use a writable root filesystem or not.
+    - Which filesystem groups the container can run as.
+    - Which volume types a pod can use.
+
+    ```yaml
+    apiVersion: extensions/v1betav1
+    kind: PodSecurityPolicy
+    spec:
+      allowCapabilities:
+        - SYS_TIME
+      defaultAddCapabilities:
+        - CHOWN
+      # ...
+    ```
+
+- Isolate the pod network:
+  - How the network between pods can be secured by limiting which pods can talk to which pods -> depends on which container networking plugin is used in the cluster -> If plugin supports it, configure network isolation with **NetworkPolicy** resources.
+
+  - Deny all:
+
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: default-deny
+  spec:
+    podSelector: # empty pod selector matches all pods in the same namespace
+  ```
+
+  - Allow only some pods in the namespace to connect to a server pod.
+
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: db-policy
+  spec:
+    podSelector:
+      matchLabels:
+        app: database # secure access to pods with app=database label
+    ingress:
+      - from:
+          - podSelector: # It allows incoming connections only from pods with app=webserver label
+              matchLabels:
+                app: webserver
+        ports:
+          - port: 5432
+  ```
+
+  - Isolate the network between Kubernetes namespace.
+  - Isolate using CIDR notation.
