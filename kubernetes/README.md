@@ -23,6 +23,7 @@
     - [3.9. Namespaces](#39-namespaces)
     - [3.10. Ingress](#310-ingress)
     - [3.11. ConfigMap](#311-configmap)
+    - [3.12. Liveness and Readiness](#312-liveness-and-readiness)
   - [4. Security](#4-security)
     - [4.1. Kubernetes API Server Control access](#41-kubernetes-api-server-control-access)
     - [4.2. Secure Pod and Container](#42-secure-pod-and-container)
@@ -83,7 +84,7 @@
   # Top-level entries stored in etcd
   etcdctl get /registry --prefix=true
   etcdctl get /registry/pods --prefix=true
-  ``` 
+  ```
 
 - `kube-scheduler`: watches for newly created Pods with no assigned node, and selects a node for them to run on.
 - `kube-controller-manager`: runs controller processes.
@@ -148,7 +149,7 @@ kubectl get componentstatuses
   - ReplicaSet controller gets notification through watch API server, then sends **Create Pod** request to API server Pods endpoint.
   - Scheduler gets notification through watch API server, then assigns pod to node.
   - Kubelet gets notification through watch API server, creates containers.
-  
+
 ### 2.6. Kubernetes API
 
 - Both user and Kubernetes components interact with the cluster by manipulating objects through the Kubenetes APIs.
@@ -442,7 +443,7 @@ spec:
   ```bash
   kubectl get pvc
   ```
-  
+
   - Use a persistent volume in a pod
 
   ```yaml
@@ -570,27 +571,29 @@ kubectl apply -f ns-test2.yaml
 
 - Typically, services and pods have IPs only routable by the cluster network.
 
-  ```
-    internet
-      |
-  --------
-  [ Services ]
-  ```
+```
+  internet
+    |
+----------
+[ Services ]
+```
 
-- An Ingress is a collection of rules that allow **inbound connections** to reach
-  the cluster services.
+- An Ingress is a collection of rules that allow **inbound connections** to reach the cluster services.
 
-  ```
-    internet
-      |
-  [ Ingress ]
-  ---|---|---
-  [ Services ]
-  ```
+```
+  internet
+    |
+[ Ingress ]
+---|---|---
+[ Services ]
+```
 
 - It's an alternative to the exernal **LoadBalancer** and **NodePort**:
   - Ingress allows you to **easily expose services** that need to be accessible from **outside** to the **cluster**.
-- With ingress you can run **Ingress Controller** (basically a LoadBalancer) within the Kubernetes cluster.
+- With ingress you can run your own **Ingress Controller** (basically a load balancer) within the Kubernetes cluster. There are a default ingress controller avaiable, or you can write your own ingress controller.
+- For example, Nginx Ingress Controller.
+
+![](https://docs.nginx.com/nginx-ingress-controller/img/ic-high-level.png)
 
 ![](imgs/ingress.png)
 
@@ -620,6 +623,15 @@ spec:
               serviceName: helloworld-v2
               servicePort: 80
 ```
+
+- ClusterIP, NodePort, LoadBalancer or Ingress? The full article [here](https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0).
+  
+| Type                      | Uses                                                                                                                                         |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| ClusterIP - kubectl proxy | Debug your services, or connecting to them direclty from laptop for some reason. Allowing internal traffic, display internal dashboard, etc. |
+| NodePort                  | Many downsides: can only one service/port, only use ports in range 30000-32767, deal with Node/VM IP changes...                              |
+| LoadBalancer              | No filtering, no routing, etc. Can use  Need a LoadBalancer per exposed service -> can get expensive                                         |
+| Ingress                   | There are many types of Ingress controllers. Use L7 protocol.                                                                                |
 
 ### 3.11. ConfigMap
 
@@ -663,6 +675,15 @@ spec:
       configMap:
         name: app-config
 ```
+
+### 3.12. Liveness and Readiness
+
+- The kubelet uses liveness probes to know when to restart a container - answer the true-or-false question: "Is this container alive?"
+  - If you don't specify a liveness probe, kublet will decide whether to restart the container based on the status of the container's PID 1 process.
+- The kubelet uses readiness to know when a container is ready to start accepting traffic. A Pod is considered ready when all of its containers are ready. One use of this signal is to control which Pods are used as backends for Services. When a Pod is not ready, it is removed from Service load balancers.
+  - If you don't specify a readiness probe, OpenShift will assume that the container is ready to receive traffic as soon as PID 1 has started. This is never what you want.
+- The kubelet uses startup probes to know when a container application has started. If such a probe is configured, it disables liveness and readiness checks until it succeeds, making sure those probes don't  interfere with the application startup. This can be used to adopt liveness checks on slow stasrting containers, avoiding them getting killed by the kubelet before they are up and running.
+- Check [RedHat's blog](https://developers.redhat.com/blog/2020/11/10/you-probably-need-liveness-and-readiness-probes#example_2__a_jobs_server__no_rest_api_)
 
 ## 4. Security
 
