@@ -117,7 +117,7 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
 - What:
   - Each connection to an upstream server uses a temporary, or *ephemeral* port.
 - Why:
-  - `net.ipv4.ip_local_port_range`: the start and end of the range of port values. If you see that you are running out of ports, increase the range. 
+  - `net.ipv4.ip_local_port_range`: the start and end of the range of port values. If you see that you are running out of ports, increase the range.
 - How:
   - Increase the range of ports.
 
@@ -143,3 +143,23 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
   ```
 
 ## 3. Tuning Envoy
+
+### 3.1. Concurrency
+
+- What:
+  - Envoy uses a single process with multiple *threads* architecture. A single primary thread controls various sporadic coordination tasks while some number of worker threads perform listening, filtering, and forwarding.
+  - Once a connection is accepted by a listener, the connection spends the rest of its lifetime bound to a single worker thread.
+  - Envoy does no have any blocking IO operations in the event loop, even logging is implemented in a non-blocking way.
+- Why:
+- How: Leave `--concurrency` be unset (providing one worker thread per logical core on your machine).
+
+### 3.2. SO_REUSEPORT
+
+- What:
+  - By default, Envoy disable resuse port feature.
+- Why:
+  - Multiple server sockets listen on the sameport. Each server socket corresponds to a listening thread. When the kernel TCP stack receives a client connection request (SYN), according to the TCP 4-tuple (srcIP, srcPort, destIP, destPort) hash algorithm, select a listening thread, and wake it up. The new connection is bound to the thread that is woken up. So connections are more evenly distributed across threads than non-`SO_REUSEPORT` (in this case, all worker threads share on socket).
+- How:
+  - Config `enable_reuse_port` option (version >= 1.20). If you use the older version (1.18 for example), you can check `reuse_port`:
+    - https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/listener/v3/listener.proto
+    - https://www.envoyproxy.io/docs/envoy/v1.18.3/api-v3/config/listener/v3/listener.proto
