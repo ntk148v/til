@@ -159,7 +159,20 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
   - By default, Envoy disable resuse port feature.
 - Why:
   - Multiple server sockets listen on the sameport. Each server socket corresponds to a listening thread. When the kernel TCP stack receives a client connection request (SYN), according to the TCP 4-tuple (srcIP, srcPort, destIP, destPort) hash algorithm, select a listening thread, and wake it up. The new connection is bound to the thread that is woken up. So connections are more evenly distributed across threads than non-`SO_REUSEPORT` (in this case, all worker threads share on socket).
+
+  ![](https://www.muppetwhore.net/ljarchive/LJ/298/12538c.jpg)
+
 - How:
   - Config `enable_reuse_port` option (version >= 1.20). If you use the older version (1.18 for example), you can check `reuse_port`:
     - https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/listener/v3/listener.proto
     - https://www.envoyproxy.io/docs/envoy/v1.18.3/api-v3/config/listener/v3/listener.proto
+
+### 3.3. Listen connection balancing
+
+- What:
+  - By default, there is no coordination between worker threads. This means that all worker threads independently attempt to accept connections on each listener and rely on the kernel to perform adequate balancing between threads.
+- Why:
+  - For most workloads, the kernel does a very good job of balancing incoming connections (better if you enable SO_REUSEPORT).
+  - For some workloads, particularly those that have a small number of very long lived connections, it may be desirable to have Envoy force balance connections between worker threads. Envoy allows for different types of [connection balancing](https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/listener/v3/listener.proto#envoy-v3-api-field-config-listener-v3-listener-connection-balance-config).
+- How:
+  - Config can be found [here](https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/listener/v3/listener.proto#envoy-v3-api-msg-config-listener-v3-listener-connectionbalanceconfig).
