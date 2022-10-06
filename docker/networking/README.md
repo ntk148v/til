@@ -103,8 +103,6 @@ virbr0            8000.52540011765c   yes             virbr0-nic
 
 ### 3.2. User-defined bridge network
 
-![](https://docs.docker.com/engine/tutorials/bridge2.png)
-
 - User can create their own docker network.
 - Create a bridge network:
 
@@ -326,7 +324,6 @@ RETURN     all  --  0.0.0.0/0            0.0.0.0/0
 
 ### 4.1. Port forwarding
 
-
 - docker0 - default bridge network
 
 ```shell
@@ -337,11 +334,10 @@ ebc10f5c8f92   host      host      local
 4fcd98f9753c   none      null      local
 ```
 
-
 - Docker network and iptables.
 
 ```shell
-$ docker run -p 5000:5000 --rm -it python:4.7-slim python3 -m http.server 5000 --bind=0.0.0.0
+$ docker run -p 5000:5000 --rm -it python:3.7-slim python3 -m http.server 5000 --bind=0.0.0.0
 $ sudo iptables -t nat -L -n
 Chain PREROUTING (policy ACCEPT)
 target     prot opt source               destination
@@ -396,7 +392,7 @@ Serving HTTP on 0.0.0.0 port 5000 (http://0.0.0.0:5000/) ...
 ### 4.2. Host networking
 
 ```shell
-$ docker run --net=host --rm -it python:4.7-slim python3 -m http.server 5000 --bind=0.0.0.0
+$ docker run --net=host --rm -it python:3.7-slim python3 -m http.server 5000 --bind=0.0.0.0
 $ sudo iptables -t nat -L -n                                                                                                                                                                        ~
 Chain PREROUTING (policy ACCEPT)
 target     prot opt source               destination
