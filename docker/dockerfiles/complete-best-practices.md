@@ -6,7 +6,7 @@
     - [0.2. Giới thiệu về build context](#02-giới-thiệu-về-build-context)
   - [1. Best practices to reduce image size and speed up build time](#1-best-practices-to-reduce-image-size-and-speed-up-build-time)
     - [1.1. Chọn đúng base image](#11-chọn-đúng-base-image)
-    - [1.2. Loại bỏ file không cần thiết bằng .dockerignore](#12-loại-bỏ-file-không-cần-thiết-bằng-dockerignore)
+    - [1.2. Loại bỏ file không cần thiết](#12-loại-bỏ-file-không-cần-thiết)
     - [1.3. Sử dụng multi-stage builds](#13-sử-dụng-multi-stage-builds)
     - [1.3. Loại bỏ/không cài đặt các gói không cần thiết và caching](#13-loại-bỏkhông-cài-đặt-các-gói-không-cần-thiết-và-caching)
     - [1.4. Tách các ứng dụng](#14-tách-các-ứng-dụng)
@@ -36,6 +36,8 @@ Source:
 - <https://gist.github.com/StevenACoffman/41fee08e8782b411a4a26b9700ad7af5>
 
 ## 0. Ôn luyện
+
+Trước khi bắt đầu với những quy chuẩn, người đọc cần nắm được kiến thức tổng quát về Docker build.
 
 ### 0.1. Giới thiệu về Docker image và Dockerfile
 
@@ -83,21 +85,22 @@ Mọi practices viết Dockerfile đều để đạt được mục tiêu cuố
 - Thông thường các bạn nên lựa chọn image do cộng Docker build sẵn làm base image. Các base image này đã được tối ưu nhất. Ví dụ, ứng dụng yêu cầu chạy ứng dụng Nginx, thay vì tự build image từ base ubuntu, sau đó cài đặt nginx và các gói liên quan, bạn có thể sử dụng image [nginx](https://hub.docker.com/_/nginx).
 - Nếu bắt buộc phải sử dụng một base image tổng quan, có 2 lựa chọn: [alpine](https://hub.docker.com/_/alpine) và [debian-slim](https://hub.docker.com/_/debian).
 - Alpine Linux là một distro linux dựa trên musl và BusyBox, được phát triển chú trọng về đơn giản, bảo mật và hiệu quả tài nguyên. Tuy nhiên Alpine có một số hạn chế:
-  - Alpine suwr dujng musl libc, trong khi debian sử dụng GNU libc, do đó tương thích là một vấn đề cần lưu ý khi sử dụng Alpine.
+  - Alpine sử dụng musl libc, trong khi debian sử dụng GNU libc, do đó tương thích là một vấn đề cần lưu ý khi sử dụng Alpine.
   - Cộng đồng phát triển của alpine không lớn như debian nên các phần mềm trên alpine có thể bị cập nhật phiên bản chậm hơn hoặc thiếu một số phần mềm.
-- Do vậy, base image alpine thường được sử dụng với các dự án microservice, khi có số lượng service lớn, nhằm tối ưu dung lượng. Còn đối với những dự án khi số lượng service nhỏ (<10) thì xây dựng Dockerfile dựa trên debian-slim vẫn dễ dàng và an toàn hơn.
+- Do vậy, **base image alpine thường được sử dụng với các dự án microservice, khi có số lượng service lớn**, nhằm tối ưu dung lượng. Còn đối với **những dự án khi số lượng service nhỏ (<10) thì xây dựng Dockerfile dựa trên debian-slim** vẫn dễ dàng và an toàn hơn.
 
-### 1.2. Loại bỏ file không cần thiết bằng .dockerignore
+### 1.2. Loại bỏ file không cần thiết
 
 - Không phải mọi file trong file đều cần thiết cho quá trình build image. Ví dụ, thư mục `.git` rõ ràng là không cần thiết nếu như trong quá trình build không dùng dến tính năng version control.
-- Do vậy, bạn hoàn toàn có thể bỏ quả các file này bằng các sử dụng [.dockerignore file](https://docs.docker.com/engine/reference/builder/#dockerignore-file).
+- Do vậy, bạn hoàn toàn có thể bỏ quả các file này bằng cách sử dụng [.dockerignore file](https://docs.docker.com/engine/reference/builder/#dockerignore-file).
+- Ngoài ra, có thể chủ động chỉ định file sử dụng trong đặc tả `COPY`, thay vì `COPY .` (copy all).
 
 ### 1.3. Sử dụng multi-stage builds
 
-- Multi-stage builds là một tính năng mới được giới thiệu từ Docker v17.05. Multi-stage builds rất hữu ích khi bạn muốn tối ưu hóa Dockerfile của mình mà vẫn giữ cho nó vừa dễ đọc, vừa dễ maintain.
+- Multi-stage builds là một tính năng mới được giới thiệu từ Docker v17.05. Multi-stage builds rất hữu ích khi bạn muốn tối ưu hóa Dockerfile mà vẫn giữ cho nó vừa dễ đọc, vừa dễ maintain.
 - Chương trình thường chỉ cần 1 hoặc vài file thực thi và cấu hình. Để build các file thực thi đó, cần cài đặt môi trường, gói, module,... tuy nhiên, khi chạy chương trình lại không cần môi trường này. Với multi-stage builds, bạn có thể cô lập môi trường build trong một stage, môi trường chạy chương trình trong stage khác, nhờ vậy, kích thước image sẽ nhỏ hơn, nhưng không làm ảnh hưởng đến việc thực thi chương trình.
-- Ngoài ra, khi sử dụng multi-stage builds, bạn cũng có thể giảm thiểu số lượng layers bằng cách dựa vào build cache.
-- Multi-stage build thường được sử dụng với dự án sử dụng Golang, Java, React, Angular,... - có bước build. Ví dụ, Dockerfile cho ứng dụng Golang:
+- Ngoài ra, khi sử dụng multi-stage builds, bạn cũng có thể giảm thiểu số lượng layers bằng cách dựa vào build cache - chi tiết sẽ được nói đến trong phần Tận dụng build cache phía dưới.
+- Multi-stage builds thường được sử dụng với dự án sử dụng Golang, Java, React, Angular,... - các dự án có bước build. Ví dụ, Dockerfile cho ứng dụng Golang:
 
 ```Dockerfile
 # syntax=docker/dockerfile:1
@@ -131,23 +134,23 @@ CMD ["--help"]
 
 ### 1.3. Loại bỏ/không cài đặt các gói không cần thiết và caching
 
-- Đây có vẻ là một điều đương nhiên, nhưng không phải ai cũng thực sự tuân thủ. Người dùng thường có xu hướng cài đặt mọi thứ có thể phải dùng vào trong Dockerfile: text editor, công cụ troubleshoot network, công cụ debug... Điều này làm tăng kích thước của image lên đáng kể.
+- Đây có vẻ là một điều đương nhiên, nhưng không phải ai cũng thực sự tuân thủ. Người dùng thường có xu hướng cài đặt mọi thứ có thể phải dùng vào trong Dockerfile: text editor, công cụ troubleshoot, debug... Điều này làm tăng kích thước của image lên đáng kể.
 
 ![](https://www.docker.com/wp-content/uploads/2019/07/a1b36f64-1a30-45bf-8fcd-4f88437c189e.jpg)
 
-- Bên cạnh đó, package manager cache cũng cần được xóa. Trong trường hợp Docker image, cache không mang nhiều ý nghĩa.
+- Bên cạnh đó, package manager cache cũng cần được xóa. Cache là bộ nhớ tạm lưu trữ tạm thời được sử dụng để tăng tốc độ truy cập dữ liệu thường xuyên. Tuy nhiên, trong Docker image, cache không có nhiều ý nghĩa.
 
 ![](https://www.docker.com/wp-content/uploads/2019/07/363961a4-005e-46fc-963b-f7b690be12ef.jpg)
 
 ### 1.4. Tách các ứng dụng
 
-- Một lỗi khác hay mắc phải đó chính là cố gắng chạy nhiều ứng dụng trong cùng một container, giống như một máy ảo. Ví dụ, cài đặt supervisorctl trong image để quản lý một vài ứng dụng khác.
-- Mỗi container nên chỉ thực thi một chương trình duy nhất. Chia nhỏ các tác vụ và chạy các container khác nhau cho mỗi tác vụ, như vậy kích thước của image sẽ nhỏ hơn, build cũng nhanh chóng hơn (vì có thể thực hiện đồng thời nhiều job build).
-- Ngoài ra, trong quá trình chạy container, nếu một container lỗi, không làm ảnh hưởng đến toàn bộ; việc mở rộng cũng dễ dàng hơn.
+- Một lỗi khác hay mắc phải đó chính là cố gắng chạy nhiều ứng dụng trong cùng một container, giống như một máy ảo. Ví dụ, cài đặt `supervisorctl` trong image để quản lý một vài ứng dụng khác.
+- Mỗi container chỉ nên thực thi một chương trình duy nhất. Chia nhỏ các tác vụ và chạy các container khác nhau cho mỗi tác vụ, như vậy kích thước của image sẽ nhỏ hơn, build cũng nhanh chóng hơn. Chúng ta có thể thực hiện chạy build nhiều image đồng thời, nếu các image có chung phần base, cache sẽ được sử dụng.
+- Mở rộng hơn nữa, trong quá trình chạy container, chia nhỏ các tác vụ thành các container cũng giúp việc mở rộng theo chiều ngang (scale out/in) dễ dàng hơn.
 
 ### 1.5. Giảm thiểu tối đa số lượng layers
 
-- Như đã nói ở phần 0, Docker image được cấu thành từ nhiều layers. Các layer không phải là **free**. Chúng chiếm dụng không gian và khi layer xếp chồng lên nhau ngày càng nhiều thì kích thước image cuối cùng của bạn cũng tăng lên. Nguyên nhân là do hệ thống sẽ lưu giữ tất cả các thay đổi giữa các đặc tả Dockerfile khác nhau. Do vậy. giảm số lượng layer là điều đầu tiên cần nghĩ khi muốn giảm kích thước images.
+- Như đã nói ở phần 0, Docker image được cấu thành từ nhiều layers. Các layer không phải là *free*. Chúng chiếm dụng không gian và khi layer xếp chồng lên nhau ngày càng nhiều thì kích thước image cuối cùng của bạn cũng tăng lên. Nguyên nhân là do hệ thống sẽ lưu giữ tất cả các thay đổi giữa các đặc tả Dockerfile khác nhau. Do vậy. giảm số lượng layer là điều cần làm khi muốn giảm kích thước images.
 - Các đặc tả `RUN`, `COPY`, `ADD` tạo ra layer vì chúng thay đổi file system. Các đặc tả khác tạo ra các layer tạm, không làm ảnh hưởng đến kích thước của image.
   - Lấy ví dụ một Dockerfile đơn giản như sau:
   
@@ -192,7 +195,7 @@ CMD ["--help"]
       rm -rf /var/lib/apt/lists/*
   ```
 
-- Nếu có thể, hãy sử dụng multi-stage build.
+- Nếu có thể, hãy sử dụng multi-stage builds.
 
 ### 1.6. Tận dụng build cache
 
@@ -201,11 +204,11 @@ CMD ["--help"]
   - Đối với đặc tả `ADD` và `COPY`, nội dung của file(s) được lấy ra, và dùng để tính toán ra một checksum tương ứng. Trong quá trình cache lookup, Docker so sánh checksum này với checksum của image trong cache. Nếu có bất kỳ thay đổi nào trong file(s), checksum thay đổi, đồng nghĩa với việc cache bị invalidated.
   - Ngược lại, đối với các đặc tả khác, chỉ command string được sử dụng để so sánh.
 - Từ đó, chúng ta sẽ có một số cách Sau đây để tận dụng build cache.
-- Sắp xếp để tận dụng được cache: lấy ví dụ như sau, thay vì COPY files trước khi thực hiện update và install, hãy chuyển COPY ra sau. Bởi vì files thường sẽ bị thay đổi, do vậy cache tính là invalidated do vậy tính từ COPY, mỗi đặc tả đều cần tạo image mới. Trong khi đó, nếu thực hiện COPY ra sau, bạn có thể tận dụng image đã được update và install ở trong cache.
+- Sắp xếp để tận dụng được cache: lấy ví dụ như sau, thay vì `COPY` files trước khi thực hiện update và install, hãy chuyển `COPY` ra sau. Bởi vì files thường sẽ bị thay đổi, do vậy cache tính là invalidated do vậy tính từ C`OPY, mỗi đặc tả đều cần tạo image mới. Trong khi đó, nếu thực hiện `COPY` ra sau, bạn có thể tận dụng image đã được update và install ở trong cache.
 
 ![](https://www.docker.com/wp-content/uploads/2019/07/ef41db8f-fe5e-4a78-940a-6a929db7929d-1.jpg)
 
-- Thay vì COPY tất cả, hãy chỉ định rõ file cần COPY trong đặc tả. Như vậy, thay đổi của file chỉ ảnh hưởng đến image layer đó. Bạn có thể để file thường thay đổi ở phía sau để tận dụng tối đa cache.
+- Thay vì copy tất cả files trong build context vào trong image, hãy chỉ định rõ file cần copy đặc tả `COPY`. Như vậy, loại bỏ các file không cần thiết mà thường xuyên thay đổi, làm thay đổi checksum. Bạn có thể để file thường thay đổi (dĩ nhiên là cần thiết cho quá trình build) ở phía sau để tận dụng tối đa cache.
 
 ![](https://www.docker.com/wp-content/uploads/2019/07/0c1d0c4e-406c-468c-b6ba-b71ac68b9c84.jpg)
 
@@ -219,7 +222,7 @@ CMD ["--help"]
 
 ### 2.2. Sử dụng tag cụ thể
 
-- Người dùng thường sử dụng tag latest trong Dockerfile. Latest chỉ mang tính chất tương đối ở thời điểm build, ví dụ, khi build image openjdk 7 là latest, nhưng thời gian sau, openjdk 11 mới là latest, ứng dụng có thể không còn tương thích. Người dùng sẽ không biết đâu version của base image, gây khó khăn cho việc troubleshooting.
+- Người dùng thường sử dụng tag latest trong Dockerfile. Latest chỉ mang tính chất tương đối ở thời điểm build, ví dụ, khi build image openjdk 7 là latest, nhưng thời gian sau, openjdk 11 mới là latest, ứng dụng có thể không còn tương thích. Người dùng sẽ không biết đâu version của base image, gây khó khăn cho việc troubleshooting nếu có lỗi xảy ra.
 - Thay vì thế, hãy dùng tag cụ thể trong Dockerfile.
 
 ![](https://www.docker.com/wp-content/uploads/2019/07/9d991da9-bdb9-4108-8b36-296a5a3772aa.jpg)
@@ -284,14 +287,14 @@ ENTRYPOINT /app/my-app-entrypoint.sh
 
 #### 3.3.2. Sử dụng trusted base images
 
-- Luôn sử dụng official images ở trused repositories.
+- Luôn sử dụng official images ở trused repositories, đây là những image đã được tối ưu hóa về kích thước cũng như cập nhật thường xuyên các bản vá bảo mật.
 
 #### 3.3.3. Thường xuyên cập nhật images
 
 - Thường xuyên cập nhật images để cập nhật các bản vá fix lỗi bảo mật.
-- Chiến lược phiên bản:
+- Do vậy, bạn cần:
   - Sử dụng phiên bản stable hoặc long-term support (LTS).
-  - Cập nhật base image lên phiên bản mới trước khi EOL: Nếu bạn sử dụng ubuntu:16.04 làm base image, hãy cập nhật lên ubuntu:22.04.
+  - Cập nhật base image lên phiên bản mới trước khi EOL: Nếu bạn sử dụng ubuntu:18.04 (đã EOL) làm base image tại thời điểm 2022, cập nhật lên phiên bản ubuntu còn được hỗ trợ.
   - Định kỳ build lại image để cập nhật phiên bản mới nhất của các gói.
 
 ### 3.4. Ngăn chặn rò rỉ dữ liệu mật
@@ -303,4 +306,7 @@ ENTRYPOINT /app/my-app-entrypoint.sh
 
 #### 3.4.2. ADD, COPY
 
-- Cả ADD và COPY cung cấp cùng một chức năng, tuy nhiên ADD cho phép thêm files dùng URL hoặc giải nén tar file. Nếu không cần dùng các tính năng này, luôn sử dụng COPY.
+- `ADD` và `COPY` đều cho phép copy local files vào trong Docker image. Bên cạnh đó, `ADD` còn nhận đầu vào là remote URL hoặc file nén.
+- Luôn sử dụng `COPY` thay vì `ADD` để tránh các vấn đề bảo mật tiềm ẩn:
+  - `ADD` cho phép download file vào trong Docker image bằng remote URL, có thể xảy ra khả năng tấn công man-in-the-middle: thay đổi nội dung file được download về. Bên cạnh đó, nguồn gốc và tính xác thực remote URL cũng phải được kiểm tra.
+  - Nếu dùng đầu vào là file nén, `ADD` tự động giải nén file này, vẫn có khả năng xảy ra tấn công sử dụng file nén (zip bombs, [zip slip vulnerabilities](https://snyk.io/research/zip-slip-vulnerability?utm_source=dzone&utm_medium=content&utm_campaign=content_promo&utm_content=cs_docker_security_10)).
