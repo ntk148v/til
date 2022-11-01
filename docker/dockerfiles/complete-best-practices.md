@@ -1,32 +1,32 @@
 # A complete guide for writing Dockerfile
 
 - [A complete guide for writing Dockerfile](#a-complete-guide-for-writing-dockerfile)
-  - [0. Ôn luyện](#0-ôn-luyện)
-    - [0.1. Giới thiệu về Docker image và Dockerfile](#01-giới-thiệu-về-docker-image-và-dockerfile)
-    - [0.2. Giới thiệu về build context](#02-giới-thiệu-về-build-context)
-  - [1. Best practices to reduce image size and speed up build time](#1-best-practices-to-reduce-image-size-and-speed-up-build-time)
-    - [1.1. Chọn đúng base image](#11-chọn-đúng-base-image)
-    - [1.2. Loại bỏ file không cần thiết](#12-loại-bỏ-file-không-cần-thiết)
-    - [1.3. Sử dụng multi-stage builds](#13-sử-dụng-multi-stage-builds)
-    - [1.3. Loại bỏ/không cài đặt các gói không cần thiết và caching](#13-loại-bỏkhông-cài-đặt-các-gói-không-cần-thiết-và-caching)
-    - [1.4. Tách các ứng dụng](#14-tách-các-ứng-dụng)
-    - [1.5. Giảm thiểu tối đa số lượng layers](#15-giảm-thiểu-tối-đa-số-lượng-layers)
-    - [1.6. Tận dụng build cache](#16-tận-dụng-build-cache)
-  - [2. Best practices for maintainability](#2-best-practices-for-maintainability)
-    - [2.1. Luôn sử dụng official image nếu có thể](#21-luôn-sử-dụng-official-image-nếu-có-thể)
-    - [2.2. Sử dụng tag cụ thể](#22-sử-dụng-tag-cụ-thể)
-  - [3. Best practices for container security](#3-best-practices-for-container-security)
-    - [3.1. Sử dụng build-args thay vì environment](#31-sử-dụng-build-args-thay-vì-environment)
-    - [3.2. Tránh cấp các đặc quyền không cần thiết](#32-tránh-cấp-các-đặc-quyền-không-cần-thiết)
-      - [3.2.1. Rootless containers](#321-rootless-containers)
-      - [3.2.2. Các file thực thi thuộc sở hữu của root và không cấp quyền sửa đổi](#322-các-file-thực-thi-thuộc-sở-hữu-của-root-và-không-cấp-quyền-sửa-đổi)
-    - [3.3. Giảm thiểu attack surface](#33-giảm-thiểu-attack-surface)
-      - [3.3.1. Multi-stage builds](#331-multi-stage-builds)
-      - [3.3.2. Sử dụng trusted base images](#332-sử-dụng-trusted-base-images)
-      - [3.3.3. Thường xuyên cập nhật images](#333-thường-xuyên-cập-nhật-images)
-    - [3.4. Ngăn chặn rò rỉ dữ liệu mật](#34-ngăn-chặn-rò-rỉ-dữ-liệu-mật)
-      - [3.4.1. Credentials và confidentiality](#341-credentials-và-confidentiality)
-      - [3.4.2. ADD, COPY](#342-add-copy)
+  - [1. Ôn luyện](#1-ôn-luyện)
+    - [1.1. Giới thiệu về Docker image và Dockerfile](#11-giới-thiệu-về-docker-image-và-dockerfile)
+    - [1.2. Giới thiệu về build context](#12-giới-thiệu-về-build-context)
+  - [2. Best practices to reduce image size and speed up build time](#2-best-practices-to-reduce-image-size-and-speed-up-build-time)
+    - [2.1. Chọn đúng base image](#21-chọn-đúng-base-image)
+    - [2.2. Loại bỏ file không cần thiết](#22-loại-bỏ-file-không-cần-thiết)
+    - [2.3. Sử dụng multi-stage builds](#23-sử-dụng-multi-stage-builds)
+    - [2.4. Loại bỏ/không cài đặt các gói không cần thiết và caching](#24-loại-bỏkhông-cài-đặt-các-gói-không-cần-thiết-và-caching)
+    - [2.5. Tách các ứng dụng](#25-tách-các-ứng-dụng)
+    - [2.6. Giảm thiểu tối đa số lượng layers](#26-giảm-thiểu-tối-đa-số-lượng-layers)
+    - [2.7. Tận dụng build cache](#27-tận-dụng-build-cache)
+  - [3. Best practices for maintainability](#3-best-practices-for-maintainability)
+    - [3.1. Luôn sử dụng official image nếu có thể](#31-luôn-sử-dụng-official-image-nếu-có-thể)
+    - [3.2. Sử dụng tag cụ thể](#32-sử-dụng-tag-cụ-thể)
+  - [4. Best practices for container security](#4-best-practices-for-container-security)
+    - [4.1. Sử dụng build-args thay vì environment](#41-sử-dụng-build-args-thay-vì-environment)
+    - [4.2. Tránh cấp các đặc quyền không cần thiết](#42-tránh-cấp-các-đặc-quyền-không-cần-thiết)
+      - [4.2.1. Rootless containers](#421-rootless-containers)
+      - [4.2.2. Các file thực thi thuộc sở hữu của root và không cấp quyền sửa đổi](#422-các-file-thực-thi-thuộc-sở-hữu-của-root-và-không-cấp-quyền-sửa-đổi)
+    - [4.3. Giảm thiểu attack surface](#43-giảm-thiểu-attack-surface)
+      - [4.3.1. Multi-stage builds](#431-multi-stage-builds)
+      - [4.3.2. Sử dụng trusted base images](#432-sử-dụng-trusted-base-images)
+      - [4.3.3. Thường xuyên cập nhật images](#433-thường-xuyên-cập-nhật-images)
+    - [4.4. Ngăn chặn rò rỉ dữ liệu mật](#44-ngăn-chặn-rò-rỉ-dữ-liệu-mật)
+      - [4.4.1. Credentials và confidentiality](#441-credentials-và-confidentiality)
+      - [4.4.2. ADD, COPY](#442-add-copy)
 
 Source:
 
@@ -35,11 +35,11 @@ Source:
 - <https://www.docker.com/blog/intro-guide-to-dockerfile-best-practices/>
 - <https://gist.github.com/StevenACoffman/41fee08e8782b411a4a26b9700ad7af5>
 
-## 0. Ôn luyện
+## 1. Ôn luyện
 
 Trước khi bắt đầu với những quy chuẩn, người đọc cần nắm được kiến thức tổng quát về Docker build.
 
-### 0.1. Giới thiệu về Docker image và Dockerfile
+### 1.1. Giới thiệu về Docker image và Dockerfile
 
 - Dockerfile là file dạng text bao gồm các dòng đặc tả về Docker image, tuân theo định dạng [Dockerfile](https://docs.docker.com/engine/reference/builder/).
 - Docker thực hiện tự động build images bằng cách đọc các đặc tả `Dockerfile`.
@@ -57,7 +57,7 @@ RUN apt-get install -y curl  # One layer
 
 - Khi chạy một image thành container, bản chất là thêm một *read-write layer* (container layer) ở trên các image layers. Mọi thay đổi ở container (ghi file mới, thay đổi file, xóa file,...) đều được ghi vào container layer.
 
-### 0.2. Giới thiệu về build context
+### 1.2. Giới thiệu về build context
 
 - Thư mục chạy `docker build` command gọi là *build context*. Mặc định, đây là thư mực chứa Dockerfile, tuy nhiên có thể chỉ định đường dẫn của Dockerfile bằng option `-f`.
 - Build context bao gồm tất cả nội dung của các file và thư mục con của thư mục hiện tại, được gửi về Docker daemon trong quá trình build.
@@ -72,14 +72,14 @@ RUN echo "hello world"
 EOF
 ```
 
-## 1. Best practices to reduce image size and speed up build time
+## 2. Best practices to reduce image size and speed up build time
 
 Mọi practices viết Dockerfile đều để đạt được mục tiêu cuối cùng là tối ưu hóa quá trình build image. Điều đó có thể đạt được bằng cách:
 
 - Giảm kích thước của image.
 - Tăng tốc độ build image.
 
-### 1.1. Chọn đúng base image
+### 2.1. Chọn đúng base image
 
 - Lựa chọn base image phù hợp là bước đầu tiên trong quá trình tối ưu hóa build phase. Việc lựa chọn base image phụ thuộc vào nhiều điều kiện như loại ứng dụng bạn mong muốn chạy trên container.
 - Thông thường các bạn nên lựa chọn image do cộng Docker build sẵn làm base image. Các base image này đã được tối ưu nhất. Ví dụ, ứng dụng yêu cầu chạy ứng dụng Nginx, thay vì tự build image từ base ubuntu, sau đó cài đặt nginx và các gói liên quan, bạn có thể sử dụng image [nginx](https://hub.docker.com/_/nginx).
@@ -89,13 +89,13 @@ Mọi practices viết Dockerfile đều để đạt được mục tiêu cuố
   - Cộng đồng phát triển của alpine không lớn như debian nên các phần mềm trên alpine có thể bị cập nhật phiên bản chậm hơn hoặc thiếu một số phần mềm.
 - Do vậy, **base image alpine thường được sử dụng với các dự án microservice, khi có số lượng service lớn**, nhằm tối ưu dung lượng. Còn đối với **những dự án khi số lượng service nhỏ (<10) thì xây dựng Dockerfile dựa trên debian-slim** vẫn dễ dàng và an toàn hơn.
 
-### 1.2. Loại bỏ file không cần thiết
+### 2.2. Loại bỏ file không cần thiết
 
 - Không phải mọi file trong file đều cần thiết cho quá trình build image. Ví dụ, thư mục `.git` rõ ràng là không cần thiết nếu như trong quá trình build không dùng dến tính năng version control.
 - Do vậy, bạn hoàn toàn có thể bỏ quả các file này bằng cách sử dụng [.dockerignore file](https://docs.docker.com/engine/reference/builder/#dockerignore-file).
 - Ngoài ra, có thể chủ động chỉ định file sử dụng trong đặc tả `COPY`, thay vì `COPY .` (copy all).
 
-### 1.3. Sử dụng multi-stage builds
+### 2.3. Sử dụng multi-stage builds
 
 - Multi-stage builds là một tính năng mới được giới thiệu từ Docker v17.05. Multi-stage builds rất hữu ích khi bạn muốn tối ưu hóa Dockerfile mà vẫn giữ cho nó vừa dễ đọc, vừa dễ maintain.
 - Chương trình thường chỉ cần 1 hoặc vài file thực thi và cấu hình. Để build các file thực thi đó, cần cài đặt môi trường, gói, module,... tuy nhiên, khi chạy chương trình lại không cần môi trường này. Với multi-stage builds, bạn có thể cô lập môi trường build trong một stage, môi trường chạy chương trình trong stage khác, nhờ vậy, kích thước image sẽ nhỏ hơn, nhưng không làm ảnh hưởng đến việc thực thi chương trình.
@@ -132,7 +132,7 @@ CMD ["--help"]
 
 - Bạn có thể tham khảo thêm [NodeJS application example](https://github.com/Coffee-WIP/coffeewip-website/blob/master/Dockerfile) và [Python Django multi-stage build](https://github.com/Coffee-WIP/coffeewip-website/blob/master/Dockerfile).
 
-### 1.3. Loại bỏ/không cài đặt các gói không cần thiết và caching
+### 2.4. Loại bỏ/không cài đặt các gói không cần thiết và caching
 
 - Đây có vẻ là một điều đương nhiên, nhưng không phải ai cũng thực sự tuân thủ. Người dùng thường có xu hướng cài đặt mọi thứ có thể phải dùng vào trong Dockerfile: text editor, công cụ troubleshoot, debug... Điều này làm tăng kích thước của image lên đáng kể.
 
@@ -142,13 +142,13 @@ CMD ["--help"]
 
 ![](https://www.docker.com/wp-content/uploads/2019/07/363961a4-005e-46fc-963b-f7b690be12ef.jpg)
 
-### 1.4. Tách các ứng dụng
+### 2.5. Tách các ứng dụng
 
 - Một lỗi khác hay mắc phải đó chính là cố gắng chạy nhiều ứng dụng trong cùng một container, giống như một máy ảo. Ví dụ, cài đặt `supervisorctl` trong image để quản lý một vài ứng dụng khác.
 - Mỗi container chỉ nên thực thi một chương trình duy nhất. Chia nhỏ các tác vụ và chạy các container khác nhau cho mỗi tác vụ, như vậy kích thước của image sẽ nhỏ hơn, build cũng nhanh chóng hơn. Chúng ta có thể thực hiện chạy build nhiều image đồng thời, nếu các image có chung phần base, cache sẽ được sử dụng.
 - Mở rộng hơn nữa, trong quá trình chạy container, chia nhỏ các tác vụ thành các container cũng giúp việc mở rộng theo chiều ngang (scale out/in) dễ dàng hơn.
 
-### 1.5. Giảm thiểu tối đa số lượng layers
+### 2.6. Giảm thiểu tối đa số lượng layers
 
 - Như đã nói ở phần 0, Docker image được cấu thành từ nhiều layers. Các layer không phải là *free*. Chúng chiếm dụng không gian và khi layer xếp chồng lên nhau ngày càng nhiều thì kích thước image cuối cùng của bạn cũng tăng lên. Nguyên nhân là do hệ thống sẽ lưu giữ tất cả các thay đổi giữa các đặc tả Dockerfile khác nhau. Do vậy. giảm số lượng layer là điều cần làm khi muốn giảm kích thước images.
 - Các đặc tả `RUN`, `COPY`, `ADD` tạo ra layer vì chúng thay đổi file system. Các đặc tả khác tạo ra các layer tạm, không làm ảnh hưởng đến kích thước của image.
@@ -197,14 +197,14 @@ CMD ["--help"]
 
 - Nếu có thể, hãy sử dụng multi-stage builds.
 
-### 1.6. Tận dụng build cache
+### 2.7. Tận dụng build cache
 
 - Khi build image, Docker thực thi từng dòng đặc tả trong Dockerfile, theo thứ tự xuất hiện. Tuy nhiên, thay vì tạo ngay một image mới, Docker kiểm tra xem có image nào có thể dùng được trong cache. Quá trình được thực hiện như sau:
   - Kiểm tra parent image, nếu image này đã thỏa mãn, ở trong cache, tiếp tục kiểm tra các child images xem có image nào trong đó thực thi đặc tả đang cần tìm cache. Nếu không có, cache tính là invalidated, Docker tạo image mới như bình thường.
   - Đối với đặc tả `ADD` và `COPY`, nội dung của file(s) được lấy ra, và dùng để tính toán ra một checksum tương ứng. Trong quá trình cache lookup, Docker so sánh checksum này với checksum của image trong cache. Nếu có bất kỳ thay đổi nào trong file(s), checksum thay đổi, đồng nghĩa với việc cache bị invalidated.
   - Ngược lại, đối với các đặc tả khác, chỉ command string được sử dụng để so sánh.
 - Từ đó, chúng ta sẽ có một số cách Sau đây để tận dụng build cache.
-- Sắp xếp để tận dụng được cache: lấy ví dụ như sau, thay vì `COPY` files trước khi thực hiện update và install, hãy chuyển `COPY` ra sau. Bởi vì files thường sẽ bị thay đổi, do vậy cache tính là invalidated do vậy tính từ C`OPY, mỗi đặc tả đều cần tạo image mới. Trong khi đó, nếu thực hiện `COPY` ra sau, bạn có thể tận dụng image đã được update và install ở trong cache.
+- Sắp xếp để tận dụng được cache: lấy ví dụ như sau, thay vì `COPY` files trước khi thực hiện update và install, hãy chuyển `COPY` ra sau. Bởi vì files thường sẽ bị thay đổi, do vậy cache tính là invalidated do vậy tính từ `COPY`, mỗi đặc tả đều cần tạo image mới. Trong khi đó, nếu thực hiện `COPY` ra sau, bạn có thể tận dụng image đã được update và install ở trong cache.
 
 ![](https://www.docker.com/wp-content/uploads/2019/07/ef41db8f-fe5e-4a78-940a-6a929db7929d-1.jpg)
 
@@ -214,22 +214,22 @@ CMD ["--help"]
 
 - Tận dụng tối đa các cachable unit như RUN update và install.
 
-## 2. Best practices for maintainability
+## 3. Best practices for maintainability
 
-### 2.1. Luôn sử dụng official image nếu có thể
+### 3.1. Luôn sử dụng official image nếu có thể
 
 - Như đã nói phía trên, official image là những image được tối ưu hóa. Hãy sử dụng các image này làm base image nếu có thể.
 
-### 2.2. Sử dụng tag cụ thể
+### 3.2. Sử dụng tag cụ thể
 
 - Người dùng thường sử dụng tag latest trong Dockerfile. Latest chỉ mang tính chất tương đối ở thời điểm build, ví dụ, khi build image openjdk 7 là latest, nhưng thời gian sau, openjdk 11 mới là latest, ứng dụng có thể không còn tương thích. Người dùng sẽ không biết đâu version của base image, gây khó khăn cho việc troubleshooting nếu có lỗi xảy ra.
 - Thay vì thế, hãy dùng tag cụ thể trong Dockerfile.
 
 ![](https://www.docker.com/wp-content/uploads/2019/07/9d991da9-bdb9-4108-8b36-296a5a3772aa.jpg)
 
-## 3. Best practices for container security
+## 4. Best practices for container security
 
-### 3.1. Sử dụng build-args thay vì environment
+### 4.1. Sử dụng build-args thay vì environment
 
 - Trong môi trường kết nối bị kiểm soát qua proxy, người dùng hay thêm http/https proxy vào đặc tả ENV trong Dockerfile.
 
@@ -243,9 +243,9 @@ ENV https_proxy https://proxy
 - Đương nhiên, build hoạt động bình thường. Tuy nhiên, về sau khi sử dụng image, nếu `docker history`, bạn vẫn có thể lấy được thông tin proxy của công ty. Ngoài ra, http/https proxy trong môi trường có thể làm sai lệch hoạt động của ứng dụng.
 - Vì vậy, không bao giờ expose ENV dạng proxy trong Dockerfile. Thay vào đó, sử dụng [`--build-args`](https://docs.docker.com/engine/reference/commandline/build/).
 
-### 3.2. Tránh cấp các đặc quyền không cần thiết
+### 4.2. Tránh cấp các đặc quyền không cần thiết
 
-#### 3.2.1. Rootless containers
+#### 4.2.1. Rootless containers
 
 - Theo một [báo cáo của Sysdig](https://sysdig.com/blog/sysdig-2021-container-security-usage-report/), có đến 58% images đang dùng entrypoint chạy bằng **root** (**UID 0**).
 - Để chạy rootless container, cần lưu ý:
@@ -263,7 +263,7 @@ ENV https_proxy https://proxy
 
 - Container có thể chạy dùng root user, sau đó sử dụng [gosu](https://github.com/tianon/gosu) hoặc  [su-exec](https://github.com/ncopa/su-exec) để chuyển sang user thường.
 
-#### 3.2.2. Các file thực thi thuộc sở hữu của root và không cấp quyền sửa đổi
+#### 4.2.2. Các file thực thi thuộc sở hữu của root và không cấp quyền sửa đổi
 
 - Tất cả các file thực thi trong container phải để owner là root, kể cả các file được thực thi bởi non-root user và không thể sửa đổi.
 - Điều này không cho phép user chỉnh sửa các file thực thi/script, từ đó dẫn đến các tấn công khác.
@@ -277,19 +277,19 @@ USER app
 ENTRYPOINT /app/my-app-entrypoint.sh
 ```
 
-### 3.3. Giảm thiểu attack surface
+### 4.3. Giảm thiểu attack surface
 
 - Loại bỏ các gói không cần thiết hoặc hạn chế expose ports sẽ giảm thiểu attack surface. Càng nhiều thành phần trong container, đồng nghĩa với việc càng nhiều nguy cơ bị tấn công.
 
-#### 3.3.1. Multi-stage builds
+#### 4.3.1. Multi-stage builds
 
 - Phần này đã nói phía trên nên không trình bày lại.
 
-#### 3.3.2. Sử dụng trusted base images
+#### 4.3.2. Sử dụng trusted base images
 
 - Luôn sử dụng official images ở trused repositories, đây là những image đã được tối ưu hóa về kích thước cũng như cập nhật thường xuyên các bản vá bảo mật.
 
-#### 3.3.3. Thường xuyên cập nhật images
+#### 4.3.3. Thường xuyên cập nhật images
 
 - Thường xuyên cập nhật images để cập nhật các bản vá fix lỗi bảo mật.
 - Do vậy, bạn cần:
@@ -297,14 +297,14 @@ ENTRYPOINT /app/my-app-entrypoint.sh
   - Cập nhật base image lên phiên bản mới trước khi EOL: Nếu bạn sử dụng ubuntu:18.04 (đã EOL) làm base image tại thời điểm 2022, cập nhật lên phiên bản ubuntu còn được hỗ trợ.
   - Định kỳ build lại image để cập nhật phiên bản mới nhất của các gói.
 
-### 3.4. Ngăn chặn rò rỉ dữ liệu mật
+### 4.4. Ngăn chặn rò rỉ dữ liệu mật
 
-#### 3.4.1. Credentials và confidentiality
+#### 4.4.1. Credentials và confidentiality
 
 - Không bao giờ để secret hoặc credentials vào Dockerfile! (Environment variables, Args, Hard coded trong CMD).
 - Lưu ý, kiểm tra các files copy vào trong container, tốt nhất nên chỉ định rõ file được COPY/ADD hoặc sử dụng `.dockerignore`.
 
-#### 3.4.2. ADD, COPY
+#### 4.4.2. ADD, COPY
 
 - `ADD` và `COPY` đều cho phép copy local files vào trong Docker image. Bên cạnh đó, `ADD` còn nhận đầu vào là remote URL hoặc file nén.
 - Luôn sử dụng `COPY` thay vì `ADD` để tránh các vấn đề bảo mật tiềm ẩn:
