@@ -112,7 +112,6 @@ echo 1 > /proc/sys/net/core/bpf_jit_enable
 - When not to use eBPF:
   - eBPF prohibits loops and other high-level constructs -> simple and restricted -> want more control over how the programs are executed, write a kernel module.
   - Executing eBPF consumes CPU cycles -> a high CPU usage.
-  - Not suite for per-packet processing.
 
 ## 4. Hello World!
 
