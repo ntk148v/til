@@ -6,6 +6,7 @@ Table of contents:
   - [1. Getting started with AWS](#1-getting-started-with-aws)
   - [2. IAM](#2-iam)
   - [3. EC2](#3-ec2)
+  - [4. EC2 Instance storage](#4-ec2-instance-storage)
 
 ## 1. Getting started with AWS
 
@@ -193,5 +194,58 @@ Table of contents:
 - Placement Groups:
   - To control over the EC2 Instance placement strategies:
     - Cluster - clusters instances into a low-latency group in a single AZ.
+      - Pros: Great network
+      - Cons: If the rack fails, all instances fails at the same time
+      - Use case:
+        - Big Data job that needs to complete fast.
+        - Application that needs extermely low latency and high network throughput.
     - Spread - spreads instances (<= 7 instances/group/AZ) across underlying hardware.
+      - Pros: Can span across AZ -> reduced risk. EC2 instances are on different physical hardware.
+      - Cons: Limited to 7 instances per AZ per placement group.
+      - Use case:
+        - Application that needs to maximize high availability.
+        - Critical applications where each instance must be isolated from failure from each other.
     - Partition - spreads instances across many different partitions (which rely on different sets of racks) within an AZ.
+      - Cluster + Spread.
+      - Use case: HDFS, HBase, Cassandra, Kafka.
+
+![](https://user-images.githubusercontent.com/29729545/162229203-a79a5752-25cf-41d8-a72d-abfa92d74e02.png)
+
+- Elastic Network Interfaces (ENI):
+  - Logical component in a VPC that represents a virtual network card.
+  - Independent, can attach on the fly EC2 instances.
+  - Bound to a specific AZ.
+- EC2 hibernate:
+  - Stop/Terminate
+  - Start: OS boots -> EC2 User data script is run -> OS boots up -> application starts, cached get warmed up -> Take time! -> Solution?
+  - Hibernate: in-memory (RAM) state is preserved (is written to a file in the root EBS volume) -> boot faster (OS is not stopped/started).
+  - Use case: long-running processing, saving the RAM state, services that take time to initialize.
+  - Instance RAM size <= 150BG/Root volume must be EBS, encrypted/On-Demand, Reserved, Spot.
+  - Can not hibernated >  60 days.
+
+![](https://docs.aws.amazon.com/images/AWSEC2/latest/UserGuide/images/hibernation-flow.png)
+
+## 4. EC2 Instance storage
+
+- EBS:
+  - Network drive you can attach to your instance while they run.
+  - Only be mounted to 1 instance at a time.
+  - Bound to a specific AZ.
+  - Have a provisioned capacity (size in GBs, and IOPS)
+  - Controls the EBS behaviour when an EC2 instance terminates.
+    - By default, root EBS volume is deleted.
+    - By default, any other attached EBS volume is not deleted.
+- EBS Snapshot:
+  - Make a incremental backup (snapshot) at a point of time.
+  - Not necessary to detach volume to do snapshot, but recommended.
+  - Can copy snapshots across AZ or Region.
+  - Snapshot pricing: charges for snapshots are based on the amount of data stored. Because snapshots are incremental, deleting a snapshot mnight not reduce your storage costs.
+  - How the incremental snapshots work?
+
+  ![](https://docs.aws.amazon.com/images/AWSEC2/latest/UserGuide/images/snapshot_1a.png)
+
+  - Relations among incremental snapshots of different volumes.
+
+  ![](https://docs.aws.amazon.com/images/AWSEC2/latest/UserGuide/images/snapshot_1c.png)
+
+  - Check out [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html).
