@@ -239,6 +239,13 @@ Table of contents:
   - Make a incremental backup (snapshot) at a point of time.
   - Not necessary to detach volume to do snapshot, but recommended.
   - Can copy snapshots across AZ or Region.
+  - Features:
+    - Snapshot archive: 75% cheaper, takes 24-72 hours for restoring.
+    - Recycle Bin for EBS snapshots: automatically protect deleted snapshots.
+    - Fast snapshot restore (FSR):
+
+    ![](https://a.b.cdn.console.awsstatic.com/6a98289778c38e57ce43d43ab74b677f9e026ce9a3881582df5a1f56de4a81fd/f8eae9c8d72566f61cb3e7d325627d7f.png)
+
   - Snapshot pricing: charges for snapshots are based on the amount of data stored. Because snapshots are incremental, deleting a snapshot mnight not reduce your storage costs.
   - How the incremental snapshots work?
 
@@ -249,3 +256,45 @@ Table of contents:
   ![](https://docs.aws.amazon.com/images/AWSEC2/latest/UserGuide/images/snapshot_1c.png)
 
   - Check out [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html).
+- AMI (Amazon Machine Image):
+  - AMI are customization of an EC2 instance.
+  - Built for a specific region.
+  - Public AMI/Private AMI/AWS Marketplace AMI.
+  - AMI Process : AMI Image -> Instance -> AMI Image -> Instance.
+
+  ![](https://a.b.cdn.console.awsstatic.com/311e85f9ee2b8f5015e6953f1d9bc4d717e331cc94b3c6d9691e98516f58dd0b/assets/img/How-it-works.png)
+
+- EC2 Instance store:
+  - EBS volumes are network driver -> limited performance -> use EC2 Instance store for better performance:
+    - Better I/O Volume
+    - EC2 Instance store lose storage if they're stopped.
+    - Good for buffer/cache/scratch data/temporary content.
+    - Risk of data loss if hardware fails.
+    - Backups and Replications are your responsibility.
+- EBS Volume types:
+  - 6 types:
+    - gp2/gp3 (SSD): general purpose SSD volume -> wide variety for workloads.
+    - io1/iop2 (SSD): highest-performance SSD volume -> mission-critical low-latency or high-throughput workloads.
+    - st 1 (HDD): low cost HDD volume -> frequently accessewd, throughtput-intenstive workloads.
+    - sc 1 (HDD): lowest cost HDD volume -> less frequently accessed workloads.
+  - gp2/gp3 + io1/io2 -> boot volumes.
+  - Check more [here](https://jayendrapatil.com/aws-ebs-volume-types/) and [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html).
+
+  ![](https://www.testpreptraining.com/tutorial/wp-content/uploads/2019/08/image015.png)
+
+  ![](https://sf.ezoiccdn.com/ezoimgfmt/jayendrapatil.com/wp-content/uploads/2016/03/EBS_Volume_Types.png?ezimgfmt=ng:webp/ngcb1)
+- EBS Multi-attach - io1/io2 family:
+  - Attach the same EBS volume to multiple EC2 instances (<= 16 instances) in the same AZ.
+  - Each instance has full read-write permissions to the high-performance volume.
+  - Use cases:
+    - Archive higher application availabiliuty.
+    - Application must manage concurrent write operations.
+  - Must use a file system that's cluster-aware.
+- EBS Encryption:
+  - Create an encrypted EBS volume:
+    - Data at rest is encrypted inside the volume.
+    - All the data in flight moving between the instance and the volume is encrypted.
+    - All snapshots are encrypted.
+    - All volumes created from the snapshot are encrypted.
+  - Minimal impact on latency.
+  - KMS (AES-256).
