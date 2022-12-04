@@ -7,6 +7,7 @@ Table of contents:
   - [2. IAM](#2-iam)
   - [3. EC2](#3-ec2)
   - [4. EC2 Instance storage](#4-ec2-instance-storage)
+  - [5. High availability and Scalability: ELB & AS](#5-high-availability-and-scalability-elb--as)
 
 ## 1. Getting started with AWS
 
@@ -283,6 +284,7 @@ Table of contents:
   ![](https://www.testpreptraining.com/tutorial/wp-content/uploads/2019/08/image015.png)
 
   ![](https://sf.ezoiccdn.com/ezoimgfmt/jayendrapatil.com/wp-content/uploads/2016/03/EBS_Volume_Types.png?ezimgfmt=ng:webp/ngcb1)
+
 - EBS Multi-attach - io1/io2 family:
   - Attach the same EBS volume to multiple EC2 instances (<= 16 instances) in the same AZ.
   - Each instance has full read-write permissions to the high-performance volume.
@@ -298,3 +300,102 @@ Table of contents:
     - All volumes created from the snapshot are encrypted.
   - Minimal impact on latency.
   - KMS (AES-256).
+- EFS - Elastic File System:
+  - Manage NFS that can be mounted on many EC2
+  - EFS works with EC2 instances in multi-AZ
+  - High available, scale, expensive (3x gp2), pay per use
+  - Use cases: content management, web serving, data sharing,...
+  - Use NFSv4.1 protocol
+  - Use security group to control access
+  - Compatible with Linux based AMI
+  - KMS
+  - File system scales automatically, pay-per-use, no capacity planning
+  - EFS scale: 1000s of concurrent NFS clients, 10GB+/s throughput.
+    - Performance mode: General purpose (default - web server, CMS,...), Max I/O (big data, media processing)
+    - Throughput mode: Bursting (1 TB = 50MiB/s + burst of up to 100MiB/s)
+  - Storage classes:
+    - Storage tiers (life cycle management):
+      - Standard + Infrequent access (EFS -IA)
+    - Availability and durability:
+      - Standard: Mutli AZ
+      - One zone: One AZ
+
+    ![](https://docs.aws.amazon.com/images/efs/latest/ug/images/efs-standard.png)
+
+    ![](https://docs.aws.amazon.com/images/efs/latest/ug/images/efs-one-zone.png)
+
+- EFS vs EBS:
+  - EBS volumes:
+    - can be attached to only 1 instance at a time.
+    - locked at the AZ level.
+    - gp2: IO increases if the disk size increases.
+    - io1: can increase IO independently.
+    - Take migrate across AZ: volume -> take snapshot -> restore to another AZ
+  - EFS:
+    - Mount 100s of instances across AZ.
+    - EFS share websites files.
+    - Only for Linux instances (POSIX).
+    - EFS has higher price point than EBS.
+    - Can leverage EFS-IA for cost savings.
+
+## 5. High availability and Scalability: ELB & AS
+
+- High availability and Scalability:
+  - Vertical vs Horizontal Scaling:
+    - Vertical scaling: increase instance size.
+    - Horizontal scaling: increase number of instances (auto scaling group & load balancer)
+
+  ![](https://www.cloudzero.com/hubfs/blog/horizontal-vs-vertical-scaling.webp)
+
+  - HA:
+    - Usually + horizontal scaling.
+    - Run application/system in at least 2 data centers (== AZ)
+    - Passive (for example: RDS multi az) / Active (for example: horizontal scaling)
+- ELB - ELastic Load Balancing:
+  - A managed load balancer.
+    - AWS guarantees that it will be working.
+    - AWS takes care of upgrades, maintenance, high availability.
+    - AWS provides only a few configuration knobs.
+  - It is intergrated with many AWS offerings/services.
+  - Healthcheck:
+    - Enable the load balancer to know if instances it forwards traffic are available.
+    - Port + route.
+  - 4 kinds:
+    - Classic Load Balancer (v1 - legacy).
+    - Application Load Balancer (v2):
+      - HTTP (v1.1, v2), HTTPS, WebSocket (layer 7) + Redirect
+      - Multiple HTTP applications across machine (target groups)
+        - EC2 target groups
+        - ECS tasks
+        - Lambda functions - HTTP request is translated into a JSON event
+        - IP addresses - must be private
+      - Multiple applications on the same machine (ex: containers)
+      - Routing tables to different target groups.
+      - Fit for microservices & container-based application.
+      - Port mapping feature to redirect to a dynamic port in ECS.
+      - Latency ~ 400ms
+    - Network Load Balancer (v2):
+      - TCP, TLS, UDP (layer 4)
+      - Handle million of request per seconds.
+      - Latency ~ 100ms
+      - Has 1 static IP per AZ, and supports assigning Elastic IP.
+      - Target groups:
+        - EC2 instances.
+        - IP addresses - must be private.
+        - Application Load Balancer.
+      - Healthcheck: TCP HTTP HTTPS protocols.
+    - Gateway Load Balancer
+      - IP Protocol (layer 3)
+      - Deploy, scale, and manage a fleet f 3rd party network virtual appliances in AWS.
+      - Functions:
+        - Transparent Network Gateway.
+        - Load Balancer.
+      - GENEVE protocol port 6081.
+      - Target groups:
+        - EC2 instances.
+        - IP addresses - must be private
+  - Security groups:
+  - Fixed hostname `XXX.region.elb.amazonaws.com`
+  - Applications servers don't see the IP of client directly.
+    - The true IP of the client is inserted in the header `X-Forwarded-For`.
+    - Proxy protocol.
