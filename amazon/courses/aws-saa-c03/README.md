@@ -7,6 +7,7 @@ Table of contents:
   - [2. IAM](#2-iam)
   - [3. EC2](#3-ec2)
   - [4. EC2 Instance storage](#4-ec2-instance-storage)
+  - [5. High availability and Scalability: ELB & AS](#5-high-availability-and-scalability-elb--as)
 
 ## 1. Getting started with AWS
 
@@ -239,6 +240,13 @@ Table of contents:
   - Make a incremental backup (snapshot) at a point of time.
   - Not necessary to detach volume to do snapshot, but recommended.
   - Can copy snapshots across AZ or Region.
+  - Features:
+    - Snapshot archive: 75% cheaper, takes 24-72 hours for restoring.
+    - Recycle Bin for EBS snapshots: automatically protect deleted snapshots.
+    - Fast snapshot restore (FSR):
+
+    ![](https://a.b.cdn.console.awsstatic.com/6a98289778c38e57ce43d43ab74b677f9e026ce9a3881582df5a1f56de4a81fd/f8eae9c8d72566f61cb3e7d325627d7f.png)
+
   - Snapshot pricing: charges for snapshots are based on the amount of data stored. Because snapshots are incremental, deleting a snapshot mnight not reduce your storage costs.
   - How the incremental snapshots work?
 
@@ -249,3 +257,192 @@ Table of contents:
   ![](https://docs.aws.amazon.com/images/AWSEC2/latest/UserGuide/images/snapshot_1c.png)
 
   - Check out [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html).
+- AMI (Amazon Machine Image):
+  - AMI are customization of an EC2 instance.
+  - Built for a specific region.
+  - Public AMI/Private AMI/AWS Marketplace AMI.
+  - AMI Process : AMI Image -> Instance -> AMI Image -> Instance.
+
+  ![](https://a.b.cdn.console.awsstatic.com/311e85f9ee2b8f5015e6953f1d9bc4d717e331cc94b3c6d9691e98516f58dd0b/assets/img/How-it-works.png)
+
+- EC2 Instance store:
+  - EBS volumes are network driver -> limited performance -> use EC2 Instance store for better performance:
+    - Better I/O Volume
+    - EC2 Instance store lose storage if they're stopped.
+    - Good for buffer/cache/scratch data/temporary content.
+    - Risk of data loss if hardware fails.
+    - Backups and Replications are your responsibility.
+- EBS Volume types:
+  - 6 types:
+    - gp2/gp3 (SSD): general purpose SSD volume -> wide variety for workloads.
+    - io1/iop2 (SSD): highest-performance SSD volume -> mission-critical low-latency or high-throughput workloads.
+    - st 1 (HDD): low cost HDD volume -> frequently accessewd, throughtput-intenstive workloads.
+    - sc 1 (HDD): lowest cost HDD volume -> less frequently accessed workloads.
+  - gp2/gp3 + io1/io2 -> boot volumes.
+  - Check more [here](https://jayendrapatil.com/aws-ebs-volume-types/) and [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html).
+
+  ![](https://www.testpreptraining.com/tutorial/wp-content/uploads/2019/08/image015.png)
+
+  ![](https://sf.ezoiccdn.com/ezoimgfmt/jayendrapatil.com/wp-content/uploads/2016/03/EBS_Volume_Types.png?ezimgfmt=ng:webp/ngcb1)
+
+- EBS Multi-attach - io1/io2 family:
+  - Attach the same EBS volume to multiple EC2 instances (<= 16 instances) in the same AZ.
+  - Each instance has full read-write permissions to the high-performance volume.
+  - Use cases:
+    - Archive higher application availabiliuty.
+    - Application must manage concurrent write operations.
+  - Must use a file system that's cluster-aware.
+- EBS Encryption:
+  - Create an encrypted EBS volume:
+    - Data at rest is encrypted inside the volume.
+    - All the data in flight moving between the instance and the volume is encrypted.
+    - All snapshots are encrypted.
+    - All volumes created from the snapshot are encrypted.
+  - Minimal impact on latency.
+  - KMS (AES-256).
+- EFS - Elastic File System:
+  - Manage NFS that can be mounted on many EC2
+  - EFS works with EC2 instances in multi-AZ
+  - High available, scale, expensive (3x gp2), pay per use
+  - Use cases: content management, web serving, data sharing,...
+  - Use NFSv4.1 protocol
+  - Use security group to control access
+  - Compatible with Linux based AMI
+  - KMS
+  - File system scales automatically, pay-per-use, no capacity planning
+  - EFS scale: 1000s of concurrent NFS clients, 10GB+/s throughput.
+    - Performance mode: General purpose (default - web server, CMS,...), Max I/O (big data, media processing)
+    - Throughput mode: Bursting (1 TB = 50MiB/s + burst of up to 100MiB/s)
+  - Storage classes:
+    - Storage tiers (life cycle management):
+      - Standard + Infrequent access (EFS -IA)
+    - Availability and durability:
+      - Standard: Mutli AZ
+      - One zone: One AZ
+
+    ![](https://docs.aws.amazon.com/images/efs/latest/ug/images/efs-standard.png)
+
+    ![](https://docs.aws.amazon.com/images/efs/latest/ug/images/efs-one-zone.png)
+
+- EFS vs EBS:
+  - EBS volumes:
+    - can be attached to only 1 instance at a time.
+    - locked at the AZ level.
+    - gp2: IO increases if the disk size increases.
+    - io1: can increase IO independently.
+    - Take migrate across AZ: volume -> take snapshot -> restore to another AZ
+  - EFS:
+    - Mount 100s of instances across AZ.
+    - EFS share websites files.
+    - Only for Linux instances (POSIX).
+    - EFS has higher price point than EBS.
+    - Can leverage EFS-IA for cost savings.
+
+## 5. High availability and Scalability: ELB & AS
+
+- High availability and Scalability:
+  - Vertical vs Horizontal Scaling:
+    - Vertical scaling: increase instance size.
+    - Horizontal scaling: increase number of instances (auto scaling group & load balancer)
+
+  ![](https://www.cloudzero.com/hubfs/blog/horizontal-vs-vertical-scaling.webp)
+
+  - HA:
+    - Usually + horizontal scaling.
+    - Run application/system in at least 2 data centers (== AZ)
+    - Passive (for example: RDS multi az) / Active (for example: horizontal scaling)
+- ELB - ELastic Load Balancing:
+  - A managed load balancer.
+    - AWS guarantees that it will be working.
+    - AWS takes care of upgrades, maintenance, high availability.
+    - AWS provides only a few configuration knobs.
+  - It is intergrated with many AWS offerings/services.
+  - Healthcheck:
+    - Enable the load balancer to know if instances it forwards traffic are available.
+    - Port + route.
+  - 4 kinds:
+    - Classic Load Balancer (v1 - legacy).
+    - Application Load Balancer (v2):
+      - HTTP (v1.1, v2), HTTPS, WebSocket (layer 7) + Redirect
+      - Multiple HTTP applications across machine (target groups)
+        - EC2 target groups
+        - ECS tasks
+        - Lambda functions - HTTP request is translated into a JSON event
+        - IP addresses - must be private
+      - Multiple applications on the same machine (ex: containers)
+      - Routing tables to different target groups.
+      - Fit for microservices & container-based application.
+      - Port mapping feature to redirect to a dynamic port in ECS.
+      - Latency ~ 400ms
+    - Network Load Balancer (v2):
+      - TCP, TLS, UDP (layer 4)
+      - Handle million of request per seconds.
+      - Latency ~ 100ms
+      - Has 1 static IP per AZ, and supports assigning Elastic IP.
+      - Target groups:
+        - EC2 instances.
+        - IP addresses - must be private.
+        - Application Load Balancer.
+      - Healthcheck: TCP HTTP HTTPS protocols.
+    - Gateway Load Balancer
+      - IP Protocol (layer 3)
+      - Deploy, scale, and manage a fleet f 3rd party network virtual appliances in AWS.
+      - Functions:
+        - Transparent Network Gateway.
+        - Load Balancer.
+      - GENEVE protocol port 6081.
+      - Target groups:
+        - EC2 instances.
+        - IP addresses - must be private
+  - Security groups:
+  - Fixed hostname `XXX.region.elb.amazonaws.com`
+  - Applications servers don't see the IP of client directly.
+    - The true IP of the client is inserted in the header `X-Forwarded-For`.
+    - Proxy protocol.
+  - Sticky sessions (session affinity): the same client is always redirected to the same instance behind a load balancer. The "cookie" used for stickiness has an expiration date you control.
+    - Application-based cookie.
+      - Custom cookie.
+      - Application cookie: generated by the load balancer (AWSALBAPP).
+    - Duration-based cookie: Generated by the load balancer (AWSALB).
+  - Cross zone load balancing:
+    - Each load balancer instance distributes evenly across all registered instances all AZ.
+    - ALB: enabled by default, no charges for inter AZ data.
+    - NLB & GWLB: disabled by default, charges for inter AZ data.
+
+  ![](https://cloudacademy.com/wp-content/uploads/2019/08/Screen-Shot-2019-08-02-at-9.46.42-AM.png)
+
+  - SSL/TLS certificates:
+    - Allows traffic between your clients and load balancer to be encrypted in transit.
+    - X.509 certificate
+    - Managed by AWS Certificate Manager (ACM)
+  - Connection draining/Deregistration Delay:
+    - Time to complete "in-flight requests" while the instance is de-registering or unhealthy.
+    - Stops sending new requests to the EC2 instance which is de-registering.
+    - Default: 300s.
+- Auto Scaling Group:
+  - Automatically register new instances to a load balancer.
+  - Re-create an EC2 instance in case a previous one is terminated.
+  - Free.
+  - Attributes:
+    - Launch template: AMI + Instance type, EC2 User Data, EBS Volume, Security Groups,...
+    - Min/Max size/Initial Capacity.
+    - Scaling policies.
+  - Scale an ASG based on CloudWatch alarms.
+  - Scaling policies:
+    - Dynamic scaling policies:
+      - Target tracking scaling:
+        - Most simple and easy to setup.
+        - Example: average ASG CPU to stay at around 40%.
+      - Simple/Step scaling:
+        - Alarm is triggerd -> do scale.
+      - Scheduled actions:
+        - Anticipate a scaling based on known usage patterns.
+        - Example: increase the min capacity to 10 at 5pm on Fridays.
+    - Predictive scaling: continuously forecast load and schedule scaling ahead.
+    - Metrics:
+      - CPU Utilization: average CPU utilization across instances.
+      - Request count/target.
+      - Average Network In/Out.
+      - Any custom metric (on CloudWatch)
+    - Cooldowns:
+      - During the cooldown period, ASG will not launch or terminate additional instances (to allow for metrics to stabilize).
