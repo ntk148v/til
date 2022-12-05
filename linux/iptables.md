@@ -5,6 +5,7 @@ Source:
 - <https://www.thegeekstuff.com/2011/01/iptables-fundamentals/>
 - <https://www.opsist.com/blog/2015/08/11/how-do-i-see-what-iptables-is-doing.html>
 - <https://www.digitalocean.com/community/tutorials/a-deep-dive-into-iptables-and-netfilter-architecture>
+- <https://www.sobyte.net/post/2022-04/understanding-netfilter-and-iptables/> - advanced
 
 - [Iptables](#iptables)
   - [1. Introduction](#1-introduction)
