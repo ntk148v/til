@@ -7,7 +7,8 @@ Table of contents:
   - [2. IAM](#2-iam)
   - [3. EC2](#3-ec2)
   - [4. EC2 Instance storage](#4-ec2-instance-storage)
-  - [5. High availability and Scalability: ELB & AS](#5-high-availability-and-scalability-elb--as)
+  - [5. High availability and Scalability: ELB \& AS](#5-high-availability-and-scalability-elb--as)
+  - [6. RDS+Aurora+ElastiCache](#6-rdsauroraelasticache)
 
 ## 1. Getting started with AWS
 
@@ -446,3 +447,134 @@ Table of contents:
       - Any custom metric (on CloudWatch)
     - Cooldowns:
       - During the cooldown period, ASG will not launch or terminate additional instances (to allow for metrics to stabilize).
+
+## 6. RDS+Aurora+ElastiCache
+
+- RDS - Relational Database Service:
+  - Managed DB service for DB use SQL as a query language.
+    - Automated provisioning, OS patching.
+    - Continous backups and restore to specific timestamp (Point in Time Restore)
+    - Monitoring dashboards
+    - Read replicas for improved read performance
+    - Multi AZ setup for DR
+    - Maintenance windows for upgrades
+    - Scaling capacity:
+      - Storage autoscaling:
+        - Scale automatically if:
+          - Free storage  < 10% of allocated storage.
+          - Low-storage lasts at least 5 minutes.
+          - 6 hours have passed since last modification.
+        - Set Maximum storage threshold
+        - Use cases: unpredictable workloads.
+    - Storaged backed by EBS (gp2 or io1)
+  - Databases: PostGres, MySQL, MariaDB, Oracle, SQL Server, Aurora.
+  - Can't SSH into instances.
+  - Read replicas for read scalability:
+    - Up to 5 read replicas.
+    - Replication is ASYNC -> read - eventually consistent.
+    - For analytic use cases.
+    - Network cost: data goes from AZ to others -> read replicas within same region -> no charges
+  - Multi AZ:
+    - SYNC replication
+    - Free
+    - Not used for scaling
+    - Read replicas
+  - Zero downtime switch from one AZ to multi AZ:
+    - A snapshot is taken.
+    - A new DB is restored from a snapshot in a new AZ
+    - Synchronization is established between 2 databases
+  - Custom: access to the underlying database and OS (by de-activate Automation Mode)
+  - RDS Backups:
+    - Automated backups:
+      - Daily full backup.
+      - Transaction logs: back up/5 minutes.
+      - 1-35 days of rentention -> 0 = disable automated backup.
+    - Manual DB snapshots.
+    - Trick: Stopped database, still pay for storage -> snapshot & restore.
+- Amazon Aurora:
+  - A proprietary technology from AWS.
+  - Postgres and MySQL are both supported as Aurora DB.
+  - AWS cloud optimized.
+  - Costs more than RDS (20% more)
+  - High availability and Read scaling:
+    - 6 copies of data across 3 AZ:
+      - 4/6: writes.
+      - 3/6: reads.
+      - Self healing with peer-to-peer replication.
+      - Storage is stripped across 100s of volumes.
+    - Cross Region replication.
+
+    ![](https://docs.aws.amazon.com/images/AmazonRDS/latest/AuroraUserGuide/images/AuroraArch001.png)
+
+  - Custom endpoints:
+    - Define a subset of Aurora instances as a Custom Endpoint.
+    - Example: Run analytics queries on specific replicas.
+  - Serverless:
+    - Automated database instantiation and auto-scaling based on actual usage.
+    - Good for infrequent, intermittent or unpredictable workloads.
+    - No capacity planning needed.
+    - Pay per second, can be more cost-effective.
+  - Multi-master:
+    - Every node does R/W - vs promoting a RR as the new master.
+  - Global Aurora:
+    - Aurora Cross Region Read Replicas.
+    - Aurora Global Database (recommended):
+      - Cross regions.
+      - Promote another region has an RTO of < 1 minute.
+      - Cross region replication takes less than 1 second.
+  - Machine learning:
+    - Supported services: SageMaker, Comprehend.
+    - Use caes: fraud detection, ads targeting, sentiment analysis, product recommendations.
+  - Aurora Backups:
+    - Automated Backups:
+      - 1-35 days (can't be disabled)
+      - point-in-time recovery.
+    - Manual DB snapshots.
+  - Database Cloning:
+    - Create a new DB Cluster from an existing one.
+    - Faster than snapshot & restore.
+    - Very fast & cost-effective.
+    - Useful to create a "staging" database from a "production" database without impacting the production database.
+- RDB & Aurora Restore options:
+  - Restoring a RDS/Aurora backup or a snapshot creates a new database.
+  - Restoring database from S3.
+    - Create a backup of db.
+    - Store it on S3.
+    - Restore the backup file onto a new RDS instance running MySQL.
+- RDS & Aurora Security:
+  - At-rest encryption.
+  - In-flight encryption.
+  - IAM authentication.
+  - Security groups.
+  - No SSH available.
+  - Audit logs can be enabled -> CloudWatch.
+- RDS Proxy:
+  - Allow apps to pool and share DB connections established with the database.
+  - Improving database effeciency by reducing the stress on database resources and minimize open connections.
+  - Reduced RDS & Aurora failover time by up 66%.
+  - Enforce IAM authentication.
+  - Never publicity accesible (must be accessed from VPC).
+- ElastiCache:
+  - Manage Redis or Memcached.
+  - Caches: help reduce load off of databases for read intensive workloads, make application stateless.
+  - AWS takes care of OS maintenance/patching, optimizations, setup, configuration, monitoring, failure recovery and backups.
+  - Using involves heavy application code changes.
+  - [DB cache](https://aws.amazon.com/getting-started/hands-on/boosting-mysql-database-performance-with-amazon-elasticache-for-redis/):
+    - Applications queries ElastiCache, if not available, get from RDS and store in ElastiCache.
+    - Help relieve load from RDS.
+    - Cache must have an invalidation strategy to make sure only the most current data is used in there.
+  - [User session store](https://aws.amazon.com/getting-started/hands-on/building-fast-session-caching-with-amazon-elasticache-for-redis/):
+    - User logs into any of the application
+    - The application writes the session data into ElastiCache.
+    - The user hits another instance of our application.
+    - The instance retrieves the data (from ElastiCache) and the user is already logged in.
+  - [Redis vs Memcached](https://aws.amazon.com/elasticache/redis-vs-memcached/).
+  - Cache security.
+    - All caches:
+      - Do not support IAM authentication.
+    - Redis AUTH: password/token.
+    - Memcached: SASL-based authentication.
+  - [Patterns/Strategies](https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/Strategies.html):
+    - Lazy loading: loads data into the cache only when necessary. All read data is cached, data can become stale in cache.
+    - Write through: adds data or updates data in the cache whenever data is written to the database (no stale data).
+    - Adding TTL: store temporary session data in a cache (using TTL features)
