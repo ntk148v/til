@@ -9,6 +9,7 @@ Table of contents:
   - [4. EC2 Instance storage](#4-ec2-instance-storage)
   - [5. High availability and Scalability: ELB \& AS](#5-high-availability-and-scalability-elb--as)
   - [6. RDS+Aurora+ElastiCache](#6-rdsauroraelasticache)
+  - [7. Route 53](#7-route-53)
 
 ## 1. Getting started with AWS
 
@@ -578,3 +579,91 @@ Table of contents:
     - Lazy loading: loads data into the cache only when necessary. All read data is cached, data can become stale in cache.
     - Write through: adds data or updates data in the cache whenever data is written to the database (no stale data).
     - Adding TTL: store temporary session data in a cache (using TTL features)
+
+## 7. Route 53
+
+- DNS - Domain Name System.
+  - Domain registrar: Route 53, GoDaddy,...
+  - DNS Records: A,AAAA,CNAME,NS,....
+  - Zone File: contain DNS records
+  - Nameserver: resolves DNS queries
+- Route 53:
+  - A highly available, scalable, fully managed and Authoritative (The customer can update the DNS records) DNS
+  - Ability to check the health of your resources.
+  - 100% availability SLA.
+  - Records:
+    - How you want to route traffic for a domain
+    - Contain: Domain/Subdomain name + record type + value + routing policy + TTL
+    - Supported DNS record types:
+      - A/AAAA/CNAME/NS:
+        - A: maps a hostname to IPv4
+        - AAAA: maps a hostname to IPv6
+        - CNAME: maps a hostname to another hostname
+        - NS: Name servers for the hosted zone
+      - CAA/DS/MX/NAPTR/PTR/SOA/TXT/SPF/SRV
+  - Hosted zones:
+    - A container for records that define how to route traffic to a domain and its subdomains
+    - Public/Private Hosted zones.
+    - 0.5$/month/hosted zone.
+  - Records TTL: Except for Alias records, TTL is mandatory for each DNS record.
+  - CNAME vs Alias:
+    - CNAME: points a hostname to any other hostname. Only for Non Root domain (aka something.mydomain.com)
+    - Alias:
+      - Points a hostname to an AWS resource (app.mydomain.com => blahblah.amazonaws.com). Works for Root/Non Root Domain (aka mydomain.com)
+      - An extension to DNS functionality.
+      - Automatically recognizes changes in the resource's IP address.
+      - Always of type A/AAAA
+      - Can't set the TTL
+      - Targets: Elastic Load Balancers, CloudFront Distributions, API Gateway, Elastic Beanstalk environments, S3 websites, VPC Interface endpoints, Global Accelerator accelerator, Route 53 record in the same hosted zone.
+    - Routing policies:
+      - Define how Route 53 responds to DNS queries.
+      - Supported Routing policies:
+        - Simple:
+          - Typically, single resource (can specify multiple values -> random one is chosen by the client)
+          - Alias enabled -> 1 AWS resource
+          - No healthcheck
+        - Weighted:
+          - Control the % of the request that go to each specific resource
+
+          ```
+          traffic (%) = <weight for a specific record>/<sum of all the weights for all records>
+          ```
+
+        - DNS records must have the same name and type
+        - Health checks.
+        - Use cases: load balancing between regions, testing new application versions,...
+        - Assign a weight of 0 to a record -> stop sending traffic
+        - All records's weight = 0 -> all records will be returned equally
+
+        - Failover: Active/Passive
+        - Latency based:
+          - Redirect to the resource that has the least latency (between users and AWS regions) close to use.
+          - Health checks.
+        - Geolocation:
+          - Routing is based on user location.
+          - Should create a "Default" record.
+          - Use cases: web localization, restrict content distribution, load balancing,...
+          - Health Checks
+        - Multi-value answer:
+          - Use when routing traffic to multiple resources
+          - Health Checks
+          - Up to 8 healthy records
+          - Not substitute for having an ELB
+        - Geoproximity (using Route 53 Traffic Flow feature):
+          - Route traffic to resources based on the geographic location of users and resources.
+          - Ability to shift more traffic to resources based on the defined bias.
+          - Resources can be: AWS resources - Non-AWS resources.
+          - Must use Route 53 Traffic Flow.
+    - Health Checks:
+      - HTTP Health Checks: public resources.
+      - Automated DNS Failover.
+      - Intergrated with CloudWatch metrics.
+      - About 15 Global health checkers will check the endpoint health
+      - Pass only: 2xx and 3xx status codes. Or based on the text in the first 5120 bytes of the response.
+      - Configure you router/firewall to allow incoming requests from Health Checks.
+      - Combined the result of multiple Health Checks into a single Health Check (using OR, AND, or NOT) -> perform maintenance to website without causing all health checks to fail.
+      - Can't access Private endpoints -> Workaround: CloudWatch Metric + Alarm -> Health Check checks that alarm.
+- Domain Registar vs DNS Service:
+  - Buy/Register your domain name with a Domain Registar
+  - Domain Registar provides you with a DNS Service to manage DNS records, but you can use another DNS Service.
+  - DNS Service != Domain Registar
