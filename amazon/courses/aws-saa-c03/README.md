@@ -11,6 +11,7 @@ Table of contents:
   - [6. RDS+Aurora+ElastiCache](#6-rdsauroraelasticache)
   - [7. Route 53](#7-route-53)
   - [8. AWS Well-Architected Framework](#8-aws-well-architected-framework)
+  - [9. S3](#9-s3)
 
 ## 1. Getting started with AWS
 
@@ -672,3 +673,97 @@ Table of contents:
 ## 8. AWS Well-Architected Framework
 
 - It's deserverd [its own article](../../well-architected-framework/README.md).
+
+## 9. S3
+
+- Simple Storage Service
+- Use cases:
+  - Backup and storage
+  - Disaster recovery
+  - Archive
+  - Hybrid Cloud storage
+  - Application hosting
+  - Media hosting
+  - Data lakes and big data analytics
+  - Software delivery
+  - Static website
+- Buckets:
+  - Store objects ("files") in "buckets" (directories)
+  - Globally unique name
+  - Defined at region level (S3 looks like a global service but buckets are created in region)
+  - Naming convetion
+    - No uppercase, no underscore
+    - 3-63 characters long
+    - Not an IP
+    - Must start with lowercase letter or number
+    - Must NOT start with the prefix xn--
+    - Must NOT end with the suffix -s3alias
+- Objects:
+  - Objects have a Key
+  - Key is the FULL path: `s3://my-bucket/my_file.txt`
+  - Key = prefix + object name
+  - Values are the content of the body:
+    - Max size: 5TB
+    - Upload more than 5GB, must use "multi-part upload"
+  - Metadata (list of key/value pairs)
+  - Tags (Unicode key/value pair) - security/lifecycle
+  - Version ID (if versioning is enabled).
+- Security:
+  - User-based: IAM policies
+
+  ![](https://docs.aws.amazon.com/images/AmazonS3/latest/userguide/images/user-policy.png)
+
+  - Resource-based:
+
+    ![](https://docs.aws.amazon.com/images/AmazonS3/latest/userguide/images/resource-based-policy.png)
+
+    - Bucket policies: bucket wide rules - allow cross account
+      - JSON based policies.
+      - Use cases:
+        - Grant public access to the bucket
+        - Force objects to be encrypted at upload
+        - Grant access to another account (Cross account)
+    - Object Access Control List (ACL)
+    - Bucket Access Control List (ACL)
+  - Encryption: encrypt objects using keys.
+- Versioning:
+  - Enabled at bucket level
+  - Best practices to version your buckets:
+    - Protect against unintended deletes -> restore a version
+    - Easy roll back to previous version
+  - All file is not versioned -> enable version -> version "null"
+  - Suspend versioning -> not delete the previous versions
+- [Replication](https://aws.amazon.com/s3/features/replication/) (Cross-region replication & Same-region replication):
+  - Must enable Versioning in source and destination buckets
+  - Buckets can be in different AWS accounts
+  - Copying is asynchronous
+  - IAM permissions
+  - Use cases:
+    - CRR: compliance, lower latency access, replication across accounts
+    - SRR: log aggregation, live replication between production and test accounts
+
+  ![](https://d1.awsstatic.com/Products/product-name/s3/S3-blast-HIW.fec9a333a2c7492f18fe92cd8952a0d7f6a141d5.png)
+
+- [Replication](https://aws.amazon.com/s3/features/replication/) (Batch Replication):
+  - CRR and SRR: only new objects are replicated.
+  - Replicate existing objects/retry objects were unable to replicate using Batch replication
+  - Use cases: backfill newly created buckets, retry replication, migration
+- Replication Time Control:
+  - Replication Time Control replicates most objects "that you upload" to S3 in seconds, and 99.99% of those objects within 15 minutes.
+
+  ![](https://d1.awsstatic.com/architecture-diagrams/ArchitectureDiagrams/replication-time-control-updated.7e4011429383a586f314f6ece8e582b7be91ee4b.png)
+- Storage classes:
+
+| Name                              | Overview                                                                                                              | Availability | Use cases                                                                   |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------------- |
+| Standard - General Purpose        | Used for frequently accessed data, low latency, high throughput                                                       | 99.99%       | Big data analytics, mobile & gaming applications, content distribution,...  |
+| Standard - Infrequent Access (IA) | Lower cost than S3 standard                                                                                           | 99.9%        | Disater recovery, backups                                                   |
+| One Zone - IA                     |                                                                                                                       | 99.5%        | Storing secondary backup copies of on-premises data, or data you can create |
+| Glacier Instant Retrieval         | Millisecond retrieval, great for data accessed a quarter. (store >= 90 days)                                          |              | Archive/Backup                                                              |
+| Glacier Flexible Retrieval        | Expedited (1-5 minutes),  Standard (3-5 hours), Bulk (5-12 hours) - free (store >= 90days)                            |              | Archive/Backup                                                              |
+| Glacier Deep Archive              | Standard (12 hours), Bulk (48 hours) (store >= 180 days)                                                              |              | Archive/Backup, long term storage                                           |
+| Intelligent Tiering               | Small monthly monitoring and auto-tiering free, move objects automatically between Access Tiers, no retrieval charges |              |                                                                             |
+
+  ![](https://static.us-east-1.prod.workshops.aws/public/a965bfb5-cf47-4f7c-aae6-82cceb3572f3/static/images/002_services/002_storage/003_s3/s3_storage_classes.png?classes=shadow&width=1024px)
+
+  ![](https://res.cloudinary.com/practicaldev/image/fetch/s--v3YS5Oxn--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/htu5kvq6u5qffovohc20.png)
