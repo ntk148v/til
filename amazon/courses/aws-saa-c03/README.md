@@ -12,6 +12,7 @@ Table of contents:
   - [7. Route 53](#7-route-53)
   - [8. AWS Well-Architected Framework](#8-aws-well-architected-framework)
   - [9. S3](#9-s3)
+  - [10. Amazon SDK, IAM Roles & Policies](#10-amazon-sdk-iam-roles--policies)
 
 ## 1. Getting started with AWS
 
@@ -767,3 +768,19 @@ Table of contents:
   ![](https://static.us-east-1.prod.workshops.aws/public/a965bfb5-cf47-4f7c-aae6-82cceb3572f3/static/images/002_services/002_storage/003_s3/s3_storage_classes.png?classes=shadow&width=1024px)
 
   ![](https://res.cloudinary.com/practicaldev/image/fetch/s--v3YS5Oxn--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/htu5kvq6u5qffovohc20.png)
+
+- Moving between Storage Classes:
+  - Can transition objects between Storage Classes.
+  - Moving objects can be automated using a Lifecycle Rules.
+    - Transition actions: configure objects to transition to annother storage class (ex: move to Standard IA class 60 days after creation)
+    - Expiration actions: configure to expire (delete) objects after some time (ex: can be used to delete old versions of files)
+    - Rules can be created for a certain prefix (ex: `s3://mybucket/mp3/*`) or certain object tags (ex: `Department: Finance`)
+
+  ![](https://docs.aws.amazon.com/images/AmazonS3/latest/userguide/images/lifecycle-transitions-v3.png)
+
+## 10. Amazon SDK, IAM Roles & Policies
+
+- Policy Simulator: https://policysim.aws.amazon.com/
+- EC2 instance metadata
+- AWS SDK - Software Development Kit:
+  - If you don’t specify or configure a default region, then us-east-1 will be chosen by default
