@@ -10,6 +10,7 @@ Table of contents:
   - [5. High availability and Scalability: ELB \& AS](#5-high-availability-and-scalability-elb--as)
   - [6. RDS+Aurora+ElastiCache](#6-rdsauroraelasticache)
   - [7. Route 53](#7-route-53)
+  - [8. AWS Well-Architected Framework](#8-aws-well-architected-framework)
 
 ## 1. Getting started with AWS
 
@@ -667,3 +668,7 @@ Table of contents:
   - Buy/Register your domain name with a Domain Registar
   - Domain Registar provides you with a DNS Service to manage DNS records, but you can use another DNS Service.
   - DNS Service != Domain Registar
+
+## 8. AWS Well-Architected Framework
+
+- It's deserverd [its own article](../../well-architected-framework/README.md).
