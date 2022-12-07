@@ -12,7 +12,7 @@ Table of contents:
   - [7. Route 53](#7-route-53)
   - [8. AWS Well-Architected Framework](#8-aws-well-architected-framework)
   - [9. S3](#9-s3)
-  - [10. Amazon SDK, IAM Roles & Policies](#10-amazon-sdk-iam-roles--policies)
+  - [10. Amazon SDK, IAM Roles \& Policies](#10-amazon-sdk-iam-roles--policies)
 
 ## 1. Getting started with AWS
 
@@ -771,12 +771,86 @@ Table of contents:
 
 - Moving between Storage Classes:
   - Can transition objects between Storage Classes.
-  - Moving objects can be automated using a Lifecycle Rules.
+  - Moving objects can be automated using a **Lifecycle Rules**.
     - Transition actions: configure objects to transition to annother storage class (ex: move to Standard IA class 60 days after creation)
     - Expiration actions: configure to expire (delete) objects after some time (ex: can be used to delete old versions of files)
     - Rules can be created for a certain prefix (ex: `s3://mybucket/mp3/*`) or certain object tags (ex: `Department: Finance`)
+    - Example:
+      - Application on EC2 creates thumbnails (from source images). These thumbnails can be recreated easily, and only need to be kept for 60 days. The source images should be able to be immediately retrieved for these 60 days, and afterwards, the user can wait up to 6 hours.
+        - S3 source images: Standard -> Glacier after 60 days (Lifecycle configuration)
+        - S3 thumbnails: One-Zone IA -> expired after 60 days (Lifecycle configuration)
+      - Should be able to recover your deleted S3 objects immediately for 30 days (rarely). After this time, and for up to 1 year, recover time should be within 48 hours.
+        - Enable S3 Versioning: "deleted objects" are in fact hidden by a "delete marker" and can be recovered.
+        - "Noncurrent versions" of the object -> Standard IA -> Glacier Deep Archive (afterwards).
 
   ![](https://docs.aws.amazon.com/images/AmazonS3/latest/userguide/images/lifecycle-transitions-v3.png)
+
+- Storage Class Analysis:
+  - Help to decide when to transition the right data to the right storage class -> you can create Lifecycle rules then.
+  - Only provide recommendations for Standard or Standard IA.
+  - Daily update.
+- Requester Pays:
+  - In general, bucket owners pay for all S3 storage and data transfer costs.
+  - With Requester Pays buckets, the requester instead of the bucket owner pays the cost of the request and the data download from the bucket.
+  - The requester must be authenticated.
+
+  ![](https://user-images.githubusercontent.com/29729545/151326716-7681bab7-d7c2-4c5e-afdf-aeb5d66abd01.png)
+
+- Event Notifications:
+  - Example: `S3:ObjectCreated,S3:ObjectRemoved,S3:ObjectRestore,...`
+  - To enable, add a notification configuration that identifies the events.
+
+  ![](https://media.amazonwebservices.com/blog/2014/s3_notification_flow_2.png)
+  
+  - Can send events to Amazon EventBridge. Unlike other destinations, you don't need to select which event types you want to deliver (all of them are sent!).
+    - Advanced filtering
+    - Multiple destinations
+    - EventBridge Capabilities: Archive, Replay Events, Repliable Delivery
+- Baseline Performance:
+  - Automatically scales to high request rates, latency.
+  - Baseline performance: 3500 PUT/COPY/POST/DELETE 5500 GET/HEAD per second per prefix in a bucket (no limit number of prefixes in a bucket).
+- Performance guidelines:
+  - Measure performance.
+  - Scale Storage connections horizontally: Spread requests across many connections.
+  - Use byte-range fetches:
+    - Parallelize Gets by requesting specific byte ranges.
+    - `Range` HTTP header.
+    - Better resilience in case of failures.
+  - Retry requests for latency-sensitive applications.
+  - Combine S3 and EC2 in the same AWS region.
+  - Use Amazon S3 Transfer Acceleration to minimize latency caused by distance.
+    - Increase transfer speed by transferring file to an AWS edge location which will forward the data to the S3 bucket in the target region.
+    - Compatible with the multi-part upload.
+
+  ![](https://static1.tothenew.com/blog/wp-content/uploads/2016/04/Selection_136.png)
+
+  - Use Latest version of the AWS SDKs.
+  - Multi-part upload: recommended for files > 100MB, must use for files > 5GB -> parallelize uploads
+  - Use Caching for Frequently Accessed Content (CloudFront, ElasticCache, Elemental MediaStore)
+- Select & Glacier Select:
+  - Retrieve less data using SQL by performing server-side filtering.
+  - Can filter by rows & columnes.
+  - Less entwork transfer, less CPU cost client-side.
+  - Glacier is priced in 3 dimensions:
+    - GB of Data Scanned
+    - GB of Data Returned
+    - Select requests
+
+  ![](https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2017/11/28/s3_select.png)
+
+- Batch Operations:
+  - Perform bulk operations on existing S3 objects with a single request:
+    - Modify object metadata & properties
+    - Encrypt un-encrypted objects
+    - Modify ACLs, tags
+    - Restore objects from S3 Glacier
+    - ...
+  - A job consist of a list of objects, the action to perform, and optional parameters.
+  - Use S3 inventory to list objects and use S3 Select to filter objects.
+
+  ![](https://d2908q01vomqb2.cloudfront.net/fc074d501302eb2b93e2554793fcaf50b3bf7291/2021/11/11/Fig1.png)
+
+- Security"
 
 ## 10. Amazon SDK, IAM Roles & Policies
 
