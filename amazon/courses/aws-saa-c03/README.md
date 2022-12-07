@@ -1014,3 +1014,30 @@ Table of contents:
 - EC2 instance metadata
 - AWS SDK - Software Development Kit:
   - If you don’t specify or configure a default region, then us-east-1 will be chosen by default
+
+## 11. CloudFront, AWS Global Accelerator
+
+- CloudFront:
+  - Content Delivery Network (CDN)
+  - Improves read performance, content is caced at the edge.
+  - DDoS protection (+ Shield - AWS WAF)
+  - Origins:
+    - S3 Bucket:
+      - Enhanced security with CloudFront Origin Access Control (OAC)
+      - CloudFront can be used as an ingress (to upload files to S3)
+    - Custom origin (HTTP):
+      - Application Load Balancer
+      - EC2 instance
+      - S3 website (must first enable the bucket as a static S3 website)
+      - Any HTTP backend
+  - CloudFront vs S3 Cross Region Replication
+    - CloudFront:
+      - Global Edge network
+      - Files are cached for a TTL
+      - Great for static content that must be available everywhere
+    - S3 Cross Region Replication:
+      - Setup for each region you want to replication to happen
+      - Files are updated in near real-time
+      - Read only
+      - Great for dynamic content that needs to available at low-latency in few regions+
+      
