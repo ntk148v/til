@@ -492,7 +492,7 @@ Table of contents:
     - Automated backups:
       - Daily full backup.
       - Transaction logs: back up/5 minutes.
-      - 1-35 days of rentention -> 0 = disable automated backup.
+      - 1-35 days of retention -> 0 = disable automated backup.
     - Manual DB snapshots.
     - Trick: Stopped database, still pay for storage -> snapshot & restore.
 - Amazon Aurora:
@@ -801,7 +801,7 @@ Table of contents:
   - To enable, add a notification configuration that identifies the events.
 
   ![](https://media.amazonwebservices.com/blog/2014/s3_notification_flow_2.png)
-  
+
   - Can send events to Amazon EventBridge. Unlike other destinations, you don't need to select which event types you want to deliver (all of them are sent!).
     - Advanced filtering
     - Multiple destinations
@@ -850,7 +850,163 @@ Table of contents:
 
   ![](https://d2908q01vomqb2.cloudfront.net/fc074d501302eb2b93e2554793fcaf50b3bf7291/2021/11/11/Fig1.png)
 
-- Security"
+- Security:
+  - Object encryption: You can encrypt objects in S3 buckets using 1/4 methods:
+    - Server-Side encryption (SSE):
+      - SSE with S3-managed keys (SSE-S3):
+        - Encryption keys handled, managed, and owned by AWS.
+        - AES-256
+        - Must set header `"x-amz-server-side-cryption":"AES256"`
+
+        ![](https://user-images.githubusercontent.com/29729545/147951666-48c6c7af-c3b0-42fd-b434-ed21edcb1f9e.png)
+
+      - SSE with KMS keys stored in AWS KMS (SSE-KMS):
+        - Leverage AWS KMS to manage keys.
+        - Must set header `"x-amz-server-side-cryption":"aws:kms"`
+        - KMS limits: upload - call GenerateDataKey KMS API, download - call Decrypt KMS API -> Count towards the KMS quota/s.
+      - SSE with Customer-provided keys (SSE-C):
+        - You manage your own keys.
+        - HTTPS must be used, encryption keys must provided in HTTP headers, for every HTTP request made.
+
+        ![](https://user-images.githubusercontent.com/29729545/147952597-e8809e11-cf3a-4dab-af64-8a15b80a4849.png)
+
+    - Client-side encryption:
+      - Use library - AmazonS3 Client-side encryption library
+      - Client: encrypt/decrypt data when send/retrieve.
+      - Fully manages the keys and encryption cycle.
+
+    ![](https://user-images.githubusercontent.com/29729545/147953387-1df6f1ad-3e43-4590-9bc1-2555815e23ab.png)
+
+  - Encryption in transit (SSL/TLS).
+  - Default encryption vs Bucket policies:
+    - Force encryption:
+      - Use a bucket policy and refuse any API call to PUT an S3 object without headers.
+
+      ```JSON
+      {
+        "Version": "2012-10-17",
+        "Id": "PutObjPolicy",
+        "Statement": [
+            {
+                    "Sid": "DenyIncorrectEncryptionHeader",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Action": "s3:PutObject",
+                    "Resource": "arn:aws:s3:::<bucket_name>/*",
+                    "Condition": {
+                            "StringNotEquals": {
+                                "s3:x-amz-server-side-encryption": "AES256"
+                            }
+                    }
+            },
+            {
+                    "Sid": "DenyUnEncryptedObjectUploads",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Action": "s3:PutObject",
+                    "Resource": "arn:aws:s3:::<bucket_name>/*",
+                    "Condition": {
+                            "Null": {
+                                "s3:x-amz-server-side-encryption": true
+                            }
+                }
+            }
+        ]
+      }
+      ```
+
+      ```JSON
+      {
+        "Version": "2012-10-17",
+        "Id": "PutObjPolicy",
+        "Statement": [
+            {
+                    "Sid": "DenyIncorrectEncryptionHeader",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Action": "s3:PutObject",
+                    "Resource": "arn:aws:s3:::<bucket_name>/*",
+                    "Condition": {
+                        "StringNotEquals": {
+                            "s3:x-amz-server-side-encryption": "aws:kms"
+                                }
+                    }
+            },
+            {
+                    "Sid": "DenyUnEncryptedObjectUploads",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Action": "s3:PutObject",
+                    "Resource": "arn:aws:s3:::<bucket_name>/*",
+                    "Condition": {
+                        "Null": {
+                            "s3:x-amz-server-side-encryption": true
+                                }
+                        }
+            }
+        ]
+      }
+      ```
+
+      - Default encryption option.
+    - Bucket policies are evaluated before "default encryption".
+    - Cross-Origin Resource Sharing (CORS):
+      - Origin = scheme (protocol) + host (domain) + port
+      - Web browser based mechanism to allow request to other origins while visiting the main origin.
+      - The requests won't be fulfilled unless the other origin allows for the requests, using CORS Headers (ex: Access-Control-Allow-Origin).
+      - If a client makes a cross-origin request on S3 bucket, we need to enable the correct CORS headers (*popular example question*).
+      - Can allow for a specific origin or for `*` (all).
+    - Multi-Factor Authentication:
+      - Force users to generate a code on a device (usually a mobile phone or hardware) before doing important operations on S3.
+        - Permanently delete an object version.
+        - Suspend Versioning on the bucket.
+      - Versioning must be enabled.
+      - Only the bucket owner (root account) can enable/disable MFA delete.
+    - Access logs:
+      - Access logs will be logged into Logging Bucket (in the same AWS region).
+      - That data can be analyzed using data analysis tools.
+      - Do not set your logging bucket to be the monitored bucket.
+    - Pre-signed URLs:
+      - Generate pre-signed URLs using the S3 Console, CLI or SDK.
+      - URL expiration.
+      - Users given a pre-signed URL inherit the permissions of the user that generated the URL for GET/PUT.
+      - Use cases:
+        - Allow only logged-in users to download data from S3 bucket.
+        - Allow an ever-changing list of users to download files by generating URLs dynamically.
+        - Allow temporarily a user to upload a file to a precise location in S3 bucket.
+    - Glacier Vault Lock:
+      - Adopt Write Once Read Many (WORM) model: prevent further edits after uploading.
+      - Create a Vault Lock Policy.
+      - Lock the policy for future edits.
+      - Helpful for compliance and data retention.
+    - Object Lock:
+      - Adopt a WORM model.
+      - Block an object version deletion for a specified amount of time.
+      - Versioning must be enabled.
+    - Access Points:
+      - Each Access point gets its own DNS and policy to limit who can access it.
+        - A specific IAm user/group.
+        - One policy/Access point -> easier to manage than complex bucket policies.
+      - When to use:
+        - Large shared data sets.
+        - Copy data securely.
+        - Restrict access to VPC.
+        - Test new access policies.
+        - Limit acess to specific account IDs.
+        - Provide a unique name.
+
+      ![](https://d1.awsstatic.com/re19/Westeros/Diagram_S3_Access_Points.fa88c474dc1073aede962aaf3a6af2d6b02be933.png)
+
+    - Object Lambda:
+      - Use AWS Lambda Functions to change the object before it is retrieved by the caller application.
+      - Only 1 S3 Bucket is needed, on top of which we create S3 Access Point and S3 Object Lambda Access Point.
+      - Use cases:
+        - Redacting personally identifiable information for analytics or non-production environments.
+        - Converting across data formats.
+        - Compressing or decompressing.
+        - Resizing and watermarking images.
+
+      ![](https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2021/03/16/s3-object-lambda-architecture-1-1024x520.png)
 
 ## 10. Amazon SDK, IAM Roles & Policies
 
