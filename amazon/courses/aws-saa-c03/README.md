@@ -77,7 +77,7 @@ Table of contents:
 
 - To access AWS:
   - AWS management console (password + MFA)
-  - AWS CLI (access keys): https://github.com/aws/aws-cli
+  - AWS CLI (access keys): <https://github.com/aws/aws-cli>
     - Install with pip: `pip install awscli`.
   - AWS SDK (access keys): Language-specific APIs.
 - Access keys are generated through the AWS Console:
@@ -1012,7 +1012,7 @@ Table of contents:
 
 ## 10. Amazon SDK, IAM Roles & Policies
 
-- Policy Simulator: https://policysim.aws.amazon.com/
+- Policy Simulator: <https://policysim.aws.amazon.com/>
 - EC2 instance metadata
 - AWS SDK - Software Development Kit:
   - If you don’t specify or configure a default region, then us-east-1 will be chosen by default
@@ -1110,32 +1110,140 @@ Table of contents:
 - AWS Snow Family:
   - High-secure, portable **offline devices** to collect and process data at the edge, and migrate data into and out of AWS.
     - If it takes more than a week to transfer over the network, use Snowball devices
-  
+
   ![](https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2020/12/08/You-need-the-right-tool-to-move-data-so-you-can-innovate-anywhere-options-for-data-transfer.png)
 
-  - Data migration: Snowcone, Snowball Edge, Snowmobile.
-  - Edge computing: Snowcone, Snowball Edge.
-  - Snowball Edge:
-    - Physical data transport solution.
-    - Alternative to moving data over the network (and paying network fees).
-    - Pay per data transfer job.
-    - Provide block storage and Amazon S3-compatible object storage.
-    - Storage Optimized vs Compute Optimized.
-    - Use cases: large data cloud migrations, DC decommission, disaster recovery.
-  - Snowcone:
-    - Small, portable computing, anywhere, rugged & secure, withstands harsh environments.
-    - Device used for edge computing, storage, and data transfer.
-    - 8 TBs of usable storage.
-    - Must provide your own battery/cables.
-    - Can be sent back to AWS offline/connect it to internet and use AWS DataSync to send data.
-  - Snowmobile:
-    - Transfer exabytes (1 EB = 1,000,000 TBs) of data.
-    - Capacity: 100PB
-    - High security: temperature controllerd, GPS, 24/7 video surveillance.
-    - Bettern than Snowball if you transfer more than 10PB.
+  - Data migration:
+    - Snowball Edge:
+      - Physical data transport solution.
+      - Alternative to moving data over the network (and paying network fees).
+      - Pay per data transfer job.
+      - Provide block storage and Amazon S3-compatible object storage.
+      - Storage Optimized vs Compute Optimized.
+      - Use cases: large data cloud migrations, DC decommission, disaster recovery.
+    - Snowcone:
+      - Small, portable computing, anywhere, rugged & secure, withstands harsh environments.
+      - Device used for edge computing, storage, and data transfer.
+      - 8 TBs of usable storage.
+      - Must provide your own battery/cables.
+      - Can be sent back to AWS offline/connect it to internet and use AWS DataSync to send data.
+    - Snowmobile:
+      - Transfer exabytes (1 EB = 1,000,000 TBs) of data.
+      - Capacity: 100PB
+      - High security: temperature controllerd, GPS, 24/7 video surveillance.
+      - Bettern than Snowball if you transfer more than 10PB.
 
   ![](https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2020/12/08/Summary-comparison-of-the-AWS-Snow-Family.png)
 
-  - Data migration workflow:
-
   ![](https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2020/12/08/AWS-Snow-Family-data-migration-workflow.png)
+
+  - Edge computing:
+    - Process data while it's being created on an edge location (limited/no internet access, limited/no easy access to computing power).
+    - Uses cases: preprocess data, machine learning at the edge, transcoding media streams.
+    - Snowcone:
+      - 2 CPUs, 4 GB memory
+      - Use-C power
+    - Snowball Edge (Compute optimized):
+      - 52 vCPUs, 208 GB memory
+      - Optional GPU
+    - Snowball Edge (Storage optimized):
+      - Up to 40 vCPUs, 80 GB memory
+      - Object storage clustering available
+  - AWS OpsHub to manage Snow Family Device.
+- Snowball into Glacier:
+  - Snowball can't import to Glacier directly.
+  - Must use Amazon S3 first, in combination with an S3 lifecycle policy.
+- Amazon FSx:
+  - Launch 3rd party high-performance file system on AWS.
+  - Fully managed service.
+  - FSx for Windows (File Server):
+    - FSx for Windows is a fully managed Windows file system share drive
+    - Can be mounted on Linux EC2 instance.
+    - Scale up to 10s of GB/s, millions of IOPS, 100s PB of data
+    - SDD/HDD.
+    - Data is backed-up daily to S3.
+
+    ![](https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2020/02/26/Figure-1-reference-architecture-connecting-a-Windows-client-to-an-Amazon-FSx-file-system-over-AWS-Direct-Connect.png)
+
+  - FSx for Lustre:
+    - Lustre is a type of parallel distributed file system, for large-scale computing.
+    - Machine Learning, High Performance Computing, Video Processing, Financial Modeling,...
+    - Scale up to 100s GB/s, millions of IOPs, sub-ms latencies.
+    - SSD/HDD
+    - Seamless integration with S3.
+    - Deployment Options:
+      - Scratch File System:
+        - Temporary storage.
+        - Data is not replicated.
+        - High burst (faster!)
+        - Usage: short-term processing, optimize costs.
+
+      ![](https://docs.aws.amazon.com/images/fsx/latest/LustreGuide/images/fsx-lustre-scratch-architecture.png)
+
+      - Persistent File System:
+        - Long-term storage.
+        - Data is replicated
+        - Usage: long-term processing, sensitive data.
+
+      ![](https://docs.aws.amazon.com/images/fsx/latest/LustreGuide/images/fsx-lustre-persistent-architecture.png)
+
+  - FSx for NetApp ONTAP:
+    - Managed NetApp ONTAP
+    - Storage shrinks or grows automatically.
+    - Snapshots, replication, low-cost, compression and data-deduplication.
+    - Point-in-time instantaneous cloning (helpful for testing new workloads)
+  - FSx for OpenZFS:
+    - Managed OpenZFS file system.
+    - Up to 1,000,000 IOPS with < 0.5ms latency.
+    - Snapshots, compression and low-cost.
+    - Point-in-time instantaneous cloning (helpful for testing new workloads)
+- Hybrid Cloud for Storage:
+  - Cloud + On-premises
+  - S3 is a proprietary storage technology -> expose S3 data on-premises -> AWS Storage Gateway.
+- AWS Storage Gateway:
+  - Bridge between on-premises data and cloud data
+  - Use cases: disaster recovery, backup & restore, tiered storage, on-premises cache & low-latency files access
+  - Require hardware.
+  - Types:
+    - S3 File Gateway:
+      - Configured S3 buckets are accessible using the NFS and SMB protocol.
+      - Most recently used data is cached in the file gateway.
+      - Transition to S3 Glacier using a Lifecycle Policy.
+    - FSx File Gateway:
+      - Native access t Amazon FSx for Windows File Server.
+      - Local cache for frequently accessed data.
+      - Windows native compatiblity.
+      - Useful for group file shares and home directories.
+    - Volume Gateway:
+      - Block storage using iSCSI protocol backed by S3 (S3 -> EBS).
+      - Cached volumes: low latency access to most recent data.
+      - Stored volumes: entire dataset is on premise, scheduled backups to S3.
+    - Tape Gateway:
+      - Virtual Tape Library (VTL) backed by S3 and archived by Glacier.
+      - Back up data using existing tape-based processes (iSCSI interface).
+- AWS Transfer Faimly:
+  - A fully-managed service for file transfers into and out of S3 or EFS using FTP protocol (FTPS, SFTP).
+  - Managved infrastructure, scalable, reliable, HA.
+  - Pay per provisionewd endpoint per hour + data transfers in GB.
+  - Usage: sharing files, public datasets, CRM, ERP,...
+- AWS Data Sync:
+  - Move large amount of data to and from:
+    - On-premises/other cloud -> AWS (needs agent)
+    - AWS -> AWS (different storage services) (no agent)
+  - Replication tasks can be scheduled hourly, daily, weekly
+  - File permissions and metadata are preserved.
+- **AWS Storage Comparison**:
+  - S3: Object Storage
+  - S3 Glacier: Object Archival
+  - EBS volumes: Network storage for one EC2 instance at a time
+  - Instance Storage: Physical storage for your EC2 instance (high IOPS)
+  - EFS: Network File System for Linux instances, POSIX filesystem
+  - FSx for Windows: Network File System for Windows servers
+  - FSx for Lustre: High Performance Computing Linux file system
+  - FSx for NetApp ONTAP: High OS Compatibility
+  - FSx for OpenZFS: Managed ZFS file system
+  - Storage Gateway: S3 & FSx File Gateway, Volume Gateway (cache & stored), Tape Gateway
+  - Transfer Family: FTP, FTPS, SFTP interface on top of Amazon S3 or Amazon EFS
+  - DataSync: Schedule data sync from on-premises to AWS, or AWS to AWS
+  - Snowcone / Snowball / Snowmobile: to move large amount of data to the cloud, physically
+  - Database: for specific workloads, usually with indexing and querying
