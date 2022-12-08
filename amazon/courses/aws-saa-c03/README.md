@@ -1040,4 +1040,66 @@ Table of contents:
       - Files are updated in near real-time
       - Read only
       - Great for dynamic content that needs to available at low-latency in few regions+
-      
+    - ALB or EC2 as an origin:
+      - EC2: public + security allow Public IP of edge locations.
+      - ALB: public + security allow Public IP of edge locations. EC2 instances: allow ALB IP.
+    - Geo Restriction:
+      - Can restrict who can access your distribution:
+        - Alowlist.
+        - Blocklist.
+      - "country": determined using 3rd party Geo-IP database.
+      - Use case: Copyright Laws to control access to content.
+    - Pricing:
+      - The cost of data out per edge location varies.
+
+      ![](https://www.logicata.com/wp-content/uploads/2022/02/cloudfront-pricing-1-1024x373.jpg.webp)
+
+      - Price classes:
+        - Reduce the number of edge locations for cost reduction.
+        - 3 price classes:
+          - All: all regions.
+          - 200: most regions, but excludes the most expensive regions.
+          - 100: only the least expensive regions.
+      - Cache invalidations:
+        - CloudFront only refresh content after the TTL has expired.
+        - Force cache refresh by performing a CloudFront Invalidation.
+        - Can validate all files/special path.
+- Global Accelerator:
+  - Leverage the AWS internal network to route to your application.
+  - 2 Anycast IP are created for your application.
+    - Anycast IP: all serves hold the same IP address and the client is routed to the nearest one.
+  - The Anycast IP send traffic directly to Edge Locations.
+  - The Edge locations send the traffic to your application.
+  - Works with Elastic IP, EC2 instance, ALB, NLB, public or private.
+  - Consistent performance:
+    - Intelligent routing to lowest latency and fast regional failover.
+    - Internal AWS network.
+  - Health checks:
+    - Helps make your application global (<= 1 minute for unhealthy)
+    - Great for disaster recovery.
+  - Security:
+    - only 2 external IP need to be whitelisted.
+    - DDoS protection.
+  - How it works:
+    - When a request to made to an accelerator static IP address, the request is first routed to a nearby Global Accelerator edge location over the public internet via the Anycast BGP protocol.
+    - The accelerator accepts the request if there is a listener configured that matches the protocol and port, then determines the most optimal endpoint group based on:
+      - Geographic proximity to the edge location.
+      - Traffic dial settings.
+      - Health of the endpoints in the endpoint group.
+    - If the endpoint group closest to the edge location has the traffic dial configured to 100 percent and the endpoints in the region are passing health checks, the request is forwarded over the AWS global network.
+    - If the endpoint group closest to the edge location has the traffic dial configured to less than 100 percent, the configured percentage of requests received by the edge location is sent tothe closest endpoint group, and the remaining requests are distributed to other endpoint groups weighted by geographic proximity and the traffic dials settings.
+    - For endpoint groups with multiple endpoints, Global Accelerator spreads the traffic across the endpoints using a 5 tuple hash based on protocol, src IP, dst IP, src port, dst port. If endpoint weights are configured, Global Accelerator sends traffic to an endpoint based on weight that you assign to it as a proportion of the total weight for all endpoints in the group.
+
+    ![](https://d2908q01vomqb2.cloudfront.net/5b384ce32d8cdef02bc3a139d4cac0a22bb029e8/2019/03/29/image-1-1024x576.png)
+
+- Global Accelerator vs CloudFront:
+  - CloudFront:
+    - Improves performance for both cacheable content and dynamic content (api acceleration and dynamic site delivery).
+    - Content is served at the edge.
+  - Global Accelerator:
+    - Improves performance for a widge range of applications over TCP or UDP by proxying packets at the edge to applications running in one or more AWS regions.
+    - Good fit for non-HTTP use cases: gaming (UDP), IoT (MQTT), or Voice over IP.
+    - Good for HTTP use cases:
+      - that require static IP addresses.
+      - that require deterministic, fast regional failover.
+
