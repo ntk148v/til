@@ -13,6 +13,8 @@ Table of contents:
   - [8. AWS Well-Architected Framework](#8-aws-well-architected-framework)
   - [9. S3](#9-s3)
   - [10. Amazon SDK, IAM Roles \& Policies](#10-amazon-sdk-iam-roles--policies)
+  - [11. CloudFront, AWS Global Accelerator](#11-cloudfront-aws-global-accelerator)
+  - [12. AWS Storage Extras](#12-aws-storage-extras)
 
 ## 1. Getting started with AWS
 
@@ -1103,3 +1105,37 @@ Table of contents:
       - that require static IP addresses.
       - that require deterministic, fast regional failover.
 
+## 12. AWS Storage Extras
+
+- AWS Snow Family:
+  - High-secure, portable **offline devices** to collect and process data at the edge, and migrate data into and out of AWS.
+    - If it takes more than a week to transfer over the network, use Snowball devices
+  
+  ![](https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2020/12/08/You-need-the-right-tool-to-move-data-so-you-can-innovate-anywhere-options-for-data-transfer.png)
+
+  - Data migration: Snowcone, Snowball Edge, Snowmobile.
+  - Edge computing: Snowcone, Snowball Edge.
+  - Snowball Edge:
+    - Physical data transport solution.
+    - Alternative to moving data over the network (and paying network fees).
+    - Pay per data transfer job.
+    - Provide block storage and Amazon S3-compatible object storage.
+    - Storage Optimized vs Compute Optimized.
+    - Use cases: large data cloud migrations, DC decommission, disaster recovery.
+  - Snowcone:
+    - Small, portable computing, anywhere, rugged & secure, withstands harsh environments.
+    - Device used for edge computing, storage, and data transfer.
+    - 8 TBs of usable storage.
+    - Must provide your own battery/cables.
+    - Can be sent back to AWS offline/connect it to internet and use AWS DataSync to send data.
+  - Snowmobile:
+    - Transfer exabytes (1 EB = 1,000,000 TBs) of data.
+    - Capacity: 100PB
+    - High security: temperature controllerd, GPS, 24/7 video surveillance.
+    - Bettern than Snowball if you transfer more than 10PB.
+
+  ![](https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2020/12/08/Summary-comparison-of-the-AWS-Snow-Family.png)
+
+  - Data migration workflow:
+
+  ![](https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2020/12/08/AWS-Snow-Family-data-migration-workflow.png)
