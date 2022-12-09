@@ -15,6 +15,7 @@ Table of contents:
   - [10. Amazon SDK, IAM Roles \& Policies](#10-amazon-sdk-iam-roles--policies)
   - [11. CloudFront, AWS Global Accelerator](#11-cloudfront-aws-global-accelerator)
   - [12. AWS Storage Extras](#12-aws-storage-extras)
+  - [13. Amazon Messaging - Decoupling applications](#13-amazon-messaging---decoupling-applications)
 
 ## 1. Getting started with AWS
 
@@ -1247,3 +1248,72 @@ Table of contents:
   - DataSync: Schedule data sync from on-premises to AWS, or AWS to AWS
   - Snowcone / Snowball / Snowmobile: to move large amount of data to the cloud, physically
   - Database: for specific workloads, usually with indexing and querying
+
+## 13. Amazon Messaging - Decoupling applications
+
+- Amazon SQS:
+  - Standard Queue Service
+  - Fully managed service.
+  - Standard Queue:
+    - Attributes:
+      - Unlimited throughput, unlimited number of messages in queue.
+      - Default retention of messages: 4 days, maximum of 14 days.
+      - Low latency (<10ms)
+      - Limitation of 256KB per message sent.
+    - At least once delivery, occsionally -> can have duplicate messages.
+    - Best effort ordering -> can have out of order messages.
+    - Produce: SDK (SendMessage API)
+    - Consumer:
+      - Consumers (running on EC2 instance, servers, or AWS Lambda)
+      - Poll SQS for messages (<= 10 messages)
+      - Delete using SDK (DeleteMessage API)
+  - Security:
+    - Encryption: in-flight using HTTPS API, at-rest encryption using KMS keys, client-side encryption.
+    - Access controls: IAM policies to regulate access to the SQS API.
+    - SQS Access Policies (~ S3 bucket policies): cross-account access to SQS/allow other services to write to SQS.
+  - Message visibility timeout:
+    - After a message is polled by a consumer, it becomes invisible to other consumers.
+    - Default: timeout 30s (min 0s - max 12h).
+    - Message has 30s to be processed.
+    - Afterwards, the message is "visible" in SQS.
+    - A consumer could call the ChangeMessageVisibility API to get more time.
+    - Timeout: high -> consumers crashes, long recover.
+    - Timeout: low -> may get duplicates.
+
+    ![](https://docs.aws.amazon.com/images/AWSSimpleQueueService/latest/SQSDeveloperGuide/images/sqs-visibility-timeout-diagram.png)
+
+  - Long polling:
+    - Long Polling: When a consumer requests messages from the queue, it can optionally "wait" for messages to arrive if there are none in the queue.
+    - The wait time: 1-20s.
+    - Decreases the number of API calls made to SQS while increasing efficiency and reducing latency of your application.
+    - Can be enabled at queue level/API level.
+  - First In First Out (FIFO) Queue.
+    - Limited throughput: 300 msg/s without batching, 3000 msg/s with.
+    - Exactly-once send capability (by removing  duplicates)
+    - Messages are processed in order by the consumer.
+  - Usages:
+    - SQS + AutoscalingGroup + CloudWatch.
+    - Decouple between applications.
+    - Buffer to database writes.
+- Amazon SNS:
+  - Simple Notification Service.
+  - The "event producer"  only sends message to one SNS topic.
+  - Many "event receivers" (subscriptions).
+  - 100,000 topics limit.
+  - <=12,500,000 subscriptions/topic.
+  - SNS can integrate with a lot of AWS services.
+  - Publish:
+    - Topic publish (using the SDK):
+      - Create a topic
+      - Create a subscription (or many)
+      - Publish to the topic
+    - Direct publish (for mobile apps SDK):
+      - Create a platform application
+      - Create a platform endpoint
+      - Publish to the platform endpoint
+      - Works with Google GCM, Apple APNS, Amazon ADM...
+  - Security:
+    - Encryption: in-flight, at-rest, client-side.
+    - Access controls: IAM policies to regulate access to the SNS API.
+    - SNS Access Policies (~ S3 bucket policies).
+  - SNS + SQS: fan out - push once in SNS, receive in the all SQS queues that are subscribers.
