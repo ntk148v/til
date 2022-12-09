@@ -17,4 +17,5 @@ Table of Contents:
 ## 1. Linux Networking stack: Receiving data
 
 - It's a getting started. Before perform any tuning, let make sure that we understand how computers running Linux receive packets.
+- In network devices, it is common for the NIC to raise an IRQ to signal that a packet has arrived and is ready to be processed.
 - 
