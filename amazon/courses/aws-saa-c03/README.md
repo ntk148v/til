@@ -1316,4 +1316,122 @@ Table of contents:
     - Encryption: in-flight, at-rest, client-side.
     - Access controls: IAM policies to regulate access to the SNS API.
     - SNS Access Policies (~ S3 bucket policies).
-  - SNS + SQS: fan out - push once in SNS, receive in the all SQS queues that are subscribers.
+  - SNS + SQS:
+    - Fan out - push once in SNS, receive in the all SQS queues that are subscribers.
+    - Make sure SQS queue access policy allows for SNS to write.
+  - Applicatiopn:
+    - S3 events to multiple queues.
+    - SNS to Amazon S3 through Kinesis Data Firehoe.
+  - FIFO topic:
+    - Similar features as SQS FIFO: Ordering by Message Group ID, deduplication using Deduplication ID or Content Based deduplication.
+    - Can only have SQS FIFO queues as subscribers.
+    - Fanout + ordering + deduplication: SNS FIFO + SQS FIFO.
+  - Messages filtering:
+    - JSON Policy used to filter messages sentg to SNS topic's subscriptions.
+    - If a subscription doesn't have a filter policy, it receives every message.
+
+    ![](https://d2908q01vomqb2.cloudfront.net/1b6453892473a467d07372d45eb05abc2031647a/2022/11/22/Payload-filtering-example3.png)
+
+- Amazon Kinesis:
+  - Makes it easy to collect, process, and analyze streaming data in real-time.
+  - Ingest real-time such as: application logs, metrics, website clickstreams, IoT telemetry data...
+  - Types:
+    - Data Streams:
+      - Capture, process, and store data streams.
+
+      ![](https://d1.awsstatic.com/Digital%20Marketing/House/1up/products/kinesis/Product-Page-Diagram_Amazon-Kinesis-Data-Streams.e04132af59c6aa1e9372cabf44a17749f4a81b16.png)
+
+      - Retention: 1-365 days.
+      - Once data is inserted, can't be deleted (immutability)
+      - Data that shares the same partition goes to the sane shard (ordering)
+      - Capacity modes:
+        - Provisioned Mode:
+          - Choose the number of shards provisioned, scale manually or using API.
+          - Pay per shard provisioned per hour.
+        - On-demand Mode:
+          - No need to provision or manage the capacity.
+          - Scale automatically.
+          - Pay per stream per hour & data in/out per GB.
+      - Security:
+        - Control access/authorization using IAM policies.
+        - Encryption: in-flight, at-rest, clien side.
+        - VPC Endpoints available for Kinesis to access within VPC.
+        - Monitor API calls using CloudTrail.
+      - The capacity limits are defined by the number of shards within the data stream. The limits can be exceeded by either data throughput or the number of reading data calls. Each shard allows for 1 MB/s incoming data and 2 MB/s outgoing data.
+    - Data Firehose:
+      - Load data streams into AWS data stores.
+      - Fully managed service, no administrator, autoscaling, serverless.
+      - Pay for datga going through Firehose.
+      - Near Real time: 60s latency.
+      - Support custom data transformation using AWS Lambda.
+
+      ![](https://d1.awsstatic.com/pdp-how-it-works-assets/product-page-diagram_Amazon-KDF_HIW-V2-Updated-Diagram@2x.6e531854393eabf782f5a6d6d3b63f2e74de0db4.png)
+
+      - Data Firehose vs Data Stream.
+
+      | Data Streams | Data Firehose|
+      |--------------|--------------|
+      | Streaming service for ingest at scale | Load streaming data into S3/Redshift/ES/3rd party/custom HTTP|
+      | Write custom code (producer/consumer)|Fully managed|
+      | Real-time (20)ms)| Near real-time (60s)|
+      | Manage scaling (sharings splitting/merging)|Auto scaling|
+      | Data storage for 1-365 days| No data storage|
+      | Support replay capability| Doesn't support replay capability|
+
+    - Data Analytics:
+      - Analyze data streams with SQL or Apache Flink.
+
+      ![](https://d1.awsstatic.com/architecture-diagrams/Product-Page-Diagram_Amazon-Kinesis-Data-Analytics_HIW.82e3aa53a5c87db03c766218b3d51f1a110c60eb.png)
+
+      - Use cases: deliver streaming data in seconds, create real-time analytics, perform stateful processing.
+    - Video Streams:
+      - Capture, process, and store video streams.
+
+      ![](https://d1.awsstatic.com/re19/KVS_WebRTC/product-page-diagram_Kinesis-video-streams_how-it-works_01.cb5682fffec40aed239111f7454a586b31d6e680.png)
+
+- Kinesis vs SQS FIFO ordering:
+  - Ordering data into Kinesis: using partition key.
+  - Ordering data into SQS FIFO:
+    - If you don't use a Group ID, messages are consumed in the order they are sent, with only one consumer.
+    - To scale the number of consumers -> Group -> Group ID (similar to partition key in Kinesis/consumer group id in Kafka).
+  - Kinesis Data Streams:
+    - The maximum amount of consumers in parallel = number of shards.
+    - Can receive up to 5 MB/s of data.
+    - **Send a lot of data, data orderd per shard**
+  - SQS FIFO:
+    - The number of consumers = number of groups -> *dynamic number of consumers*
+    - Up to 300 messages per second (3000 using batching)
+- SQS vs SNS vs Kinesis:
+  - SQS:
+    - Consumer "pull data"
+    - Data is deleted after being consumed
+    - Can have as many workers (consumers) as we want
+    - No need to provision throughput
+    - Ordering - FIFO queues
+    - Individual message delay capability
+  - SNS:
+    - Push data io many subscribers
+    - Up to 12,500,000 subscribers
+    - Data is not persisted.
+    - Pub/Sub
+    - Up to 100,000 topics
+    - No need to provision throughput
+    - Integrates with SQS for fan-out
+    - FIFO capability
+  - Kinesis:
+    - Standard: pull data, Enhanced-fan out: push data
+    - Possibility to replay data
+    - Meant for real-time big data, analytics and ETL
+    - Ordering at shard level
+    - Data expires after X days
+    - Provisioned  mode or on-demand capacity mode
+- Amazon MQ:
+  - SQS, SNS are "cloud-native" services: proprietary protocols from AWS.
+  - Traditional applications may use open protocols (MQTT, AMQP, STOMP,...)
+  - Migrate: two options
+    - Re-engineering the application to use SQS and SNS.
+    - Use Amazon MQ!
+  - Amazon MQ: maanged message broker service for: RabbitMQ and ActiveMQ
+    - Doesn't scale as much as SQS, SNS
+    - Run on servers, can run in Multi-AZ with failover (active - passive), integrate with Amazon EFS for storage
+    - Both queue features (SQS) and topic features (SNS)
