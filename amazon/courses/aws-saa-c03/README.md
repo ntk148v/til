@@ -17,6 +17,7 @@ Table of contents:
   - [12. AWS Storage Extras](#12-aws-storage-extras)
   - [13. Amazon Messaging - Decoupling applications](#13-amazon-messaging---decoupling-applications)
   - [14. Containers on AWS](#14-containers-on-aws)
+  - [15. Serverless](#15-serverless
 
 ## 1. Getting started with AWS
 
@@ -1531,3 +1532,31 @@ Table of contents:
   - APC access support
   - Connect to database, cache, and message queue services
   - Use cases: web apps, APis, microservices, rapid production deployments
+
+## 15. serverless
+
+- AWS Lambda:
+  - Virtual functions - no servers to manage (ofc this's serverless, right)
+  - Limited by time - short executions
+  - Run on-demand
+  - Benefits:
+    - Easy pricing: pay per request and compute time
+    - Integrated with the whole AWS suite of services
+    - Integrated with many programming language
+    - Easy monitoring through CloudWatch
+    - Easy to get more resources per functions
+    - AWS Lambda container image:
+      - Must implement the Lambda Runtime API
+      - ECS/Fargate is preferred for running arbitrary Docker images
+    - [AWS Lambda integrations](https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html):
+      - API Gateway
+      - Kinesis
+      - DynamoDB
+      - S3
+      - CloudFront
+      - CloudWatch Events EventBridge & Logs
+      - SNS
+      - SQS
+      - Cognito
+
+    ![](https://d2908q01vomqb2.cloudfront.net/fc074d501302eb2b93e2554793fcaf50b3bf7291/2019/06/27/Screen-Shot-2019-06-27-at-2.23.51-PM-1024x510.png)
