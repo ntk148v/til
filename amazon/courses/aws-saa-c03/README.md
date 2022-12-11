@@ -1545,18 +1545,32 @@ Table of contents:
     - Integrated with many programming language
     - Easy monitoring through CloudWatch
     - Easy to get more resources per functions
-    - AWS Lambda container image:
-      - Must implement the Lambda Runtime API
-      - ECS/Fargate is preferred for running arbitrary Docker images
-    - [AWS Lambda integrations](https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html):
-      - API Gateway
-      - Kinesis
-      - DynamoDB
-      - S3
-      - CloudFront
-      - CloudWatch Events EventBridge & Logs
-      - SNS
-      - SQS
-      - Cognito
+  - AWS Lambda container image:
+    - Must implement the Lambda Runtime API
+    - ECS/Fargate is preferred for running arbitrary Docker images
+  - [AWS Lambda integrations](https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html):
+    - API Gateway
+    - Kinesis
+    - DynamoDB
+    - S3
+    - CloudFront
+    - CloudWatch Events EventBridge & Logs
+    - SNS
+    - SQS
+    - Cognito
 
     ![](https://d2908q01vomqb2.cloudfront.net/fc074d501302eb2b93e2554793fcaf50b3bf7291/2019/06/27/Screen-Shot-2019-06-27-at-2.23.51-PM-1024x510.png)
+
+  - Limits:
+    - Per Region:
+      - Execution:
+        - Memory allocation 128 MB - 10GB
+        - Maximum execution tim: 900s (15 minutes)
+        - Environment variables (4KB)
+        - Disk capacity: 512 MB to 10GB
+        - Concurrency executions: 1000 (can be increased)
+      - Deployment:
+        - Lambda function deployment size: 50MB
+        - Size of uncompressed deployment (code + dependencies): 250MB
+        - Can use the /tmp directory to load other files at startup
+        - Size of environment variables: 4KB
