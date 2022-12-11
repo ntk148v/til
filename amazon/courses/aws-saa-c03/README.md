@@ -16,6 +16,7 @@ Table of contents:
   - [11. CloudFront, AWS Global Accelerator](#11-cloudfront-aws-global-accelerator)
   - [12. AWS Storage Extras](#12-aws-storage-extras)
   - [13. Amazon Messaging - Decoupling applications](#13-amazon-messaging---decoupling-applications)
+  - [14. Containers on AWS](#14-containers-on-aws)
 
 ## 1. Getting started with AWS
 
@@ -1435,3 +1436,98 @@ Table of contents:
     - Doesn't scale as much as SQS, SNS
     - Run on servers, can run in Multi-AZ with failover (active - passive), integrate with Amazon EFS for storage
     - Both queue features (SQS) and topic features (SNS)
+
+## 14. Containers on AWS
+
+- Amazon ECS - Elastic Container Service:
+
+  ![](https://d1.awsstatic.com/product-page-diagram_Amazon-ECS%402x.0d872eb6fb782ddc733a27d2bb9db795fed71185.png)
+
+  - EC2 Launch type:
+    - Launch Docker containers on AWS = Launch ECS Tasks on ECS Clusters.
+    - EC2 Launch type: you must provision & maintain the infrastructure (EC2 instances)
+    - Each EC2 instance must run the ECS agent to register in the ECS Cluster.
+    - AWS takes care of staring/stopping containers.
+  - Fargate Launch type:
+    - Launch Docker containers on AWS.
+    - You do not provision the infrastructure (no EC2 instance to manage)
+    - Serverless
+    - Create task definitions
+  - IAM Roles for ECS:
+    - EC2 Instance Profile (EC2 Launch type only)
+      - Used by the ECS agent
+      - Make API calls to ECS service
+      - Send container logs to CloudWatch logs
+      - Pull Docker image from ECR
+      - Reference sensitive data in Secrets Manager or SSM Parameter Store
+  - ECS Task Role:
+    - Allow each task to have a specific role
+    - Use different rioles for the different ECS services you run
+    - Task Role is defined in the task definition
+  - Load Balancer integrations:
+    - ALB suppported and works for most use cases
+    - NLB recommended only for high throughput/high performance use cases, or to pair it with AWS Private Link
+    - Elastic Load Balancer supported but not recommended (no advanced features - no Fargate)
+  - Data Volumes (EFS):
+    - Mount EFS file sytems onto ECS tasks
+    - Works for both EC2 and Fargate launch types
+    - Tasks running in any AZ will share the same data in the EFS file system
+    - Fargate + EFS = serverless
+    - Use cases: persistent multi-AZ shared storage for your containers.
+  - Tasks - Auto scaling:
+    - Automatically increase/decrease the desired number of ECS tasks
+    - AWS Application Autoscaling:
+      - CPU utilization
+      - Memory Utilization
+      - ALB request count per target
+    - Target tracking - scale based on target value for a specific CloudWatch metric.
+    - Step scaling - scaled on a specified CloudWatch alarm.
+    - Scheduled scaling - scale based on a specified date/time.
+    - EC2 Service Auto scaling (task level) != EC2 Auto scaling (EC2 instance level)
+  - EC2 Launch type - Auto scaling EC2 instances:
+    - Auto Scaling Group Scaling
+      - Scale your ASG based on CPU utilization
+      - Add EC2 instances over time
+    - ECS Cluster Capacity Provider
+      - Used to automatically provision and scale the infrastructure for your ECS tasks
+      - Capacity Provider paired with an Auto Scaling Group
+- Amazon ECR - Elastic Container Registry:
+  - Store and manage Docker images on AWS
+  - Fully integrated with ECS, backed by S3
+  - Access is controlled through IAm
+  - Support image vulnerability scanning, versioning, image tags,...
+- Amazon EKS - Elastic Kubernetes Service
+  - Launch managed Kubernetes clusters on AWS
+  - An alternative to ECS.
+  - EKS supports EC2 mode and Fargate.
+  - Use case: if your company is already running Kubernetes on-premises or in another cloud, and want to migrate to AWS using Kubernetes.
+
+  ![](https://d1.awsstatic.com/product-page-diagram_Amazon-EKS%402x.ddc48a43756bff3baead68406d3cac88b4151a7e.ddc48a43756bff3baead68406d3cac88b4151a7e.png)
+
+  ![](https://d1.awsstatic.com/partner-network/QuickStart/datasheets/amazon-eks-on-aws-architecture-diagram.64cf0e40c45ade8107daf6a3ef5e2e05134d9a4b.png)
+
+  - Node Types:
+    - Managed Node Groups:
+      - Create and manage Nodes (EC2 instances) for you
+      - Nodes are aprt of an ASG managed by EKS
+      - Support On-demand or Spot instances
+    - Self-managed nodes:
+      - Nodes created by you and registered to the EKS cluster and managed by an ASG
+      - You can use prebuilt AMI
+    - Fargate: Serverless
+  - Data volumes:
+    - Need to specify StorageClass manifest on your EKS cluster
+    - Leverages a Container Storage Interface (CSI) compliant driver
+    - Support for:
+      - Amazon EBS
+      - Amazon EFS
+      - Amazon FSx for Lustre
+      - Amazon FSx for NetApp ONTAP
+- AWS App Runner:
+  - Fully managed service that makes it easy to deploy web applications and APIs at scale
+  - No infrastructure experience required
+  - Start with your source code or container image
+  - Automatically builds and deploy the web app
+  - APC access support
+  - Connect to database, cache, and message queue services
+  - Use cases: web apps, APis, microservices, rapid production deployments
