@@ -17,7 +17,7 @@ Table of contents:
   - [12. AWS Storage Extras](#12-aws-storage-extras)
   - [13. Amazon Messaging - Decoupling applications](#13-amazon-messaging---decoupling-applications)
   - [14. Containers on AWS](#14-containers-on-aws)
-  - [15. Serverless](#15-serverless
+  - [15. serverless](#15-serverless)
 
 ## 1. Getting started with AWS
 
@@ -1371,14 +1371,14 @@ Table of contents:
 
       - Data Firehose vs Data Stream.
 
-      | Data Streams | Data Firehose|
-      |--------------|--------------|
-      | Streaming service for ingest at scale | Load streaming data into S3/Redshift/ES/3rd party/custom HTTP|
-      | Write custom code (producer/consumer)|Fully managed|
-      | Real-time (20)ms)| Near real-time (60s)|
-      | Manage scaling (sharings splitting/merging)|Auto scaling|
-      | Data storage for 1-365 days| No data storage|
-      | Support replay capability| Doesn't support replay capability|
+      | Data Streams                                | Data Firehose                                                 |
+      | ------------------------------------------- | ------------------------------------------------------------- |
+      | Streaming service for ingest at scale       | Load streaming data into S3/Redshift/ES/3rd party/custom HTTP |
+      | Write custom code (producer/consumer)       | Fully managed                                                 |
+      | Real-time (20)ms)                           | Near real-time (60s)                                          |
+      | Manage scaling (sharings splitting/merging) | Auto scaling                                                  |
+      | Data storage for 1-365 days                 | No data storage                                               |
+      | Support replay capability                   | Doesn't support replay capability                             |
 
     - Data Analytics:
       - Analyze data streams with SQL or Apache Flink.
@@ -1574,3 +1574,133 @@ Table of contents:
         - Size of uncompressed deployment (code + dependencies): 250MB
         - Can use the /tmp directory to load other files at startup
         - Size of environment variables: 4KB
+  - Customization at the Edge:
+    - Execute some form of the logic at the edge - Edge Function:
+      - A code that you write and attach to CloudFront distributions
+      - Run close to users to minimize latency
+    - CloudFront has two kinds of functions:
+      - CloudFront Functions:
+        - Lightweight functions written in JS
+        - Used to change Viewer requests and response
+        - Native feature of CloudFront
+        - Use cases:
+          - Cache key normalization
+          - Header manipulation
+          - URL rewrites or redirects
+          - Request authen and author
+      - Lambda@Edge:
+        - Lambda functions written in NodeJS or Python
+        - Used to change CloudFront requests and responses (Viewer request response, Origin request response)
+        - Use cases:
+          - Longer execution time
+          - Adjustable CPU or memory
+          - Your code depends on a 3rd libraries
+          - Network access to use external service for processing
+          - File system access or access to the body of the HTTP requests
+    - Use case: customize the CDN content, web security and privacy, dynamic web application at the edge,...
+    - Pay for use
+  - Lambda in VPC:
+    - Default, Lambda fuction is launched outside your own VPC (in an AWS-owned VPC)
+    - Can't access resources in your VPC
+    - Lambda in VPC: define the VPC ID, the Subnet, and the Security Groups. Lambda will create an ENI in your subnets.
+
+    ![](https://d2908q01vomqb2.cloudfront.net/fc074d501302eb2b93e2554793fcaf50b3bf7291/2019/07/02/lambda-develope-mao-1024x484.jpg)
+
+    - Lambda functions are deployed in your VPC -> to access RDS -> use RDS proxy.
+- Amazon DynamoDB:
+  - Overview:
+    - Fully managed, highly available with replication across multiple AZs.
+    - NoSQL database.
+    - Scale to massive workloads, distrbuted database
+    - Millions of requests per seconds, trillions of row, 100s of TB of storage.
+    - Fast and consistent in performance.
+    - Integrated with IAM for security, authorization and administration.
+    - Low cost and auto scaling.
+    - No maintenance or patching, always available.
+  - Standard or IA.
+  - Basic:
+    - Made of Tables.
+    - Each table has a Primary Key. DynamoDB supports 2 types of Primary Key:
+      - Partition Key: simple primary key, composed of 1 attribute knowns as the partition key.
+      - Partition Key and Sort Key (composite primary key): All data under a partition key is sorted by the sort key value.
+    - Each table can have an infinite number of items (rows). Size of item <= 400KB
+    - Each item has attributes.
+
+    ![](https://d2908q01vomqb2.cloudfront.net/887309d048beef83ad3eabf2a79a64a389ab1c9f/2018/09/10/dynamodb-partition-key-1.gif)
+
+  - Read/Write Capacity Modes:
+    - Provisioned Mode (default):
+      - Number of reads/writes per second.
+      - Plan capacity beforehand.
+      - Pay for provisioned Read Capacity Units (RCU) and Write Capacity Unit (WCU)
+      - Possibility to add auto-scaling mode for RCU and WCU
+    - On-demand Mode:
+      - Automatically scale
+      - No capacity planning needed
+      - Pay for what you use, more expensive
+      - Great for unpredictable workloads, steep sudden spikes
+  - DynamoDB Accelerator (DAX):
+    - Memory cache for DynamoDB
+    - Help solve read congestion by caching
+    - Microseconds latency for cached data
+    - Doesn't require application logic modification (compatible with existing DynamoDB APIs)
+    - 5 minutes TTL (default)
+    - vs ElasticCache: store Aggregation result. DAX stores individual objects cache, quey & scan cache.
+  - Stream Processing:
+    - Ordered stream of item-level modifications (create/update/delete) in a table
+    - Use cases:
+      - React to changes in real-time
+      - Real-time usage analytics
+      - Insert into dervative tables
+      - Implement cross-region replication
+      - Invoke AWS Lambda on changes to your DynamoDB table
+    - vs Kinesis Data Streams: Kinesis Data Streams offers 1 year retention, high # of consumers, process using AWS Lambda, Kinesis Data Analytics,... Stream Processing: limited # of consumers.
+  - Global Tables:
+    - Make a DynamoDB table accessible with low latency in multiple-regions
+    - Active-Active replication
+    - Application can READ and WRITE to the table in any region.
+    - Must enable DynamoDB Streams as a pre-requisite
+  - Time to live (TTL):
+    - Automatically delete items after an expiry timestamp.
+    - Use cases: reduce stored data by keeping only current items, adhere to regulatory obligations, web session handling...
+    - You identify a specific attribute name for it.
+  - Backups for disaster recovery:
+    - Continuous backups using point-in-time recovery (PITR).
+    - On-demands backups.
+  - Integration with S3:
+    - Export to S3 (must enable PITR)
+    - Import to S3
+- API Gateway:
+  - Overview:
+    - AWS Lambda + API Gateway: no infrastructure to manage
+    - Support for the WebSocket protocol
+    - Handle API versioning
+    - Handle differnt environments
+    - Handle security
+    - Create API keys, handle request throttling
+    - Swagger/OpenAPI
+    - Transform and validate requests and responses
+    - Generate SDK and API specifications
+    - Cache API responses
+  - Integrations high level:
+    - Lambda function: invoke Lambda function.
+    - HTTP: expose HTTP endpoints in the backend.
+    - AWS Service: expose any AWS API through the API Gateway.
+  - Endpoint types:
+    - Edge-optimized (default): for global clients
+      - Geographically distributed clients.
+      - API requests are routed to the nearest CloudFront Edge Location which improves latency.
+      - API Gateway still lives in 1 AWS Region
+    - Regional: for clients within the same region
+    - Private: only be accessed from your VPC using ENI
+  - Security:
+    - User authentication through:
+      - IAM roles (internal applications)
+      - Cognito (external users)
+      - Custom autorizer (own logic)
+    - Custom Domain name HTTPS security
+- Step functions:
+  - Build serverless visual workflow to orchestrate your Lambda functions.
+  - Workflow as a Service
+  - Integrate with other AWS services
+  - Use cases: order fulfillment, data processing, web applications,...
