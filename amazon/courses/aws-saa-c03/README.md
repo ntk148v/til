@@ -1,5 +1,9 @@
 # AWS SAA-C03
 
+Sources & Refer:
+
+- <https://www.awsgeek.com/>
+
 Table of contents:
 
 - [AWS SAA-C03](#aws-saa-c03)
@@ -18,6 +22,7 @@ Table of contents:
   - [13. Amazon Messaging - Decoupling applications](#13-amazon-messaging---decoupling-applications)
   - [14. Containers on AWS](#14-containers-on-aws)
   - [15. serverless](#15-serverless)
+  - [16. Databases](#16-databases)
 
 ## 1. Getting started with AWS
 
@@ -460,6 +465,9 @@ Table of contents:
 ## 6. RDS+Aurora+ElastiCache
 
 - RDS - Relational Database Service:
+
+  ![](https://www.awsgeek.com/Amazon-RDS/Amazon-RDS.jpg)
+
   - Managed DB service for DB use SQL as a query language.
     - Automated provisioning, OS patching.
     - Continous backups and restore to specific timestamp (Point in Time Restore)
@@ -564,6 +572,9 @@ Table of contents:
   - Enforce IAM authentication.
   - Never publicity accesible (must be accessed from VPC).
 - ElastiCache:
+
+  ![](https://www.awsgeek.com/Amazon-ElastiCache/Amazon-ElastiCache.jpg)
+
   - Manage Redis or Memcached.
   - Caches: help reduce load off of databases for read intensive workloads, make application stateless.
   - AWS takes care of OS maintenance/patching, optimizations, setup, configuration, monitoring, failure recovery and backups.
@@ -681,6 +692,8 @@ Table of contents:
 - It's deserverd [its own article](../../well-architected-framework/README.md).
 
 ## 9. S3
+
+![](https://www.awsgeek.com/Amazon-S3/Amazon-S3.jpg)
 
 - Simple Storage Service
 - Use cases:
@@ -1254,6 +1267,9 @@ Table of contents:
 ## 13. Amazon Messaging - Decoupling applications
 
 - Amazon SQS:
+
+  ![](https://www.awsgeek.com/Amazon-SQS/Amazon-SQS.jpg)
+
   - Standard Queue Service
   - Fully managed service.
   - Standard Queue:
@@ -1298,6 +1314,9 @@ Table of contents:
     - Decouple between applications.
     - Buffer to database writes.
 - Amazon SNS:
+
+  ![](https://www.awsgeek.com/Amazon-SNS/Amazon-SNS.jpg)
+
   - Simple Notification Service.
   - The "event producer"  only sends message to one SNS topic.
   - Many "event receivers" (subscriptions).
@@ -1716,3 +1735,127 @@ Table of contents:
     - For example, basic auth: *store token in AWS Security Token Service* (STS)
 
     ![](https://docs.aws.amazon.com/images/cognito/latest/developerguide/images/amazon-cognito-ext-auth-basic-flow.png)
+
+## 16. Databases
+
+- [How to choose a database](https://aws.amazon.com/startups/start-building/how-to-choose-a-database/)
+- Questions to choose the right datbase based on architecture:
+  - Read-heavy, write-heavy, or balanced workload? Throughput needs? Will it change, does it need to scale or fluctuate during the day?
+  - How much data to store and for how long? Will it grow? Average object size?
+  - How are they accessed?
+  - Data durability? Source of truth for the data?
+  - Latency requirements? Concurrent users?
+  - Data model? How will you query the data? Joins? Structured? Semi-structured?
+  - Strong schema? More flexibility? Reporting? Search? RDBMS? NoSQL?
+  - License costs? Switch to Cloud Native DB such as Aurora?
+- Database Types:
+  - RDBMS (=SQL/OLTP): RDS, Aurora - great for joins
+  - NoSQL database - no joins, no SQL: DynamoDB (~JSON), ElasticCache (key-value pairs), Neptune (Graphs), DocumentDB (for MongoDB), Keyspaces (for Apache Cassandra)
+  - Object store: S3 (for big objects) / Glacier (for backups/archives)
+  - Data warehouse (=SQL Analytics/BI): Redshift (OLAP), Athena, EMR
+  - Search: OpenSearch (JSON) - free text, unstructured searches
+  - Graphs: Amazon Neptune - displays relationships between data
+  - Ledger: Amazon Quantum Ledger Database
+  - Time series: Amazon Timestream
+- Amazon RDS:
+  - Managed PostgreSQL/MySQL/Oracle/SQL Server/MariaDB/Custom
+  - Provisioned RDS Instance Size and EBS Volume Type & Size
+  - Auto-scaling capability for Storage
+  - Support for Read Replicas and Multi AZ
+  - Security through IAM, Security Groups, KMS, SSL in transit
+  - Automated Backup with Point-in-time restore feature (35 days)
+  - Manual DB snapshot for longer-term recovery
+  - Managed and scheduled maintenance (with downtime)
+  - Support for IAM authentication, integration with Secrets Manager
+  - RDS custom for access to and customize the underlying instance (Oracle & SQL Server)
+  - Use case: Store relational datasets (RDBMS/OLTP), perform SQL queries, transactions
+- Amazon Aurora:
+  - Compatible API for PostgreSQL/MySQL, separation of storage and compute.
+  - Storage: data is stored in 6 replicas, across 3 AZs.
+  - Compute: Cluster of DB instance across multiple AZ, autoscaling of Read Replicas
+  - Same security/monitoring/maintenance features as RDS
+  - Know the backup & restore options for Aurora
+  - Serverless
+  - Multi-master - continuous writes failover
+  - Global: up to 16 DB Read instances in each region
+  - Machine Learning: perform ML using SageMaker & Comprehend
+  - Database cloning: new cluster from existing one, faster than restoring a snapshot
+  - Use case: same as RDS, but with less maintenance / more flexibility, performance & features.
+- ElastiCache:
+  - Redis/Memcached
+  - In-memory data store, sub-ms latency
+  - Must provision an EC2 instance type
+  - Support for clustering (Redis) and Multi AZ, Read replicas (sharding)
+  - Security through IAM, Security Groups, KMS, Redis Auth
+  - Backup/Snapshot/Point in time maintenance
+  - Requires some application code changes to be leveraged
+  - Use case: Key-value store, Frequent reads, less writes, cache results for DB queries, store session data for website, cannot use SQL.
+- DynamoDB:
+  - AWS proprietary technology, managed serverless NoSQL database, millisecond latency
+  - Capacity modes: provisioned capacity with optional auto scaling or on-demand capacity
+  - Can replace ElastiCache as key/value store (storing session data for example, using TTL feature)
+  - High available, Multi AZ by default, Read and Write are decoupled, transaction capability
+  - DAX cluster for read cache, microsecond read latency
+  - Security, authen and author - IAM
+  - Event processing: DynamoDB Streams -> Lambdad, Kinesis Data Streams
+  - Global Table feature: active-active setup
+  - Automated backup (35 days) with PITR, or on-demand backups
+  - Export/import to/from S3
+  - Great  to rapidly evolve schemas
+  - Use case: serverless applications development (small documents 100s KB), distributed serverless cache, doesn't have SQL query language available
+- S3:
+  - Key/value store for objects
+  - Great for bigger objects, not so great for many small objects
+  - Serverles, scales infinitely, max object size is 5 TB, versioning capability
+  - Tiers: Standar, Infrequent Access, Intelligent, Glacier + lifecycle policy
+  - Features: Versioning, Encryption, Replication, MFA-Delete, Access logs,...
+  - Security: IAM, Bucket Policies, ACL, Access Points, Object lambda, CORS, Objects/Vault Lock
+  - Encryption: SSE-S3, SSE-KMS, SSE-C, client-side, TLS in transit, default encryption
+  - Batch operations
+  - Performance: multi-part upload, S3 transfer acceleration, S3 Select
+  - Automation: S3 Event notifications (SNS, SQS, Lambda, EventBridge)
+  - Use cases: static files, key value store for big files, website hosting
+- DocumentDB:
+  - An "AWS implementation" for MongoDB.
+  - Full managed, high available with replication across 3 AZ
+  - DocumentDB storage automatically grows in increments of 10GB, up to 64TB
+  - Auto scaling
+- Amazon Neptune:
+
+  ![](https://www.awsgeek.com/Amazon-Neptune/Amazon-Neptune.jpg)
+
+  - Fully managed graph database
+  - High available across 3 AZ, with up to 15 read replicas
+  - Build and run applications working with highly connected datasets - optimized for these complex and hard queries
+  - Can store up to billions of relations and query the graph with milliseconds latency
+  - Replication
+  - Great for knowledge graphs (Wiki), fraud detection, recommendation engines, social netwokring
+- Amazon Keyspaces (for Apache Cassandra):
+  - A managed Apache Cassandra-compatible database service
+  - Serverless, scalable, high available, fully managed by AWS
+  - Auto scale tables up/down based on the application traffic
+  - Tables are replicated 3 times across Multi AZ
+  - Use Cassandra Query Language (CQL)
+  - Single-digit millisecond latency at any scale, 1000s for requests per second
+  - Capacity: On-demand mode or provisioned mode with autoscaling
+  - Encryption, backup, PITR (35 days)
+  - Use case: store IoT devices info, time-series data,...
+- Amazon QLDB:
+  - Quantum Ledger Database
+  - A ledger is a book recording financial transactions
+  - Fully managed, serverless, high available, replication across 3 AZ
+  - Used to review history of all the changes made to your application data over time
+  - Immutable system: no entry can be removed or modified, cryptographically verifiable
+  - Difference with Amazon Managed Blockchain: no decentralization component, in accordancewith financial regulation rules
+- Amazon Timestream:
+  - Fully managed, fast, scalable, serverless time series database
+  - Auto scaling
+  - Store and analyze trillions of events per day
+  - 1000s times faster & 1/10th the cost of relational databases
+  - Scheduled queries, multi-measure  records, SQL compatibility
+  - Data storage tiering: recent data, kept in memory and historical data kept in a cost-optimized storage
+  - Built-in time series analytics functions
+  - Encryption in transit and at rest
+  - Use case: IoT apps, operational applications, real-time analytics,...
+
+  ![](https://www.awsgeek.com/Amazon-Timestream/Amazon-Timestream.jpg)
