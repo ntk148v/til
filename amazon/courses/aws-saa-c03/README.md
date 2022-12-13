@@ -1659,7 +1659,7 @@ Table of contents:
     - Make a DynamoDB table accessible with low latency in multiple-regions
     - Active-Active replication
     - Application can READ and WRITE to the table in any region.
-    - Must enable DynamoDB Streams as a pre-requisite
+    - Must enable DynamoDB Streams as a pre-requisite: to get a changelog and use that changelog to replicate data across replica tables in other AWS Regions.
   - Time to live (TTL):
     - Automatically delete items after an expiry timestamp.
     - Use cases: reduce stored data by keeping only current items, adhere to regulatory obligations, web session handling...
@@ -1699,8 +1699,20 @@ Table of contents:
       - Cognito (external users)
       - Custom autorizer (own logic)
     - Custom Domain name HTTPS security
-- Step functions:
+- Amazon Step functions:
   - Build serverless visual workflow to orchestrate your Lambda functions.
   - Workflow as a Service
   - Integrate with other AWS services
   - Use cases: order fulfillment, data processing, web applications,...
+- Amazon Cognito:
+  - A developer-centric and cost-effictive customer identify and access management (CIAM) service that scales to millions of users.
+  - Main components:
+    - User pool: User directory that provides sign-up and sign-in options for app user.
+    - Identity pool: Enable you to grant your users access to other AWS services.
+
+  ![](https://docs.aws.amazon.com/cognito/latest/developerguide/images/scenario-cup-cib.png)
+
+  - [Authentication flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html):
+    - For example, basic auth: *store token in AWS Security Token Service* (STS)
+
+    ![](https://docs.aws.amazon.com/images/cognito/latest/developerguide/images/amazon-cognito-ext-auth-basic-flow.png)
