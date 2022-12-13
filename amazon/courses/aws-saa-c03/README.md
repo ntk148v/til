@@ -1859,3 +1859,58 @@ Table of contents:
   - Use case: IoT apps, operational applications, real-time analytics,...
 
   ![](https://www.awsgeek.com/Amazon-Timestream/Amazon-Timestream.jpg)
+
+## 17. Data & Analytics
+
+- Athena:
+  - Serverless query service to analyze data stored in Amazon S3
+  - Use standard SQl languages to query the files
+  - Support CSV, JSON, ORC, Avro, and Parquet
+  - Commonly used with Amazon Quicksight for reporting/dashboards
+  - Use case: Business intelligence/analytics/reporting, analyze & query VPC flow logs, ELB logs, CloudTrail trails,...
+  - Analyze data in S3 using serverless? -> Athena
+
+  ![](https://www.xenonstack.com/hubfs/amazon-athena-tools.png)
+
+  - Use colummar data for cost-saving (less scan)
+    - Apache Parquet or ORC is recommened
+    - Hugo performance improvement
+    - Use Glue to convert your data -> Parquet or ORC
+  - Compress data for smaller retrievals
+  - Partition datasets in S3 for easy query on virtual columns
+  - Use larger files (128MB) to minimize overhead
+  - Federated Query:
+    - Allow you to run SQl queries across data stored in relational, non-relational, object, and custom data sources
+    - Use Data Source Connectors that run on AWS Lambda to run Federated Queries
+- Redshift:
+  - Based on PostgreSQL, but it's not used for OLTP
+  - It's OLAP - online analytical processing (analytics and data warhousing)
+  - 10x better performance than other data warehouses, scale to PBs of data
+  - Columnar storage of data (instead of row based) & parallel query engine
+  - Pay as you go based on the instances provisioned
+  - Has a SQL interface for performing the queries
+  - Quicksight or Tableau
+  - vs Athena: faster queries/joins/aggregations (thanks to indexes)
+  - Cluster:
+
+  ![](https://d2908q01vomqb2.cloudfront.net/b6692ea5df920cad691c20319a6fffd7a4a766b8/2018/11/21/ScaleRedshift2.png)
+
+  - Provision the node size in advance
+  - Use Reserved Instances for cost savings
+  - Has no "Multi AZ" mode
+  - Snapshots are Point-in-time backups of a cluser, stored internally in S3
+  - Snapshots are incremental
+  - Restore a snapshot -> a new cluster
+  - Automated: every 8 hours, ever 5 GB, or on a schedule. Set retention
+  - You can configure Amazon Redshift to auto copy snapshots of cluster to another AWS Region
+  - Load data into Redshift: Large inserts are much better!
+    - Kinesis Data firehose
+    - S3 using copy command
+    - EC2 Instance with JDBC driver
+  - Redshift Spectrum:
+    - Query data that is already in S3 without loading it.
+    - Require Redshift cluster
+
+    ![](https://d2908q01vomqb2.cloudfront.net/b6692ea5df920cad691c20319a6fffd7a4a766b8/2017/07/18/redshift_spectrum-1.gif)
+
+- OpenSearch:
