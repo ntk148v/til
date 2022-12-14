@@ -15,7 +15,8 @@ Table of Contents:
   - [1. Linux Networking stack: Receiving data](#1-linux-networking-stack-receiving-data)
   - [2. Network Performance tuning](#2-network-performance-tuning)
     - [2.1. The NIC Ring Buffer](#21-the-nic-ring-buffer)
-    - [2.2. Interrupts and Interrupt Handlers (Hardware IRQ)](#22-interrupts-and-interrupt-handlers-hardware-irq)
+    - [2.2.HardIRQ - Interrupt Coalescence](#22hardirq---interrupt-coalescence)
+    - [2.3. SoftIRQ - Interrupt Coalescing and Ingress QDisc](#23-softirq---interrupt-coalescing-and-ingress-qdisc)
 
 ## 1. Linux Networking stack: Receiving data
 
@@ -27,7 +28,7 @@ Table of Contents:
   - **softIRQ** system is a system that kernel uses to process work outside of the device driver IRQ context. In the case of network devices, the softIRQQ system is responsible for processing incoming packets.
 
 ```shell
-$ cat /proc/interrupts
+cat /proc/interrupts
 
            CPU0       CPU1       CPU2       CPU3       CPU4       CPU5
   0:         34          0          0          0          0          0   IO-APIC   2-edge      timer
@@ -36,7 +37,7 @@ $ cat /proc/interrupts
   8:          0          0          0          0          0          0   IO-APIC   8-edge      rtc0
   9:          0          0          0          0          0          0   IO-APIC   9-fasteoi   acpi
  12:          0          0          0      18802          0          0   IO-APIC  12-edge      i8042
- 17:          0          0          0          0         96     138101   IO-APIC  17-fasteoi   enp0s17
+ 17:          0          0          0          0         96     138101   IO-APIC  17-fasteoi   eth3
  18:          0          0          0      59389          0          0   IO-APIC  18-fasteoi   vmwgfx
  20:          0          0     129334          0          0          0   IO-APIC  20-fasteoi   ioc0, vboxguest
  21:          0      33641          0          0          0          0   IO-APIC  21-fasteoi   ahci[0000:00:0d.0], snd_intel8x0
@@ -147,7 +148,7 @@ There are factors should be considered for network performance tuning. Note that
   - Check command:
 
   ```shell
-  $ ethtool -g eth3
+  ethtool -g eth3
   Ring parameters for eth3:
   Pre-set maximums:
   RX: 8192
@@ -166,7 +167,7 @@ There are factors should be considered for network performance tuning. Note that
 
   ```shell
   # Increase both the Rx and Tx buffers to the maximum
-  $ ethtool -G eth3 rx 8192 tx 8192
+  ethtool -G eth3 rx 8192 tx 8192
   ```
 
   - Persist the value:
@@ -176,11 +177,118 @@ There are factors should be considered for network performance tuning. Note that
   - How to monitor:
 
   ```shell
-  $ ethtool -S eth3 | grep -e "err" -e "drop" -e "over" -e "miss" -e "timeout" -e "reset" -e "restar" -e "collis" -e "over" | grep -v "\: 0"
+  ethtool -S eth3 | grep -e "err" -e "drop" -e "over" -e "miss" -e "timeout" -e "reset" -e "restar" -e "collis" -e "over" | grep -v "\: 0"
   ```
 
-### 2.2. Interrupts and Interrupt Handlers (Hardware IRQ)
+### 2.2.HardIRQ - Interrupt Coalescence
 
-- **What**:
-- **Why**:
-- **How**:
+- HardIRQ:
+  - When a NIC receives incoming data, it copies the data into kernel buffers using DMA, then raises a hard interrupt to notify the kernel.
+  - Hard interrupts can be expensive in terms of CPU usage, especially when holding kernel locks.
+  - The hard interrupt handler then leaves the majority of packet reception to SoftIRQ.
+  - Hard interrupts can be seen in `/proc/interrupts`.
+
+  ```shell
+  # For example, the columns represent the number of incoming interrupts as a counter value
+   egrep “CPU0|eth3” /proc/interrupts
+       CPU0 CPU1 CPU2 CPU3 CPU4 CPU5
+  110:    0    0    0    0    0    0   IR-PCI-MSI-edge   eth3-rx-0
+  111:    0    0    0    0    0    0   IR-PCI-MSI-edge   eth3-rx-1
+  112:    0    0    0    0    0    0   IR-PCI-MSI-edge   eth3-rx-2
+  113:    2    0    0    0    0    0   IR-PCI-MSI-edge   eth3-rx-3
+  114:    0    0    0    0    0    0   IR-PCI-MSI-edge   eth3-tx
+  ```
+
+- Interrupt coalescence
+  - **What**:
+    - The amount of traffic that a network will receive (number of frames), or time that passes after receiving traffic (timeout).
+      - Interrupting too soon: poor system performance (the kernel stops a running task to handle the hardIRQ)
+      - Interrupting too late: traffic isn't taken off the NIC soon enough -> more traffic -> overwrite -> traffic loss!
+
+  - **Why**: reduce CPU usage, hardIRQ, might be increase throughput at cost of latency
+  - **How**:
+    - Check command:
+      - Adaptive mode enables the card to auto-moderate the IC. The driver will inspect traffic patterns and kernel receive patterns, and  estimate coalescing settings on-the-fly which aim to prevent packet loss -> useful if many small packets are received.
+      - Higher interrupt coalescence favors bandwidth over latency: VOIP application (latency-sensitive) may require less coalescence than a file transfer (throughput-sensitive)
+
+    ```shell
+    ethtool -c eth3
+
+    Coalesce parameters for eth3:
+    Adaptive RX: on TX: off # Adaptive mdoe
+    stats-block-usecs: 0
+    sample-interval: 0
+    pkt-rate-low: 400000
+    pkt-rate-high: 450000
+    rx-usecs: 16
+    rx-frames: 44
+    rx-usecs-irq: 0
+    rx-frames-irq: 0
+    ```
+
+    - Change command:
+      - Allow at least some packets to buffer in the NIC, and at least some time to pass, before interrupting the kernel. The values depend on system capabilities and traffic received.
+
+    ```shell
+    # Turn adaptive mode off
+    # Interrupt the kernel immediately upon reception of any traffic
+    ethtool -C eth3 adaptive-rx off rx-usecs 0 rx-frames 0
+    ```
+
+    - How to monitor:
+
+### 2.3. SoftIRQ - Interrupt Coalescing and Ingress QDisc
+
+- SoftIRQ:
+  - Kernel routines which are scheduled  to run at a time when other tasks will not be interrupted.
+  - Purpose: drain the network adapter receive ring buffer.
+  - Check:
+
+  ```shell
+  ps aux | grep ksoftirq
+                                                                    # ksotirqd/<cpu-number>
+  root          13  0.0  0.0      0     0 ?        S    Dec13   0:00 [ksoftirqd/0]
+  root          22  0.0  0.0      0     0 ?        S    Dec13   0:00 [ksoftirqd/1]
+  root          28  0.0  0.0      0     0 ?        S    Dec13   0:00 [ksoftirqd/2]
+  root          34  0.0  0.0      0     0 ?        S    Dec13   0:00 [ksoftirqd/3]
+  root          40  0.0  0.0      0     0 ?        S    Dec13   0:00 [ksoftirqd/4]
+  root          46  0.0  0.0      0     0 ?        S    Dec13   0:00 [ksoftirqd/5]
+  ```
+
+  - Monitor:
+
+  ```shell
+  watch -n1 grep RX /proc/softirqs
+  watch -n1 grep TX /proc/softirqs
+  ```
+
+- Interrupt coalescence:
+  - **What**: the maximum number of microseconds in 1 NAPI polling cycle. Polling will exit when either `netdev_budget_usecs` have elapsed during the poll cycle or the number of packets processed reaches `netdev_budget`.
+  - **Why**: instead of reacting to tons of softIRQ, the driver keeps polling data; keep an eye on `dropped` (# of packets that were dropped because `netdev_max_backlog` was exceeded) and `squeezed` (# of times ksoftirq ran out of `netdev_budget` or time slice with work remaining)
+  - **How**:
+    - Check command:
+
+    ```shell
+    sysctl net.core.netdev_budget_usecs
+
+    net.core.netdev_budget_usecs = 8000
+    ```
+
+    - Change command:
+
+    ```shell
+    sysctl -w net.core.netdev_budget <value>
+    ```
+
+    - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
+    - How to monitor:
+      - If any of columns beside the 1st column are increasing, need to change budgets!
+
+    ```shell
+    cat softnet_stat
+
+    0073d76b 00000000 000049ae 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+    000000d2 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+    0000015c 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+    0000002a 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+    ```
