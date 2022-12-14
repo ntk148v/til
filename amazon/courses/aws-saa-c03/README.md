@@ -23,6 +23,7 @@ Table of contents:
   - [14. Containers on AWS](#14-containers-on-aws)
   - [15. serverless](#15-serverless)
   - [16. Databases](#16-databases)
+  - [17. Data \& Analytics](#17-data--analytics)
 
 ## 1. Getting started with AWS
 
@@ -1914,3 +1915,94 @@ Table of contents:
     ![](https://d2908q01vomqb2.cloudfront.net/b6692ea5df920cad691c20319a6fffd7a4a766b8/2017/07/18/redshift_spectrum-1.gif)
 
 - OpenSearch:
+  - Elasticsearch!
+  - DynamoDB, queries only exist by primary key or indexes - OpenSearch, search any field, even partially matches
+  - Cluster of instances (not serverless)
+  - Ingestion from Kinesis Data Firehose, AWS IoT, and CloudWatch Logs
+  - Security through Cognito & IAM, KMS encryption, TLS
+  - Dashboard
+  - Patterns:
+    - DynamoDB -> DynamoDB Stream -> Lambda Function -> Amazon OpenSearch
+    - CloudWatch Logs -> Subscription Filter -> Lambda Function -> Amazon OpenSearch (Real time)
+    - CloudWatch Logs -> Subscription Filter -> Kinesis Data Firehose -> Amazon OpenSearch (Near real time)
+    - Kinesis Data Streams -> Kinesis Data Firehose (integrate with Lambda for data transformation) -> Amazon OpenSearch
+    - Kinesis Data Streams -> Lambda Function -> Amazon OpenSearch
+  - Amazon EMR:
+    - Elastic MapReduce
+    - Create Hadoop clusters (Big Data) to analyze and process vast amount of data
+    - Apache Spark, HBase, Presto, Flink,...
+    - Auto-scaling and integrated with Spot instances
+    - Use case: data processing, machine learning, web indexing, big data...
+    - Node types:
+      - Master node: manage the cluster, coordinate, manage health - long running
+      - Core node: Run tasks and store data - long running
+      - Task node (optional): just to run tasks - usually Spot
+    - Purchasing options:
+      - On-demand
+      - Reserved (min 1 year): cost savings
+      - Spot instances: cheaper
+
+    ![](https://docs.aws.amazon.com/images/emr/latest/ManagementGuide/images/cluster-node-types.png)
+
+- Amazon QuickSight:
+  - Serverless machine learning-powered business intelligence service to create interactive dashboards.
+  - Use cases: business analytics, building visualizations, perform ad-hoc analysis, get business insights using data,..
+  - Enterprise edition: Column-level security (CLS)
+- Amazon Glue:
+  - Managed extract, transform, and load (ETL) service
+  - Useful to prepare and transform data for analytics
+  - Serverless
+
+  ![](https://d2908q01vomqb2.cloudfront.net/b6692ea5df920cad691c20319a6fffd7a4a766b8/2020/02/05/ParquetWriterAWSGlue3.png)
+
+  - Glue Job Bookmarks: prevent re-processing old data
+  - Glue Elastic Views:
+    - Combine and replicate data across multiple data stores using SQL
+    - No custom code
+    - Leverage a "virtual table" (materialized view)
+  - Glue DataBrew: clean and normalize data using pre-built transformation
+  - Glue Studio: new GUI
+  - Glue Streaming ETL (built on Apache Spark Structured Streaming): compatible with Kinesis Data Streaming, MSK
+- AWS Lake Formation:
+  - Data lake = central place to have all your data for analytics purposes
+  - Fully managed service that makes it easy to setup a data lake in days
+  - Discover, cleanse, transform, and ingest data into Data Lake
+  - It automates many complex manual steps (collecting, cleansing, moving, cataloging data,...) and de-duplicate (using ML Transforms)
+  - Out-of-box source blueprints
+  - Fing-grained access control
+  - Built on top of AWS Glue
+
+  ![](https://docs.aws.amazon.com/images/lake-formation/latest/dg/images/overview-diagram.png)
+
+- Kinesis Data Analytics:
+  - For SQL applications:
+    - Real-time analytics using SQL
+    - Add reference data from Amazon S3 to enrich streaming data
+    - Fully managed, no servers to provision
+    - Auto scaling
+    - Pay for actual consumption rate
+
+  ![](https://docs.aws.amazon.com/images/kinesisanalytics/latest/dev/images/kinesis-app.png)
+
+  - For Apache Flink:
+    - Use Flink to process and analyze streaming data
+    - Run any Apache Flink application on a managed cluster on AWS
+- Amazon Managed Streaming for Apache Kafka (MSK):
+  - Alternative to Kinesis
+  - Fully managed Kafka
+  - MSK Serverless
+  - vs Kinesis Data Streams:
+    - Kinesis Data Streams:
+      - 1 MB message size limit
+      - Data Streams with Shards
+      - Shard Splitting & Merging
+      - TLS in-flight encryption
+      - KMS at-rest encryption
+    - MSK:
+      - 1 MB default -> can configure
+      - Kafka Topics for partitions
+      - Can only add partitions to a topic
+      - PLAINTEXT or TLS in-flight encryption
+      - KMS at-rest encryption
+  - Consumers: Kinesis Data Analytics for Flink, Glue, Lambda, Applications.
+- Big Data Ingestion Pipeline:
