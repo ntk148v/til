@@ -2005,4 +2005,3 @@ Table of contents:
       - PLAINTEXT or TLS in-flight encryption
       - KMS at-rest encryption
   - Consumers: Kinesis Data Analytics for Flink, Glue, Lambda, Applications.
-- Big Data Ingestion Pipeline:
