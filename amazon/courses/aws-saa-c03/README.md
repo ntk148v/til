@@ -24,6 +24,7 @@ Table of contents:
   - [15. serverless](#15-serverless)
   - [16. Databases](#16-databases)
   - [17. Data \& Analytics](#17-data--analytics)
+  - [18. Machine Learning](#18-machine-learning)
 
 ## 1. Getting started with AWS
 
@@ -2005,3 +2006,40 @@ Table of contents:
       - PLAINTEXT or TLS in-flight encryption
       - KMS at-rest encryption
   - Consumers: Kinesis Data Analytics for Flink, Glue, Lambda, Applications.
+
+## 18. Machine Learning
+
+- Amazon Rekognition:
+  - Find objects, people, text, scenes, in images and videos using ML
+  - Facial analytics and facial search to do user verification, people counting
+  - Create a database of "familiar faces" or compare against celebrities
+  - Use cases:
+    - Labeling
+    - Content moderation:
+      - Detect content that is inapproprioate, unwanted, or offensive
+      - Used in social media, broadcase media, advertising, and e-commerce situations to create a safe UX
+      - Set a Minimum Confidence Threshold for items that will be flagged
+      - Flag sensitive content for manual review in Amazon Augmented AI (A2I)
+    - Text detection
+    - Face detection and analysis (gender, age range, emotions...)
+    - Face search and verification
+    - Celebrity recognition
+    - Pathing
+- Amazon Transcribe:
+  - Automatically convert speech to text
+  - Uses a deep learning process called automatic speed recognition (ASR) to convert speech to text quickly and accurately
+  - Automatically remove Personal Identifiable Information (PII) using Redaction
+  - Support Automatic Language Identification for multi-lingual audio
+  - Use cases:
+    - Transcribe customer service calls
+    - Automate closed captioning and subtitling
+    - Generate metadata for media assets to create a full searchable archive
+- Amazon Polly:
+  - Turn text into lifelike speech using deep learning
+  - Allowing you to create applications that talk
+  - Lexicon & SSML:
+    - Customize the pronnunciation of words with Pronunciation lexions
+    - Generate speech from plain text or from documents marked up with Speech Synthesis Markup Language (SSML)
+- Amazon Translate:
+  - Natural and accurate language translation
+  - Allow you to localize content - such as websites and applications - for international users, and to easily translate large volumes of text efficiently
