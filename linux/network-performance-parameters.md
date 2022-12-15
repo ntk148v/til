@@ -21,7 +21,10 @@ Table of Contents:
   - [2. Network Performance tuning](#2-network-performance-tuning)
     - [2.1. The NIC Ring Buffer](#21-the-nic-ring-buffer)
     - [2.2. Interrupt Coalescence (IC) - rx-usecs, tx-usecs, rx-frames, tx-frames (hardware IRQ)](#22-interrupt-coalescence-ic---rx-usecs-tx-usecs-rx-frames-tx-frames-hardware-irq)
-    - [2.3. Interrupt Coalescing (soft IRQ) and Ingress QDisc](#23-interrupt-coalescing-soft-irq-and-ingress-qdisc)
+    - [2.3. Interrupt Coalescing (soft IRQ)](#23-interrupt-coalescing-soft-irq)
+    - [2.4. Ingress QDisc](#24-ingress-qdisc)
+    - [2.5. Egress Disc - txqueuelen and default\_qdisc](#25-egress-disc---txqueuelen-and-default_qdisc)
+    - [2.7. TCP Read and Write Buffers/Queues](#27-tcp-read-and-write-buffersqueues)
 
 ## 1. Linux Networking stack: Receiving data
 
@@ -169,11 +172,29 @@ Table of Contents:
       net.core.netdev_budget_usecs = 8000
       ```
 
+   - `dev_weight`: the maximum number of packets that kernel can handle on a NAPI interrupt, it's a PER-CPU variable. For drivers that support LRO or GRO_HW, a hardware aggregated packet is counted as one packet in this.
+
+    ```shell
+    sysctl net.core.dev_weight
+
+    net.core.dev_weight = 64
+    ```
+
 10. Linux also allocates memory to `sk_buff`.
 11. Linux fills the metadata: protocol, interface, setmatchheader, removes ethernet
 12. Linux passes the skb to the kernel stack (`netif_receive_skb`)
 13. It sets the network header, clone `skb` to taps (i.e. tcpdump) and pass it to tc ingress
 14. Packets are handled to a qdisc sized `netdev_max_backlog` with its algorithm defined by `default_qdisc`
+    - `netdev_max_backlog`: a queue whitin the Linux kernel where traffic is stored after reception from the NIC, but before processing by the protocols stacks (IP, TCP, etc). There is one backlog queue per CPU core. A given core's queue can grow automatically, containing a number of packets up to the maximum specified by the `netdev_max_backlog` settings.
+    - In other words, this is the maximum number of packets, queued on the INPUT side (the ingress dsic), when the interface receives packets faster than kernel can process them.
+    - Check command, the default value is 1000.
+
+    ```shell
+    sysctl net.core.netdev_max_backlog
+
+    net.core.netdev_max_backlog = 1000
+    ```
+
 15. It calls `ip_rcv` and packets are handled to IP
 16. It calls netfilter (`PREROUTING`)
 17. It looks at the routing table, if forwarding or local
@@ -188,7 +209,29 @@ Table of Contents:
 
 ### 1.2. Linux kernel network transmission
 
-// WIP
+1. Application sends message (`sendmsg` or other)
+2. TCP send message allocates skb_buff
+3. It enqueues skb to the socket write buffer of `tcp_wmem` size
+4. Builds the TCP header (src and dst port, checksum)
+5. Calls L3 handler (in this case `ipv4` on `tcp_write_xmit` and `tcp_transmit_skb`)
+6. L3 (`ip_queue_xmit`) does its work: build ip header and call netfilter (`LOCAL_OUT`)
+7. Calls output route action
+8. Calls netfilter (`POST_ROUTING`)
+9. Fragment the packet (`ip_output`)
+10. Calls L2 send function (`dev_queue_xmit`)
+11. Feeds the output (QDisc) queue of `txqueuelen` length with its algorithm `default_qdisc`
+    - `txqueuelen`: Transmit Queue Length, is a TCP/IP stack network interface value that sets the number of packets allowed per kernel transmit queue of a network interface device.
+      - By default, value is 1000 (depend on network interface driver): `ifconfig <interface> | grep txqueuelen`
+    - `default_qdisc`: the default queuing discipline to use for network devices. This allows overriding the default of pfifo_fast with an alternative. Since the default queuing discipline is created without additional parameters so is best suited to queuing disciplines that work well without configuration like stochastic fair queue (sfq), CoDel (codel) or fair queue CoDel (fq_codel). For full details for each QDisc in `man tc <qdisc-name>` (for example, `man tc fq_codel`).
+12. The driver code enqueue the packets at the `ring buffer tx`
+13. The driver will do a `soft IRQ (NET_TX_SOFTIRQ)` after `tx-usecs` timeout or `tx-frames`
+14. Re-enable hard IRQ to NIC
+15. Driver will map all the packets (to be sent) to some DMA'ed region
+16. NIC fetches the packets (via DMA) from RAM to transmit
+17. After the transmission NIC will raise a `hard IRQ` to signal its completion
+18. The driver will handle this IRQ (turn it off)
+19. And schedule (`soft IRQ`) the NAPI poll system
+20. NAPI will handle the receive packets signaling and free the RAM
 
 ## 2. Network Performance tuning
 
@@ -196,7 +239,29 @@ Tuning a NIC for optimum throughput and latency is a complex process with many f
 
 There are factors should be considered for network performance tuning. Note that, the interface card name may be different in your device, change the appropriate value.
 
-Ok, let's follow through the Packet reception and do some tuning.
+Ok, let's follow through the Packet reception (and transmission) and do some tuning.
+
+**NOTE**:
+
+Before we continue, let's discuss aabout `/proc/net/softnet_stat` as it will be used a lot then.
+
+```shell
+cat /proc/net/softnet_stat
+
+0000272d 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+000034d9 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000001
+00002c83 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000002
+0000313d 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000003
+00003015 00000000 00000001 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000004
+000362d2 00000000 000000d2 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000005
+```
+
+- Each line of the softnet_stat file represents a CPU core starting from CPU0.
+- The statistics in each column are provided in hexadecimal
+- 1st column is the number of frames received by the interrupt handler.
+- 2nd column is the number of frames dropped due to `netdev_max_backlog` being exceeded.
+- 3rd column is the number of times ksoftirqd ran out of `netdev_budget` or CPU time when there was still work to be done.
+- The other columns may vary depending on the Linux version.
 
 ### 2.1. The NIC Ring Buffer
 
@@ -278,7 +343,7 @@ Ok, let's follow through the Packet reception and do some tuning.
 
   - How to monitor:
 
-### 2.3. Interrupt Coalescing (soft IRQ) and Ingress QDisc
+### 2.3. Interrupt Coalescing (soft IRQ)
 
 - `net.core.netdev_budget_usecs`:
   - Tuning:
@@ -289,18 +354,96 @@ Ok, let's follow through the Packet reception and do some tuning.
     ```
 
     - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
-    - How to monitor:
-      - If any of columns beside the 1st column are increasing, need to change budgets!
-
-    ```shell
-    cat softnet_stat
-
-    0073d76b 00000000 000049ae 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-    000000d2 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-    0000015c 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-    0000002a 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-    ```
 
 - `net.core.netdev_budget`:
+  - Tuning:
+    - Change command:
+
+    ```shell
+    sysctl -w net.core.netdev_budget <value>
+    ```
+
+    - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
+    - How to monitor:
+      - If any of columns beside the 1st column are increasing, need to change budgets. Small increments are normal and do not  require tuning.
+
+    ```shell
+    cat /proc/net/softnet_stat
+    ```
+
+- `net.core.dev_weight`:
+  - Tuning:
+    - Change command:
+
+    ```shell
+    sysctl -w net.core.dev_weight <value>
+    ```
+
+    - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
+    - How to monitor:
+
+    ```shell
+    cat /proc/net/softnet_stat
+    ```
+
+### 2.4. Ingress QDisc
+
+- In step (14), I has mentioned `netdev_max_backlog`, it's about Per-CPU backlog queue. The `netif_receive_skb()` kernel function (step (12)) will find the corresponding CPU for a packet, and enqueue packets in that CPU's queue. If the queue for that processor is full and already at maximum size, packets will be dropped. The default size of queue - `netdev_max_backlog` value is 1000, this may not be enough for multiple interfaces operating at 1Gbps, or even a single interface at 10Gbps.
+- Tuning:
+  - Change command:
+    - Double the value -> check `/proc/net/softnet_stat`
+    - If the rate is reduced -> Double the value
+    - Repeat until the optimum size is established and drops do not increment
+
+    ```shell
+    sysctl -w net.core.netdev_max_backlog <value>
+    ```
+
+  - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
+  - How to monitor: determine whether the backlog needs increasing.
+    - 2nd column is a counter that is incremented when the netdev backlog queue overflows.
+
+  ```shell
+  cat /proc/net/softnet_stat
+  ```
+
+### 2.5. Egress Disc - txqueuelen and default_qdisc
+
+- In the step (11) (transimission), there is `txqueuelen`, a queue/buffer to face conection bufrst and also to apply [traffic control (tc)](http://tldp.org/HOWTO/Traffic-Control-HOWTO/intro.html).
+- Tuning:
+  - Change command:
+
+  ```shell
+  ifconfig <interface> txqueuelen value
+  ```
+
+  - How to monitor:
+
+  ```shell
+  ip -s link
+  # Check RX/TX dropped?
+  ```
+
+- You can change `default_qdisc` as well, cause each application has diffrent load and need to traffic control and it is used also to fight against [bufferfloat](https://www.bufferbloat.net/projects/codel/wiki/).The can check [this article - Queue Disciplines section](https://www.coverfire.com/articles/queueing-in-the-linux-network-stack/).
+- Tuning:
+  - Change command:
+
+  ```shell
+  sysctl -w net.core.default_qdisc <value>
+  ```
+
+  - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
+  - How to monitor:
+
+  ```shell
+  tc -s qdisc ls dev <interface>
+  # Example
+  qdisc fq_codel 0: root refcnt 2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+    Sent 33867757 bytes 231578 pkt (dropped 0, overlimits 0 requeues 6) # Dropped, overlimits, requeues!!!
+    backlog 0b 0p requeues 6
+      maxpacket 5411 drop_overlimit 0 new_flow_count 1491 ecn_mark 0
+      new_flows_len 0 old_flows_len 0
+  ```
+### 2.7. TCP Read and Write Buffers/Queues
 
 // WIP
