@@ -4,13 +4,15 @@ Source:
 
 - <https://github.com/leandromoreira/linux-network-performance-parameters/>
 - <https://access.redhat.com/sites/default/files/attachments/20150325_network_performance_tuning.pdf>
+- <https://www.coverfire.com/articles/queueing-in-the-linux-network-stack/>
 - <https://blog.cloudflare.com/how-to-achieve-low-latency/>
 - <https://blog.packagecloud.io/illustrated-guide-monitoring-tuning-linux-networking-stack-receiving-data/>
 - <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-receiving-data/>
 - <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-sending-data/>
 - <https://openwrt.org/docs/guide-developer/networking/praxis>
-- <https://www.coverfire.com/articles/queueing-in-the-linux-network-stack/>
-- <https://blog.cloudflare.com/how-to-achieve-low-latency/>
+- <http://arthurchiao.art/blog/tcp-listen-a-tale-of-two-queues/>
+- <https://juejin.cn/post/7106345054368694280>
+- <https://blog.51cto.com/u_15169172/2710604>
 
 Table of Contents:
 
@@ -104,6 +106,8 @@ Table of Contents:
 ![](https://github.com/leandromoreira/linux-network-performance-parameters/raw/master/img/linux_network_flow.png)
 
 ### 1.1. Linux network packet reception
+
+![](./images/linux-networking-recv.pngfi)
 
 ![](https://pic002.cnblogs.com/images/2012/360373/2012110119582618.png)
 
@@ -204,14 +208,33 @@ Table of Contents:
 21. It goes to the tcp finite state machine
 22. Enqueue the packet to the receive buffer and sized as `tcp_rmem` rules
     - If `tcp_moderate_rcvbuf is enabled kernel will auto-tune the receive buffer
+    - `tcp_rmem`: Contains 3 values that represent the minimum, default and maximum size of the TCP socket receive buffer.
+    - `net.core.rmem_max`: the upper limit of the TCP receive buffer size.
+    - `SO_RECVBUF` sets the fixed size of the TCP receive buffer, it will override `tcp_rmem`, and the kernel will no longer dynamically adjust the buffer. The maximum value set by `SO_RECVBUF` cannot exceed `net.core.rmem_max`. Normally, we will not use it.
 23. Kernel will signalize that there is data available to apps (epoll or any polling system)
 24. Application wakes up and reads the data
 
 ### 1.2. Linux kernel network transmission
 
+![](./images/linux-networking-send.png)
+
+![](https://s2.51cto.com/images/blog/202104/15/25012de83ba2d80fcd790b49ff346b62.png?x-oss-process=image/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_30,g_se,x_10,y_10,shadow_20,type_ZmFuZ3poZW5naGVpdGk=/format,webp/resize,m_fixed,w_1184)
+
 1. Application sends message (`sendmsg` or other)
 2. TCP send message allocates skb_buff
 3. It enqueues skb to the socket write buffer of `tcp_wmem` size
+   - `tcp_wmem`: Contains 3 values that represent the minimum, default and maximum size of the TCP socket send buffer.
+   - Check command:
+
+    ```shell
+    sysctl net.ipv4.tcp_wmem
+    net.ipv4.tcp_wmem = 4096        16384   262144
+    ```
+
+    - The size of the TCP send buffer will be dynamically adjusted between min and max by the kernel. The initial size is default.
+    - `net.core.wmem_max`: the upper limit of the TCP send buffer size.
+    - `SO_SNDBUF` sets the fixed size of the send buffer, it will override `tcp_wmem`, and the kernel will no longer dynamically adjust the buffer. The maximum value set by SO_SNDBUF cannot exceed `net.core.wmem_max`. Normally, we will not use it.
+
 4. Builds the TCP header (src and dst port, checksum)
 5. Calls L3 handler (in this case `ipv4` on `tcp_write_xmit` and `tcp_transmit_skb`)
 6. L3 (`ip_queue_xmit`) does its work: build ip header and call netfilter (`LOCAL_OUT`)
@@ -243,7 +266,7 @@ Ok, let's follow through the Packet reception (and transmission) and do some tun
 
 **NOTE**:
 
-Before we continue, let's discuss aabout `/proc/net/softnet_stat` as it will be used a lot then.
+Before we continue, let's discuss about `/proc/net/softnet_stat` & `/proc/net/sockstat` as these files will be used a lot then.
 
 ```shell
 cat /proc/net/softnet_stat
@@ -262,6 +285,20 @@ cat /proc/net/softnet_stat
 - 2nd column is the number of frames dropped due to `netdev_max_backlog` being exceeded.
 - 3rd column is the number of times ksoftirqd ran out of `netdev_budget` or CPU time when there was still work to be done.
 - The other columns may vary depending on the Linux version.
+
+```shell
+cat /proc/net/sockstat
+
+sockets: used 937
+TCP: inuse 21 orphan 0 tw 0 alloc 22 mem 5
+UDP: inuse 9 mem 5
+UDPLITE: inuse 0
+RAW: inuse 0
+FRAG: inuse 0 memory 0
+```
+
+- Check `mem` field. It is calculated simply by summing `sk_buff->truesize` for all sockets.
+- More detail [here](https://unix.stackexchange.com/questions/419518/how-to-tell-how-much-memory-tcp-buffers-are-actually-using)
 
 ### 2.1. The NIC Ring Buffer
 
@@ -444,6 +481,17 @@ cat /proc/net/softnet_stat
       maxpacket 5411 drop_overlimit 0 new_flow_count 1491 ecn_mark 0
       new_flows_len 0 old_flows_len 0
   ```
+
 ### 2.7. TCP Read and Write Buffers/Queues
 
-// WIP
+- Define what is [memory pressure](https://wwwx.cs.unc.edu/~sparkst/howto/network_tuning.php) is specified at `tcp_mem` and `tcp_moderate_rcvbuf`.
+- We can adjust the mix-max size of buffer to improve performance:
+  - Change command:
+
+  ```shell
+  sysctl -w net.ipv4.tcp_rmem="min default max"
+  sysctl -w net.ipv4.tcp_wmem="min default max"
+  ```
+
+  - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
+  - How to monitor:
