@@ -27,6 +27,7 @@ Table of Contents:
     - [2.4. Ingress QDisc](#24-ingress-qdisc)
     - [2.5. Egress Disc - txqueuelen and default\_qdisc](#25-egress-disc---txqueuelen-and-default_qdisc)
     - [2.7. TCP Read and Write Buffers/Queues](#27-tcp-read-and-write-buffersqueues)
+    - [2.8. TCP FSM and congestion algorithm](#28-tcp-fsm-and-congestion-algorithm)
 
 ## 1. Linux Networking stack: Receiving data
 
@@ -107,7 +108,7 @@ Table of Contents:
 
 ### 1.1. Linux network packet reception
 
-![](./images/linux-networking-recv.pngfi)
+![](./images/linux-networking-recv.png)
 
 ![](https://pic002.cnblogs.com/images/2012/360373/2012110119582618.png)
 
@@ -494,4 +495,6 @@ FRAG: inuse 0 memory 0
   ```
 
   - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
-  - How to monitor:
+  - How to monitor: check `/proc/net/sockstat`.
+
+### 2.8. TCP FSM and congestion algorithm
