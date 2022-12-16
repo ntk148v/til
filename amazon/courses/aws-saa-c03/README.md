@@ -26,6 +26,7 @@ Table of contents:
   - [17. Data \& Analytics](#17-data--analytics)
   - [18. Machine Learning](#18-machine-learning)
   - [19. AWS Monitoring \& Audit](#19-aws-monitoring--audit)
+  - [20. Advanced Identity in AWS](#20-advanced-identity-in-aws)
 
 ## 1. Getting started with AWS
 
@@ -2298,3 +2299,19 @@ Table of contents:
     - Ensure an SSL ceriticate is always assigned to the LB
   - CloudTrail:
     - Track who made any changes to LB with API calls
+
+## 20. Advanced Identity in AWS
+
+- Basic organization:
+
+![](https://docs.aws.amazon.com/images/organizations/latest/userguide/images/AccountOuDiagram.png)
+
+- AWS Organization:
+  - Global service
+  - Allows to manage multiple AWS accounts
+  - The main account is the management account
+  - Other accounts are member account
+  - Consolidated Billing across all accounts - single payment method
+  - Pricing benefits from aggregated usage (volume discount for EC2, S3...)
+  - Shared reserved instances and Savings Plan discount across accounts
+  - API is available to automate AWS account creation
