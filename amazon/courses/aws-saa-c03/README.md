@@ -2315,3 +2315,95 @@ Table of contents:
   - Pricing benefits from aggregated usage (volume discount for EC2, S3...)
   - Shared reserved instances and Savings Plan discount across accounts
   - API is available to automate AWS account creation
+  - Advantages:
+    - Multi Account vs One Account Multi VPC
+    - Use tagging standards for billing purpose
+    - Enable CloudTrail on all accounts, send logs to central S3 account
+    - Send CloudWatch logs to central logging account
+    - Establish Cross Account Roles for admin roles
+  - Security: Service Control Policies (SCP)
+- IAM Roles vs Resource Based Policies:
+  - Cross account:
+    - Attache a resource-based policy to a resource
+    - OR using a role as a proxy
+  - When you assume a role (user, application or service), you give up your original permissions and take the permissions assigned to the role
+  - When using a resource-based policy, the principal doesn't have to give up his permissions
+  - Resource-based policy: Lambda, SNS, SQS, CloudWatch logs, API gateway,...
+  - IAM role: kinesis stream, systems manager run command, ECS task,...
+- IAM Permission Boundaries:
+  - Are supported for users and roles (not groups)
+  - Advanced feature to use a managed policy to set the maximum permissions an IAM entity can get
+
+  ![](https://docs.aws.amazon.com/images/IAM/latest/UserGuide/images/permissions_boundary.png)
+
+  ![](https://docs.aws.amazon.com/images/IAM/latest/UserGuide/images/EffectivePermissions-rbp-boundary-id.png)
+
+  ![](https://docs.aws.amazon.com/images/IAM/latest/UserGuide/images/EffectivePermissions-scp-boundary-id.png)
+
+  ![](https://docs.aws.amazon.com/images/IAM/latest/UserGuide/images/EffectivePermissions-session-boundary-id.png)
+
+- IAM Policy Evaluation logic:
+
+  ![](https://docs.aws.amazon.com/images/IAM/latest/UserGuide/images/PolicyEvaluationHorizontal111621.png)
+
+- Amazon Cognito:
+  - Give users an identity to interact with our web or mobile application
+  - Cognito User Pools (CUP):
+    - Sign in functionality for app users
+      - Create a serverless database of user for your web & mobile apps
+      - Simple login, password reset...
+    - Integrate with API Gateway & Application Load Balancer
+  - Cognito Identity Pools (Federated Identity):
+    - Provide AWS credentials to users so they can access AWS resources directly
+    - Integrate with Cognito User Pools as an identity providers
+    - The IAM policies applied to the credentials are defined in Cognito
+    - They can be customized based on the `user_id` for fine grained control
+    - Default IAM roles for authenticated and guest users
+
+    ![](https://docs.aws.amazon.com/images/cognito/latest/developerguide/images/scenario-cup-cib.png)
+
+  - Cognito vs IAM: "hundreds of users", "mobile users", "authenticate with SAML"
+- Amazon IAM Identity Center:
+  - One login (SSO) for all your:
+    - AWS accounts in Organizations
+    - Business cloud applications
+    - SAML 2.0-enabled applications
+    - EC2 Windows instances
+  - Identity providers:
+    - Built-in identity store
+    - 3rd party: AD, OneLogin, Okta,...
+  - Fine-grained permissions and assignments:
+    - Multi-account permissions:
+      - Manage access across AWS accounts in AWS Organization
+      - Permission Sets: a collaction of one or more IAM policies assigned to users and groups to define AWS access
+    - Application Assignments:
+      - SSO access to many 2.0 business applications
+      - Provide required URLs, ceriticates, and metadata
+    - Attribute-Based Access Control (ABAC):
+      - Fine-grained based on users's attributes stored in IAM identity center identity store
+- Amazon Directory Services:
+  - 3 flavors:
+    - AWS Managed Microsoft AD:
+      - Create your own AD in AWS, manage users locally, supports MFA
+      - Establish trust connections with on-premise AD
+    - AD Connector:
+      - Directory Gateway (proxy) to redirect to on-premise AD, support MFA
+      - Users are managed on the on-premise AD
+    - Simple AD:
+      - AD-compatible managed directory on AWS
+      - Cannot be joined with on-premised AD
+  - Integrate with IAM Identity Center:
+    - Connect to an AWS Managed Microsoft AD
+    - Connect to a Self-Managed  Directory (via Managed Microsoft AD/AD connector)
+- Amazon Control Tower:
+  - Easy way to set up and govern a secure and compliant multi-account AWS environment based on best practices
+  - Uses AWS Organizations to create accounts
+  - Benefits:
+    - Automate the setup of your environment
+    - Automate ongoing policy management using GuardRails
+      - Prventive Guardrails: using SCPs
+      - Detective Guardrails: using AWS config
+    - Detect policy violations and remediate them
+    - Monitor compliance through an interactive dashboard
+
+## 21. AWS Security & Encryption
