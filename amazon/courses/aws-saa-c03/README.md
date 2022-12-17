@@ -2407,3 +2407,39 @@ Table of contents:
     - Monitor compliance through an interactive dashboard
 
 ## 21. AWS Security & Encryption
+
+- Amazon KMS - Key Management Service:
+  - AWS manages encryption keys for us
+  - Fully integrated with IAM for authorization
+  - Easy way to control access to your data
+  - Able to audit KMS Key usage using CloudTrail
+  - Seamlessly integrated into most AWS service (EBS, S3, RDS, SSM...)
+  - Never ever store secrets in plaintext, especially in code.
+  - KMS Keys Types:
+    - KMS Keys: The new name of KMS Customer Master Key
+    - Symmetric (AES-256 keys):
+      - Single encryption key that is used to encrypt and decrypt
+      - AWS services that are integrated with KMS use Symmetric CMKs
+      - You never get access to the KMS Key unencrypted (must call KMS API to use)
+    - Asymmetric (RSA & ECC key pairs):
+      - Public (Encrypt) and Private Key (Decrypt) pair
+      - Used for Encrypt/Decrypt, or Sign/Verify operations
+      - The public key is downloadable, but you can't access the Private Key unencrypted
+      - Use case: encryption outside of AWS by users who can't call the KMS API
+  - Three types os KMS Keys:
+    - AWS Managed Key: free (`aws/service-name`) (rotation: 1 year - auto)
+    - Customer Managed Keys (CMK) created in KMS (1 year - auto - must be enabled)
+    - Customer Manager Keys imported (rotation: manual)
+  - Key Policies:
+    - Control access to KMS keys, "similar" to S3 bucket policies, except you can't control access without them
+    - Default:
+      - Created if you don't provide a specific KMS Key Policy
+      - Complete access to the key to the root user = entire AWS account
+  - Multi-regions Keys:
+    - Identical KMS keys in different regions that can be used interchangeably
+    - Multi-region keys have the same key ID, key material, automatic rotation...
+    - Encrypt in 1 region - decrypt in other
+    - No need to re-encrypt or making cross-Region API calls
+    - Not Global
+    - Managed independently
+    - Use case: global client-side encryption, encryption on Global DynamoDB, Global Aurora
