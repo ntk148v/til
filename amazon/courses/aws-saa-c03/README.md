@@ -512,7 +512,7 @@ Table of contents:
       - 1-35 days of retention -> 0 = disable automated backup.
     - Manual DB snapshots.
     - Trick: Stopped database, still pay for storage -> snapshot & restore.
-- Amazon Aurora:
+- AWS Aurora:
   - A proprietary technology from AWS.
   - Postgres and MySQL are both supported as Aurora DB.
   - AWS cloud optimized.
@@ -1173,7 +1173,7 @@ Table of contents:
 - Snowball into Glacier:
   - Snowball can't import to Glacier directly.
   - Must use Amazon S3 first, in combination with an S3 lifecycle policy.
-- Amazon FSx:
+- AWS FSx:
   - Launch 3rd party high-performance file system on AWS.
   - Fully managed service.
   - FSx for Windows (File Server):
@@ -1270,7 +1270,7 @@ Table of contents:
 
 ## 13. Amazon Messaging - Decoupling applications
 
-- Amazon SQS:
+- AWS SQS:
 
   ![](https://www.awsgeek.com/Amazon-SQS/Amazon-SQS.jpg)
 
@@ -1317,7 +1317,7 @@ Table of contents:
     - SQS + AutoscalingGroup + CloudWatch.
     - Decouple between applications.
     - Buffer to database writes.
-- Amazon SNS:
+- AWS SNS:
 
   ![](https://www.awsgeek.com/Amazon-SNS/Amazon-SNS.jpg)
 
@@ -1357,7 +1357,7 @@ Table of contents:
 
     ![](https://d2908q01vomqb2.cloudfront.net/1b6453892473a467d07372d45eb05abc2031647a/2022/11/22/Payload-filtering-example3.png)
 
-- Amazon Kinesis:
+- AWS Kinesis:
   - Makes it easy to collect, process, and analyze streaming data in real-time.
   - Ingest real-time such as: application logs, metrics, website clickstreams, IoT telemetry data...
   - Types:
@@ -1450,20 +1450,20 @@ Table of contents:
     - Ordering at shard level
     - Data expires after X days
     - Provisioned  mode or on-demand capacity mode
-- Amazon MQ:
+- AWS MQ:
   - SQS, SNS are "cloud-native" services: proprietary protocols from AWS.
   - Traditional applications may use open protocols (MQTT, AMQP, STOMP,...)
   - Migrate: two options
     - Re-engineering the application to use SQS and SNS.
     - Use Amazon MQ!
-  - Amazon MQ: maanged message broker service for: RabbitMQ and ActiveMQ
+  - AWS MQ: maanged message broker service for: RabbitMQ and ActiveMQ
     - Doesn't scale as much as SQS, SNS
     - Run on servers, can run in Multi-AZ with failover (active - passive), integrate with Amazon EFS for storage
     - Both queue features (SQS) and topic features (SNS)
 
 ## 14. Containers on AWS
 
-- Amazon ECS - Elastic Container Service:
+- AWS ECS - Elastic Container Service:
 
   ![](https://d1.awsstatic.com/product-page-diagram_Amazon-ECS%402x.0d872eb6fb782ddc733a27d2bb9db795fed71185.png)
 
@@ -1515,12 +1515,12 @@ Table of contents:
     - ECS Cluster Capacity Provider
       - Used to automatically provision and scale the infrastructure for your ECS tasks
       - Capacity Provider paired with an Auto Scaling Group
-- Amazon ECR - Elastic Container Registry:
+- AWS ECR - Elastic Container Registry:
   - Store and manage Docker images on AWS
   - Fully integrated with ECS, backed by S3
   - Access is controlled through IAm
   - Support image vulnerability scanning, versioning, image tags,...
-- Amazon EKS - Elastic Kubernetes Service
+- AWS EKS - Elastic Kubernetes Service
   - Launch managed Kubernetes clusters on AWS
   - An alternative to ECS.
   - EKS supports EC2 mode and Fargate.
@@ -1543,10 +1543,10 @@ Table of contents:
     - Need to specify StorageClass manifest on your EKS cluster
     - Leverages a Container Storage Interface (CSI) compliant driver
     - Support for:
-      - Amazon EBS
-      - Amazon EFS
-      - Amazon FSx for Lustre
-      - Amazon FSx for NetApp ONTAP
+      - AWS EBS
+      - AWS EFS
+      - AWS FSx for Lustre
+      - AWS FSx for NetApp ONTAP
 - AWS App Runner:
   - Fully managed service that makes it easy to deploy web applications and APIs at scale
   - No infrastructure experience required
@@ -1630,7 +1630,7 @@ Table of contents:
     ![](https://d2908q01vomqb2.cloudfront.net/fc074d501302eb2b93e2554793fcaf50b3bf7291/2019/07/02/lambda-develope-mao-1024x484.jpg)
 
     - Lambda functions are deployed in your VPC -> to access RDS -> use RDS proxy.
-- Amazon DynamoDB:
+- AWS DynamoDB:
   - Overview:
     - Fully managed, highly available with replication across multiple AZs.
     - NoSQL database.
@@ -1722,12 +1722,12 @@ Table of contents:
       - Cognito (external users)
       - Custom autorizer (own logic)
     - Custom Domain name HTTPS security
-- Amazon Step functions:
+- AWS Step functions:
   - Build serverless visual workflow to orchestrate your Lambda functions.
   - Workflow as a Service
   - Integrate with other AWS services
   - Use cases: order fulfillment, data processing, web applications,...
-- Amazon Cognito:
+- AWS Cognito:
   - A developer-centric and cost-effictive customer identify and access management (CIAM) service that scales to millions of users.
   - Main components:
     - User pool: User directory that provides sign-up and sign-in options for app user.
@@ -1761,7 +1761,7 @@ Table of contents:
   - Graphs: Amazon Neptune - displays relationships between data
   - Ledger: Amazon Quantum Ledger Database
   - Time series: Amazon Timestream
-- Amazon RDS:
+- AWS RDS:
   - Managed PostgreSQL/MySQL/Oracle/SQL Server/MariaDB/Custom
   - Provisioned RDS Instance Size and EBS Volume Type & Size
   - Auto-scaling capability for Storage
@@ -1773,7 +1773,7 @@ Table of contents:
   - Support for IAM authentication, integration with Secrets Manager
   - RDS custom for access to and customize the underlying instance (Oracle & SQL Server)
   - Use case: Store relational datasets (RDBMS/OLTP), perform SQL queries, transactions
-- Amazon Aurora:
+- AWS Aurora:
   - Compatible API for PostgreSQL/MySQL, separation of storage and compute.
   - Storage: data is stored in 6 replicas, across 3 AZs.
   - Compute: Cluster of DB instance across multiple AZ, autoscaling of Read Replicas
@@ -1824,7 +1824,7 @@ Table of contents:
   - Full managed, high available with replication across 3 AZ
   - DocumentDB storage automatically grows in increments of 10GB, up to 64TB
   - Auto scaling
-- Amazon Neptune:
+- AWS Neptune:
 
   ![](https://www.awsgeek.com/Amazon-Neptune/Amazon-Neptune.jpg)
 
@@ -1834,7 +1834,7 @@ Table of contents:
   - Can store up to billions of relations and query the graph with milliseconds latency
   - Replication
   - Great for knowledge graphs (Wiki), fraud detection, recommendation engines, social netwokring
-- Amazon Keyspaces (for Apache Cassandra):
+- AWS Keyspaces (for Apache Cassandra):
   - A managed Apache Cassandra-compatible database service
   - Serverless, scalable, high available, fully managed by AWS
   - Auto scale tables up/down based on the application traffic
@@ -1844,14 +1844,14 @@ Table of contents:
   - Capacity: On-demand mode or provisioned mode with autoscaling
   - Encryption, backup, PITR (35 days)
   - Use case: store IoT devices info, time-series data,...
-- Amazon QLDB:
+- AWS QLDB:
   - Quantum Ledger Database
   - A ledger is a book recording financial transactions
   - Fully managed, serverless, high available, replication across 3 AZ
   - Used to review history of all the changes made to your application data over time
   - Immutable system: no entry can be removed or modified, cryptographically verifiable
   - Difference with Amazon Managed Blockchain: no decentralization component, in accordancewith financial regulation rules
-- Amazon Timestream:
+- AWS Timestream:
   - Fully managed, fast, scalable, serverless time series database
   - Auto scaling
   - Store and analyze trillions of events per day
@@ -1930,7 +1930,7 @@ Table of contents:
     - CloudWatch Logs -> Subscription Filter -> Kinesis Data Firehose -> Amazon OpenSearch (Near real time)
     - Kinesis Data Streams -> Kinesis Data Firehose (integrate with Lambda for data transformation) -> Amazon OpenSearch
     - Kinesis Data Streams -> Lambda Function -> Amazon OpenSearch
-  - Amazon EMR:
+  - AWS EMR:
     - Elastic MapReduce
     - Create Hadoop clusters (Big Data) to analyze and process vast amount of data
     - Apache Spark, HBase, Presto, Flink,...
@@ -1947,11 +1947,11 @@ Table of contents:
 
     ![](https://docs.aws.amazon.com/images/emr/latest/ManagementGuide/images/cluster-node-types.png)
 
-- Amazon QuickSight:
+- AWS QuickSight:
   - Serverless machine learning-powered business intelligence service to create interactive dashboards.
   - Use cases: business analytics, building visualizations, perform ad-hoc analysis, get business insights using data,..
   - Enterprise edition: Column-level security (CLS)
-- Amazon Glue:
+- AWS Glue:
   - Managed extract, transform, and load (ETL) service
   - Useful to prepare and transform data for analytics
   - Serverless
@@ -1990,7 +1990,7 @@ Table of contents:
   - For Apache Flink:
     - Use Flink to process and analyze streaming data
     - Run any Apache Flink application on a managed cluster on AWS
-- Amazon Managed Streaming for Apache Kafka (MSK):
+- AWS Managed Streaming for Apache Kafka (MSK):
   - Alternative to Kinesis
   - Fully managed Kafka
   - MSK Serverless
@@ -2011,7 +2011,7 @@ Table of contents:
 
 ## 18. Machine Learning
 
-- Amazon Rekognition:
+- AWS Rekognition:
   - Find objects, people, text, scenes, in images and videos using ML
   - Facial analytics and facial search to do user verification, people counting
   - Create a database of "familiar faces" or compare against celebrities
@@ -2027,7 +2027,7 @@ Table of contents:
     - Face search and verification
     - Celebrity recognition
     - Pathing
-- Amazon Transcribe:
+- AWS Transcribe:
   - Automatically convert speech to text
   - Uses a deep learning process called automatic speed recognition (ASR) to convert speech to text quickly and accurately
   - Automatically remove Personal Identifiable Information (PII) using Redaction
@@ -2036,7 +2036,7 @@ Table of contents:
     - Transcribe customer service calls
     - Automate closed captioning and subtitling
     - Generate metadata for media assets to create a full searchable archive
-- Amazon Polly:
+- AWS Polly:
   - Turn text into lifelike speech using deep learning
   - Allowing you to create applications that talk
   - Lexicon & SSML:
@@ -2044,20 +2044,20 @@ Table of contents:
       - Stylized words (like `t33n c0d3`)
       - Acronyms: `AWS -> Amazon Web Services`
     - Generate speech from plain text or from documents marked up with Speech Synthesis Markup Language (SSML)
-- Amazon Translate:
+- AWS Translate:
   - Natural and accurate language translation
   - Allow you to localize content - such as websites and applications - for international users, and to easily translate large volumes of text efficiently
-- Amazon Lex (same  technology that powers Alexa):
+- AWS Lex (same  technology that powers Alexa):
   - Automatic Speech Recognition (ASR) to convert speech to text
   - Natural Language Understanding to recognize the intent of text, callers
   - Help build chatbots, call center bots
-- Amazon Connect:
+- AWS Connect:
   - Receive calls, create contact flows, cloud-based virtual contact center
   - No upfront payments, 80% cheaper than traditional contect center solutions
 
   ![](https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2017/07/27/diagram_Lex_Connect.png)
 
-- Amazon Comprehend:
+- AWS Comprehend:
   - For Natural Language Processing - NLP
   - Fully managed and serverless service
   - Uses machine learning to find insights and relationships in text
@@ -2077,18 +2077,18 @@ Table of contents:
       - Case notes
     - Detect Protected Health Information (PHI)
     - Store documents in Amazon S3, analyze real-time data with Kinesis Data Firehose, or use Amazon Transcribe to transcribe patient narratives into text that can be analyzed by Comprehend Medical
-- Amazon SageMaker:
+- AWS SageMaker:
   - Fully managed service for developers/data scientists to build ML models
   - Typically, difficult to do all the processes in one place + provision servers
   - Machine learning process (simplified): predicting your exam score
-- Amazon Forecast:
+- AWS Forecast:
   - Fully managed service that uses ML to deliver highly accurate forecasts
   - Example: predict the future sales of a raincoat
   - 50% more accurate than looking at the data itself
   - Reduce forecasting time from months to hours
   - Use cases: Product demand planning, financial planning, resource planning,...
   - Data -> S3 -> Forecase (Forecasting model) -> result
-- Amazon Kendra:
+- AWS Kendra:
   - Fully managed document search service powered by Machine Learning
   - Extract answers from within a document (text, pdf, HTML, ...)
   - Natural Language search capabilities
@@ -2098,14 +2098,14 @@ Table of contents:
 
   ![](https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2020/04/09/smarter-faq-kendra-1.gif)
 
-- Amazon Personalize:
+- AWS Personalize:
   - Fully managed ML-service to build apps with real-time personalized recommendations
   - Example: personalized product recommendations/re-ranking, customized direct marketing
   - Same technology used by Amazon.com
   - Integrates into existing websites, applications, SMS, email marketing sytems,...
   - Implement in days, not months
   - Use cases: retail stores, media and entertainment,...
-- Amazon Textract:
+- AWS Textract:
   - Automatically extracts text, handwriting, and data from any scanned documents using AI and ML
   - Extract data from forms and tables
   - Use cases:
@@ -2128,11 +2128,11 @@ Table of contents:
 
 ## 19. AWS Monitoring & Audit
 
-- Amazon CloudWatch:
+- AWS CloudWatch:
 
   ![](https://digitalcloud.training/wp-content/uploads/2022/01/amazon-cloudwatch-service-and-features.jpeg)
 
-  - Amazon CloudWatch Metric:
+  - AWS CloudWatch Metric:
     - Provide metric for every services in AWS
     - Metrics belong to namespaces
     - Dimension is an atribute of a metric (instance id, environment,...)
@@ -2148,7 +2148,7 @@ Table of contents:
 
     - Metric filters can be used to trigger CloudWatch alarms
 
-  - Amazon CloudWatch Logs:
+  - AWS CloudWatch Logs:
     - Log groups: arbitrary name, usually representing an application
     - Log stream: instances within application/log files/containers
     - Can define log expiration policies
@@ -2213,7 +2213,7 @@ Table of contents:
       - Powered by SageMaker
       - Enhanced visibility into application health to reduce the time it will take you to troubleshoot and repair your applications
       - Find and alerts are sent to Amazon EventBridge and SSM OpsCenter
-- Amazon EventBridge:
+- AWS EventBridge:
   - Schedule: Cron jobs (scheduled scripts -> trigger script on Lambda function)
   - Event pattern: event rules to react to a service doing something
   - Trigger Lambda functions, send SQS/SNS messages,...
@@ -2230,7 +2230,7 @@ Table of contents:
   - Resource-based policy:
     - Manage permissions for a specific Event Bus
     - Use case: aggregate all events from AWS Organizatio in a single AWS account or AWS region
-- Amazon CloudTrail:
+- AWS CloudTrail:
 
   ![](https://images.viblo.asia/09a1ac88-b823-4711-b3b2-bfa8dfe28e9e.png)
 
@@ -2262,11 +2262,11 @@ Table of contents:
     ![](https://images.viblo.asia/5d364034-68bc-4204-9144-af6ee868cdf1.png)
 
   - Integration:
-    - Amazon EventBridge - Intercept API Calls:
+    - AWS EventBridge - Intercept API Calls:
       - Log API call to CloudTrail
       - Generate event to EventBridge
       - Send alert to SNS
-- Amazon Config:
+- AWS Config:
   - Helps with auditing and recording compliance of your AWS resources
   - Helps record configurations and changes over time
   - Per-region service
@@ -2346,7 +2346,7 @@ Table of contents:
 
   ![](https://docs.aws.amazon.com/images/IAM/latest/UserGuide/images/PolicyEvaluationHorizontal111621.png)
 
-- Amazon Cognito:
+- AWS Cognito:
   - Give users an identity to interact with our web or mobile application
   - Cognito User Pools (CUP):
     - Sign in functionality for app users
@@ -2363,7 +2363,7 @@ Table of contents:
     ![](https://docs.aws.amazon.com/images/cognito/latest/developerguide/images/scenario-cup-cib.png)
 
   - Cognito vs IAM: "hundreds of users", "mobile users", "authenticate with SAML"
-- Amazon IAM Identity Center:
+- AWS IAM Identity Center:
   - One login (SSO) for all your:
     - AWS accounts in Organizations
     - Business cloud applications
@@ -2381,7 +2381,7 @@ Table of contents:
       - Provide required URLs, ceriticates, and metadata
     - Attribute-Based Access Control (ABAC):
       - Fine-grained based on users's attributes stored in IAM identity center identity store
-- Amazon Directory Services:
+- AWS Directory Services:
   - 3 flavors:
     - AWS Managed Microsoft AD:
       - Create your own AD in AWS, manage users locally, supports MFA
@@ -2395,7 +2395,7 @@ Table of contents:
   - Integrate with IAM Identity Center:
     - Connect to an AWS Managed Microsoft AD
     - Connect to a Self-Managed  Directory (via Managed Microsoft AD/AD connector)
-- Amazon Control Tower:
+- AWS Control Tower:
   - Easy way to set up and govern a secure and compliant multi-account AWS environment based on best practices
   - Uses AWS Organizations to create accounts
   - Benefits:
@@ -2408,7 +2408,7 @@ Table of contents:
 
 ## 21. AWS Security & Encryption
 
-- Amazon KMS - Key Management Service:
+- AWS KMS - Key Management Service:
   - AWS manages encryption keys for us
   - Fully integrated with IAM for authorization
   - Easy way to control access to your data
@@ -2443,3 +2443,391 @@ Table of contents:
     - Not Global
     - Managed independently
     - Use case: global client-side encryption, encryption on Global DynamoDB, Global Aurora
+  - Note, S3 Replication with encryption:
+    - SSE-S3: replicated by default
+    - SSE-C: never replicated
+    - SSE-KMS: need to enable the option:
+      - Specify which KMS key to encrypt the objects within the target bucket
+      - Adapt the KMS key policy for the target key
+      - An IAM role with kms:Decrypt for the source and kms:Encrypt for the target
+      - Might get KMS throttling error -> can ask for a Service Quotas increase
+    - Can use Multi-region KMS Keys -> treated as independent keys by Amazon S3
+  - Note, AMI Sharing process encrypted via KMS
+    - AMI in Source Account is encrypted with KMS Key from Source Account
+    - Must modify the image attribute to add a Launch Permission which corresponds to the specific target AWS account
+    - Must share the KMS Keys used to encrypted the snapshot the AMI references with the target account/IAM Role
+    - The IAM Roke/User in the target account must have the permissions to DescribeKey, ReEncrypted, CreateGrant, Decrypt
+    - When launching an EC2 instance from the AMI, optinally the target account can specify a new KMS key in its own account to re-encrypt the volumes
+- SSM Parameter Store:
+  - Secure Storage for configuration and secrets
+  - Optional Seamless Encryption using KMS
+  - Serverless, scalable, durable, easy SDK
+  - Version tracking of configuration/secrets
+  - Security through IAM
+  - Notifications with Amazon Event Bridge
+  - Integration with CloudFormation
+  - Hierarchy: Just like directory
+
+    ```
+    /my-department
+      my-app/
+        dev/
+          ...
+        prod/
+          ...
+    ```
+
+  - Standard vs Advanced
+  - Parameters Policies (advanced parameters): Allow to assign a TTL to a parameter (expiration date) to force updating or deleting sensitive data such as passwords
+- AWS Secrets Manager:
+  - Newer service, meant for storing secrets
+  - Capability to force rotation of secrets every X days
+  - Automate generation of secrets on rotation (use Lambda)
+  - Integration with Amazon RDS (*)
+  - Secrets are encrypted using KMS
+  - Multi-region secrets:
+    - Replicate secrets across multiple AWS regions
+    - Secrets Manager keeps read replicas in sync with the Primary Secret
+    - Use case: multi-region apps, disaster recovery strategies, multi-region DB...
+  - [Compare with SSM Parameter Store](https://tutorialsdojo.com/aws-secrets-manager-vs-systems-manager-parameter-store/)
+- AWS Certificate Manager (ACM):
+  - Easily provision, manage, and deploy TLS Certificates
+  - Provide in-flight encryption for websites
+  - Support both public and private TLS certificates
+  - Free of charge for public TLS certificates
+  - Automate TLS certificates renewal
+  - Integration with (Load TLS certificates on):
+    - ELB
+    - CloudFront Distributions
+    - APIs on API Gateway
+  - Can't use ACM with EC2 (can't be extracted)
+  - Import Public Certificates:
+    - No automation renewal -> import a new one
+    - Send daily expiration events starting 45 days prior to expiration
+    - AWS Config has a managed rule named `acm-certificate-expiration-check` to check for expiriing certificates
+  - Intergrate with API Gateway:
+    - Create a Custom Domain Name in API Gateway
+    - Edge-Optimized (default): for global clients:
+      - TLS Certificates must be in the same region as CloudFront
+    - Regional:
+      - TLS Certificate must be imported on API Gateway in the same region as the API Stage
+- AWS WAF - Web Application Firewall:
+  - Protect web applications from common web exploits (Layer 7 - HTTP)
+  - Deploy on:
+    - ALB
+    - API Gateway
+    - CloudFront
+    - AppSync GraphQL API
+    - Cognito User Pool
+  - Define Web Access Control List (ACL) Rules:
+    - IP Set (<= 10,000 IP addresses)
+    - HTTP headers, HTTP body, or URL strings Protects from common attack - SQL injection and Cross-Site Scripting (XSS)
+    - Size constraints, geo-match (block countries)
+    - Rate-based rules
+  - Web ACL are Regional except for CloudFront
+  - A rule group is a reusable set of rules
+  - Fixed IP while using WAF with a Load Balancer:
+    - Global Accelerator for fixed IP and WAF on the ALB
+- AWS Shield:
+  - Protect from Distributed Denial of Service (DDoS) attack
+  - Shield Standard:
+    - Free
+    - Provide protection from attacks such as SYN/UDP floods, Reflection attacks and other layer 3/4 attacks
+  - Shield Advanced:
+    - Optional
+    - Protect against more sophisticated atack on EC2, ELB, CloudFront, Global Accelerator, and Route 53
+    - Auto + WAF rules!
+- AWS Firewall Manager:
+  - Manage rules in all accounts of an AWS Organization
+  - Security Policy: common set of security rules
+    - WAF rules
+    - AWS Shield Advanced
+    - Security Groups
+    - AWS Network Firewall
+    - Amazon Route 53 Resolver DNS Firewall
+    - Policies are created at the region level
+  - Rules are applied to new resources as they are created (good for compliance) across all and future accounts in Organization
+- WAF vs Firewall Manager vs AWS Shield:
+  - Used together
+  - For granular protection -> WAF alone = correct choice
+  - Use WAF across accounts, accelerate WAF configuration, automate the protection of new resources -> use FirewallManager with AWS WAF
+  - DDoS attack frequently -> Shield Advanced
+- [Best practices for DDoS Resiliency](https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/mitigation-techniques.html):
+
+  ![](https://docs.aws.amazon.com/images/whitepapers/latest/aws-best-practices-ddos-resiliency/images/ddos-resilient-architecture.jpg)
+
+<table id="w125aab9c21">
+   <thead>
+      <tr>
+         <th>
+            AWS Edge
+         </th>
+         <th>
+            AWS Region
+         </th>
+         <th>
+         </th>
+         <th>
+         </th>
+         <th>
+         </th>
+         <th>
+         </th>
+         <th>
+         </th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr>
+         <td>
+         </td>
+         <td>
+            <p>Using Amazon CloudFront (BP1) with AWS WAF (BP2) </p>
+         </td>
+         <td>
+            <p>Using Global Accelerator (BP1) </p>
+         </td>
+         <td>
+            <p>Using Amazon Route&nbsp;53 (BP3) </p>
+         </td>
+         <td>
+            <p>Using Elastic Load Balancing (BP6) with AWS WAF (BP2)</p>
+         </td>
+         <td>
+            <p>Using Security Groups and network ACLs in Amazon VPC (BP5) </p>
+         </td>
+         <td>
+            <p>
+               Using
+               <a href="https://aws.amazon.com/pm/ec2/" rel="noopener noreferrer" target="_blank">
+                  <span>Amazon Elastic Compute
+                  Cloud</span>
+                  <awsui-icon class="awsdocs-link-icon" name="external">
+                     <span class="awsui_icon_h11ix_31bp4_98 awsui_size-normal-mapped-height_h11ix_31bp4_151 awsui_size-normal_h11ix_31bp4_147">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+                           <path class="stroke-linecap-square" d="M10 2h4v4"></path>
+                           <path d="m6 10 8-8"></path>
+                           <path class="stroke-linejoin-round" d="M14 9.048V14H2V2h5"></path>
+                        </svg>
+                     </span>
+                  </awsui-icon>
+               </a>
+               (Amazon EC2)
+               <a href="https://aws.amazon.com/ec2/autoscaling/" rel="noopener noreferrer" target="_blank">
+                  <span>Auto
+                  Scaling</span>
+                  <awsui-icon class="awsdocs-link-icon" name="external">
+                     <span class="awsui_icon_h11ix_31bp4_98 awsui_size-normal-mapped-height_h11ix_31bp4_151 awsui_size-normal_h11ix_31bp4_147">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+                           <path class="stroke-linecap-square" d="M10 2h4v4"></path>
+                           <path d="m6 10 8-8"></path>
+                           <path class="stroke-linejoin-round" d="M14 9.048V14H2V2h5"></path>
+                        </svg>
+                     </span>
+                  </awsui-icon>
+               </a>
+               (BP7)
+            </p>
+         </td>
+      </tr>
+      <tr>
+         <td>
+            Layer 3 (for example, UDP reflection) attack mitigation
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+      </tr>
+      <tr>
+         <td>
+            Layer 4 (for example, SYN flood) attack mitigation
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+         </td>
+         <td>
+         </td>
+      </tr>
+      <tr>
+         <td>
+            Layer 6 (for example, TLS) attack mitigation
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+         </td>
+         <td>
+         </td>
+      </tr>
+      <tr>
+         <td>
+            Reduce attack surface
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+         </td>
+      </tr>
+      <tr>
+         <td>
+            Scale to absorb application layer traffic
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+      </tr>
+      <tr>
+         <td>
+            Layer 7 (application layer) attack mitigation
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔(*)
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔(*)
+         </td>
+         <td>
+            ✔(*)
+         </td>
+      </tr>
+      <tr>
+         <td>
+            Geographic isolation and dispersion of excess traffic and
+            larger DDoS attacks
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+            ✔
+         </td>
+         <td>
+         </td>
+         <td>
+         </td>
+         <td>
+         </td>
+      </tr>
+      <tr>
+         <td> ✔(*): if used with AWS WAF with <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html">Application Load Balancer</a>
+         </td>
+         <td>
+         </td>
+         <td>
+         </td>
+         <td>
+         </td>
+         <td>
+         </td>
+         <td>
+         </td>
+         <td>
+         </td>
+      </tr>
+   </tbody>
+</table>
+
+- AWS GuardDuty:
+  - Intelligent Threat discovery to Protect AWS account
+  - Use machine learning algorithms, anomaly detection, 3rd party data
+  - One click to enable (30 days trial)
+  - Input data includes:
+    - CloudTrail event logs
+    - VPC Flow logs
+    - DNS Logs
+    - Kubernetes Audit logs
+  - Can setup CloudWatch event rules to be notified in case of findings
+  - Can protect against CryptoCurrency attacks
+- AWS Inspector:
+  - Automated Security Assessments
+  - For EC2 instances:
+    - Leverage the AWS System Manager (SSM) agent
+    - Analyze against unuintened network accessibility
+    - Analyze the running OS against known vulnerabilities
+  - For Container images push to Amazon ECR:
+    - Assessment of Container Images
+  - For Lambda Functions:
+    - Identity software vulnerabilities in function code and package dependencies
+    - Assessment of functions as they are deployed
+  - Report & integrate with AWS Security Hub
+  - Send findings to Event Bridge
+- AWS Macie:
+  - Fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect your sensitive data in AWS
+  - Macie helps identify and alert to sensitive data, such as personally identifiable information (PII)
+  - Send to EventBridge
