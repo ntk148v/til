@@ -28,7 +28,7 @@ Table of contents:
   - [19. AWS Monitoring \& Audit](#19-aws-monitoring--audit)
   - [20. Advanced Identity in AWS](#20-advanced-identity-in-aws)
   - [21. AWS Security \& Encryption](#21-aws-security--encryption)
-  - [22. Networking](#22-networking)
+  - [22. Networking - Virtual Private Cloud (VPC)](#22-networking---virtual-private-cloud-vpc)
 
 ## 1. Getting started with AWS
 
@@ -2834,4 +2834,255 @@ Table of contents:
   - Macie helps identify and alert to sensitive data, such as personally identifiable information (PII)
   - Send to EventBridge
 
-## 22. Networking
+## 22. Networking - Virtual Private Cloud (VPC)
+
+![](https://media.geeksforgeeks.org/wp-content/cdn-uploads/20210706122706/External_network.png)
+
+- Default VPC Overview:
+  - All new AWS accounts have a default VPC
+  - New EC2 instances are launched into the default VPC if no subnet is specified
+  - Default VPC has Internet connectivity and all EC2 instances inside it have public IPv4 addresses
+  - Public and private IPv4 DNS names
+- VPC in AWS - IPv4:
+  - Can have multiple VPCs in an AWS Region (max 5 - soft limit)
+  - Max.CIDR per VPC is 5, for each CIDR:
+    - Min.size is /28 (16 IP addresses)
+    - Max.size is /16 (65536 IP addresses)
+  - VPC Private -> only Private IPv4 ranges are allowed:
+    - 10.0.0.0 - 10.255.255.255 (10.0.0.0/8)
+    - 172.16.0.0 - 172.31.255.255 (172.16.0.0/12)
+    - 192.168.0.0 - 192.168.255.255 (192.168.0.0/16)
+- VPC - Subnet (IPv4):
+  - AWS reservces 5 IP addresses (first 4 & last 1) in each subnet, not available for use.
+
+  ```
+  10.0.0.0/24
+
+  10.0.0.0 – Network Address
+  10.0.0.1 – reserved by AWS for the VPC router
+  10.0.0.2 – reserved by AWS for mapping to Amazon-provided DNS
+  10.0.0.3 – reserved by AWS for future use
+  10.0.0.255 – Network Broadcast Address. AWS does not support broadcast in a VPC, therefore the address is reserved
+  ```
+
+- Internet Gateway & Route Tables (IGW):
+  - Allow resources in a VPC connect to the internet
+  - It scales horizontally and is highly available and redundant
+  - Must be created separately from a VPC
+  - One VPC only be attached to one IGW and vice versa
+  - IGW on their own do not allow Internet access -> It's Route tables -> Route tables must also be edited!
+- Bastion Hosts:
+  - Use Bastion Host to SSH into private EC2 instances
+  - In public subnet, then connect to all other private subnets
+  - Security group must allow inbound from the internet on port 22 from  restricted CIDR
+  - Security Group of the EC2 instances (in private subnet) must allow the Security Group of the Bastion Host, or the private IP of the Bastion host.
+- NAT Instance (deprecated):
+  - Network Address Translation
+  - Allow EC2 instances in private subnets to connect to the Internet
+  - Must be launched in a public subnet
+  - Must disable EC2 setting: Source/Destination Check
+  - Must have Elastic IP attached to it
+  - Route Tables must be configured to route traffic from private subnets to the NAT instance
+
+  ![](https://docs.aws.amazon.com/images/vpc/latest/userguide/images/nat-instance_updated.png)
+
+  - Pre-configured Amazon Linux AMI is available (End of support)
+  - Not highly available/resilient setup out of the box
+  - Internet traffic bandwidth depends on EC2 instance type
+  - Must manage Security Groups & rules
+- NAT Gateway:
+  - AWS-managed NAT, higher bandwidth, high availability, no administration
+  - Pay per hour for usage and bandwidth
+  - NATGW is created in a specific Availability Zone, use an Elastic IP -> multiple NAT Gateways in multiple AZs for fault-tolerance
+  - Can't be used by EC2 instance in the same subnet!
+  - Require an IGW (Private Subnet -> NATGW -> IGW)
+  - No Security Groups to manage/required
+- Security Groups & NACLs:
+
+  ![](https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Fdfecb48f-842b-4147-b0c1-7a4615774c91_479x541.png)
+
+  - Network Access Control List (NACL):
+    - Firewall which control traffic from and to subnets
+    - 1 NACL per subnet, new subnets are assigned to Default NACL
+      - Accept all inbound/outbound
+      - Do not modify the Default NACL
+    - Define NACL Rules:
+    - Newly created NACLs will deny everything
+    - NACL are a great way of blocking a specific IP address at the subnet level
+  - Ephemeral ports:
+    - For any two endpoints to establish a connection -> use port
+    - Clients connect to a define port, and expect a response on an ephemeral port
+    - Diffrent OS use different port ranges
+  - In practice, to cover the different types of clients that might initiate traffic to public-facing instances in your VPC, you can open ephemeral ports 1024-65535. However, you can also add rules to the ACL to deny traffic on any malicious ports within that range. Ensure that you place the deny rules earlier in the table than the allow rules that open the wide range of ephemeral ports.
+
+  | Security Groups                                                  | NACL                                                                                  |
+  | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+  | Instance level                                                   | Subnet level                                                                          |
+  | Allow rules                                                      | Allow rules and deny rules                                                            |
+  | Stateful: return traffic is auto allowed                         | Stateless: return traffic must be explicit allowed by rules (ephemeral ports)         |
+  | All rules are evaluated before deciding whether to allow traffic | Rules are evaluated in order when deciding whether to allow traffic, first match wins |
+  | Applies to an EC2 instance when specified by someone             | Automatically applies to all EC2 instances in the subnet that it's associated with    |
+
+- VPC Peering:
+  - Privately connect two VPCs using AWS's network
+  - Make them behaves as if they were in the same network
+  - Must not have overlapping CIDRs
+  - VPC Peering connection is NOT transitive (must be established for each VPC that need to communicate with one other)
+  - You must update route tables in each VPC's subnets to ensure EC2 instances can communicate with each other
+- VPC Endpoints:
+  - Every AWS service is publicly exposed (public URL)
+  - VPC Endpoint allows you to connect to AWS services using a private  network instead of public internet.
+  - They're redundant and scale horizontally
+  - They remove the need of IGW, NATGW,... to access AWS Services
+  - In case of issues:
+    - Check DNS setting resolution in VPC
+    - Check route tables
+  - Types:
+    - Interface endpoints:
+      - Provision an ENI (private IP address) as an entry point (must attach a Security Group)
+      - Support  most AWS services
+    - Gateway endpoints:
+      - Provision a gateway and must be used as a target in a route table (does not use Security Group)
+      - Support both S3 and DynamoDB (Free)
+  - Gateway or Interface Endpoints for S3: Gateway! (in exam), it's free. Interface endpoint is preferred access is required from on-premises (Site-to-Site VPN or Direct Connect), a different VPC or a different region.
+  - Lambda in VPC accessing DynamoDB:
+    - Option 1: access from the public internet
+    - Option 2: access from the private internet -> use VPC Gateway
+- VPC Flow logs:
+  - Capture information about IP traffic going into your interfaces:
+    - VPC Flow logs
+    - Subnet Flow logs
+    - ENI Flow logs
+  - Help to monitor and troubleshoot connectivity issues
+  - Flow logs data can go to S3/CloudWatch logs
+  - Capture network information from AWS managed interfaces: ELB, RDS, ElasticCache,...
+  - Format:
+
+  ```
+  ${version} ${vpc-id} ${subnet-id} ${instance-id} ${interface-id} ${account-id} ${type} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${pkt-srcaddr} ${pkt-dstaddr} ${protocol} ${bytes} ${packets} ${start} ${end} ${action} ${tcp-flags} ${log-status}
+  ```
+
+  ![](https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2019/09/13/2019-08-13_10-41-04.png)
+
+  - Troubleshoot SG & NACL issues: Look at the "ACTION" field
+    - Incoming requests: inbound REJECT -> NACL or SG; inbound ACCEPT, outbound REJECT -> NACL
+    - Outgoing requests: outbound REJECT -> NACL or SG; outbound ACCEPT, inbound REJECT -> NACL
+- Site-to-Site VPN, Virtual Private Gateway & Customer Gateway:
+  - Virtual Private Gateway (VGW):
+    - VPN concentrator on the AWS side of the VPN connection
+    - VGW is created and attached to the VPC from which you want to create the Site-to-Site VPN connection
+    - Possibility to customize the Autonomous System Number (ASN)
+    - Enable Route Propagation for the VGW in the route table
+  - Customer Gateway (CGW):
+    - Software application or physical device on customer side of the VPN connection
+    - On-premises
+    - IP address: Public Internet-routable IP address/public IP address of the NAT device
+
+  ![](https://docs.aws.amazon.com/images/vpn/latest/s2svpn/images/vpn-basic-diagram.png)
+
+  - AWS VPN CloudHub:
+    - Provide secure communication between multiple sites, if you have multiple VPN connections
+    - Low-cost hub-and-spoke model for primary or secondary network connectivity between different locataions
+    - It's VPn connection so it goes over the public internet
+    - To set it up, connect multiple VPN connections on the same VGW, setup dynamic routing and configure route tables
+
+  ![](https://docs.aws.amazon.com/images/vpn/latest/s2svpn/images/AWS_VPN_CloudHub-diagram.png)
+
+- Direct Connect (DX):
+  - Providee a dedicated private connection from a remote network to VPC
+  - Decdicated connection must be setup between DC and AWS Direct Connect locations
+  - You need to setup a Virtual Private Gateway on VPC
+  - Access public resources (S3) and private (EC2) on same connection
+  - Use cases:
+    - Increase bandwidth throughput - working with large data sets - lower cost
+    - More consistent network experience - applications using real-time data feeds
+    - Hybrid Environments (on prem + cloud)
+  - Support both Ipv4 and Ipv6
+
+  ![](https://docs.aws.amazon.com/images/directconnect/latest/UserGuide/images/direct-connect-overview.png)
+
+  - Direct Connect Gateway:
+    - If you want to setup a Direct Connect to one or more VPC in many different regions (same account), you must use a Direct Connect Gateway
+
+  ![](https://d2908q01vomqb2.cloudfront.net/5b384ce32d8cdef02bc3a139d4cac0a22bb029e8/2019/11/20/dxg_overviewE.png)
+
+  - Connection Types:
+    - Dedicated connections: 1 Gbps, 10Gbps and 100Gbps capacity
+      - Physical ethernet port dedicated to a customer
+      - Request made to AWS first, then completed by AWS Direct connect partners
+    - Hosted connections: 50Mbps, 500Mbps, to 10Gbps
+      - Connection requests are made via AWS Direct Connect partners
+      - Capacity can be added or removed on demand
+      - 1, 2, 5, 10 Gbps available at select AWS Direct connect partners
+    - Lead times are often longer than 1 month to establish a new connection
+  - Encryption:
+    - Data in transit is not encrypted but is private
+    - AWS Direct Connect + VPN provides an IPsec-encrypted private connection
+    - Good for an extra level of security, but slightly more complex to put in place
+  - Resiliency:
+    - High resiliency: one connection at multiple locations
+    - Maximum resiliency: separate connections terminating on separate devices in more than one location
+  - In case Direct Connect fails -> setup a backup Direct Connect connection (expensive), or a Site-to-Site VPN connection
+- Transit Gateway:
+  - For having transitive peering between thousands of VPC and on-premises, hub-and-spoke (star) connection
+  - Regional resource, can work cross-region
+  - Share cross-account using Resource Access Manager (RAM)
+  - Peer Transit Gateway across regions
+  - Route Tables: limit which VPC can talk with other VPC
+  - Work with Direct Connect Gateway, VPN connections
+  - Support IP multicast
+
+  ![](https://docs.aws.amazon.com/images/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/images/hub-and-spoke-design.png)
+
+  - Site-to-Site VPN ECMP:
+    - ECMP = Equal Cost Multi-Path routing
+    - Routing strategy to allow to forward a packet over multiple best path
+    - Use case: create multiple Site-to-Site VPN connections to increase bandwidth of your connections to AWS
+  - Use Transit Gateway to share Direct Connect between multiple accounts
+- VPC - Traffic Monitoring:
+  - Allow to capture and inspect network traffic in VPC
+  - Route the traffic to security appliances that you manage
+  - Capture the traffic:
+    - From (Source): ENIs
+    - To (Target): an ENI or a NLB
+  - Capture all packets or capture the packets of your interest
+  - Source and Target can be in the same VPC or different VPCs (VPC Peering)
+  - Use case: content inspection, threat monitoring, troubleshooting,...
+- IPv6 in VPC:
+  - Every IPv6 address is public and Internet-routable (no private range)
+  - IPv4 can't be disabled for VPC and subnets
+  - Can enable IPv6 to operate in dual-stack mode
+  - EC2 instances will get at least a private internal IPv4 and public IPv6. They can communicate using either IPv4 or IPv6
+  - Troubleshoot:
+    - If can't launch an EC2 instance in subet -> No available IPv4 in subnet -> Create a new IPv4 CIDR in subnet
+- Egress-only Internet Gateway:
+  - Used for IPv6 only
+  - Similar to a NAT Gateway
+  - Allow instance  in VPC outbound connections over IPv6 while preventing the internet to initiate an IPv6 connection to your instances
+  - Must update the Route Tables
+- Networking Costs in AWS per GB - Simplified:
+  - Use Private IP instead of Public IP for good savings and better network performance
+  - Use same AZ for maximum savings (at cost of HA)
+  - Minimizing egress traffic network cost:
+    - Try to keep as much internet traffic to minimize cost
+    - Direct Connect location that are co-located in the same AWS region result in lower cost for egress network
+  - S3 Data Transfer pricing:
+    - S3 ingress: free
+    - S3 to internet: $0.09/GB
+    - S3 Transfer Acceleration: +$0.04->$0.08/GB
+    - S3 to CloudFront: $0.085/GB (cheaper!)
+    - S3 Cross Region Replication: $0.02/GB
+- AWS Network Firewall:
+  - Protect entire AWS VPC
+  - From Layer 3 to Layer 7 protection
+  - Any direction, you can inspect:
+    - VPC to VPC traffic
+    - Outbound to internet
+    - Inbound from internet
+    - To/from Direct Connect & Site-to-Site VPN
+  - Internally, AWS Network Firewall uses the AWS Gateway Loadbalacner
+  - Rules can be centrally managed across account by AWS Firewall Managver to apply to many VPCs
+  - Support 1000s of rules
+  - Traffic filtering: allow, drop, or alert for the traffic that matches the rules
+  - Active flow inspection to protect against network threats with intrusion-prevention capabilities
+  - Send logs of rule matches to S3, CloudWatch logs, Kinesis Data Firehose
