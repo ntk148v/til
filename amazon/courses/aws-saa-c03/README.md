@@ -27,6 +27,8 @@ Table of contents:
   - [18. Machine Learning](#18-machine-learning)
   - [19. AWS Monitoring \& Audit](#19-aws-monitoring--audit)
   - [20. Advanced Identity in AWS](#20-advanced-identity-in-aws)
+  - [21. AWS Security \& Encryption](#21-aws-security--encryption)
+  - [22. Networking](#22-networking)
 
 ## 1. Getting started with AWS
 
@@ -2831,3 +2833,5 @@ Table of contents:
   - Fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect your sensitive data in AWS
   - Macie helps identify and alert to sensitive data, such as personally identifiable information (PII)
   - Send to EventBridge
+
+## 22. Networking
