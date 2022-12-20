@@ -1,6 +1,6 @@
 # AWS SAA-C03
 
-Sources & Refer:
+Sources and Refer:
 
 - <https://www.awsgeek.com/>
 
@@ -11,24 +11,25 @@ Table of contents:
   - [2. IAM](#2-iam)
   - [3. EC2](#3-ec2)
   - [4. EC2 Instance storage](#4-ec2-instance-storage)
-  - [5. High availability and Scalability: ELB \& AS](#5-high-availability-and-scalability-elb--as)
+  - [5. High availability and Scalability: ELB and AS](#5-high-availability-and-scalability-elb-and-as)
   - [6. RDS+Aurora+ElastiCache](#6-rdsauroraelasticache)
   - [7. Route 53](#7-route-53)
   - [8. AWS Well-Architected Framework](#8-aws-well-architected-framework)
   - [9. S3](#9-s3)
-  - [10. Amazon SDK, IAM Roles \& Policies](#10-amazon-sdk-iam-roles--policies)
+  - [10. Amazon SDK, IAM Roles and Policies](#10-amazon-sdk-iam-roles-and-policies)
   - [11. CloudFront, AWS Global Accelerator](#11-cloudfront-aws-global-accelerator)
   - [12. AWS Storage Extras](#12-aws-storage-extras)
   - [13. Amazon Messaging - Decoupling applications](#13-amazon-messaging---decoupling-applications)
   - [14. Containers on AWS](#14-containers-on-aws)
   - [15. serverless](#15-serverless)
   - [16. Databases](#16-databases)
-  - [17. Data \& Analytics](#17-data--analytics)
+  - [17. Data and Analytics](#17-data-and-analytics)
   - [18. Machine Learning](#18-machine-learning)
-  - [19. AWS Monitoring \& Audit](#19-aws-monitoring--audit)
+  - [19. AWS Monitoring and Audit](#19-aws-monitoring-and-audit)
   - [20. Advanced Identity in AWS](#20-advanced-identity-in-aws)
-  - [21. AWS Security \& Encryption](#21-aws-security--encryption)
+  - [21. AWS Security and Encryption](#21-aws-security-and-encryption)
   - [22. Networking - Virtual Private Cloud (VPC)](#22-networking---virtual-private-cloud-vpc)
+  - [23. Disaster Recovery and Migrations](#23-disaster-recovery-and-migrations)
 
 ## 1. Getting started with AWS
 
@@ -100,8 +101,8 @@ Table of contents:
 - IAM Roles for Services:
   - Some AWS service will need to perform actions on your behalf. (An IAM role is an IAM identity that you can create in your account that has specific permissions. An IAM role is similar to an IAM user, in that it is an AWS identity with permission policies that determine what the identity can and cannot do in AWS.)
   - Assign permissions to AWS services with IAM roles.
-- IAM Security Tool: Credentials report (account-level) & Access advisor (user-level).
-- Guidelines & Best practices:
+- IAM Security Tool: Credentials report (account-level) and Access advisor (user-level).
+- Guidelines and Best practices:
   - Don't use the root account except for AWS account setup.
   - One physical user = One AWS user.
   - Assign users to groups and assign permissions to groups.
@@ -110,17 +111,17 @@ Table of contents:
   - Create and use Roles for giving permissions to AWS services.
   - Use Access keys for CLI/SDK.
   - Audit permissions of your account with the IAM credentials report.
-  - Never share IAM users & access keys.
+  - Never share IAM users and access keys.
 
 ## 3. EC2
 
 - Elastic Compute Cloud (IaaS)
-- Sizing & configuration options:
+- Sizing and configuration options:
   - OS
   - CPU
   - RAM
   - Storage:
-    - Network-attached (EBS & EFS)
+    - Network-attached (EBS and EFS)
     - Hardware (EC2 Instance store)
   - Network
   - Security group (firewall)
@@ -158,14 +159,14 @@ Table of contents:
 
 - Instances purchasing options:
   - On-demand instances: short workload, predictable pricing, pay by second.
-  - Reserved (1 & 3 years):
+  - Reserved (1 and 3 years):
     - Up to 72% discount compared to On-demand.
     - Recommended for steady-state usage applications (think database).
     - Reserved instances: long workloads.
     - Convertible reserverd instances: long workloads with flexible instances (can change EC2 instance type, family, OS, tenancy).
-  - Saving plans (1 & 3 years):
+  - Saving plans (1 and 3 years):
     - Commitment to an amount of usage (for example $10/hour for 1/3 years), long workload.
-    - Loked to a specific instance family & AWS region.
+    - Loked to a specific instance family and AWS region.
     - Flexible across: instance type, OS, tenancy (host, dedicated, default)
   - Spot instances:
     - Short workloads, cheap, can lose instances.
@@ -359,12 +360,12 @@ Table of contents:
     - EFS has higher price point than EBS.
     - Can leverage EFS-IA for cost savings.
 
-## 5. High availability and Scalability: ELB & AS
+## 5. High availability and Scalability: ELB and AS
 
 - High availability and Scalability:
   - Vertical vs Horizontal Scaling:
     - Vertical scaling: increase instance size.
-    - Horizontal scaling: increase number of instances (auto scaling group & load balancer)
+    - Horizontal scaling: increase number of instances (auto scaling group and load balancer)
 
   ![](https://www.cloudzero.com/hubfs/blog/horizontal-vs-vertical-scaling.webp)
 
@@ -392,7 +393,7 @@ Table of contents:
         - IP addresses - must be private
       - Multiple applications on the same machine (ex: containers)
       - Routing tables to different target groups.
-      - Fit for microservices & container-based application.
+      - Fit for microservices and container-based application.
       - Port mapping feature to redirect to a dynamic port in ECS.
       - Latency ~ 400ms
     - Network Load Balancer (v2):
@@ -428,7 +429,7 @@ Table of contents:
   - Cross zone load balancing:
     - Each load balancer instance distributes evenly across all registered instances all AZ.
     - ALB: enabled by default, no charges for inter AZ data.
-    - NLB & GWLB: disabled by default, charges for inter AZ data.
+    - NLB and GWLB: disabled by default, charges for inter AZ data.
 
   ![](https://cloudacademy.com/wp-content/uploads/2019/08/Screen-Shot-2019-08-02-at-9.46.42-AM.png)
 
@@ -513,7 +514,7 @@ Table of contents:
       - Transaction logs: back up/5 minutes.
       - 1-35 days of retention -> 0 = disable automated backup.
     - Manual DB snapshots.
-    - Trick: Stopped database, still pay for storage -> snapshot & restore.
+    - Trick: Stopped database, still pay for storage -> snapshot and restore.
 - AWS Aurora:
   - A proprietary technology from AWS.
   - Postgres and MySQL are both supported as Aurora DB.
@@ -555,16 +556,16 @@ Table of contents:
     - Manual DB snapshots.
   - Database Cloning:
     - Create a new DB Cluster from an existing one.
-    - Faster than snapshot & restore.
-    - Very fast & cost-effective.
+    - Faster than snapshot and restore.
+    - Very fast and cost-effective.
     - Useful to create a "staging" database from a "production" database without impacting the production database.
-- RDB & Aurora Restore options:
+- RDB and Aurora Restore options:
   - Restoring a RDS/Aurora backup or a snapshot creates a new database.
   - Restoring database from S3.
     - Create a backup of db.
     - Store it on S3.
     - Restore the backup file onto a new RDS instance running MySQL.
-- RDS & Aurora Security:
+- RDS and Aurora Security:
   - At-rest encryption.
   - In-flight encryption.
   - IAM authentication.
@@ -574,7 +575,7 @@ Table of contents:
 - RDS Proxy:
   - Allow apps to pool and share DB connections established with the database.
   - Improving database effeciency by reducing the stress on database resources and minimize open connections.
-  - Reduced RDS & Aurora failover time by up 66%.
+  - Reduced RDS and Aurora failover time by up 66%.
   - Enforce IAM authentication.
   - Never publicity accesible (must be accessed from VPC).
 - ElastiCache:
@@ -758,7 +759,7 @@ Table of contents:
     - Easy roll back to previous version
   - All file is not versioned -> enable version -> version "null"
   - Suspend versioning -> not delete the previous versions
-- [Replication](https://aws.amazon.com/s3/features/replication/) (Cross-region replication & Same-region replication):
+- [Replication](https://aws.amazon.com/s3/features/replication/) (Cross-region replication and Same-region replication):
   - Must enable Versioning in source and destination buckets
   - Buckets can be in different AWS accounts
   - Copying is asynchronous
@@ -779,15 +780,15 @@ Table of contents:
   ![](https://d1.awsstatic.com/architecture-diagrams/ArchitectureDiagrams/replication-time-control-updated.7e4011429383a586f314f6ece8e582b7be91ee4b.png)
 - Storage classes:
 
-| Name                              | Overview                                                                                                              | Availability | Use cases                                                                   |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------------- |
-| Standard - General Purpose        | Used for frequently accessed data, low latency, high throughput                                                       | 99.99%       | Big data analytics, mobile & gaming applications, content distribution,...  |
-| Standard - Infrequent Access (IA) | Lower cost than S3 standard                                                                                           | 99.9%        | Disater recovery, backups                                                   |
-| One Zone - IA                     |                                                                                                                       | 99.5%        | Storing secondary backup copies of on-premises data, or data you can create |
-| Glacier Instant Retrieval         | Millisecond retrieval, great for data accessed a quarter. (store >= 90 days)                                          |              | Archive/Backup                                                              |
-| Glacier Flexible Retrieval        | Expedited (1-5 minutes),  Standard (3-5 hours), Bulk (5-12 hours) - free (store >= 90days)                            |              | Archive/Backup                                                              |
-| Glacier Deep Archive              | Standard (12 hours), Bulk (48 hours) (store >= 180 days)                                                              |              | Archive/Backup, long term storage                                           |
-| Intelligent Tiering               | Small monthly monitoring and auto-tiering free, move objects automatically between Access Tiers, no retrieval charges |              |                                                                             |
+| Name                              | Overview                                                                                                              | Availability | Use cases                                                                    |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------- |
+| Standard - General Purpose        | Used for frequently accessed data, low latency, high throughput                                                       | 99.99%       | Big data analytics, mobile and gaming applications, content distribution,... |
+| Standard - Infrequent Access (IA) | Lower cost than S3 standard                                                                                           | 99.9%        | Disater recovery, backups                                                    |
+| One Zone - IA                     |                                                                                                                       | 99.5%        | Storing secondary backup copies of on-premises data, or data you can create  |
+| Glacier Instant Retrieval         | Millisecond retrieval, great for data accessed a quarter. (store >= 90 days)                                          |              | Archive/Backup                                                               |
+| Glacier Flexible Retrieval        | Expedited (1-5 minutes),  Standard (3-5 hours), Bulk (5-12 hours) - free (store >= 90days)                            |              | Archive/Backup                                                               |
+| Glacier Deep Archive              | Standard (12 hours), Bulk (48 hours) (store >= 180 days)                                                              |              | Archive/Backup, long term storage                                            |
+| Intelligent Tiering               | Small monthly monitoring and auto-tiering free, move objects automatically between Access Tiers, no retrieval charges |              |                                                                              |
 
   ![](https://static.us-east-1.prod.workshops.aws/public/a965bfb5-cf47-4f7c-aae6-82cceb3572f3/static/images/002_services/002_storage/003_s3/s3_storage_classes.png?classes=shadow&width=1024px)
 
@@ -851,9 +852,9 @@ Table of contents:
   - Use Latest version of the AWS SDKs.
   - Multi-part upload: recommended for files > 100MB, must use for files > 5GB -> parallelize uploads
   - Use Caching for Frequently Accessed Content (CloudFront, ElasticCache, Elemental MediaStore)
-- Select & Glacier Select:
+- Select and Glacier Select:
   - Retrieve less data using SQL by performing server-side filtering.
-  - Can filter by rows & columnes.
+  - Can filter by rows and columnes.
   - Less entwork transfer, less CPU cost client-side.
   - Glacier is priced in 3 dimensions:
     - GB of Data Scanned
@@ -864,7 +865,7 @@ Table of contents:
 
 - Batch Operations:
   - Perform bulk operations on existing S3 objects with a single request:
-    - Modify object metadata & properties
+    - Modify object metadata and properties
     - Encrypt un-encrypted objects
     - Modify ACLs, tags
     - Restore objects from S3 Glacier
@@ -1032,7 +1033,7 @@ Table of contents:
 
       ![](https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2021/03/16/s3-object-lambda-architecture-1-1024x520.png)
 
-## 10. Amazon SDK, IAM Roles & Policies
+## 10. Amazon SDK, IAM Roles and Policies
 
 - Policy Simulator: <https://policysim.aws.amazon.com/>
 - EC2 instance metadata
@@ -1144,7 +1145,7 @@ Table of contents:
       - Storage Optimized vs Compute Optimized.
       - Use cases: large data cloud migrations, DC decommission, disaster recovery.
     - Snowcone:
-      - Small, portable computing, anywhere, rugged & secure, withstands harsh environments.
+      - Small, portable computing, anywhere, rugged and secure, withstands harsh environments.
       - Device used for edge computing, storage, and data transfer.
       - 8 TBs of usable storage.
       - Must provide your own battery/cables.
@@ -1224,7 +1225,7 @@ Table of contents:
   - S3 is a proprietary storage technology -> expose S3 data on-premises -> AWS Storage Gateway.
 - AWS Storage Gateway:
   - Bridge between on-premises data and cloud data
-  - Use cases: disaster recovery, backup & restore, tiered storage, on-premises cache & low-latency files access
+  - Use cases: disaster recovery, backup and restore, tiered storage, on-premises cache and low-latency files access
   - Require hardware.
   - Types:
     - S3 File Gateway:
@@ -1264,7 +1265,7 @@ Table of contents:
   - FSx for Lustre: High Performance Computing Linux file system
   - FSx for NetApp ONTAP: High OS Compatibility
   - FSx for OpenZFS: Managed ZFS file system
-  - Storage Gateway: S3 & FSx File Gateway, Volume Gateway (cache & stored), Tape Gateway
+  - Storage Gateway: S3 and FSx File Gateway, Volume Gateway (cache and stored), Tape Gateway
   - Transfer Family: FTP, FTPS, SFTP interface on top of Amazon S3 or Amazon EFS
   - DataSync: Schedule data sync from on-premises to AWS, or AWS to AWS
   - Snowcone / Snowball / Snowmobile: to move large amount of data to the cloud, physically
@@ -1378,7 +1379,7 @@ Table of contents:
         - On-demand Mode:
           - No need to provision or manage the capacity.
           - Scale automatically.
-          - Pay per stream per hour & data in/out per GB.
+          - Pay per stream per hour and data in/out per GB.
       - Security:
         - Control access/authorization using IAM policies.
         - Encryption: in-flight, at-rest, clien side.
@@ -1471,7 +1472,7 @@ Table of contents:
 
   - EC2 Launch type:
     - Launch Docker containers on AWS = Launch ECS Tasks on ECS Clusters.
-    - EC2 Launch type: you must provision & maintain the infrastructure (EC2 instances)
+    - EC2 Launch type: you must provision and maintain the infrastructure (EC2 instances)
     - Each EC2 instance must run the ECS agent to register in the ECS Cluster.
     - AWS takes care of staring/stopping containers.
   - Fargate Launch type:
@@ -1579,7 +1580,7 @@ Table of contents:
     - DynamoDB
     - S3
     - CloudFront
-    - CloudWatch Events EventBridge & Logs
+    - CloudWatch Events EventBridge and Logs
     - SNS
     - SQS
     - Cognito
@@ -1670,7 +1671,7 @@ Table of contents:
     - Microseconds latency for cached data
     - Doesn't require application logic modification (compatible with existing DynamoDB APIs)
     - 5 minutes TTL (default)
-    - vs ElasticCache: store Aggregation result. DAX stores individual objects cache, quey & scan cache.
+    - vs ElasticCache: store Aggregation result. DAX stores individual objects cache, quey and scan cache.
   - Stream Processing:
     - Ordered stream of item-level modifications (create/update/delete) in a table
     - Use cases:
@@ -1765,7 +1766,7 @@ Table of contents:
   - Time series: Amazon Timestream
 - AWS RDS:
   - Managed PostgreSQL/MySQL/Oracle/SQL Server/MariaDB/Custom
-  - Provisioned RDS Instance Size and EBS Volume Type & Size
+  - Provisioned RDS Instance Size and EBS Volume Type and Size
   - Auto-scaling capability for Storage
   - Support for Read Replicas and Multi AZ
   - Security through IAM, Security Groups, KMS, SSL in transit
@@ -1773,20 +1774,20 @@ Table of contents:
   - Manual DB snapshot for longer-term recovery
   - Managed and scheduled maintenance (with downtime)
   - Support for IAM authentication, integration with Secrets Manager
-  - RDS custom for access to and customize the underlying instance (Oracle & SQL Server)
+  - RDS custom for access to and customize the underlying instance (Oracle and SQL Server)
   - Use case: Store relational datasets (RDBMS/OLTP), perform SQL queries, transactions
 - AWS Aurora:
   - Compatible API for PostgreSQL/MySQL, separation of storage and compute.
   - Storage: data is stored in 6 replicas, across 3 AZs.
   - Compute: Cluster of DB instance across multiple AZ, autoscaling of Read Replicas
   - Same security/monitoring/maintenance features as RDS
-  - Know the backup & restore options for Aurora
+  - Know the backup and restore options for Aurora
   - Serverless
   - Multi-master - continuous writes failover
   - Global: up to 16 DB Read instances in each region
-  - Machine Learning: perform ML using SageMaker & Comprehend
+  - Machine Learning: perform ML using SageMaker and Comprehend
   - Database cloning: new cluster from existing one, faster than restoring a snapshot
-  - Use case: same as RDS, but with less maintenance / more flexibility, performance & features.
+  - Use case: same as RDS, but with less maintenance / more flexibility, performance and features.
 - ElastiCache:
   - Redis/Memcached
   - In-memory data store, sub-ms latency
@@ -1857,7 +1858,7 @@ Table of contents:
   - Fully managed, fast, scalable, serverless time series database
   - Auto scaling
   - Store and analyze trillions of events per day
-  - 1000s times faster & 1/10th the cost of relational databases
+  - 1000s times faster and 1/10th the cost of relational databases
   - Scheduled queries, multi-measure  records, SQL compatibility
   - Data storage tiering: recent data, kept in memory and historical data kept in a cost-optimized storage
   - Built-in time series analytics functions
@@ -1866,14 +1867,14 @@ Table of contents:
 
   ![](https://www.awsgeek.com/Amazon-Timestream/Amazon-Timestream.jpg)
 
-## 17. Data & Analytics
+## 17. Data and Analytics
 
 - Athena:
   - Serverless query service to analyze data stored in Amazon S3
   - Use standard SQl languages to query the files
   - Support CSV, JSON, ORC, Avro, and Parquet
   - Commonly used with Amazon Quicksight for reporting/dashboards
-  - Use case: Business intelligence/analytics/reporting, analyze & query VPC flow logs, ELB logs, CloudTrail trails,...
+  - Use case: Business intelligence/analytics/reporting, analyze and query VPC flow logs, ELB logs, CloudTrail trails,...
   - Analyze data in S3 using serverless? -> Athena
 
   ![](https://www.xenonstack.com/hubfs/amazon-athena-tools.png)
@@ -1892,7 +1893,7 @@ Table of contents:
   - Based on PostgreSQL, but it's not used for OLTP
   - It's OLAP - online analytical processing (analytics and data warhousing)
   - 10x better performance than other data warehouses, scale to PBs of data
-  - Columnar storage of data (instead of row based) & parallel query engine
+  - Columnar storage of data (instead of row based) and parallel query engine
   - Pay as you go based on the instances provisioned
   - Has a SQL interface for performing the queries
   - Quicksight or Tableau
@@ -1924,7 +1925,7 @@ Table of contents:
   - DynamoDB, queries only exist by primary key or indexes - OpenSearch, search any field, even partially matches
   - Cluster of instances (not serverless)
   - Ingestion from Kinesis Data Firehose, AWS IoT, and CloudWatch Logs
-  - Security through Cognito & IAM, KMS encryption, TLS
+  - Security through Cognito and IAM, KMS encryption, TLS
   - Dashboard
   - Patterns:
     - DynamoDB -> DynamoDB Stream -> Lambda Function -> Amazon OpenSearch
@@ -2000,7 +2001,7 @@ Table of contents:
     - Kinesis Data Streams:
       - 1 MB message size limit
       - Data Streams with Shards
-      - Shard Splitting & Merging
+      - Shard Splitting and Merging
       - TLS in-flight encryption
       - KMS at-rest encryption
     - MSK:
@@ -2041,7 +2042,7 @@ Table of contents:
 - AWS Polly:
   - Turn text into lifelike speech using deep learning
   - Allowing you to create applications that talk
-  - Lexicon & SSML:
+  - Lexicon and SSML:
     - Customize the pronnunciation of words with Pronunciation lexions:
       - Stylized words (like `t33n c0d3`)
       - Acronyms: `AWS -> Amazon Web Services`
@@ -2128,7 +2129,7 @@ Table of contents:
   - Personalize: real-time personalized recommendations
   - Textract: detect text and data in documents
 
-## 19. AWS Monitoring & Audit
+## 19. AWS Monitoring and Audit
 
 - AWS CloudWatch:
 
@@ -2283,12 +2284,12 @@ Table of contents:
     - Notifications: use EventBridge to trigger notifications when AWS resources are non-compliant, ability to send configuration changes and compliance state notifications to SNS
   - Config resource:
 
-| CloudWatch                          | CloudTrail                                            | Config                                      |
-| ----------------------------------- | ----------------------------------------------------- | ------------------------------------------- |
-| Performance monitoring & dashboards | Record API calls made within your Account by everyone | Record configuration changes                |
-| Events & Alerting                   | Can define trails for specific resources              | Evaluate resources against compliance rules |
-| Global service                      | Global Service                                        | Per-region service                          |
-| Log Aggeration & Analytics          |                                                       | Get timeline of changes and compliance      |
+| CloudWatch                            | CloudTrail                                            | Config                                      |
+| ------------------------------------- | ----------------------------------------------------- | ------------------------------------------- |
+| Performance monitoring and dashboards | Record API calls made within your Account by everyone | Record configuration changes                |
+| Events and Alerting                   | Can define trails for specific resources              | Evaluate resources against compliance rules |
+| Global service                        | Global Service                                        | Per-region service                          |
+| Log Aggeration and Analytics          |                                                       | Get timeline of changes and compliance      |
 
 - For example, for ELB:
   - CloudWatch:
@@ -2352,9 +2353,9 @@ Table of contents:
   - Give users an identity to interact with our web or mobile application
   - Cognito User Pools (CUP):
     - Sign in functionality for app users
-      - Create a serverless database of user for your web & mobile apps
+      - Create a serverless database of user for your web and mobile apps
       - Simple login, password reset...
-    - Integrate with API Gateway & Application Load Balancer
+    - Integrate with API Gateway and Application Load Balancer
   - Cognito Identity Pools (Federated Identity):
     - Provide AWS credentials to users so they can access AWS resources directly
     - Integrate with Cognito User Pools as an identity providers
@@ -2408,7 +2409,7 @@ Table of contents:
     - Detect policy violations and remediate them
     - Monitor compliance through an interactive dashboard
 
-## 21. AWS Security & Encryption
+## 21. AWS Security and Encryption
 
 - AWS KMS - Key Management Service:
   - AWS manages encryption keys for us
@@ -2423,7 +2424,7 @@ Table of contents:
       - Single encryption key that is used to encrypt and decrypt
       - AWS services that are integrated with KMS use Symmetric CMKs
       - You never get access to the KMS Key unencrypted (must call KMS API to use)
-    - Asymmetric (RSA & ECC key pairs):
+    - Asymmetric (RSA and ECC key pairs):
       - Public (Encrypt) and Private Key (Decrypt) pair
       - Used for Encrypt/Decrypt, or Sign/Verify operations
       - The public key is downloadable, but you can't access the Private Key unencrypted
@@ -2827,7 +2828,7 @@ Table of contents:
   - For Lambda Functions:
     - Identity software vulnerabilities in function code and package dependencies
     - Assessment of functions as they are deployed
-  - Report & integrate with AWS Security Hub
+  - Report and integrate with AWS Security Hub
   - Send findings to Event Bridge
 - AWS Macie:
   - Fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect your sensitive data in AWS
@@ -2853,7 +2854,7 @@ Table of contents:
     - 172.16.0.0 - 172.31.255.255 (172.16.0.0/12)
     - 192.168.0.0 - 192.168.255.255 (192.168.0.0/16)
 - VPC - Subnet (IPv4):
-  - AWS reservces 5 IP addresses (first 4 & last 1) in each subnet, not available for use.
+  - AWS reservces 5 IP addresses (first 4 and last 1) in each subnet, not available for use.
 
   ```
   10.0.0.0/24
@@ -2865,7 +2866,7 @@ Table of contents:
   10.0.0.255 – Network Broadcast Address. AWS does not support broadcast in a VPC, therefore the address is reserved
   ```
 
-- Internet Gateway & Route Tables (IGW):
+- Internet Gateway and Route Tables (IGW):
   - Allow resources in a VPC connect to the internet
   - It scales horizontally and is highly available and redundant
   - Must be created separately from a VPC
@@ -2889,7 +2890,7 @@ Table of contents:
   - Pre-configured Amazon Linux AMI is available (End of support)
   - Not highly available/resilient setup out of the box
   - Internet traffic bandwidth depends on EC2 instance type
-  - Must manage Security Groups & rules
+  - Must manage Security Groups and rules
 - NAT Gateway:
   - AWS-managed NAT, higher bandwidth, high availability, no administration
   - Pay per hour for usage and bandwidth
@@ -2897,7 +2898,7 @@ Table of contents:
   - Can't be used by EC2 instance in the same subnet!
   - Require an IGW (Private Subnet -> NATGW -> IGW)
   - No Security Groups to manage/required
-- Security Groups & NACLs:
+- Security Groups and NACLs:
 
   ![](https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Fdfecb48f-842b-4147-b0c1-7a4615774c91_479x541.png)
 
@@ -2964,10 +2965,10 @@ Table of contents:
 
   ![](https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2019/09/13/2019-08-13_10-41-04.png)
 
-  - Troubleshoot SG & NACL issues: Look at the "ACTION" field
+  - Troubleshoot SG and NACL issues: Look at the "ACTION" field
     - Incoming requests: inbound REJECT -> NACL or SG; inbound ACCEPT, outbound REJECT -> NACL
     - Outgoing requests: outbound REJECT -> NACL or SG; outbound ACCEPT, inbound REJECT -> NACL
-- Site-to-Site VPN, Virtual Private Gateway & Customer Gateway:
+- Site-to-Site VPN, Virtual Private Gateway and Customer Gateway:
   - Virtual Private Gateway (VGW):
     - VPN concentrator on the AWS side of the VPN connection
     - VGW is created and attached to the VPC from which you want to create the Site-to-Site VPN connection
@@ -3079,10 +3080,189 @@ Table of contents:
     - VPC to VPC traffic
     - Outbound to internet
     - Inbound from internet
-    - To/from Direct Connect & Site-to-Site VPN
+    - To/from Direct Connect and Site-to-Site VPN
   - Internally, AWS Network Firewall uses the AWS Gateway Loadbalacner
   - Rules can be centrally managed across account by AWS Firewall Managver to apply to many VPCs
   - Support 1000s of rules
   - Traffic filtering: allow, drop, or alert for the traffic that matches the rules
   - Active flow inspection to protect against network threats with intrusion-prevention capabilities
   - Send logs of rule matches to S3, CloudWatch logs, Kinesis Data Firehose
+
+## 23. Disaster Recovery and Migrations
+
+- Disaster Recovery:
+  - Any event that has a negative impact on a company's business continuity for fiances is a disaster -> DR: prepare for and recover from a disaster
+  - Need to define 2 terms:
+
+    ![](https://advisera.com/wp-content/uploads//sites/5/2015/06/rto-vs-rpo-what-is-the-difference-no-white-spaces.png)
+
+    - RPO: Recovery Point Objective
+      - The interval of time that might pass during a disruption before the quantity of data lost during that period exceeds the Business Continuity Plan’s maximum allowable threshold or "tolerance"
+    - RTO: Recovery Time Objective
+      - the duration of time and a service level within which a business process must be restored after a disaster in order to avoid unacceptable consequences associated with a break in continuity. In other words, the RTO is the answer to the question: "How much time did it take to recover after notification of business process disruption?"
+  - Disaster Recovery strategies:
+
+    ![](https://docs.aws.amazon.com/images/whitepapers/latest/disaster-recovery-workloads-on-aws/images/disaster-recovery-strategies.png)
+
+    - Backup and Restore (High RPO):
+
+      ![](https://docs.aws.amazon.com/images/whitepapers/latest/disaster-recovery-workloads-on-aws/images/backup-restore-architecture.png)
+
+    - Pilot Light:
+      - A small version of the app is always running in the Cloud
+      - Useful for the critical core (pilot light)
+      - Verify similar to Backup and restore
+      - Faster than Backup and restore as critical systems are already up.
+
+      ![](https://docs.aws.amazon.com/images/whitepapers/latest/disaster-recovery-workloads-on-aws/images/pilot-light-architecture.png)
+
+    - Warm Standby:
+      - Full system is up and running, but at minimum size
+      - Upon disaster, we can scale to production load
+
+      ![](https://docs.aws.amazon.com/images/whitepapers/latest/disaster-recovery-workloads-on-aws/images/warm-standby-architecture.png)
+
+    - Hot Site/Multi-Site Approach:
+      - Very low RTO (minutes or seconds): very expensive
+      - Full production scale is running AWS and On premise
+
+      ![](https://docs.aws.amazon.com/images/whitepapers/latest/disaster-recovery-workloads-on-aws/images/multi-site-active-active-architecture.png)
+
+  - Disaster recovery tips:
+    - Backup:
+      - EBS snapshot, RDS automated backup/snapshots,...
+      - Regular pushes to S3/S3 IA/Glacier, Lifecycle policy, Cross region replication
+      - From On-premise: Snowball/Storage Gateway
+    - High availability:
+      - Route 53 to migrate DNS over from Region to Region
+      - RDS Multi-AZ, ElasticCache Multi-AZ, EFS, S3...
+      - Site to Site VPN as a recovery from Direct Connect
+    - Replication:
+      - RDS replication (cross region), AWS Aurora + Global Databases
+      - Data replication from on-premise -> RDS
+      - Storage Gateway
+    - Automation:
+      - Cloudformation/Elastic Beanstalk to re-create a whole new environment
+      - Recover/reboot EC2 instances with CloudWatch if alarms fail
+      - AWS Lambda functions for customized automations
+    - Chaos:
+      - Netflix has "simian-army" randonly terminating EC2 - ChaosMonkey
+- DMS - Database Migration Service:
+  - Quickly and securely migrate databases to AWS, resilient, self healing
+  - The source database remains available during the migration
+  - Supports:
+    - Homogeneous migrations: Oracle to Oracle
+    - Heterogeneous migrations: Microsoft SQL Server to Aurora
+  - Continuous Data replication using CDC
+  - Must create an EC2 instance to perform replication tasks
+  - DMS Sources and Targets:
+    - Sources:
+      - On-premise and EC2 instance databases: Oracle, MS SQL Server, MySQL/MariaDB, PostgreSQL, MongoDB, SAP, DB2
+      - Azure SQL Database
+      - AWS RDS + Aurora
+      - AWS S3
+    - Targets:
+      - On-Premise and EC2 instances databases: Oracle, MS SQL Server, MySQL, MariaDB, PostgreSQL, SAP
+      - AWS RDS
+      - AWS Redshift
+      - AWS DynamoDB
+      - AWS S3
+      - ElasticSearch Service
+      - Kinesis Data Streams
+      - DocumentDB
+  - AWS Schema conversion tool (SCT):
+    - Convert database's schema from one engine to other
+    - Prefer compute-intensive instances to optimize data conversions
+    - You do not need to use SCT if you are migrating the same DB engine
+  - DMS - Continuous Replication:
+  - RDS & Aurora MySQL migrations:
+    - RDS MySQL to Aurora MySQL:
+      - Option 1: DB Snapshots from RDS MySQL restored as MySQL Aurora DB
+      - Option 2: Create an Aurora Read Replica from RDS MySQL, and when the replication lag is 0, promote it as its own DB cluster (can take time and cost $)
+    - External MySQL to Aurora MySQL:
+      - Option 1: Use Percona XtraBackup to create a file backup in S3 -> Create an Aurora MySQL Db from S3
+      - Option 2: Create an Aurora MySQL DB -> Use mysqldump utility to migrate MySQL into Aurora (slower)
+    - Use DMS if both databases are up and running
+  - RDS & Aurora PostgreSQL migrations:
+    - RDS PostgreSQL to Aurora PostgreSQL:
+      - Option 1: DB snapshots from RDS PostgreSQL restored as PostgreSQL Aurora DB
+      - Option 2: Create an Aurora Read Replica from RDS PostgreSQL, and when the replicatiopn lag is 0, promote it as its own DB cluster (can take time and cost $)
+    - External PostgreSQL to Aurora PostgreSQL:
+      - Create a backup and put it in Amazon S3
+      - Import it using the `aws_s3` Aurora extension
+    - Use DMS if both databases are up and running
+- On-premise strategy with AWS:
+  - Ability to download Amazon Linux 2 AMI as a VM (.iso format)
+  - VM import/export:
+    - Migrate existing applications into EC2
+    - Create a DR repository strategy for on-premises VMs
+    - Can export back the VMs from EC2 to on-premise
+  - AWS Application Discovery Service:
+    - Gather information about on-premises servers to plan a migration
+    - Server utilization and dependency mappings
+    - Track with AWS Migration Hub
+  - AWS Database Migration (DMS):
+    - Replicate on-premise -> AWS, AWS -> AWS, AWS -> on-premise
+    - Work with various database technologies (Orcale, MySQL, DynamoDB,..)
+  - AWS Server Migration Service (SMS):
+    - Incremental replication of on-premise live servers to AWS
+- AWS Backup:
+  - Fully managed service
+  - Centrally manage and automate backups across AWS services
+  - No need to create custom scripts and manual processes
+  - Supported services:
+    - EC2/EBS
+    - S3
+    - RDS, Aurora, DynamoDB
+    - DocumentDB/Amazon Neptune
+    - EFS/FSx (Lustre & Windows File Server)
+    - AWS storage gateway (volume gateway)
+  - Support cross-region backups
+  - Support cross-account backups
+  - Support PITR for supported service
+  - On-demand and scheduled backups
+  - Tag-based backup policies
+  - Create backup policies as Backup Plans:
+    - Backup frequency (every 12 hours, daily, weekly, monthly, cron expression)
+    - Backup window
+    - Transition to Cold Storage (Never, Days, Weeks, Months, Years)
+    - Retention Period (Always, Days, Weeks, Months, Years)
+  - AWS Backup Vault Lock:
+    - Enforce a WORM (Write Once Read Many) state for all the backups that you store in AWS Backup Vault
+    - Additional layer of defense to protect backups against:
+      - Inadvertent or malicious delete operations
+      - Updates that shorten or alter retention periods
+    - Even the root user can't delete backups when enabled
+- AWS Application Discovery Service:
+  - Plan migration projects by gathering information about on-premise data centers
+  - Server utilization data and dependency mapping are important for migrations
+  - Agentless discovery (AWS agentless discovery connector):
+    - VM inventory, configuration, and performance history such as CPU, memory, and disk usage
+  - Agent-based discovery (AWS application discovery agent):
+    - System configuration, system performance, running processes, and details of the network connections between systems
+  - Resulting data can be viewed within AWS Migration Hub
+
+  ![](https://d1.awsstatic.com/products/application-discovery-service/Product-Page-Diagram_AWS-Application-Discovery-Service%201.9d81c27f3de50349a9406b8def61b8eb914e2930.png)
+
+- AWS Application Migration Service (MGN):
+  - CloudEndure Migration to replace MGN
+  - Lift-and-shift (rehost) solution which simplify migrating applications to AWS
+  - Convert physical, virtual, and cloud-based servers to run natively on AWS
+  - Support wide range of platforms, OS, and databases
+  - Minimal downtime, reduced costs
+
+  ![](https://d1.awsstatic.com/pdp-headers/2022/application-migration/MGN-How-It-Works-Diagram_biggerfonts1.1cb6cd71af1796ed95842d71c7b7a588a81c442d.jpg)
+
+- Transfer large amount of data into AWS:
+  - Example: 200TB of data - 100Mbps internet connection
+  - Over the internet/Site-to-site VPN:
+    - Immediate to setup
+    - Take `200(TB)*1000(GB)*1000(MB)*8(Mb)/100 Mbps = 16,000,000s = 185d`
+  - Over direct connect 1 Gbps:
+    - Long for the one-time setup (1 month)
+    - Take `200(TB)*1000(GB)*8(Gb)/1 Gbps = 1,600,000s = 18.5d`
+  - Over Snowball:
+    - Take 2 to 3 snowballs in parallel
+    - Takes about 1 week for the end-to-end transfer
+    - Can be combined with DMS
+  - For on-going replication/transfers: Site-to-site VPN or DX with DMS or DataSync
