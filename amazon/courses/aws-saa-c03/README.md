@@ -3208,6 +3208,11 @@ Table of contents:
     - Incremental replication of on-premise live servers to AWS
 - AWS Backup:
   - Fully managed service
+
+  ![](https://d1.awsstatic.com/products/backup/Product-Page-Diagram_AWS-Backup%402x.9a3f6d1b456ddadac992018c5b308bb1d9e8c055.png)
+
+  ![](https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2021/07/28/Automate-centralized-backup-at-scale-across-AWS-services-using-AWS-Backup-1.jpg)
+
   - Centrally manage and automate backups across AWS services
   - No need to create custom scripts and manual processes
   - Supported services:
