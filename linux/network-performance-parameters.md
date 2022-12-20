@@ -23,11 +23,13 @@ Table of Contents:
   - [2. Network Performance tuning](#2-network-performance-tuning)
     - [2.1. The NIC Ring Buffer](#21-the-nic-ring-buffer)
     - [2.2. Interrupt Coalescence (IC) - rx-usecs, tx-usecs, rx-frames, tx-frames (hardware IRQ)](#22-interrupt-coalescence-ic---rx-usecs-tx-usecs-rx-frames-tx-frames-hardware-irq)
-    - [2.3. Interrupt Coalescing (soft IRQ)](#23-interrupt-coalescing-soft-irq)
-    - [2.4. Ingress QDisc](#24-ingress-qdisc)
-    - [2.5. Egress Disc - txqueuelen and default\_qdisc](#25-egress-disc---txqueuelen-and-default_qdisc)
-    - [2.7. TCP Read and Write Buffers/Queues](#27-tcp-read-and-write-buffersqueues)
-    - [2.8. TCP FSM and congestion algorithm](#28-tcp-fsm-and-congestion-algorithm)
+    - [2.3. IRQ Affinity](#23-irq-affinity)
+    - [2.4. Receive-side scaling (RSS)](#24-receive-side-scaling-rss)
+    - [2.5. Interrupt Coalescing (soft IRQ)](#25-interrupt-coalescing-soft-irq)
+    - [2.6. Ingress QDisc](#26-ingress-qdisc)
+    - [2.7. Egress Disc - txqueuelen and default\_qdisc](#27-egress-disc---txqueuelen-and-default_qdisc)
+    - [2.8. TCP Read and Write Buffers/Queues](#28-tcp-read-and-write-buffersqueues)
+    - [2.9. TCP FSM and congestion algorithm](#29-tcp-fsm-and-congestion-algorithm)
 
 ## 1. Linux Networking stack: Receiving data
 
@@ -381,7 +383,67 @@ FRAG: inuse 0 memory 0
 
   - How to monitor:
 
-### 2.3. Interrupt Coalescing (soft IRQ)
+### 2.3. IRQ Affinity
+
+- IRQs have an associated "affinity property", `snmp_affinity`, which defines the CPU cores that are allowed to execute the Interrupt Service Routines (ISRs) for that IRQ. This property can be used to improve application performance by assigning both interrupt affinity and the application's thread affinity to one or more specific CPU cores. This allows cache line sharing between the specified interrupt and application threads.
+- By default, it is controlled by [`irqbalancer`](https://github.com/Irqbalance/irqbalance) daemon.
+
+```shell
+systemctl status irqbalance.service
+```
+
+- But it can also be manually balanced if desired to determine if `irqbalance` is not balancing IRQs in a optimum manner and therefore causing packet loss. There may be some very specific cases where manually balancing interrupts permanently can be beneficial. Before does this kind of tuning, make sure you stop `irqbalance`:
+
+```shell
+systemctl stop irqbalance.service
+```
+
+- The interrupt affinity value a particular IRQ number is stored in the associated `/proc/irq/<IRQ_NUMBER>/snmp_affinity` file, which can be viewed and modified by the root user. The value stored in this file is a hexadecimal bit-mask representing all CPU cores in the system.
+- To set the interrupt affinity for the Ethernet driver on a server with 4 cores (for example):
+
+```shell
+# Determine the IRQ number associated with the Ethernet driver
+grep eth0 /proc/interrupts
+
+32:   0     140      45       850264      PCI-MSI-edge      eth0
+
+# IRQ 32
+# Check the current value
+# The default value is 'f', meaning that the IRQ can be serviced
+# on any of the CPUs
+cat /proc/irq/32/smp_affinity
+
+f
+
+# CPU0 is the only CPU used
+echo 1 > /proc/irq/32/snmp_affinity
+cat /proc/irq/32/snmp_affinity
+
+1
+
+# Commas can be used to delimit snmp_affinity values for discrete 32-bit groups
+# This is required on systems with more than 32 cores
+# For example, IRQ  40 is serviced on all cores of a 64-core system
+cat /proc/irq/40/smp_affinity
+
+ffffffff,ffffffff
+
+# To service IRQ 40 on only the upper 32 cores
+echo 0xffffffff,00000000 > /proc/irq/40/smp_affinity
+cat /proc/irq/40/smp_affinity
+
+ffffffff,00000000
+```
+
+- [Script](https://gist.github.com/xdel/9c50ccedea9e0c9d0000d550b07ee242) to set IRQ affinity on Intel NICs, handles system with > 32 cores.
+- As I said, IRQ affinity can improve performance but only in a very specific configuration with a pre-defined workload. It is [a double edged sword](https://stackoverflow.com/questions/48659720/is-it-a-good-practice-to-set-interrupt-affinity-and-io-handling-thread-affinity).
+
+### 2.4. Receive-side scaling (RSS)
+
+- RSS, also known as multi-queue receive, distributes network receive processing across several hardware-based receive queues, allowing inbound network traffic to be processed by multiple CPUs.
+- RSS can be used to relieve bottlenecks in receive interrupt processing caused by overloading a single CPU, and to reduce network latency.
+
+### 2.5. Interrupt Coalescing (soft IRQ)
 
 - `net.core.netdev_budget_usecs`:
   - Tuning:
@@ -424,7 +486,7 @@ FRAG: inuse 0 memory 0
     cat /proc/net/softnet_stat
     ```
 
-### 2.4. Ingress QDisc
+### 2.6. Ingress QDisc
 
 - In step (14), I has mentioned `netdev_max_backlog`, it's about Per-CPU backlog queue. The `netif_receive_skb()` kernel function (step (12)) will find the corresponding CPU for a packet, and enqueue packets in that CPU's queue. If the queue for that processor is full and already at maximum size, packets will be dropped. The default size of queue - `netdev_max_backlog` value is 1000, this may not be enough for multiple interfaces operating at 1Gbps, or even a single interface at 10Gbps.
 - Tuning:
@@ -445,7 +507,7 @@ FRAG: inuse 0 memory 0
   cat /proc/net/softnet_stat
   ```
 
-### 2.5. Egress Disc - txqueuelen and default_qdisc
+### 2.7. Egress Disc - txqueuelen and default_qdisc
 
 - In the step (11) (transimission), there is `txqueuelen`, a queue/buffer to face conection bufrst and also to apply [traffic control (tc)](http://tldp.org/HOWTO/Traffic-Control-HOWTO/intro.html).
 - Tuning:
@@ -483,7 +545,7 @@ FRAG: inuse 0 memory 0
       new_flows_len 0 old_flows_len 0
   ```
 
-### 2.7. TCP Read and Write Buffers/Queues
+### 2.8. TCP Read and Write Buffers/Queues
 
 - Define what is [memory pressure](https://wwwx.cs.unc.edu/~sparkst/howto/network_tuning.php) is specified at `tcp_mem` and `tcp_moderate_rcvbuf`.
 - We can adjust the mix-max size of buffer to improve performance:
@@ -497,4 +559,4 @@ FRAG: inuse 0 memory 0
   - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
   - How to monitor: check `/proc/net/sockstat`.
 
-### 2.8. TCP FSM and congestion algorithm
+### 2.9. TCP FSM and congestion algorithm
