@@ -3352,3 +3352,28 @@ Table of contents:
     - Highly scalable - can handle large volumes of media files and large file sizes
     - Cost effective - duration-based pricing model
     - Fully managed and secured, pay for what you use
+- AWS Batch:
+  - Fully managed batch procssing at any scale
+  - Efficiently run 100,000s of computing batch jobs on AWS
+  - A "batch" job is a job with a start and an end
+  - AWS Batch will dynamically launch EC2 instances or Spot Instances
+  - AWS Batch provisions the right amount of compute/memory
+  - Submit or schedule batch jobs and AWS Batch does the rest
+  - Batch jobs are defined as Docker images and run on ECS
+  - Helpful for cost optimizations and focusing less on the infrastructure
+  - Batch vs Lambda:
+
+  | Lambda | Batch|
+  |---|---|
+  | Time limit | No time limit|
+  | Limited runtimes | Any runtime as long as it's packaged as a Docker image |
+  | Limited temporary disk space | Rely on EBS/instance store for disk space|
+  | Serverless | Rely on EC2 |
+
+- AWS AppFlow:
+  - Fully managed integration service that enables to securely transfer data between Software-as-a-Service (SaaS) applications and AWS.
+  - Sources: Salesforce, SAP, Zendesk, Slack, and ServiceNow
+  - Destinations: AWS services like S3,Redshift or non AWS such as SnowFlake and SalesForce
+  - Frequency: on a schedule, in response to events, or on demand
+  - Data transformation capabilities like filtering and validation
+  - Encrypted over the public internet or privately over AWS Private Link
