@@ -30,6 +30,7 @@ Table of contents:
   - [21. AWS Security and Encryption](#21-aws-security-and-encryption)
   - [22. Networking - Virtual Private Cloud (VPC)](#22-networking---virtual-private-cloud-vpc)
   - [23. Disaster Recovery and Migrations](#23-disaster-recovery-and-migrations)
+  - [24. Other services](#24-other-services)
 
 ## 1. Getting started with AWS
 
@@ -3271,3 +3272,83 @@ Table of contents:
     - Takes about 1 week for the end-to-end transfer
     - Can be combined with DMS
   - For on-going replication/transfers: Site-to-site VPN or DX with DMS or DataSync
+
+## 24. Other services
+
+- CloudFormation:
+  - Declarative way of outlining AWS infrastructure, for any Resources
+  - Benefits:
+    - Infrastructure as code:
+      - No resources are manually created, which is excellent for control
+      - Changes to the infrastructure are reviewed through code
+    - Cost:
+      - Estimate the costs of resources using the CloudFormation template.
+      - Savings strategy: In dev, could automation deletion of templates at 5 PM and recreated at 8 AM
+    - Productivity:
+    - Don't re-invent the wheel: leverage existing templates on the web/document
+    - Support almost all AWS resources.
+- AWS Simple Email Service (SES):
+  - Fully managed service to send emails securely, globally and at scale
+  - Allow inboud/outbound email
+  - Reputation dashboard, performance insights, anti-spam feedback
+  - Provide statistics such as email deliveries, bounces, feedback loop results, email open
+  - Support DomainKeys Identified mail (DKIM) and Sender Policy Framework (SPF)
+  - Flexible IP deployment
+  - Send emails using application using AWS Console, APIs, or SMTP
+  - Use cases: transactional, marketing, and bulk email communications
+- AWS Pinpoint:
+  - Scalable 2-way (inbound/outbound) marketing communications service
+  - Support emails, SMS, push, voice, and in-app messaging
+  - Ability to segment and personalize messages with the right content to customers
+  - Possibility to receive replies
+  - Scale to billions of messages per day
+  - Use cases: run campaigns by sending marketing, bulk, transactional SMS messages
+  - Vs SNS or SES:
+    - SNS and SES: manage each message's audience, content, and delivery schedule
+    - Pinpoint: create message templates, delivery schedules, highly-targeted segments, and full campaigns
+- Systems Manager:
+  - SSM Session Manager:
+    - Allow you start a secure shell on EC2 and on-premise servers
+    - No SSH access, bation hosts, or SSH keys needed
+    - No port 22 needed
+    - Send session log data to S3 or CloudWatch logs
+    - Run command:
+      - Execute a script/command
+      - Run command across multiple instances (using resource groups)
+      - Command output can be shown in the AWS console, sent to S3 bucket or CloudWatch logs
+      - Send notifications to SNS about command status
+      - Integrated with IAM and CloudTrail
+      - Can be invoked using EventBridge
+  - Patch Manager:
+    - Automate the process of patching managed instances
+    - OS updates, applications updates, security updates
+    - Support EC2 instances and on-premise servers
+    - Patch on-demand or on a schedule using Maintenance Windows:
+      - Define a schedule for when to perform actions on instances
+      - Maintenance Window contains:
+        - Schedule
+        - Duration
+        - Set of registered instances
+        - Set of registered tasks
+    - Scan instances and generate patch compliance report
+  - Automation:
+    - Simplifies common maintenance and deployment tasks of EC2 instances and other AWS resources
+    - Automation runbook - SSM documents to define actions performed on EC2 instances or AWS resources
+    - Can be triggered using:
+      - Manually using AWS Console, CLI or SDK
+      - Event Bridge
+      - On a schedule using Maintenance Windows
+      - By AWS Config for rules remediations
+- Cost Explorer:
+  - Visualize, understand, and manage AWS costs and usage over time
+  - Create custom reports that analyze cost and usage data
+  - Analyze data at a high level, or monthly, hourly, resource level granularity
+  - Choose an optimal Savings Plan
+  - Forecase usage up to 12 months based on previous usage
+- AWS Elastic Transcoder:
+  - Convert media files stored in S3 into media files in the formats required by consumer playback devices
+  - Benefits:
+    - Easy to use
+    - Highly scalable - can handle large volumes of media files and large file sizes
+    - Cost effective - duration-based pricing model
+    - Fully managed and secured, pay for what you use
