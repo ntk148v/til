@@ -13,6 +13,8 @@ Source:
 - <http://arthurchiao.art/blog/tcp-listen-a-tale-of-two-queues/>
 - <https://juejin.cn/post/7106345054368694280>
 - <https://blog.51cto.com/u_15169172/2710604>
+- <http://balodeamit.blogspot.com/2013/10/receive-side-scaling-and-receive-packet.html>
+- <https://garycplin.blogspot.com/2017/06/linux-network-scaling-receives-packets.html>
 
 Table of Contents:
 
@@ -440,8 +442,23 @@ ffffffff,00000000
 
 ### 2.4. Receive-side scaling (RSS)
 
-- RSS, also known as multi-queue receive, distributes network receive processing across several hardware-based receive queues, allowing inbound network traffic to be processed by multiple CPUs.
-- RSS can be used to relieve bottlenecks in receive interrupt processing caused by overloading a single CPU, and to reduce network latency.
+- When packet arrives at NIC, they are added to receive queue ([ring buffer](https://stackoverflow.com/questions/47450231/what-is-the-relationship-of-dma-ring-buffer-and-tx-rx-ring-for-a-network-card)). Receive queue is assigned an IRQ number during device drive initialization and one of the available CPU processor is allocated to that receive queue. This processor is responsible for servicing IRQs interrupt service routing (ISR). Generally the data processing is also done by same processor which does ISR.
+  - If there is large amount of network traffic -> only single core is taking all responsibility of processing data. ISR routines are small so if they are being executed on single core does not make large difference in performance, but data processing and moving data up in TCP/IP stack takes time (other cores are idle).
+    - *These pictures are from [balodeamit blog](http://balodeamit.blogspot.com/2013/10/receive-side-scaling-and-receive-packet.html)*
+    - IRQ 53 is used for "eth1-TxRx-0" mono queue.
+    - Check `smp_affinity` -> queue was configured to send interrupts to CPU8.
+
+    ![](http://1.bp.blogspot.com/-Xan_L2IHBrs/Ulxv_upXOCI/AAAAAAAABhc/Tq4vZCG5UR0/s1600/study+(4).png)
+
+  - RSS comes to rescue! RSS allow to configure network card to distributes across multiple send and receive queues (ring buffers). These queues are individually mapped to each CPU processor. When interrupts are generated for each queue, they are sent to mapped processor -> Network traffic is processed by multiple processors.
+    - 4 receive queues and 4 send queues for eth1 interface, 56-59 IRQ are assigned to those queues. Now packet processing load is being distributed among 4 CPUs achieving higher throughput and low latency.
+
+    ![](http://2.bp.blogspot.com/-AnaAh45OOcI/Ulx3IWrgsNI/AAAAAAAABiQ/iq_zZUH5rOM/s1600/study+(5).png)
+
+- RSS provides the benefits of parallel receive processing in multiprocessing environment.
+- This is NIC technology. It supprots multiple queues and integrates a hashing function (distributes packets to different queues by Source and Destination IP and if applicable by TCP/UDP source and destination ports) in the NIC. The NIC computes a hash value for each incoming packet. Based on hash values, NIC assigns packets of the same data flow to a single queue and evenly distributes traffic flows across queues.
+
+![](https://learn.microsoft.com/en-us/windows-hardware/drivers/network/images/rss.png)
 
 ### 2.5. Interrupt Coalescing (soft IRQ)
 
