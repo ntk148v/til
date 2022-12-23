@@ -5,6 +5,7 @@ Source:
 - <https://github.com/leandromoreira/linux-network-performance-parameters/>
 - <https://access.redhat.com/sites/default/files/attachments/20150325_network_performance_tuning.pdf>
 - <https://www.coverfire.com/articles/queueing-in-the-linux-network-stack/>
+- <https://github.com/torvalds/linux/blob/master/Documentation/networking/scaling.rst>
 - <https://blog.cloudflare.com/how-to-achieve-low-latency/>
 - <https://blog.packagecloud.io/illustrated-guide-monitoring-tuning-linux-networking-stack-receiving-data/>
 - <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-receiving-data/>
@@ -27,12 +28,13 @@ Table of Contents:
     - [2.2. Interrupt Coalescence (IC) - rx-usecs, tx-usecs, rx-frames, tx-frames (hardware IRQ)](#22-interrupt-coalescence-ic---rx-usecs-tx-usecs-rx-frames-tx-frames-hardware-irq)
     - [2.3. IRQ Affinity](#23-irq-affinity)
     - [2.4. Receive-side scaling (RSS)](#24-receive-side-scaling-rss)
-    - [2.5. Interrupt Coalescing (soft IRQ)](#25-interrupt-coalescing-soft-irq)
-    - [2.6. Ingress QDisc](#26-ingress-qdisc)
-    - [2.7. Egress Disc - txqueuelen and default\_qdisc](#27-egress-disc---txqueuelen-and-default_qdisc)
-    - [2.8. TCP Read and Write Buffers/Queues](#28-tcp-read-and-write-buffersqueues)
-    - [2.9. TCP FSM and congestion algorithm](#29-tcp-fsm-and-congestion-algorithm)
-    - [2.10. NUMA](#210-numa)
+    - [2.5. Receive Packet Steering (RPS)](#25-receive-packet-steering-rps)
+    - [2.6. Interrupt Coalescing (soft IRQ)](#26-interrupt-coalescing-soft-irq)
+    - [2.7. Ingress QDisc](#27-ingress-qdisc)
+    - [2.8. Egress Disc - txqueuelen and default\_qdisc](#28-egress-disc---txqueuelen-and-default_qdisc)
+    - [2.9. TCP Read and Write Buffers/Queues](#29-tcp-read-and-write-buffersqueues)
+    - [2.10. TCP FSM and congestion algorithm](#210-tcp-fsm-and-congestion-algorithm)
+    - [2.11. NUMA](#211-numa)
 
 ## 1. Linux Networking stack: Receiving data
 
@@ -463,7 +465,14 @@ ffffffff,00000000
 
 ![](https://learn.microsoft.com/en-us/windows-hardware/drivers/network/images/rss.png)
 
-### 2.5. Interrupt Coalescing (soft IRQ)
+- // WIP - Commands!
+
+### 2.5. Receive Packet Steering (RPS)
+
+- RPS is logically a software implementation of RSS. Being in software, it is necesarily called later in the datapath. Whereas RSS selects the queue and hence CPU that will run the hardware interrupt handler, RPS selects the CPU to perform protocol processing above the interrupt handler.
+- // WIP
+
+### 2.6. Interrupt Coalescing (soft IRQ)
 
 - `net.core.netdev_budget_usecs`:
   - Tuning:
@@ -506,7 +515,7 @@ ffffffff,00000000
     cat /proc/net/softnet_stat
     ```
 
-### 2.6. Ingress QDisc
+### 2.7. Ingress QDisc
 
 - In step (14), I has mentioned `netdev_max_backlog`, it's about Per-CPU backlog queue. The `netif_receive_skb()` kernel function (step (12)) will find the corresponding CPU for a packet, and enqueue packets in that CPU's queue. If the queue for that processor is full and already at maximum size, packets will be dropped. The default size of queue - `netdev_max_backlog` value is 1000, this may not be enough for multiple interfaces operating at 1Gbps, or even a single interface at 10Gbps.
 - Tuning:
@@ -527,7 +536,7 @@ ffffffff,00000000
   cat /proc/net/softnet_stat
   ```
 
-### 2.7. Egress Disc - txqueuelen and default_qdisc
+### 2.8. Egress Disc - txqueuelen and default_qdisc
 
 - In the step (11) (transimission), there is `txqueuelen`, a queue/buffer to face conection bufrst and also to apply [traffic control (tc)](http://tldp.org/HOWTO/Traffic-Control-HOWTO/intro.html).
 - Tuning:
@@ -565,7 +574,7 @@ ffffffff,00000000
       new_flows_len 0 old_flows_len 0
   ```
 
-### 2.8. TCP Read and Write Buffers/Queues
+### 2.9. TCP Read and Write Buffers/Queues
 
 - Define what is [memory pressure](https://wwwx.cs.unc.edu/~sparkst/howto/network_tuning.php) is specified at `tcp_mem` and `tcp_moderate_rcvbuf`.
 - We can adjust the mix-max size of buffer to improve performance:
@@ -579,7 +588,7 @@ ffffffff,00000000
   - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
   - How to monitor: check `/proc/net/sockstat`.
 
-### 2.9. TCP FSM and congestion algorithm
+### 2.10. TCP FSM and congestion algorithm
 
 > Accept and SYN queues are governed by net.core.somaxconn and net.ipv4.tcp_max_syn_backlog. [Nowadays net.core.somaxconn caps both queue sizes](https://blog.cloudflare.com/syn-packet-handling-in-the-wild/#queuesizelimits).
 
@@ -595,7 +604,7 @@ ffffffff,00000000
 
 - You may want to check [Broadband tweaks note](./broadband-tweaks.md).
 
-### 2.10. NUMA
+### 2.11. NUMA
 
 - This term is beyond network performance aspect.
 - Non-uniform memory access (NUMA) is a kind of memory architecture that allows a processor faster access to contents of memory than other traditional techniques. In other words, a processor can access local memory much faster than non-local memory. This is because in a NUMA setup, each processor is assigned a specific local memory exclusively for its own use. This elimates sharing of non-local memory, reducing delays (fewer memory locks) when multiple requests come in for access to the same memory location -> Increase nework performance (cause CPUs have to access ring buffer (memory) to process data packet)
