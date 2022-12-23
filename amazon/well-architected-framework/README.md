@@ -13,11 +13,12 @@ Table of Contents:
   - [2.General design principles](#2general-design-principles)
   - [3. Six pillars of AWS Well-Architected Framework](#3-six-pillars-of-aws-well-architected-framework)
   - [3.1 Operational excellence](#31-operational-excellence)
-  - [3.2. Security](#32-security)
-  - [3.3. Reliability](#33-reliability)
-  - [3.4. Performance efficiency](#34-performance-efficiency)
-  - [3.5. Cost optimization](#35-cost-optimization)
-  - [3.6. Sustainability](#36-sustainability)
+    - [3.2. Security](#32-security)
+    - [3.3. Reliability](#33-reliability)
+    - [3.4. Performance efficiency](#34-performance-efficiency)
+    - [3.5. Cost optimization](#35-cost-optimization)
+    - [3.6. Sustainability](#36-sustainability)
+  - [4. AWS Well-Architected Tool](#4-aws-well-architected-tool)
 
 ## 1. Introduction
 
@@ -31,8 +32,10 @@ Table of Contents:
 - Test systems at production scale.
 - Automate to make architectural experimentation easier.
 - Allow for evolutionary architectures.
+  - Design based on changing requirements
 - Drive architectures using data.
 - Improve through game days.
+  - Simulate applications for flash sale days
 
 ## 3. Six pillars of AWS Well-Architected Framework
 
@@ -55,7 +58,7 @@ AWS Well-Architected Framework is based on six pillars.
   - Operate
   - Evolve
 
-## 3.2. Security
+### 3.2. Security
 
 - The ability to protect data, systems, and assets to take advantage of cloud technologies to improve your security.
 - Design principles:
@@ -77,7 +80,7 @@ AWS Well-Architected Framework is based on six pillars.
   - Data Protectio
   - Incident Response
 
-## 3.3. Reliability
+### 3.3. Reliability
 
 - The ability of a workload to perform its intended function correctly and consistently when it's expected to. This includes the ability to operate and test the workload through its total lifecycle.
 - Design principles:
@@ -92,7 +95,7 @@ AWS Well-Architected Framework is based on six pillars.
   - Change Management
   - Failure Management
 
-## 3.4. Performance efficiency
+### 3.4. Performance efficiency
 
 - The ability to use computing resources efficiently to meet system requirements, and to maintain that efficiency as demand changes and technologies evolve.
 - Design principles:
@@ -107,7 +110,7 @@ AWS Well-Architected Framework is based on six pillars.
   - Monitoring
   - Tradeoffs
 
-## 3.5. Cost optimization
+### 3.5. Cost optimization
 
 - The ability to run systems to deliver business value at the lowest price point.
 - Design principles:
@@ -123,7 +126,7 @@ AWS Well-Architected Framework is based on six pillars.
   - Manage demand and supply resources
   - Optimize over time
 
-## 3.6. Sustainability
+### 3.6. Sustainability
 
 - Environment impacts, especially energy consumption and efficiency.
 - Design principles:
@@ -140,3 +143,11 @@ AWS Well-Architected Framework is based on six pillars.
   - Data patterns
   - Hardware patterns
   - Development and deployment process
+
+## 4. AWS Well-Architected Tool
+
+- Free tool to review your architectures against the 6 pillars Well-architected framework and adopt architectural best practices.
+- How does it works?
+  - Select workload and answer questions
+  - Review your answers against the 6 pillars
+  - Obtain advice

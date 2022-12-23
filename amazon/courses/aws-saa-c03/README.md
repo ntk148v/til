@@ -14,7 +14,7 @@ Table of contents:
   - [5. High availability and Scalability: ELB and AS](#5-high-availability-and-scalability-elb-and-as)
   - [6. RDS+Aurora+ElastiCache](#6-rdsauroraelasticache)
   - [7. Route 53](#7-route-53)
-  - [8. AWS Well-Architected Framework](#8-aws-well-architected-framework)
+  - [8. AWS Well-Architected Framework \& Trusted Advisor](#8-aws-well-architected-framework--trusted-advisor)
   - [9. S3](#9-s3)
   - [10. Amazon SDK, IAM Roles and Policies](#10-amazon-sdk-iam-roles-and-policies)
   - [11. CloudFront, AWS Global Accelerator](#11-cloudfront-aws-global-accelerator)
@@ -695,9 +695,29 @@ Table of contents:
   - Domain Registar provides you with a DNS Service to manage DNS records, but you can use another DNS Service.
   - DNS Service != Domain Registar
 
-## 8. AWS Well-Architected Framework
+## 8. AWS Well-Architected Framework & Trusted Advisor
 
 - It's deserverd [its own article](../../well-architected-framework/README.md).
+- Trusted Advisor:
+  - No need to install anything
+  - Analyze AWS accounts and provides recommendation
+    - Cost optimization:
+      - Low utilization EC2 instance, idle load balancers, under-utilized EBS volumes,...
+      - Reserved instances & saving plans optimizations
+    - Performance:
+      - High utilization EC2 instances, CloudFront CDN optimizations
+      - EC2 to EBS throughput optimizations,
+    - Security:
+      - MFA enabled on Root Account, IAM key rotation, exposed Access Keys
+      - S3 Bucket Permissions for public access, security groups with unrestricted ports
+    - Fault tolerance:
+      - EBS snapshots age, availability zone balance
+      - ASG Multi-AZ, RDS Multi-AZ. ELB configuration
+    - Service limits
+  - Core checks and recommendations - all customers
+  - Full Trusted Advisor - available for Business & Enterprise support plans:
+    - Ability to set CloudWatch alarms when reaching limits
+    - Programatic Access using AWS Support API
 
 ## 9. S3
 
