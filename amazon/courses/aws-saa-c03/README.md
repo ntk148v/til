@@ -3363,12 +3363,12 @@ Table of contents:
   - Helpful for cost optimizations and focusing less on the infrastructure
   - Batch vs Lambda:
 
-  | Lambda | Batch|
-  |---|---|
-  | Time limit | No time limit|
-  | Limited runtimes | Any runtime as long as it's packaged as a Docker image |
-  | Limited temporary disk space | Rely on EBS/instance store for disk space|
-  | Serverless | Rely on EC2 |
+  | Lambda                       | Batch                                                  |
+  | ---------------------------- | ------------------------------------------------------ |
+  | Time limit                   | No time limit                                          |
+  | Limited runtimes             | Any runtime as long as it's packaged as a Docker image |
+  | Limited temporary disk space | Rely on EBS/instance store for disk space              |
+  | Serverless                   | Rely on EC2                                            |
 
 - AWS AppFlow:
   - Fully managed integration service that enables to securely transfer data between Software-as-a-Service (SaaS) applications and AWS.
