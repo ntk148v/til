@@ -32,6 +32,7 @@ Table of Contents:
     - [2.7. Egress Disc - txqueuelen and default\_qdisc](#27-egress-disc---txqueuelen-and-default_qdisc)
     - [2.8. TCP Read and Write Buffers/Queues](#28-tcp-read-and-write-buffersqueues)
     - [2.9. TCP FSM and congestion algorithm](#29-tcp-fsm-and-congestion-algorithm)
+    - [2.10. NUMA](#210-numa)
 
 ## 1. Linux Networking stack: Receiving data
 
@@ -457,6 +458,8 @@ ffffffff,00000000
 
 - RSS provides the benefits of parallel receive processing in multiprocessing environment.
 - This is NIC technology. It supprots multiple queues and integrates a hashing function (distributes packets to different queues by Source and Destination IP and if applicable by TCP/UDP source and destination ports) in the NIC. The NIC computes a hash value for each incoming packet. Based on hash values, NIC assigns packets of the same data flow to a single queue and evenly distributes traffic flows across queues.
+- Check with `ethool -L` command.
+- According [Linux kernel documentation](https://github.com/torvalds/linux/blob/v4.11/Documentation/networking/scaling.txt#L80), `RSS should be enabled when latency is a concern or whenever receive interrupt processing froms a bottleneck... For low latency networking, the optimal setting is to allocate as many queues as there are CPUs in the system (or the NIC maximum, if lower)`.
 
 ![](https://learn.microsoft.com/en-us/windows-hardware/drivers/network/images/rss.png)
 
@@ -577,3 +580,75 @@ ffffffff,00000000
   - How to monitor: check `/proc/net/sockstat`.
 
 ### 2.9. TCP FSM and congestion algorithm
+
+> Accept and SYN queues are governed by net.core.somaxconn and net.ipv4.tcp_max_syn_backlog. [Nowadays net.core.somaxconn caps both queue sizes](https://blog.cloudflare.com/syn-packet-handling-in-the-wild/#queuesizelimits).
+
+- `net.core.somaxconn`: provides an upper limit on the value of the backlog parameter passed to the `listen() function` , known in userspace is as `SOMAXCONN`. If you change this value, you should also change your application to a compatible value. You can check [Envoy's performance tuning note](../til/envoy/performance.md).
+- `net.ipv4.tcp_fin_timeout`: specifies the number of seconds to wait for a final FIN packet before the socket is forcibly closed.
+- `net.ipv4.tcp_available_congestion_control`: shows the available congestion control choices that are registered.
+- `net.ipv4.tcp_congestion_control`: sets the congestion control algorithm to be used for new connections.
+- `net.ipv4.tcp_max_syn_backlog`: sets the maximum number of queued connection requests which have still not received an acknowledgment from the connecting client; if this number is exceeded, the kernel will begin dropping requests.
+- `net.ipv4.tcp_syncookies`: enables/disables syn cookie, useful for protecting against syn flood attacks.
+- `net.ipv4.tcp_slow_start_after_idle`: enables/disables tcp slow start.
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Tcp_state_diagram_fixed_new.svg/796px-Tcp_state_diagram_fixed_new.svg.png?20140126065545)
+
+- You may want to check [Broadband tweaks note](./broadband-tweaks.md).
+
+### 2.10. NUMA
+
+- This term is beyond network performance aspect.
+- Non-uniform memory access (NUMA) is a kind of memory architecture that allows a processor faster access to contents of memory than other traditional techniques. In other words, a processor can access local memory much faster than non-local memory. This is because in a NUMA setup, each processor is assigned a specific local memory exclusively for its own use. This elimates sharing of non-local memory, reducing delays (fewer memory locks) when multiple requests come in for access to the same memory location -> Increase nework performance (cause CPUs have to access ring buffer (memory) to process data packet)
+
+![](https://b2600047.smushcdn.com/2600047/wp-content/uploads/2018/04/NUMA-Architecture.png?lossy=1&strip=1&webp=1)
+
+- NUMA architecture splits a subset of CPU, memory, and devices into different "nodes", in effect creating multiple small computers with a fast interconnect and common operating system. NUMA systems need to be tuned differently to non-NUMA system. For NUMA, the aim is to group all interrupts from the devices  in a single node onto the CPU cores belonging to that node.
+- Although this appears as though it would be useful for reducing latency, NUMA systems have been known to interact badly with real time applications, as they can cause unexpected event latencies.
+- Determine NUMA nodes:
+
+```shell
+ls -ld /sys/devices/system/node/node*
+
+drwxr-xr-x. 3 root root 0 Aug 15 19:44 /sys/devices/system/node/node0
+drwxr-xr-x. 3 root root 0 Aug 15 19:44 /sys/devices/system/node/node1
+```
+
+- Determine NUMA locality:
+
+```shell
+cat /sys/devices/system/node/node0/cpulist
+
+0-5
+
+cat /sys/devices/system/node/node1/cpulist
+# empty
+```
+
+- It makes sense to tune IRQ affinity for all CPUs, make sure that you sudo systop `irqbalance` service and manually setting the CPU affinity:
+
+```shell
+systemctl stop irqbalance
+```
+
+- Determine device locality:
+  - Check the whether a PCIe network interface belongs to a specific NUMA node. The command will display the NUMA node number, interrupts for the device should be directed to the NUMA node that the PCIe device belongs to
+
+  ```shell
+  # cat /sys/class/net/<interface>/device/numa_node
+  cat /sys/class/net/eth3/device/numa_node
+
+  1
+  # -1 - the hardware platform is not actually NUMA and the kernel is just emulating
+  # or 'faking' NUMA, or a device is on a bus which does not have any NUMA locality,
+  # such as a PCI package
+  ```
+
+- The Linux kernel has supported NUMA since version 2.5 - RedHat, Debian-based offer NUMA support for process optimization with the two software packages `numactl` and `numad`.
+  - `numad` is a daemon which can assist with process and memory management on system with NUMA architecture. Numad achieves this by monitoring system topology and resource usage, then attempting to locate processes for efficent NUMA locality and efficiency, where a process hash a sufficiently large memory size and CPU load.
+
+  ```shell
+  systemctl enable numad
+  systemctl start numad
+  ```
+
+  - `numadctl`: control NUMA policy for processes or shared memory.
