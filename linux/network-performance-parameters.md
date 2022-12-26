@@ -27,14 +27,16 @@ Table of Contents:
     - [2.1. The NIC Ring Buffer](#21-the-nic-ring-buffer)
     - [2.2. Interrupt Coalescence (IC) - rx-usecs, tx-usecs, rx-frames, tx-frames (hardware IRQ)](#22-interrupt-coalescence-ic---rx-usecs-tx-usecs-rx-frames-tx-frames-hardware-irq)
     - [2.3. IRQ Affinity](#23-irq-affinity)
-    - [2.4. Receive-side scaling (RSS)](#24-receive-side-scaling-rss)
-    - [2.5. Receive Packet Steering (RPS)](#25-receive-packet-steering-rps)
-    - [2.6. Interrupt Coalescing (soft IRQ)](#26-interrupt-coalescing-soft-irq)
-    - [2.7. Ingress QDisc](#27-ingress-qdisc)
-    - [2.8. Egress Disc - txqueuelen and default\_qdisc](#28-egress-disc---txqueuelen-and-default_qdisc)
-    - [2.9. TCP Read and Write Buffers/Queues](#29-tcp-read-and-write-buffersqueues)
-    - [2.10. TCP FSM and congestion algorithm](#210-tcp-fsm-and-congestion-algorithm)
-    - [2.11. NUMA](#211-numa)
+    - [2.4. Share the load of packet processing among CPUs](#24-share-the-load-of-packet-processing-among-cpus)
+      - [2.4.1. Receive-side scaling (RSS)](#241-receive-side-scaling-rss)
+      - [2.4.2. Receive Packet Steering (RPS)](#242-receive-packet-steering-rps)
+      - [2.4.3. Receive Flow Steering (RFS)](#243-receive-flow-steering-rfs)
+    - [2.5. Interrupt Coalescing (soft IRQ)](#25-interrupt-coalescing-soft-irq)
+    - [2.6. Ingress QDisc](#26-ingress-qdisc)
+    - [2.7. Egress Disc - txqueuelen and default\_qdisc](#27-egress-disc---txqueuelen-and-default_qdisc)
+    - [2.8. TCP Read and Write Buffers/Queues](#28-tcp-read-and-write-buffersqueues)
+    - [2.9. TCP FSM and congestion algorithm](#29-tcp-fsm-and-congestion-algorithm)
+    - [2.10. NUMA](#210-numa)
 
 ## 1. Linux Networking stack: Receiving data
 
@@ -443,7 +445,9 @@ ffffffff,00000000
 - [Script](https://gist.github.com/xdel/9c50ccedea9e0c9d0000d550b07ee242) to set IRQ affinity on Intel NICs, handles system with > 32 cores.
 - As I said, IRQ affinity can improve performance but only in a very specific configuration with a pre-defined workload. It is [a double edged sword](https://stackoverflow.com/questions/48659720/is-it-a-good-practice-to-set-interrupt-affinity-and-io-handling-thread-affinity).
 
-### 2.4. Receive-side scaling (RSS)
+### 2.4. Share the load of packet processing among CPUs
+
+#### 2.4.1. Receive-side scaling (RSS)
 
 - When packet arrives at NIC, they are added to receive queue ([ring buffer](https://stackoverflow.com/questions/47450231/what-is-the-relationship-of-dma-ring-buffer-and-tx-rx-ring-for-a-network-card)). Receive queue is assigned an IRQ number during device drive initialization and one of the available CPU processor is allocated to that receive queue. This processor is responsible for servicing IRQs interrupt service routing (ISR). Generally the data processing is also done by same processor which does ISR.
   - If there is large amount of network traffic -> only single core is taking all responsibility of processing data. ISR routines are small so if they are being executed on single core does not make large difference in performance, but data processing and moving data up in TCP/IP stack takes time (other cores are idle).
@@ -465,14 +469,48 @@ ffffffff,00000000
 
 ![](https://learn.microsoft.com/en-us/windows-hardware/drivers/network/images/rss.png)
 
+![](https://3.bp.blogspot.com/-g_sS7Jf3vW0/WUEN0wEK5BI/AAAAAAAAA9g/PLy6crp9q74ia1xcWX8lwS7WzRz2xL-WwCLcBGAs/s640/RSS.png)
+
 - // WIP - Commands!
 
-### 2.5. Receive Packet Steering (RPS)
+#### 2.4.2. Receive Packet Steering (RPS)
 
 - RPS is logically a software implementation of RSS. Being in software, it is necesarily called later in the datapath. Whereas RSS selects the queue and hence CPU that will run the hardware interrupt handler, RPS selects the CPU to perform protocol processing above the interrupt handler.
-- // WIP
+- When the driver receives a packet, it wraps the packet in a socket buffer `sk_buff` which contains a `u32` hash value for the packet (based on source IP, source port, dest IP, dest port). Since every packet of the same TCP/UDP connection (flow) shares the same hash, it's reasonable to process them with the same CPU. After that, it will reach either `netif_rx_internal()` or `netif_receive_skb_internal()`, and then `get_rps_cpu()` will be invoked to map the hash to an entry in `rps_map`, i.e. the CPU id. After getting the CPU id, `enqueue_to_backlog()` puts the sk_buff to the specific CPU queue for the further processing. The queues for each CPU are allocated in the per-cpu variable, [`softnet_data`](https://github.com/torvalds/linux/blob/v4.11/include/linux/netdevice.h#L2788).
 
-### 2.6. Interrupt Coalescing (soft IRQ)
+![](https://3.bp.blogspot.com/-zRdZ1Bw1frw/WUNdJCURkvI/AAAAAAAAA-Q/XgYiaHsBsNc9cWwAdZu83HhfOUtuSTCkgCLcBGAs/s640/RPS.png)
+
+- The benefit of using RPS is same as RSS: share the load of packet processing among the CPUs.
+  - It may be unnecessary if RSS is availble.
+  - If there are more CPUs than the queues, RPS could still be useful.
+
+#### 2.4.3. Receive Flow Steering (RFS)
+
+- Although RPS distributes packets based on flows, it doesn't take the userspace applications into consideration.
+  - The application may run on CPU A, kernel puts the packets in the queue of CPU B.
+  - CPU A can only use its own cache, the cached packets in CPU B become useless.
+- RFS extends RPS further for the applications.
+- Instead of the per-queue hash-to-CPU map, RFS maintains a global flow-to-CPU table, `rps_sock_flow_table`. The size of this table can be adjusted:
+
+```shell
+sysctl -w net.core.rps_sock_flow_entries 32768
+```
+
+- Although the socket flow table improves the application locality, it also raise a problem. When the scheduler migrates the application to a new CPU, the remaining packets in the old CPU queue become outstanding, and the application may get the out of order packets. To solve the problem, RFS uses the per-queue `rps_dev_flow_table` to track outstanding packets.
+  - The size of the per-queue flow table `rps_dev_flow_table` can configured through sysfs interface: `/sys/class/net/<dev>/queues/rx-<n>/rps_flow_cnt.`.
+  - Recommend value:
+
+```
+rps_flow_cnt = rps_sock_flow_entries / N
+
+N: the number of RX queues
+```
+
+- The next steps is way too complicated, if you want to know it, check [this](https://garycplin.blogspot.com/2017/06/linux-network-scaling-receives-packets.html) out.
+
+![](https://2.bp.blogspot.com/-US9aezp1mUE/WUI90hna5HI/AAAAAAAAA98/yhpI17Ut9wwbzCwlBxhev5Pm4vy-QR4NwCLcBGAs/s640/RFS.png)
+
+### 2.5. Interrupt Coalescing (soft IRQ)
 
 - `net.core.netdev_budget_usecs`:
   - Tuning:
@@ -515,7 +553,7 @@ ffffffff,00000000
     cat /proc/net/softnet_stat
     ```
 
-### 2.7. Ingress QDisc
+### 2.6. Ingress QDisc
 
 - In step (14), I has mentioned `netdev_max_backlog`, it's about Per-CPU backlog queue. The `netif_receive_skb()` kernel function (step (12)) will find the corresponding CPU for a packet, and enqueue packets in that CPU's queue. If the queue for that processor is full and already at maximum size, packets will be dropped. The default size of queue - `netdev_max_backlog` value is 1000, this may not be enough for multiple interfaces operating at 1Gbps, or even a single interface at 10Gbps.
 - Tuning:
@@ -536,7 +574,7 @@ ffffffff,00000000
   cat /proc/net/softnet_stat
   ```
 
-### 2.8. Egress Disc - txqueuelen and default_qdisc
+### 2.7. Egress Disc - txqueuelen and default_qdisc
 
 - In the step (11) (transimission), there is `txqueuelen`, a queue/buffer to face conection bufrst and also to apply [traffic control (tc)](http://tldp.org/HOWTO/Traffic-Control-HOWTO/intro.html).
 - Tuning:
@@ -574,7 +612,7 @@ ffffffff,00000000
       new_flows_len 0 old_flows_len 0
   ```
 
-### 2.9. TCP Read and Write Buffers/Queues
+### 2.8. TCP Read and Write Buffers/Queues
 
 - Define what is [memory pressure](https://wwwx.cs.unc.edu/~sparkst/howto/network_tuning.php) is specified at `tcp_mem` and `tcp_moderate_rcvbuf`.
 - We can adjust the mix-max size of buffer to improve performance:
@@ -588,7 +626,7 @@ ffffffff,00000000
   - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
   - How to monitor: check `/proc/net/sockstat`.
 
-### 2.10. TCP FSM and congestion algorithm
+### 2.9. TCP FSM and congestion algorithm
 
 > Accept and SYN queues are governed by net.core.somaxconn and net.ipv4.tcp_max_syn_backlog. [Nowadays net.core.somaxconn caps both queue sizes](https://blog.cloudflare.com/syn-packet-handling-in-the-wild/#queuesizelimits).
 
@@ -604,7 +642,7 @@ ffffffff,00000000
 
 - You may want to check [Broadband tweaks note](./broadband-tweaks.md).
 
-### 2.11. NUMA
+### 2.10. NUMA
 
 - This term is beyond network performance aspect.
 - Non-uniform memory access (NUMA) is a kind of memory architecture that allows a processor faster access to contents of memory than other traditional techniques. In other words, a processor can access local memory much faster than non-local memory. This is because in a NUMA setup, each processor is assigned a specific local memory exclusively for its own use. This elimates sharing of non-local memory, reducing delays (fewer memory locks) when multiple requests come in for access to the same memory location -> Increase nework performance (cause CPUs have to access ring buffer (memory) to process data packet)
