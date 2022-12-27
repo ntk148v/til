@@ -5,23 +5,14 @@ Source:
 - <https://github.com/leandromoreira/linux-network-performance-parameters/>
 - <https://access.redhat.com/sites/default/files/attachments/20150325_network_performance_tuning.pdf>
 - <https://www.coverfire.com/articles/queueing-in-the-linux-network-stack/>
-- <https://github.com/torvalds/linux/blob/master/Documentation/networking/scaling.rst>
 - <https://blog.cloudflare.com/how-to-achieve-low-latency/>
 - <https://blog.cloudflare.com/how-to-receive-a-million-packets/>
-- <https://blog.packagecloud.io/illustrated-guide-monitoring-tuning-linux-networking-stack-receiving-data/>
-- <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-receiving-data/>
-- <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-sending-data/>
-- <https://openwrt.org/docs/guide-developer/networking/praxis>
-- <http://arthurchiao.art/blog/tcp-listen-a-tale-of-two-queues/>
-- <https://juejin.cn/post/7106345054368694280>
-- <https://blog.51cto.com/u_15169172/2710604>
-- <http://balodeamit.blogspot.com/2013/10/receive-side-scaling-and-receive-packet.html>
-- <https://garycplin.blogspot.com/2017/06/linux-network-scaling-receives-packets.html>
+- <https://beej.us/guide/bgnet/html/>
 
 Table of Contents:
 
 - [Linux Network Performance](#linux-network-performance)
-  - [1. Linux Networking stack: Receiving data](#1-linux-networking-stack-receiving-data)
+  - [1. Linux Networking stack](#1-linux-networking-stack)
     - [1.1. Linux network packet reception](#11-linux-network-packet-reception)
     - [1.2. Linux kernel network transmission](#12-linux-kernel-network-transmission)
   - [2. Network Performance tuning](#2-network-performance-tuning)
@@ -39,8 +30,28 @@ Table of Contents:
     - [2.8. TCP Read and Write Buffers/Queues](#28-tcp-read-and-write-buffersqueues)
     - [2.9. TCP FSM and congestion algorithm](#29-tcp-fsm-and-congestion-algorithm)
     - [2.10. NUMA](#210-numa)
+    - [2.11. Further more - Packet processing](#211-further-more---packet-processing)
+      - [2.11.1. AF\_PACKET v4](#2111-af_packet-v4)
+      - [2.11.2. PACKET\_MMAP](#2112-packet_mmap)
+      - [2.11.3. PF\_RING](#2113-pf_ring)
+      - [2.11.4. Kernel bypass: Data Plane Development Kit (DPDK)](#2114-kernel-bypass-data-plane-development-kit-dpdk)
+      - [2.11.5. Programmable packet processing: eXpress Data Path (XDP)](#2115-programmable-packet-processing-express-data-path-xdp)
 
-## 1. Linux Networking stack: Receiving data
+## 1. Linux Networking stack
+
+Source:
+
+- <https://blog.packagecloud.io/illustrated-guide-monitoring-tuning-linux-networking-stack-receiving-data/>
+- <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-receiving-data/>
+- <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-sending-data/>
+- <https://juejin.cn/post/7106345054368694280>
+- <https://openwrt.org/docs/guide-developer/networking/praxis>
+- <http://arthurchiao.art/blog/tcp-listen-a-tale-of-two-queues/>
+- <https://blog.51cto.com/u_15169172/2710604>
+
+- The complete network data flow:
+
+![](http://web.archive.org/web/20170905131225if_/https://wiki.linuxfoundation.org/images/1/1c/Network_data_flow_through_kernel.png)
 
 - It's a getting started. Before perform any tuning, let make sure that we understand how computers running Linux receive packets.
 - You check the summary of *PackageCloud's article* here. This is a very detailed explaination.
@@ -449,9 +460,19 @@ ffffffff,00000000
 
 ### 2.4. Share the load of packet processing among CPUs
 
+Source:
+
+- <http://balodeamit.blogspot.com/2013/10/receive-side-scaling-and-receive-packet.html>
+- <https://garycplin.blogspot.com/2017/06/linux-network-scaling-receives-packets.html>
+- <https://github.com/torvalds/linux/blob/master/Documentation/networking/scaling.rst>
+
+Once upon a time, everything was so simple. The network card was slow and had only one queue. When packets arrives, the network card copies packets through DMA and sends an interrupt, and the Linux kernel harvests those packets and completes interrupt processing. As the network cards became faster, the interrupt based model may cause IRQ storm due to the massive incoming packets. This will consume the most of CPU power and freeze the system. To solve this problem, [NAPI](https://wiki.linuxfoundation.org/networking/napi) (interrupt and polling) was proposed. When the kernel receives an interrupt from the network card, it starts to poll the device and harvest packets in the queues as fast as possible. NAPI works nicely with the 1Gbps network card which is common nowadays. However, it comes to 10Gbps, 20Gbps, or even 40Gbps network cards, NAPI may not be sufficient. Those cards would demand mush faster CPU if we still use one CPU and one queue to receive packets. Fortunately, multi-core CPUs are popular now, so why not process packets in parallel?
+
+Note that, I will use `trasmit/receive queue` term. Actually it is [ring buffer](https://stackoverflow.com/questions/47450231/what-is-the-relationship-of-dma-ring-buffer-and-tx-rx-ring-for-a-network-card), there are the same. Just note here to clarify.
+
 #### 2.4.1. Receive-side scaling (RSS)
 
-- When packet arrives at NIC, they are added to receive queue ([ring buffer](https://stackoverflow.com/questions/47450231/what-is-the-relationship-of-dma-ring-buffer-and-tx-rx-ring-for-a-network-card)). Receive queue is assigned an IRQ number during device drive initialization and one of the available CPU processor is allocated to that receive queue. This processor is responsible for servicing IRQs interrupt service routing (ISR). Generally the data processing is also done by same processor which does ISR.
+- When packet arrives at NIC, they are added to receive queue. Receive queue is assigned an IRQ number during device drive initialization and one of the available CPU processor is allocated to that receive queue. This processor is responsible for servicing IRQs interrupt service routing (ISR). Generally the data processing is also done by same processor which does ISR.
   - If there is large amount of network traffic -> only single core is taking all responsibility of processing data. ISR routines are small so if they are being executed on single core does not make large difference in performance, but data processing and moving data up in TCP/IP stack takes time (other cores are idle).
     - *These pictures are from [balodeamit blog](http://balodeamit.blogspot.com/2013/10/receive-side-scaling-and-receive-packet.html)*
     - IRQ 53 is used for "eth1-TxRx-0" mono queue.
@@ -727,3 +748,112 @@ systemctl stop irqbalance
   ```
 
   - `numadctl`: control NUMA policy for processes or shared memory.
+
+### 2.11. Further more - Packet processing
+
+This section is an advance one. It introduces some advance module/framework to achieve high performance.
+
+#### 2.11.1. AF_PACKET v4
+
+Source:
+
+- <https://developer.ibm.com/articles/j-zerocopy/>
+- <https://lwn.net/Articles/737947/d>
+
+- New fast packet interfaces in Linux:
+  - `AF_PACKET v4`
+  - No system calls in data path
+  - Copy-mode by default
+  - True [zero-copy](https://en.wikipedia.org/wiki/Zero-copy) mode with `PACKET_ZEROCOPY`, DMA packet buffers mapped to user space.
+    - To better understand the solution to a problem, we first need to understand the problem itself.
+    - This sample is taken from [IBM article](https://developer.ibm.com/articles/j-zerocopy/).
+    - Scenario: Read from a file and transfer the data to another program over the network.
+
+    ```java
+    File.read(fileDesc, buf, len);
+    Socket.send(socket, buf, len);
+    ```
+
+    - The copy operation requires 4 context switches between user mode and kernel mode, and the data is copied 4 times before the operation is complete.
+
+    ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure1.gif)
+
+    ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure2.gif)
+
+    - Zero copy improves performance by elimninating these redundant data copies.
+    - You'll notice that the 2nd and 3rd copies are not actually required (The application does nothing other than cache the data and transfer it back to the socket buffer) -> The data could be transfered directly from the read buffer to the socket buffer -> Use method `transferTo()`, assume that this method transfers data from the file channel to the given writable byte channel. Internally, it depends on the OS's support for zero copy (in Linux, UNIX, this sis `sendfile()` system call).
+
+    ```c
+    #include <sys/socket.h>
+    ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count);
+    ```
+
+    ```java
+    public void transferTo(long position, long count, WritableByteChannel target);
+
+    // Copy data from a disk file to a socket
+    transferTo(position, count, writableChannel);
+    ```
+
+    ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure3.gif)
+
+    ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure4.gif)
+
+    - Gather operations: In Linux kernels 2.4 and later, the socket buffer descriptor was modified to acommondata this requirement. This approach not only reduces multiple context switches but also eliminates the duplicated data copies that require CPU involvement.
+      - No data is copied into the socket buffer. Instead, only descriptors with information about the location and length of the data are appended to the socket buffer. The DMA engine passes data directly from the kernel buffer to the protocol engine, thus elimianting the remaining final CPU copy.
+
+    ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure5.gif)
+
+  - HW descriptors only mapped to kernel
+
+#### 2.11.2. PACKET_MMAP
+
+Source:
+
+- <https://docs.kernel.org/networking/packet_mmap.html>
+
+- `PACKET_MMAP` is a Linux API for fast packet sniffing.
+
+#### 2.11.3. PF_RING
+
+- [PF_RING](https://github.com/ntop/PF_RING) is a Linux kernel module and user-space framework that allows you to process packets at high-rates while providing you a consistent API for packet processing applications.
+
+#### 2.11.4. Kernel bypass: Data Plane Development Kit (DPDK)
+
+Source:
+
+- <https://blog.cloudflare.com/kernel-bypass/>
+- <https://www.cse.iitb.ac.in/~mythili/os/anno_slides/network_stack_kernel_bypass_slides.pdf>
+
+- The kernel is insufficient:
+  - To understand the issue, check this [slide](https://www.cse.iitb.ac.in/~mythili/os/anno_slides/network_stack_kernel_bypass_slides.pdf).
+  - Performance overheads in kernel stack:
+    - Context switch between kernel and userspace
+
+    ![](./images/linux-network-1.png)
+
+    - Packet copy between kernel and userspace
+
+    ![](./images/linux-network-2.png)
+
+    - Dynamic allocation of `sk_buff`
+    - Per packet interrupt
+    - Shared data structures
+
+    ![](./images/linux-network-3.png)
+
+  - Solution: Why just bypass the kernel? Let's try to drop them as soon as they leave the network driver code!
+
+  ![](./images/linux-network-4.png)
+
+  - There are many kernel bypass techniques:
+    - User-space packet processing:
+      - Data Plane Development Kit (DPDK)
+      - Netmap
+      - ...
+    - User-space network stack
+      - mTCP
+      - ...
+  - But I only talk about the DPDK, as it's the most popular.
+
+#### 2.11.5. Programmable packet processing: eXpress Data Path (XDP)
