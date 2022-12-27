@@ -7,6 +7,7 @@ Source:
 - <https://www.coverfire.com/articles/queueing-in-the-linux-network-stack/>
 - <https://github.com/torvalds/linux/blob/master/Documentation/networking/scaling.rst>
 - <https://blog.cloudflare.com/how-to-achieve-low-latency/>
+- <https://blog.cloudflare.com/how-to-receive-a-million-packets/>
 - <https://blog.packagecloud.io/illustrated-guide-monitoring-tuning-linux-networking-stack-receiving-data/>
 - <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-receiving-data/>
 - <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-sending-data/>
@@ -31,6 +32,7 @@ Table of Contents:
       - [2.4.1. Receive-side scaling (RSS)](#241-receive-side-scaling-rss)
       - [2.4.2. Receive Packet Steering (RPS)](#242-receive-packet-steering-rps)
       - [2.4.3. Receive Flow Steering (RFS)](#243-receive-flow-steering-rfs)
+      - [2.4.4. Accelerated Receive Flow Steering (aRFS)](#244-accelerated-receive-flow-steering-arfs)
     - [2.5. Interrupt Coalescing (soft IRQ)](#25-interrupt-coalescing-soft-irq)
     - [2.6. Ingress QDisc](#26-ingress-qdisc)
     - [2.7. Egress Disc - txqueuelen and default\_qdisc](#27-egress-disc---txqueuelen-and-default_qdisc)
@@ -483,6 +485,18 @@ ffffffff,00000000
 - The benefit of using RPS is same as RSS: share the load of packet processing among the CPUs.
   - It may be unnecessary if RSS is availble.
   - If there are more CPUs than the queues, RPS could still be useful.
+- RPS requires a kernel compiled with the `CONFIG_RPS` kconfig symbol (on by default for SMP). Even when compiled, RPS remains disabled until explicitly configured. The list of CPUs to which RPS may forward traffic can be configured for each receive queue using sysfs file entry:
+
+```shell
+/sys/class/net/<dev>/queues/rx-<n>/rps_cpus
+
+# This file implements a bitmap of CPUs
+# 0 (default): disabled
+```
+
+- Suggested configuration:
+  - Single queue device: `rps_cpus` - the CPUs in the same memory domain of the interrupting CPU. If NUMA locality is not an issue, `rps_cpus` - all CPUs in the system. At high interrupt rate, it might be wise to exclude the interrupting CPU from the map since that already performs much work.
+  - Multi-queue system: if RSS is configured -> RPS is redundant and unnecessary. If there are fewer hardware queues than CPUs, then RPS might be beneficial if the `rps_cpus` for each queue are the ones that share the same memory domain as the interrupting CPU for that  queue.
 
 #### 2.4.3. Receive Flow Steering (RFS)
 
@@ -490,6 +504,7 @@ ffffffff,00000000
   - The application may run on CPU A, kernel puts the packets in the queue of CPU B.
   - CPU A can only use its own cache, the cached packets in CPU B become useless.
 - RFS extends RPS further for the applications.
+- RFS is only available if the kconfig symbol `CONFIG_RPS` is enabled.
 - Instead of the per-queue hash-to-CPU map, RFS maintains a global flow-to-CPU table, `rps_sock_flow_table`. The size of this table can be adjusted:
 
 ```shell
@@ -497,18 +512,31 @@ sysctl -w net.core.rps_sock_flow_entries 32768
 ```
 
 - Although the socket flow table improves the application locality, it also raise a problem. When the scheduler migrates the application to a new CPU, the remaining packets in the old CPU queue become outstanding, and the application may get the out of order packets. To solve the problem, RFS uses the per-queue `rps_dev_flow_table` to track outstanding packets.
-  - The size of the per-queue flow table `rps_dev_flow_table` can configured through sysfs interface: `/sys/class/net/<dev>/queues/rx-<n>/rps_flow_cnt.`.
-  - Recommend value:
-
-```
-rps_flow_cnt = rps_sock_flow_entries / N
-
-N: the number of RX queues
-```
+  - The size of the per-queue flow table `rps_dev_flow_table` can configured through sysfs interface: `/sys/class/net/<dev>/queues/rx-<n>/rps_flow_cnt.`
 
 - The next steps is way too complicated, if you want to know it, check [this](https://garycplin.blogspot.com/2017/06/linux-network-scaling-receives-packets.html) out.
 
 ![](https://2.bp.blogspot.com/-US9aezp1mUE/WUI90hna5HI/AAAAAAAAA98/yhpI17Ut9wwbzCwlBxhev5Pm4vy-QR4NwCLcBGAs/s640/RFS.png)
+
+- Suggested configuration:
+  - The suggested flow count depends on the expected number of active connections at any given time, which may be significantly less than the number of the connections -> `32768` for `rps_sock_flow_entries`.
+  - Single queue device: `rps_flow_cnt` = `rps_sock_flow_entries`.
+  - Multi-queue device: `rps_flow_cnt` (each queue) = `rps_sock_flow_entries / N` (N is the number of queues).
+
+#### 2.4.4. Accelerated Receive Flow Steering (aRFS)
+
+- Accelerated RFS is to RFS what RSS is to RPS: a hardware-accelerated load balancing mechanism that uses soft state to steer flows based on where the application thead consuming the packets of each flow is running.
+- aRFS should perform better than RFS since packets are sent directly to a CPU local to the thread consuming the data.
+- aRFS is only available if the following conditions are met:
+  - aRFS must be supported by the network interface card (export the `ndo_rx_flow_steer` netdevice function)
+  - `ntuple` filtering must be enabled.
+  - The kernel is compiled with `CONFIG_RFS_ACCEL`.
+- The map of CPU to queues is automatically deduced from the IRQ affinities configured for each receive queue by the driver, so no additional configuration should be necessary.
+
+![](https://1.bp.blogspot.com/-RQDZerX_Lgk/WUEN1icXAfI/AAAAAAAAA9s/EFfwdrDl7AcsT8ovL_J2x7GVh7awXBsHwCLcBGAs/s640/aRFS.png)
+
+- Suggested configuration:
+  - Enabled whenever one wants to use RFS and the NIC supports hardware acceleration  .
 
 ### 2.5. Interrupt Coalescing (soft IRQ)
 
