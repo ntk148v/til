@@ -816,7 +816,14 @@ Source:
 
 #### 2.11.3. PF_RING
 
+Source:
+
+- <https://www.ntop.org/products/packet-capture/pf_ring/>
+
 - [PF_RING](https://github.com/ntop/PF_RING) is a Linux kernel module and user-space framework that allows you to process packets at high-rates while providing you a consistent API for packet processing applications.
+- `PF_RING` is polling packets from NICs by means of Linux NAPI. This means that NAPI copies packets from the NIC to the `PF_RING` circular buffer, and then the userland application reads packets from ring. In this scenario, there are 2 pollers, both the application and NAPI and thjis results in CPU cucles used for this polling -> Advantage: `PF_RING` can distribute incoming packets to multiple rings simultaneously.
+
+![](https://www.ntop.org/wp-content/uploads/2012/01/vanilla_pf_ring.png)
 
 #### 2.11.4. Kernel bypass: Data Plane Development Kit (DPDK)
 
@@ -857,3 +864,7 @@ Source:
   - But I only talk about the DPDK, as it's the most popular.
 
 #### 2.11.5. Programmable packet processing: eXpress Data Path (XDP)
+
+Source:
+
+- <https://blogs.igalia.com/dpino/2019/01/10/the-express-data-path/>
