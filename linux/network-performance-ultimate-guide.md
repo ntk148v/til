@@ -8,6 +8,7 @@ Source:
 - <https://blog.cloudflare.com/how-to-achieve-low-latency/>
 - <https://blog.cloudflare.com/how-to-receive-a-million-packets/>
 - <https://beej.us/guide/bgnet/html/>
+- ,<https://blog.csdn.net/armlinuxww/article/details/111930788>>
 
 Table of Contents:
 
@@ -131,6 +132,8 @@ Source:
 ### 1.1. Linux network packet reception
 
 ![](./images/linux-networking-recv.png)
+
+![](https://img-blog.csdnimg.cn/20201025161643899.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1JvbmdfVG9h,size_16,color_FFFFFF,t_70)
 
 ![](https://pic002.cnblogs.com/images/2012/360373/2012110119582618.png)
 
@@ -805,6 +808,7 @@ Source:
     ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure5.gif)
 
   - HW descriptors only mapped to kernel
+- In order to improve Rx and Tx performance this implementation make uses `PACKET_MMAP`.
 
 #### 2.11.2. PACKET_MMAP
 
@@ -813,6 +817,7 @@ Source:
 - <https://docs.kernel.org/networking/packet_mmap.html>
 
 - `PACKET_MMAP` is a Linux API for fast packet sniffing.
+- It provides a mmapped ring buffer, shared between user space and kernel, that's ued to send and receive packets. This helps reducing system calls and the copies needed between user space and kernel.
 
 #### 2.11.3. PF_RING
 
@@ -822,6 +827,8 @@ Source:
 
 - [PF_RING](https://github.com/ntop/PF_RING) is a Linux kernel module and user-space framework that allows you to process packets at high-rates while providing you a consistent API for packet processing applications.
 - `PF_RING` is polling packets from NICs by means of Linux NAPI. This means that NAPI copies packets from the NIC to the `PF_RING` circular buffer, and then the userland application reads packets from ring. In this scenario, there are 2 pollers, both the application and NAPI and thjis results in CPU cucles used for this polling -> Advantage: `PF_RING` can distribute incoming packets to multiple rings simultaneously.
+
+- // WIP
 
 ![](https://www.ntop.org/wp-content/uploads/2012/01/vanilla_pf_ring.png)
 
@@ -849,7 +856,7 @@ Source:
 
     ![](./images/linux-network-3.png)
 
-  - Solution: Why just bypass the kernel? Let's try to drop them as soon as they leave the network driver code!
+  - Solution: Why just bypass the kernel?
 
   ![](./images/linux-network-4.png)
 
@@ -863,8 +870,95 @@ Source:
       - ...
   - But I only talk about the DPDK, as it's the most popular.
 
+- // WIP
+
 #### 2.11.5. Programmable packet processing: eXpress Data Path (XDP)
 
 Source:
 
+- <https://www.iovisor.org/technology/xdp>
 - <https://blogs.igalia.com/dpino/2019/01/10/the-express-data-path/>
+- <https://pantheon.tech/what-is-af_xdp/>
+- <https://github.com/iovisor/bpf-docs/blob/master/Express_Data_Path.pdf>
+- <https://github.com/xdp-project/xdp-paper/blob/master/xdp-the-express-data-path.pdf>
+- <http://vger.kernel.org/lpc_net2018_talks/lpc18_paper_af_xdp_perf-v2.pdf>
+- <https://arthurchiao.art/blog/firewalling-with-bpf-xdp/>
+
+- XDP (eXpress Data Path):
+  - An eBPF implementation for early packet interception. It's programmable, high performance, specialized application, packet processor in Linux networking data path.
+    - eBPF is the user-defined, sandboxed bytecode executed by the kernel. For more check [out](./ebpf/README.md).
+  - Bare metal packet processing at lowest point in the SW network stack.
+    - Before allocating SKBs
+    - Inside device drivers RX function
+    - Operate directly on RX packet-pages
+
+  ![](https://blogs.igalia.com/dpino/files/2019/01/linux-network-stack-with-xdp.png)
+
+  - Use cases:
+    - Pre-stack processing like filtering to do DOS mitigation
+    - Forwarding and load balancing
+    - Batching techniques such as in Generic Receive Offload (GRO)
+    - Flow sampling, monitoring
+    - ULP processing
+  - Properties:
+    - XDP is designed for high performance
+    - ...and programmability: New functionality can be implemented on the fly without needing kernel modification
+    - XDP is NOT kernel bypass:
+      - It's an integrated fast path in kernel stack.
+      - If the traditional kernel network stack is a freeway, kernel bypass is a proposal to build an infrastructure of high speed trains and XDP is a proposal for adding carpool lanes to the freeway - Tom Herbert and Alexei Starovoitov.
+    - XDP does NOT replace the TCP/IP stack.
+    - XDP does NOT require any specialized hardware, but there are a few hardware requirements:
+      - Multi-queue NICs
+      - Common protocol-generic offloads:
+        - TX/RX checksum offload
+        - Receive Side Scaling (RSS)
+        - Transport Segmentation Offload (TSO)
+      - LRO, aRFS, flow hash from device are "nice to have"s
+- Compare to DPDK:
+  - XDP is a young project, but very promising.
+  - Advantages of XDP over DPDK:
+    - Allow option of busy polling or interrupt driven networking
+    - No need to allocate huge pages
+    - No special hardware requirements
+    - Dedicated CPUs are not required, user has many options on how to structure the work between CPUs
+    - No need to inject packets into the kernel from a 3rd party userspace application
+    - No need to define a new security model for accessing networking HW
+    - No 3rd party code/licenseing required.
+- XDP packet processor:
+
+  ![](https://www.iovisor.org/wp-content/uploads/sites/8/2016/09/xdp-packet-processing-768x420.png)
+
+  - In kernel
+  - Component that processes RX packets
+  - Process RX "packet pages" directly out of driver
+    - Functional interface
+    - No early allocation of skbuff's, no SW queues
+  - Assign one CPU to each RX queue
+    - No locking RX queue
+    - CPU can be dedicated to busy poll to use interrupt model
+  - BPF programs performs procesing
+    - Parse packets
+    - Perform table lookups, creates/manages stateful filters
+    - Manipulate packet
+    - Return action:
+  - Basic actions:
+    - Forward:
+      - Possibly after packet modification
+      - TX queue is exclusive to same CPU so no lock needed
+    - Drop:
+      - Just return error from the function
+      - Driver recycles pages
+    - Normal receive:
+      - Allocate skbuff and receive into stack
+      - Steer packet to another CPU for processing
+      - Allow "raw" interfaces to userspace like `AF_PACKET`, netmap
+    - GRO:
+      - Coalesce packets of same connection
+      - Perform receive of large packets
+- `AF_XDP`:
+  - A new type of socket, presented into the [Linux 4.18](https://www.kernel.org/doc/html/v4.18/networking/af_xdp.html) which does not completely bypass the kernel, but utilizes its functionality and enables to create something alike DPDK or the `AF_PACKET`.
+
+  ![](https://pantheontech.b-cdn.net/wp-content/webp-express/webp-images/doc-root/wp-content/uploads/2019/09/Untitled-Diagram.jpg.webp)
+
+  - `AF_XDP` moves frames directly to the userspace, without the need to go through the whole kernel network stack. They arrive in the shortest possible time, `AF_XDP` does not bypass the kernel but creates in-kernel fast path.
+- // WIP
