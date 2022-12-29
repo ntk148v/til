@@ -883,10 +883,21 @@ Source:
 - <https://github.com/xdp-project/xdp-paper/blob/master/xdp-the-express-data-path.pdf>
 - <http://vger.kernel.org/lpc_net2018_talks/lpc18_paper_af_xdp_perf-v2.pdf>
 - <https://arthurchiao.art/blog/firewalling-with-bpf-xdp/>
+- <https://archive.fosdem.org/2018/schedule/event/xdp/attachments/slides/2220/export/events/attachments/xdp/slides/2220/fosdem18_SdN_NFV_qmonnet_XDPoffload.pdf>
 
 - XDP (eXpress Data Path):
   - An eBPF implementation for early packet interception. It's programmable, high performance, specialized application, packet processor in Linux networking data path.
     - eBPF is the user-defined, sandboxed bytecode executed by the kernel. For more check [out](./ebpf/README.md).
+    - Evolution from former BPF version (cBPF, used by tcpdump)
+    - 11 registers (64-bit), 512 bytes stack
+    - Read and write access to context (for networking: packets)
+    - LLVM backend to compile from c to eBPF (or from Lua, go, P4, Rust,...)
+    - In-kernel verifier to ensure safety, security
+    - JIT (Just-in-time) compiler available for main architecture
+    - Features:
+      - Maps: key-value entries (hash, array,...) shared between eBPF programs or with user user-space
+      - Tail calls: "long jump" from one program into an other, context is preserved
+      - Helpers; white-list of kernel functions to call from eBPF programs: get current time, print debug information, lookup or update maps, shrink or grow packets,...
   - Bare metal packet processing at lowest point in the SW network stack.
     - Before allocating SKBs
     - Inside device drivers RX function
@@ -961,4 +972,10 @@ Source:
   ![](https://pantheontech.b-cdn.net/wp-content/webp-express/webp-images/doc-root/wp-content/uploads/2019/09/Untitled-Diagram.jpg.webp)
 
   - `AF_XDP` moves frames directly to the userspace, without the need to go through the whole kernel network stack. They arrive in the shortest possible time, `AF_XDP` does not bypass the kernel but creates in-kernel fast path.
+    - XDP's user space interface
+    - Use XDP program to trigger Rx path for selected queue
+    - Zero-copy from DMA buffers to user space with driver support
+    - Copy-mode/skb-mode for non-modified
+    - `AF_XDP` can be integrated into DPDK!
+
 - // WIP
