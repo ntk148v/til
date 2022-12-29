@@ -894,6 +894,9 @@ Source:
     - LLVM backend to compile from c to eBPF (or from Lua, go, P4, Rust,...)
     - In-kernel verifier to ensure safety, security
     - JIT (Just-in-time) compiler available for main architecture
+
+    ![](./images/ebpf-1.png)
+
     - Features:
       - Maps: key-value entries (hash, array,...) shared between eBPF programs or with user user-space
       - Tail calls: "long jump" from one program into an other, context is preserved
@@ -967,15 +970,26 @@ Source:
       - Coalesce packets of same connection
       - Perform receive of large packets
 - `AF_XDP`:
+
+  ![](./images/xdp-flow.png)
+
   - A new type of socket, presented into the [Linux 4.18](https://www.kernel.org/doc/html/v4.18/networking/af_xdp.html) which does not completely bypass the kernel, but utilizes its functionality and enables to create something alike DPDK or the `AF_PACKET`.
+    - An upgraded version of `AF_PACKET`: Use XDP program to trigger Rx path for selected queue
+    - XDP programs can redirect frames to a memory buffer in user-space by eBPF -> not bypass the kernel but creates in-kernel fast path.
+    - DMA transfers use user space memory (zero copy)
 
-  ![](https://pantheontech.b-cdn.net/wp-content/webp-express/webp-images/doc-root/wp-content/uploads/2019/09/Untitled-Diagram.jpg.webp)
+    ![](./images/xdp.png)
 
-  - `AF_XDP` moves frames directly to the userspace, without the need to go through the whole kernel network stack. They arrive in the shortest possible time, `AF_XDP` does not bypass the kernel but creates in-kernel fast path.
-    - XDP's user space interface
-    - Use XDP program to trigger Rx path for selected queue
-    - Zero-copy from DMA buffers to user space with driver support
-    - Copy-mode/skb-mode for non-modified
-    - `AF_XDP` can be integrated into DPDK!
+    - Benefits:
+      - Performance improvement:
+        - Zero copy between user space and kernel space
+        - Achieve 3-20x times improvement comparing to `AF_PACKET`
+      - Connect the XDP pass-through to user-space directly:
+        - An eBPF program that processes packets can be forwarded to an application in a very efficient way
+      - For [DPDK](https://doc.dpdk.org/guides/nics/af_xdp.html):
+        - No change to DPDK apps, kernel driver handles hardware
+        - Provide a new option for users
+
+    ![](./images/xdp-dpdk.png)
 
 - // WIP
