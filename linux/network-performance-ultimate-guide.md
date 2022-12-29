@@ -838,6 +838,7 @@ Source:
 
 - <https://blog.cloudflare.com/kernel-bypass/>
 - <https://www.cse.iitb.ac.in/~mythili/os/anno_slides/network_stack_kernel_bypass_slides.pdf>
+- <https://selectel.ru/blog/en/2016/11/24/introduction-dpdk-architecture-principles/>
 
 - The kernel is insufficient:
   - To understand the issue, check this [slide](https://www.cse.iitb.ac.in/~mythili/os/anno_slides/network_stack_kernel_bypass_slides.pdf).
@@ -870,7 +871,43 @@ Source:
       - ...
   - But I only talk about the DPDK, as it's the most popular.
 
-- // WIP
+- DPDK (Data Plane Development Kit):
+  - A framework comprised of various userspace libraries and drivers fast packet processing.
+  - Though DPDK uses a number of techniques to optimise packet throughput, how it works (and the keys to its performance) is based on Fast-Path and PMD:
+    - Fast-path (kernel bypass): a fast-path is created from the NIC to the application within user space, in turn, bypassing the kernel. This eliminates context switching when moving the frame between user space/kernel space.
+    - Poll Mode Driver: instead of the NIC raising an interrupt to the CPU when a frame is received, the CPU runs a poll mode driver (PMD) to constantly poll the NIC for new packets. However, this does mean that a CPU core must be dedicated and assigned to running PMD.
+
+  - How it works:
+
+    ![](https://selectel.ru/blog/en/wp-content/uploads/sites/2/2016/11/PR-3303.png)
+
+    - The kernel doesn't step in at all: interactions with the network card are performed via special drivers and libraries
+    - The ports receiving incoming traffic on network cards need to be unbound from Linux (the kernel driver). This is done using the `dpdk_nic_bind` (or `dpkg-devbind`) command, or `./dpdk_nic_bind.py` in earlier versions.
+    - How are ports then managed by DPDK? Every driver in Linux has bind and unbind files:
+
+    ```shell
+    ls /sys/bus/pci/drivers/ixgbe
+    bind  module  new_id  remove_id  uevent  unbind
+    ```
+
+    - To unbind a device from a driver, the device's bus number needs to be written to the unbind files. Similarly, to bind a device to another driver, the bus number needs to be written to its bind file. More detailed information about this can be found [here](https://lwn.net/Articles/143397/).
+    - The DPDK installation instructions [tell that ports](http://dpdk.org/doc/guides-16.04/linux_gsg/build_dpdk.html#loading-modules-to-enable-userspace-io-for-dpdk) need to be managed by the vfio_pci, igb_uio, or uio_pci_generic driver.
+    - These drivers make it possible to interact with devices in the user space. Of course they include a kernel module, but that’s just to initialize devices and assign the PCI interface.
+    - All further communication betwene the application and network card is organized by the *DPDK PMD*.
+    - DPDK also requires *hugepages* be configured. This is required for allocating large chunks of memory and writing data to them (same job that DPDK does in traditional packet processing)
+    - Main stage:
+      - Incoming packets go to a ring buffer. The application periodically checks this buffer for new packets
+      - If the buffer contains new packet descriptors, the application will refer to the DPDK packet buffers in the specially allocated memory pool using the pointers in the packet descriptors.
+      - If the ring buffer does not contain any packets, the application will queue the network devices under the DPDK and then refer to the ring again.
+  - Components:
+    - Environment Abstraction Layer (EAL): It is responsible for gaining access to low-level resources such as hardware and memory space. It provides a generic interface that hides the environment specifics from the applications and libraries.
+    - Memory Manager: Responsible for allocating pools of objects in memory. A pool is created in hug page memory space and uses a ring to store free objects. It also provides an alignment helper to ensure that objects are padded to spread them equally on all DRAM channels.
+    - Buffer Manager: Reduces by a significant amount of the time the OS spends allocating and de-allocating buffers using advanced techniques such as Bulk Allocation, Buffer Chains, Per Core Buffer Caches etc.
+    - Queue Manager: Implements safe lockless queues, instead of using spinlocks, that allow different software components to process packets, while avoiding unnecessary wait times.
+    - Packet Flow Classification: DPDK Flow Classifier implements hash based flow classification to quickly place packets into flows for processing.
+    - Poll Mode Drivers: Instead of the NIC raising an interrupt to the CPU when a frame is received, the CPU runs a poll mode driver (PMD) to constantly poll the NIC for new packets. However, this does mean that a CPU core must be dedicated and assigned to running PMD.
+  - Limitations:
+    - Heavily Intel hardware reliant.
 
 #### 2.11.5. Programmable packet processing: eXpress Data Path (XDP)
 
@@ -991,5 +1028,3 @@ Source:
         - Provide a new option for users
 
     ![](./images/xdp-dpdk.png)
-
-- // WIP
