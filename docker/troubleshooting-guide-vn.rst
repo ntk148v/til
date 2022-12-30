@@ -156,7 +156,7 @@ Trong OverlayFS Docker, có các loại thư mục sau:
 
 Hình sau biểu diễn cách thức OverlayFS hoạt động.
 
-|\_scroll_external/attachments/image2022-11-3_17-6-48-ffaf6c9fdb494bc2711c753dbf3db8499262987ee90610b95bb10c11565f06fe.png|
+.. image:: ./media/image1.png
 
 Chi tiết tham khảo thêm tại `Docker docs`_.
 
@@ -353,7 +353,7 @@ Nhiều sự cố mạng có thể dẫn đến giảm hiệu suất ứng dụn
 
 **netshoot** **sidecar** cung cấp đầy đủ các công cụ troubleshoot từng vấn đề.
 
-|\_scroll_external/attachments/image2022-11-3_15-10-51-c2714efaf4e7c453bef181e8d571af78535ed15417b993c87d3422c35b66da54.png|
+.. image:: ./media/image2.png
 
 Bên cạnh đó, netshoot còn có zsh shell thân thiện với người dùng và cả text editor trong trường hợp cần sửa đổi cấu hình.
 
