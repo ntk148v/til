@@ -8,7 +8,7 @@ Source:
 - <https://blog.cloudflare.com/how-to-achieve-low-latency/>
 - <https://blog.cloudflare.com/how-to-receive-a-million-packets/>
 - <https://beej.us/guide/bgnet/html/>
-- ,<https://blog.csdn.net/armlinuxww/article/details/111930788>>
+- <https://blog.csdn.net/armlinuxww/article/details/111930788>>
 
 Table of Contents:
 
@@ -828,9 +828,16 @@ Source:
 - [PF_RING](https://github.com/ntop/PF_RING) is a Linux kernel module and user-space framework that allows you to process packets at high-rates while providing you a consistent API for packet processing applications.
 - `PF_RING` is polling packets from NICs by means of Linux NAPI. This means that NAPI copies packets from the NIC to the `PF_RING` circular buffer, and then the userland application reads packets from ring. In this scenario, there are 2 pollers, both the application and NAPI and thjis results in CPU cucles used for this polling -> Advantage: `PF_RING` can distribute incoming packets to multiple rings simultaneously.
 
-- // WIP
-
 ![](https://www.ntop.org/wp-content/uploads/2012/01/vanilla_pf_ring.png)
+
+- `PF_RING` has a moduar architecture that makes it possible to use additional components other than the standard `PF_RING` module.
+  - ZC module:
+  - FPGA-based card modules: add support for many vendors
+  - Stack module: can be used to inject packets to the linux network stack
+  - Timeline module: can be used to seamlessly extract traffic from a n2disk dump set using the `PF_RING API`
+  - Sysdig module: captures system events using the sysdig kernel module
+
+![](https://i0.wp.com/www.ntop.org/wp-content/uploads/2018/01/PF_RING-Big-Picture.png?w=1848&ssl=1)
 
 #### 2.11.4. Kernel bypass: Data Plane Development Kit (DPDK)
 
@@ -839,6 +846,7 @@ Source:
 - <https://blog.cloudflare.com/kernel-bypass/>
 - <https://www.cse.iitb.ac.in/~mythili/os/anno_slides/network_stack_kernel_bypass_slides.pdf>
 - <https://selectel.ru/blog/en/2016/11/24/introduction-dpdk-architecture-principles/>
+- <https://www.slideshare.net/garyachy/dpdk-44585840>
 
 - The kernel is insufficient:
   - To understand the issue, check this [slide](https://www.cse.iitb.ac.in/~mythili/os/anno_slides/network_stack_kernel_bypass_slides.pdf).
@@ -873,10 +881,13 @@ Source:
 
 - DPDK (Data Plane Development Kit):
   - A framework comprised of various userspace libraries and drivers fast packet processing.
-  - Though DPDK uses a number of techniques to optimise packet throughput, how it works (and the keys to its performance) is based on Fast-Path and PMD:
-    - Fast-path (kernel bypass): a fast-path is created from the NIC to the application within user space, in turn, bypassing the kernel. This eliminates context switching when moving the frame between user space/kernel space.
-    - Poll Mode Driver: instead of the NIC raising an interrupt to the CPU when a frame is received, the CPU runs a poll mode driver (PMD) to constantly poll the NIC for new packets. However, this does mean that a CPU core must be dedicated and assigned to running PMD.
-
+  - Goal: forward network packet to/from Network Interface Card (NIC) from/to user application at native speed (fast packet processing).
+    - 10 or 40Gb NICs
+    - Speed is the most important criteria
+    - Only forward the packet - not a network stack
+  - All traffic bypasses the kernel:
+    - When a NIC is controlled by a DPDK driver, it's invisible to the kernel
+  - Open source (BSD-3 for most, GPL for Linux Kernel related parts)
   - How it works:
 
     ![](https://selectel.ru/blog/en/wp-content/uploads/sites/2/2016/11/PR-3303.png)
@@ -900,14 +911,25 @@ Source:
       - If the buffer contains new packet descriptors, the application will refer to the DPDK packet buffers in the specially allocated memory pool using the pointers in the packet descriptors.
       - If the ring buffer does not contain any packets, the application will queue the network devices under the DPDK and then refer to the ring again.
   - Components:
-    - Environment Abstraction Layer (EAL): It is responsible for gaining access to low-level resources such as hardware and memory space. It provides a generic interface that hides the environment specifics from the applications and libraries.
-    - Memory Manager: Responsible for allocating pools of objects in memory. A pool is created in hug page memory space and uses a ring to store free objects. It also provides an alignment helper to ensure that objects are padded to spread them equally on all DRAM channels.
-    - Buffer Manager: Reduces by a significant amount of the time the OS spends allocating and de-allocating buffers using advanced techniques such as Bulk Allocation, Buffer Chains, Per Core Buffer Caches etc.
-    - Queue Manager: Implements safe lockless queues, instead of using spinlocks, that allow different software components to process packets, while avoiding unnecessary wait times.
-    - Packet Flow Classification: DPDK Flow Classifier implements hash based flow classification to quickly place packets into flows for processing.
-    - Poll Mode Drivers: Instead of the NIC raising an interrupt to the CPU when a frame is received, the CPU runs a poll mode driver (PMD) to constantly poll the NIC for new packets. However, this does mean that a CPU core must be dedicated and assigned to running PMD.
+
+    ![](https://doc.dpdk.org/guides/_images/architecture-overview.svg)
+
+    - Core components:
+      - Environment Abstraction Layer (EAL): provides a generic interface that hides the environment specifics from the applications and libraries.
+      - Ring Manager (`librte_ring`): the ring structure provides a lockless multi-producer, multi-consumer FIFO API in a finite size table.
+      - Memory Pool Manager (`librte_mempool`): is responsible for allocating pools of objects in memory.
+        - A pool is identified by name and uses a ring to store free objects.
+        - Provide some optional services, such as a per-core object cache and an alignment helper to ensure that objects are padded to spread them equally on all RAM channels.
+      - Network Packet Buffer Management (`librte_mbuf`):
+        - mbuf library provides the facility to create and desctroy buffers that may be used by the DPDK application to store message buffers (created at startup time and stored in a mempool)
+        - Provides an API to allocate/free mbufs, manipulate packet buffers which are used to carry network packets.
+      - Timer Manager (`librte_timer`): Provides a timer service to DPDK execution units, providing the ability to execute a function asynchronously.
+    - Poll Mode Drivers: Instead of the NIC raising an interrupt to the CPU when a frame is received, the CPU runs a poll mode driver (PMD) to constantly poll the NIC for new packets. However, this does mean that a CPU core must be dedicated and assigned to running PMD. However, this does mean that a CPU core must be dedicated and assigned to running PMD. The DPDK includes Poll Mode Drivers (PMDs) for 1 GbE, 10 GbE and 40GbE, and para virtualized virtio Ethernet controllers which are designed to work without asynchronous, interrupt-based signaling mechanisms.
+    - Packet Forwarding Algorithm Support: The DPDK includes Hash (`librte_hash`) and Longest Prefix Match (LPM, `librte_lpm`) libraries to support the corresponding packet forwarding algorithms.
+    - `librte_net`: a collection of IP protocol definitions and convenience macros. It is based on code from the FreeBSD* IP stack and contains protocol numbers (for use in IP headers), IP-related macros, IPv4/IPv6 header structures and TCP, UDP and SCTP header structures.
   - Limitations:
-    - Heavily Intel hardware reliant.
+    - Heavily hardware reliant.
+    - A CPU core must be dedicated and assigned to running PMD. 100% CPU.
 
 #### 2.11.5. Programmable packet processing: eXpress Data Path (XDP)
 
