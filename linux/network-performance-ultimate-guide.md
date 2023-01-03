@@ -957,6 +957,7 @@ Source:
 - <https://arthurchiao.art/blog/firewalling-with-bpf-xdp/>
 - <https://archive.fosdem.org/2018/schedule/event/xdp/attachments/slides/2220/export/events/attachments/xdp/slides/2220/fosdem18_SdN_NFV_qmonnet_XDPoffload.pdf>
 - <https://people.netfilter.org/hawk/presentations/KernelRecipes2018/XDP_Kernel_Recipes_2018.pdf>
+- <https://legacy.netdevconf.info/2.1/session.html?gospodarek>
 
 - XDP (eXpress Data Path):
   - An eBPF implementation for early packet interception. It's programmable, high performance, specialized application, packet processor in Linux networking data path.
