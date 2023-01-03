@@ -8,7 +8,7 @@ Source:
 - <https://blog.cloudflare.com/how-to-achieve-low-latency/>
 - <https://blog.cloudflare.com/how-to-receive-a-million-packets/>
 - <https://beej.us/guide/bgnet/html/>
-- <https://blog.csdn.net/armlinuxww/article/details/111930788>>
+- <https://blog.csdn.net/armlinuxww/article/details/111930788>
 
 Table of Contents:
 
@@ -34,8 +34,8 @@ Table of Contents:
     - [2.11. Further more - Packet processing](#211-further-more---packet-processing)
       - [2.11.1. AF\_PACKET v4](#2111-af_packet-v4)
       - [2.11.2. PACKET\_MMAP](#2112-packet_mmap)
-      - [2.11.3. PF\_RING](#2113-pf_ring)
-      - [2.11.4. Kernel bypass: Data Plane Development Kit (DPDK)](#2114-kernel-bypass-data-plane-development-kit-dpdk)
+      - [2.11.3. Kernel bypass: Data Plane Development Kit (DPDK)](#2113-kernel-bypass-data-plane-development-kit-dpdk)
+      - [2.11.4. PF\_RING](#2114-pf_ring)
       - [2.11.5. Programmable packet processing: eXpress Data Path (XDP)](#2115-programmable-packet-processing-express-data-path-xdp)
 
 ## 1. Linux Networking stack
@@ -819,27 +819,7 @@ Source:
 - `PACKET_MMAP` is a Linux API for fast packet sniffing.
 - It provides a mmapped ring buffer, shared between user space and kernel, that's ued to send and receive packets. This helps reducing system calls and the copies needed between user space and kernel.
 
-#### 2.11.3. PF_RING
-
-Source:
-
-- <https://www.ntop.org/products/packet-capture/pf_ring/>
-
-- [PF_RING](https://github.com/ntop/PF_RING) is a Linux kernel module and user-space framework that allows you to process packets at high-rates while providing you a consistent API for packet processing applications.
-- `PF_RING` is polling packets from NICs by means of Linux NAPI. This means that NAPI copies packets from the NIC to the `PF_RING` circular buffer, and then the userland application reads packets from ring. In this scenario, there are 2 pollers, both the application and NAPI and thjis results in CPU cucles used for this polling -> Advantage: `PF_RING` can distribute incoming packets to multiple rings simultaneously.
-
-![](https://www.ntop.org/wp-content/uploads/2012/01/vanilla_pf_ring.png)
-
-- `PF_RING` has a moduar architecture that makes it possible to use additional components other than the standard `PF_RING` module.
-  - ZC module:
-  - FPGA-based card modules: add support for many vendors
-  - Stack module: can be used to inject packets to the linux network stack
-  - Timeline module: can be used to seamlessly extract traffic from a n2disk dump set using the `PF_RING API`
-  - Sysdig module: captures system events using the sysdig kernel module
-
-![](https://i0.wp.com/www.ntop.org/wp-content/uploads/2018/01/PF_RING-Big-Picture.png?w=1848&ssl=1)
-
-#### 2.11.4. Kernel bypass: Data Plane Development Kit (DPDK)
+#### 2.11.3. Kernel bypass: Data Plane Development Kit (DPDK)
 
 Source:
 
@@ -931,6 +911,39 @@ Source:
     - Heavily hardware reliant.
     - A CPU core must be dedicated and assigned to running PMD. 100% CPU.
 
+#### 2.11.4. PF_RING
+
+Source:
+
+- <https://www.ntop.org/products/packet-capture/pf_ring/>
+- <https://repository.ellak.gr/ellak/bitstream/11087/1537/1/5-deri-high-speed-network-analysis.pdf>
+- <https://www.synacktiv.com/en/publications/breaking-namespace-isolation-with-pf_ring-before-700.html>
+
+- [PF_RING](https://github.com/ntop/PF_RING) is a Linux kernel module and user-space framework that allows you to process packets at high-rates while providing you a consistent API for packet processing applications.
+- `PF_RING` is polling packets from NICs by means of Linux NAPI. This means that NAPI copies packets from the NIC to the `PF_RING` circular buffer, and then the userland application reads packets from ring. In this scenario, there are 2 pollers, both the application and NAPI and thjis results in CPU cucles used for this polling -> Advantage: `PF_RING` can distribute incoming packets to multiple rings simultaneously.
+
+![](https://www.ntop.org/wp-content/uploads/2012/01/vanilla_pf_ring.png)
+
+- `PF_RING` has a modular architecture that makes it possible to use additional components other than the standard `PF_RING` module.
+  - ZC module (Zero Copy):
+  - FPGA-based card modules: add support for many vendors
+  - Stack module: can be used to inject packets to the linux network stack
+  - Timeline module: can be used to seamlessly extract traffic from a n2disk dump set using the `PF_RING API`
+  - Sysdig module: captures system events using the sysdig kernel module
+
+![](https://i0.wp.com/www.ntop.org/wp-content/uploads/2018/01/PF_RING-Big-Picture.png?w=1848&ssl=1)
+
+- Benefits:
+  - It creates a straight path for incoming packets in order to make them first-class citizens
+  - No need to use custom network cards: any card is supported
+  - Transparent to applications: legacy applications need to be recompiled in order to use it
+  - No kernel or low-level programming is required
+  - Developer familiar with network applications can immediately take advantage of it without having to learn new APIs
+- `PF_RING` has reduced the cost of packet capture and forward to userland. However it has some design limitations as it requires two actors  for capturing packets that result in sub-optimal performance:
+  - kernel: copy packet from NIC to ring
+  - userland: read packet from ring and process it
+- `PF_RING` [since version 7.5 includes support for](https://www.ntop.org/guides/pf_ring/modules/af_xdp.html) `AF_XDP` adapters, when compiling from source code this is enabled by default.
+
 #### 2.11.5. Programmable packet processing: eXpress Data Path (XDP)
 
 Source:
@@ -943,6 +956,7 @@ Source:
 - <http://vger.kernel.org/lpc_net2018_talks/lpc18_paper_af_xdp_perf-v2.pdf>
 - <https://arthurchiao.art/blog/firewalling-with-bpf-xdp/>
 - <https://archive.fosdem.org/2018/schedule/event/xdp/attachments/slides/2220/export/events/attachments/xdp/slides/2220/fosdem18_SdN_NFV_qmonnet_XDPoffload.pdf>
+- <https://people.netfilter.org/hawk/presentations/KernelRecipes2018/XDP_Kernel_Recipes_2018.pdf>
 
 - XDP (eXpress Data Path):
   - An eBPF implementation for early packet interception. It's programmable, high performance, specialized application, packet processor in Linux networking data path.
@@ -1050,3 +1064,7 @@ Source:
         - Provide a new option for users
 
     ![](./images/xdp-dpdk.png)
+
+- Limitations:
+  - Quite young project
+  - Require a new kernel version (>= 5.4) to fully support.
