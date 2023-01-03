@@ -55,6 +55,12 @@ Source:
 ![](http://web.archive.org/web/20170905131225if_/https://wiki.linuxfoundation.org/images/1/1c/Network_data_flow_through_kernel.png)
 
 - It's a getting started. Before perform any tuning, let make sure that we understand how computers running Linux receive packets.
+- Linux queue:
+
+![](https://github.com/leandromoreira/linux-network-performance-parameters/raw/master/img/linux_network_flow.png)
+
+### 1.1. Linux network packet reception
+
 - You check the summary of *PackageCloud's article* here. This is a very detailed explaination.
 
   <details>
@@ -125,12 +131,6 @@ Source:
 
   </details>
 
-- Linux queue:
-
-![](https://github.com/leandromoreira/linux-network-performance-parameters/raw/master/img/linux_network_flow.png)
-
-### 1.1. Linux network packet reception
-
 ![](./images/linux-networking-recv.png)
 
 ![](https://img-blog.csdnimg.cn/20201025161643899.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1JvbmdfVG9h,size_16,color_FFFFFF,t_70)
@@ -160,7 +160,7 @@ Source:
     ```
 
 6. CPU runs the `IRQ handler` that runs the driver's code.
-7. Driver will `schedule a [NAPI](https://en.wikipedia.org/wiki/New_API)`, clear the hard IRQ and return
+7. Driver will schedule a [NAPI](https://en.wikipedia.org/wiki/New_API), clear the hard IRQ and return
 8. Driver raise a `SoftIRQ (NET_RX_SOFTIRQ)`.
    - It is a kernel routines which are scheduled to run at a time when other tasks will not be interrupted.
    - Purpose: drain the network adapter receive Rx ring buffer.
