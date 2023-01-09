@@ -50,6 +50,7 @@ Source:
 - <https://openwrt.org/docs/guide-developer/networking/praxis>
 - <https://blog.51cto.com/u_15169172/2710604>
 - <https://sn0rt.github.io/media/paper/TCPlinux.pdf>
+- <https://medium.com/coccoc-engineering-blog/linux-network-ring-buffers-cea7ead0b8e8>
 
 - The complete network data flow:
 
@@ -135,8 +136,6 @@ Source:
 ![](./images/linux-networking-recv.png)
 
 ![](https://img-blog.csdnimg.cn/20201025161643899.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1JvbmdfVG9h,size_16,color_FFFFFF,t_70)
-
-![](https://pic002.cnblogs.com/images/2012/360373/2012110119582618.png)
 
 > **NOTE**: Some NICs are  "multiple queues" NICs. This diagram above shows just a single ring buffer for simplicity, but depending on the NIC you are using and your hardware settings you may have mutliple queues in the system. Check [Share the load of packet processing among CPUs](#24-share-the-load-of-packet-processing-among-cpus) section for detail.
 
