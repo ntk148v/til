@@ -45,6 +45,7 @@ Source:
 - <https://blog.packagecloud.io/illustrated-guide-monitoring-tuning-linux-networking-stack-receiving-data/>
 - <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-receiving-data/>
 - <https://blog.packagecloud.io/monitoring-tuning-linux-networking-stack-sending-data/>
+- <https://www.sobyte.net/post/2022-10/linux-net-snd-rcv/>
 - <https://juejin.cn/post/7106345054368694280>
 - <https://openwrt.org/docs/guide-developer/networking/praxis>
 - <http://arthurchiao.art/blog/tcp-listen-a-tale-of-two-queues/>
@@ -61,7 +62,7 @@ Source:
 
 ### 1.1. Linux network packet reception
 
-- You check the summary of *PackageCloud's article* here. This is a very detailed explaination.
+- You check the detailed version at [PackageCloud's article](https://blog.packagecloud.io/illustrated-guide-monitoring-tuning-linux-networking-stack-receiving-data).
 
   <details>
   <summary>Click to expand</summary>
@@ -137,19 +138,22 @@ Source:
 
 ![](https://pic002.cnblogs.com/images/2012/360373/2012110119582618.png)
 
+> **NOTE**: Some NICs are  "multiple queues" NICs. This diagram above shows just a single ring buffer for simplicity, but depending on the NIC you are using and your hardware settings you may have mutliple queues in the system. Check [Share the load of packet processing among CPUs](#24-share-the-load-of-packet-processing-among-cpus) section for detail.
+
 1. Packet arrives at the NIC
-2. NIC verifies `MAC` (if not on promiscuous mode) and `FCS` and decide to drop or to continue
-3. NIC does [DMA (Direct Memory Access) packets at RAM](https://en.wikipedia.org/wiki/Direct_memory_access), in a region previously prepared (mapped) by the driver.
+2. NIC verifies `MAC` (if not on [promiscuous mode](https://unix.stackexchange.com/questions/14056/what-is-kernel-ip-forwarding)) and `FCS` and decide to drop or to continue
+3. NIC does [DMA (Direct Memory Access) packets at RAM](https://en.wikipedia.org/wiki/Direct_memory_access), in the specified memory addressm, which is allocated and initialized by the NIC driver.
 4. NIC enqueues references to the packets at receive ring buffer queue `rx` until `rx-usecs` timeout or `rx-frames`. Let's talk about the RX ring buffer:
-   - It is a [circular buffer](https://en.wikipedia.org/wiki/Circular_buffer) where an overflow simply overwrites existing data.
+   - It is a [circular buffer](https://en.wikipedia.org/wiki/Circular_buffer) where *an overflow simply overwrites existing data*.
    - It is used to store incoming packets until they can be processed by the device driver. The device driver drains the RX ring, typically via SoftIRQs (we will talk about it then), which puts the incoming packets into a kernel data structure called an `sk_buff` or `skb` (Socket Kernel Buffers - [SKBs](http://vger.kernel.org/~davem/skb.html)) to begin its journey through the kernel and up to the application which owns the relevant socket.
    - Fixed size, FIFO and located at RAM (of course).
 5. NIC raises a `HardIRQ` - Hard Interrupt.
-   - The Hard IRQ can be expensive in terms of CPU usage, especially when holding kernel locks.
-   - Hard interrupts can be seen in `/proc/interrupts`.
+   - `HardIRQ`: interrupt from the hardware, known-as "top-half" interrupts.
+   - When a NIC receives incoming data, it copies the data into kernel buffers using DMA. The NIC notifies the kernel of this data by raising a HardIRQ. These interrupts are processed by interrupt handlers which do minimal work, as they have already interrupted another task and cannot be interrupted themselves.
+   - HardIRQs can be expensive in terms of CPU usage, especially when holding kernel locks. If they take too long to execute, they will cause the CPU to be unable to respond to other HardIRQ, so the kernel introduces `SoftIRQs` (Soft Interrupts), so that the time-consuming part of the HardIRQ handler can be moved to the SoftIRQ handler to handle it slowly. We will talk about SoftIRQ in the next steps.
+   - HardIRQs can be seen in `/proc/interrupts` where each queue has an interrupt vector in the 1st column assigned to it. These are initialized when the system boots or when the NIC device driver module is loaded. Each RX and TX queue is assigned a unique vector, which informs the interrupt handler as to which NIC/queue the interrupt is coming from. The columns represent the number of incoming interrupts as a counter value:
 
     ```shell
-    # For example, the columns represent the number of incoming interrupts as a counter value
     egrep “CPU0|eth3” /proc/interrupts
         CPU0 CPU1 CPU2 CPU3 CPU4 CPU5
     110:    0    0    0    0    0    0   IR-PCI-MSI-edge   eth3-rx-0
@@ -160,10 +164,14 @@ Source:
     ```
 
 6. CPU runs the `IRQ handler` that runs the driver's code.
-7. Driver will schedule a [NAPI](https://en.wikipedia.org/wiki/New_API), clear the hard IRQ and return
+7. Driver will schedule a [NAPI](https://en.wikipedia.org/wiki/New_API), clear the HardIRQ on the NIC, so that it can generate IRQs for new packets arrivals.
+
+    ![](https://cdn.buttercms.com/yharphBYTEm2Kt4G2fT9)
+
 8. Driver raise a `SoftIRQ (NET_RX_SOFTIRQ)`.
-   - It is a kernel routines which are scheduled to run at a time when other tasks will not be interrupted.
+   - Let's talk about the `SoftIRQ`, also known as "bottom-half" interrupt. It is a kernel routines which are scheduled to run at a time when other tasks will not be interrupted.
    - Purpose: drain the network adapter receive Rx ring buffer.
+   - These routines run in the form of `ksoftirqd/cpu-number` processes and call driver-specific code functions.
    - Check command:
 
     ```shell
@@ -184,37 +192,40 @@ Source:
     watch -n1 grep TX /proc/softirqs
     ```
 
-9. NAPI polls data from the rx ring buffer until `netdev_budget_usecs` timeout or `netdev_budget` and `dev_weight` packets.
-   - If the SoftIRQs do not run for long enough, the rate of incoming data could exceed the kernel's capability to drain the buffer last enough. As a result, the NIC buffers will overflow and traffic will be lost. Occasionaly, it is necessary to increase the time that SoftIRQs are allowed to run on the CPU. This is known as the `netdev_budget`.
-     - Check command, the default value is 300, it means the SoftIRQ process to drain 300 messages from the NIC before getting off the CPU.
+9. NAPI polls data from the rx ring buffer.
+   - NAPI was written to make processing data packets of incoming cards more efficient. HardIRQs are expensive because they can't be interrupt, we both known that. Even with *Interrupt coalesecense* (describe later in more detail), the interrupt handler will monopolize a CPU core completely. The design of NAPI allows the driver to go into a polling mode instead of being HardIRQ for every rquired packet receive.
+   - The polling routine has a budget which determines the CPU time the code is allowed, by using `netdev_budget_usecs` timeout or `netdev_budget` and `dev_weight` packets. This is required to prevent SoftIRQs from monopolizing the CPU. On completion, the kernel will exit the polling routine and re-arm, then the entire procedure will repeat itself.
+   - Let's talk about `netdev_budget_usecs` timeout or `netdev_budget` and `dev_weight` packets:
+     - If the SoftIRQs do not run for long enough, the rate of incoming data could exceed the kernel's capability to drain the buffer last enough. As a result, the NIC buffers will overflow and traffic will be lost. Occasionaly, it is necessary to increase the time that SoftIRQs are allowed to run on the CPU. This is known as the `netdev_budget`.
+       - Check command, the default value is 300, it means the SoftIRQ process to drain 300 messages from the NIC before getting off the CPU.
+
+        ```shell
+        sysctl net.core.netdev_budget
+        net.core.netdev_budget = 300
+        ```
+
+     - `netdev_budget_usecs`: The maximum number of microseconds in 1 NAPI polling cycle. Polling will exit when either `netdev_budget_usecs` have elapsed during the poll cycle or the number of packets processed reaches `netdev_budget`.
+       - Check command:
+
+        ```shell
+        sysctl net.core.netdev_budget_usecs
+
+        net.core.netdev_budget_usecs = 8000
+        ```
+
+     - `dev_weight`: the maximum number of packets that kernel can handle on a NAPI interrupt, it's a PER-CPU variable. For drivers that support LRO or GRO_HW, a hardware aggregated packet is counted as one packet in this.
 
       ```shell
-      sysctl net.core.netdev_budget
-      net.core.netdev_budget = 300
+      sysctl net.core.dev_weight
+
+      net.core.dev_weight = 64
       ```
-
-   - `netdev_budget_usecs`: The maximum number of microseconds in 1 NAPI polling cycle. Polling will exit when either `netdev_budget_usecs` have elapsed during the poll cycle or the number of packets processed reaches `netdev_budget`.
-     - Check command:
-
-      ```shell
-      sysctl net.core.netdev_budget_usecs
-
-      net.core.netdev_budget_usecs = 8000
-      ```
-
-   - `dev_weight`: the maximum number of packets that kernel can handle on a NAPI interrupt, it's a PER-CPU variable. For drivers that support LRO or GRO_HW, a hardware aggregated packet is counted as one packet in this.
-
-    ```shell
-    sysctl net.core.dev_weight
-
-    net.core.dev_weight = 64
-    ```
 
 10. Linux also allocates memory to `sk_buff`.
 11. Linux fills the metadata: protocol, interface, setmatchheader, removes ethernet
 12. Linux passes the skb to the kernel stack (`netif_receive_skb`)
 13. It sets the network header, clone `skb` to taps (i.e. tcpdump) and pass it to tc ingress
-14. Packets are handled to a qdisc sized `netdev_max_backlog` with its algorithm defined by `default_qdisc`
+14. Packets are handled to a qdisc sized `netdev_max_backlog` with its algorithm defined by `default_qdisc`:
     - `netdev_max_backlog`: a queue whitin the Linux kernel where traffic is stored after reception from the NIC, but before processing by the protocols stacks (IP, TCP, etc). There is one backlog queue per CPU core. A given core's queue can grow automatically, containing a number of packets up to the maximum specified by the `netdev_max_backlog` settings.
     - In other words, this is the maximum number of packets, queued on the INPUT side (the ingress dsic), when the interface receives packets faster than kernel can process them.
     - Check command, the default value is 1000.
@@ -224,6 +235,10 @@ Source:
 
     net.core.netdev_max_backlog = 1000
     ```
+
+    - `rxqueuelen`: Receipt Queue Length, is a TCP/IP stack network interface value that sets the number of packets allowed per kernel receive queue of a network interface device.
+      - By default, value is 1000 (depend on network interface driver): `ifconfig <interface> | grep rxqueuelen`
+    - `default_qdisc`: the default queuing discipline to use for network devices. This allows overriding the default of pfifo_fast with an alternative. Since the default queuing discipline is created without additional parameters so is best suited to queuing disciplines that work well without configuration like stochastic fair queue (sfq), CoDel (codel) or fair queue CoDel (fq_codel). For full details for each QDisc in `man tc <qdisc-name>` (for example, `man tc fq_codel`).
 
 15. It calls `ip_rcv` and packets are handled to IP
 16. It calls netfilter (`PREROUTING`)
@@ -245,6 +260,8 @@ Source:
 ![](./images/linux-networking-send.png)
 
 ![](https://s2.51cto.com/images/blog/202104/15/25012de83ba2d80fcd790b49ff346b62.png?x-oss-process=image/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_30,g_se,x_10,y_10,shadow_20,type_ZmFuZ3poZW5naGVpdGk=/format,webp/resize,m_fixed,w_1184)
+
+Although simpler than the ingress logic, the egress is still worth acknowledging
 
 1. Application sends message (`sendmsg` or other)
 2. TCP send message allocates skb_buff
@@ -370,7 +387,7 @@ FRAG: inuse 0 memory 0
 ### 2.2. Interrupt Coalescence (IC) - rx-usecs, tx-usecs, rx-frames, tx-frames (hardware IRQ)
 
 - Move on to step (5), hard interrupt - HardIRQ. NIC enqueue references to the packets at receive ring buffer queue rx until rx-usecs timeout or rx-frames, then raises a HardIRQ. This is called *Interrupt coalescence*:
-  - The amount of traffic that a network will receive (number of frames) `rx/tx-frames`, or time that passes after receiving traffic (timeout) `rx/tx-usecs`.
+  - The amount of traffic that a network will receive/transmit (number of frames) `rx/tx-frames`, or time that passes after receiving/transmitting traffic (timeout) `rx/tx-usecs`.
     - Interrupting too soon: poor system performance (the kernel stops a running task to handle the hardIRQ)
     - Interrupting too late: traffic isn't taken off the NIC soon enough -> more traffic -> overwrite -> traffic loss!
 
