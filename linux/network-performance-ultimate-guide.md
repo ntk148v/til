@@ -48,8 +48,8 @@ Source:
 - <https://www.sobyte.net/post/2022-10/linux-net-snd-rcv/>
 - <https://juejin.cn/post/7106345054368694280>
 - <https://openwrt.org/docs/guide-developer/networking/praxis>
-- <http://arthurchiao.art/blog/tcp-listen-a-tale-of-two-queues/>
 - <https://blog.51cto.com/u_15169172/2710604>
+- <https://sn0rt.github.io/media/paper/TCPlinux.pdf>
 
 - The complete network data flow:
 
@@ -142,10 +142,13 @@ Source:
 
 1. Packet arrives at the NIC
 2. NIC verifies `MAC` (if not on [promiscuous mode](https://unix.stackexchange.com/questions/14056/what-is-kernel-ip-forwarding)) and `FCS` and decide to drop or to continue
-3. NIC does [DMA (Direct Memory Access) packets at RAM](https://en.wikipedia.org/wiki/Direct_memory_access), in the specified memory addressm, which is allocated and initialized by the NIC driver.
-4. NIC enqueues references to the packets at receive ring buffer queue `rx` until `rx-usecs` timeout or `rx-frames`. Let's talk about the RX ring buffer:
+3. NIC does [DMA (Direct Memory Access)](https://en.wikipedia.org/wiki/Direct_memory_access) packets into RAM - in a kernel data structure called an `sk_buff` or `skb` (Socket Kernel Buffers - [SKBs](http://vger.kernel.org/~davem/skb.html)).
+4. NIC enqueues *references* to the packets at receive ring buffer queue `rx` until `rx-usecs` timeout or `rx-frames`. Let's talk about the RX ring buffer:
    - It is a [circular buffer](https://en.wikipedia.org/wiki/Circular_buffer) where *an overflow simply overwrites existing data*.
-   - It is used to store incoming packets until they can be processed by the device driver. The device driver drains the RX ring, typically via SoftIRQs (we will talk about it then), which puts the incoming packets into a kernel data structure called an `sk_buff` or `skb` (Socket Kernel Buffers - [SKBs](http://vger.kernel.org/~davem/skb.html)) to begin its journey through the kernel and up to the application which owns the relevant socket.
+   - It *does not contain packet data*. Instead it consists of descriptors which point to `skbs` which is DMA into RAM (step 2).
+
+   ![](https://i.stack.imgur.com/HignO.png)
+
    - Fixed size, FIFO and located at RAM (of course).
 5. NIC raises a `HardIRQ` - Hard Interrupt.
    - `HardIRQ`: interrupt from the hardware, known-as "top-half" interrupts.
@@ -193,7 +196,11 @@ Source:
     ```
 
 9. NAPI polls data from the rx ring buffer.
-   - NAPI was written to make processing data packets of incoming cards more efficient. HardIRQs are expensive because they can't be interrupt, we both known that. Even with *Interrupt coalesecense* (describe later in more detail), the interrupt handler will monopolize a CPU core completely. The design of NAPI allows the driver to go into a polling mode instead of being HardIRQ for every rquired packet receive.
+   - NAPI was written to make processing data packets of incoming cards more efficient. HardIRQs are expensive because they can't be interrupt, we both known that. Even with *Interrupt coalesecense* (describe later in more detail), the interrupt handler will monopolize a CPU core completely. The design of NAPI allows the driver to go into a polling mode instead of being HardIRQ for every required packet receive.
+   - Step 1->9 in brief:
+
+    ![](https://i.stack.imgur.com/BKBvW.png)
+
    - The polling routine has a budget which determines the CPU time the code is allowed, by using `netdev_budget_usecs` timeout or `netdev_budget` and `dev_weight` packets. This is required to prevent SoftIRQs from monopolizing the CPU. On completion, the kernel will exit the polling routine and re-arm, then the entire procedure will repeat itself.
    - Let's talk about `netdev_budget_usecs` timeout or `netdev_budget` and `dev_weight` packets:
      - If the SoftIRQs do not run for long enough, the rate of incoming data could exceed the kernel's capability to drain the buffer last enough. As a result, the NIC buffers will overflow and traffic will be lost. Occasionaly, it is necessary to increase the time that SoftIRQs are allowed to run on the CPU. This is known as the `netdev_budget`.
@@ -487,8 +494,6 @@ Source:
 - <https://github.com/torvalds/linux/blob/master/Documentation/networking/scaling.rst>
 
 Once upon a time, everything was so simple. The network card was slow and had only one queue. When packets arrives, the network card copies packets through DMA and sends an interrupt, and the Linux kernel harvests those packets and completes interrupt processing. As the network cards became faster, the interrupt based model may cause IRQ storm due to the massive incoming packets. This will consume the most of CPU power and freeze the system. To solve this problem, [NAPI](https://wiki.linuxfoundation.org/networking/napi) (interrupt and polling) was proposed. When the kernel receives an interrupt from the network card, it starts to poll the device and harvest packets in the queues as fast as possible. NAPI works nicely with the 1Gbps network card which is common nowadays. However, it comes to 10Gbps, 20Gbps, or even 40Gbps network cards, NAPI may not be sufficient. Those cards would demand mush faster CPU if we still use one CPU and one queue to receive packets. Fortunately, multi-core CPUs are popular now, so why not process packets in parallel?
-
-Note that, I will use `trasmit/receive queue` term. Actually it is [ring buffer](https://stackoverflow.com/questions/47450231/what-is-the-relationship-of-dma-ring-buffer-and-tx-rx-ring-for-a-network-card), there are the same. Just note here to clarify.
 
 #### 2.4.1. Receive-side scaling (RSS)
 
