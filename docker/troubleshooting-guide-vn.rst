@@ -49,7 +49,7 @@ Hiện tại, có các loại namespaces sau:
 
 -  Cgroup - cô lập về thư mục root của tính năng cgroups, chỉ mới xuất hiện từ Linux Kernel phiên bản 4.6 trở đi
 
-**Lưu ý**: Namespaces không giới hạn truy cập vào các tài nguyên vật lý như CPU, bộ nhớ, đĩa cứng. Các truy cập này được đo đạc và giới hạn bởi một tính tăng của Linux Kernel gọi là "*cgroups*".
+**Lưu ý**: Namespaces không giới hạn truy cập vào các tài nguyên vật lý như CPU, bộ nhớ, đĩa cứng. Các truy cập này được đo đạc và giới hạn bởi một tính năng khác của Linux Kernel gọi là "*cgroups*".
 
 **Ví dụ**
 
@@ -89,7 +89,7 @@ Như vậy, container *test* có tiến trình chính với PID: 1029819. chúng
 |    4026532568 cgroup 1 1029819 root sh |
 +----------------------------------------+
 
-Chúng ta có thể cho một tiến trình mới tham gia(join) vào namespace đang có dùng công cụ nsenter, ví dụ sau chạy lệnh /bin/sh để tạo một shell mới ở namespace của tiến trình của ví dụ về PID Namespace, ngoài ra chúng ta đã join container test network namespace, do vậy khi chạy ip a, kết quả trả về là network của container:
+Chúng ta có thể cho một tiến trình mới tham gia (join) vào namespace đang có dùng công cụ nsenter, ví dụ sau chạy lệnh /bin/sh để tạo một shell mới ở namespace của tiến trình của ví dụ về PID Namespace, ngoài ra chúng ta đã join container test network namespace, do vậy khi chạy ip a, kết quả trả về là network của container:
 
 +--------------------------------------------------------------------------------------------+
 |    ❯ sudo nsenter -t 1029819 --mount --uts --ipc --net --pid sh                            |
