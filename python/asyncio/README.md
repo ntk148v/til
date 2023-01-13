@@ -165,3 +165,154 @@ asyncio.run(m)
 
 - Tasks provide a handle on independently scheduled and running coroutines and allow the task to be queried, canceled, and results and exceptions to be retrieved later.
   - The _asyncio event loop_ manages _tasks_. As such, all _coroutines_ become and are managed as _tasks_ within the event loop.
+  - A Future is a special
+- There are 2 main ways to create and schedule a task:
+  - Create task with high-level API: [`asyncio.create_task`](https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task).
+
+  ```python
+  # define a coroutine
+  async def task_coroutine():
+      # ...
+  # create a task from a coroutine
+  task = async.create_task(task_coroutine())
+  ```
+
+  - Create task with low-level API:
+    - [`asyncio.ensure_future`](https://docs.python.org/3/library/asyncio-future.html#asyncio.ensure_future)
+
+    ```python
+    # create and schedule a task
+    task = asyncio.ensure_future(task_coroutine())
+    ```
+
+    - [`loop.create_task`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.create_task):
+
+    ```python
+    # get the current event loop
+    loop = asyncio.get_event_loop()
+    # create and schedule the task
+    task = loop.create_task(task_coroutine())
+    ```
+
+- Although we can schedule a coroutine to run independently as a task with the `create_task()` function, it may not run immediately. In fact, the task will not execute until the event loop has an opportunity to run.
+
+```python
+import asyncio
+
+
+async def task_coroutine():
+    print('execute the task')
+    # wait for a bit
+    await asyncio.sleep(2)
+
+
+async def main():
+    print('main coroutine started')
+    # create and schedule the task
+    task = asyncio.create_task(task_coroutine())
+    # wait for the task to complete
+    await task
+    print('main coroutine done')
+
+
+# start the asyncio program
+asyncio.run(main())
+
+# main coroutine started
+# execute the task
+# main coroutine done
+```
+
+- This is good to know task's life cycle:
+  - You can check whether task is done or is canceled (`done()`, `canceled()`).
+  - To get its result, use `result()`.
+  - To get its exception, use `exception()`.
+
+  ![](https://superfastpython.com/wp-content/uploads/2022/09/Asyncio-Task-Life-Cycle.png)
+
+- One more thing, we can add a done callback to a task via `add_done_callback()`. This method tasks the name of a function call when the task is done.
+
+```python
+import asyncio
+
+
+def callback(task):
+    print('this is a callback of', task)
+
+
+async def task_coroutine():
+    print('execute the task')
+    # wait for a bit
+    await asyncio.sleep(2)
+
+
+async def main():
+    print('main coroutine started')
+    # create and schedule the task
+    task = asyncio.create_task(task_coroutine())
+    task.add_done_callback(callback)
+    # wait for the task to complete
+    await task
+    print('main coroutine done')
+
+
+# start the asyncio program
+asyncio.run(main())
+
+# main coroutine started
+# execute the task
+# this is a callback of <Task finished name='Task-2' coro=<task_coroutine() done, defined at /.../run_task_callback.py:8> result=None>
+# main coroutine done
+```
+
+- Create many tasks:
+
+```python
+import asyncio
+
+
+async def task_coroutine(index):
+    print(f'task {index} is running')
+    await asyncio.sleep(2)
+
+
+async def main():
+    print('main coroutine started')
+    # start many tasks
+    started_tasks = [asyncio.create_task(task_coroutine(i)) for i in range(10)]
+    # allow some of the tasks time to start
+    await asyncio.sleep(1)
+    # get all tasks
+    tasks = asyncio.all_tasks()
+
+    for task in tasks:
+        print(f'> {task.get_name()}, {task.get_coro()}')
+
+    for task in started_tasks:
+        await task
+
+asyncio.run(main())
+
+# main coroutine started
+# task 0 is running
+# task 1 is running
+# task 2 is running
+# task 3 is running
+# task 4 is running
+# task 5 is running
+# task 6 is running
+# task 7 is running
+# task 8 is running
+# task 9 is running
+# > Task-3, <coroutine object task_coroutine at 0x7fbab1016e30>
+# > Task-6, <coroutine object task_coroutine at 0x7fbab0ea4c10>
+# > Task-11, <coroutine object task_coroutine at 0x7fbab0ea4e40>
+# > Task-2, <coroutine object task_coroutine at 0x7fbab1016ce0>
+# > Task-9, <coroutine object task_coroutine at 0x7fbab0ea4d60>
+# > Task-4, <coroutine object task_coroutine at 0x7fbab10175a0>
+# > Task-7, <coroutine object task_coroutine at 0x7fbab0ea4c80>
+# > Task-5, <coroutine object task_coroutine at 0x7fbab0ea49e0>
+# > Task-10, <coroutine object task_coroutine at 0x7fbab0ea4dd0>
+# > Task-8, <coroutine object task_coroutine at 0x7fbab0ea4cf0>
+# > Task-1, <coroutine object main at 0x7fbab1016650>
+```
