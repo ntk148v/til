@@ -1,10 +1,16 @@
-import asyncio
-
-
 async def custom_coro():
-    # await for another coroutine
-    await asyncio.sleep(1)
+    return 2+2
 
-# create the coroutine
-coro = custom_coro()
-print(type(coro))
+
+async def main():
+    # await for custom coroutine
+    result = await custom_coro()
+    print(result)
+
+
+m = main()
+# not executed yet; coro is a coroutine, not 4
+print(type(m))
+
+# <class 'coroutine'>
+# sys:1: RuntimeWarning: coroutine 'main' was never awaited

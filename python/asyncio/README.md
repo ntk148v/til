@@ -13,6 +13,7 @@ Table of content:
   - [2. What is asyncio?](#2-what-is-asyncio)
     - [2.1. Coroutine](#21-coroutine)
     - [2.2. Event loop](#22-event-loop)
+    - [2.3. Task](#23-task)
 
 ## 1. Asynchronous Programming
 
@@ -76,10 +77,91 @@ Table of content:
 - Coroutine vs Process:
   - Processes, like threads, are created and managed by the underlying operating system and are represented by a `multiprocessing.Process` object.
 - Enough talking, show me code:
+  - Calling a coroutine does not execute it, but rather returns a coroutine object.
+  - How to run it? The answer is using event loop. _Coroutine objects can only run when event loop is running_. Let's move to the next section.
 
-```python ./custom_coro.py
+```python
+async def custom_coro():
+    return 2+2
+
+
+async def main():
+    # await for custom coroutine
+    result = await custom_coro()
+    print(result)
+
+
+m = main()
+# not executed yet; coro is a coroutine, not 4
+print(type(m))
+
+# <class 'coroutine'>
+# sys:1: RuntimeWarning: coroutine 'main' was never awaited
 ```
 
 ### 2.2. Event loop
 
-- Async code can only run inside an _event loop_. The event loop is the driver code that manages the [cooperative multitasking](https://en.wikipedia.org/wiki/Cooperative_multitasking).
+- Async code can only run inside an _event loop_. The event loop is the driver code that manages the [cooperative multitasking](https://en.wikipedia.org/wiki/Cooperative_multitasking). This is a heart of asyncio, it does many things:
+  - Execute coroutines
+  - Execute callbacks
+  - Preform network i/o
+  - Run subprocesses
+- Let's run the previous example:
+
+```python
+import asyncio
+
+
+async def custom_coro():
+    return 2+2
+
+
+async def main():
+    # await for custom coroutine
+    result = await custom_coro()
+    print(result)
+
+m = main()
+
+# start the coroutine program
+asyncio.run(m)
+
+# 4
+```
+
+- `asyncio` module provides functions for accessing and interacting with the event loop - low level.
+  - Create/Get a loop:
+    - [`asyncio.new_event_loop()`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.new_event_loop): create and return a new event loop object.
+
+    ```python
+    import asyncio
+
+    # create and access a new asyncio event loop
+    loop = asyncio.new_event_loop()
+    # report defaults of the loop
+    print(loop)
+
+    # <_UnixSelectorEventLoop running=False closed=False debug=False>
+
+    ```
+
+    - [`asyncio.get_running_loop()`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.get_running_loop) (Python >= 3.7): returns the running event loop in the current OS thread. If there is no running event loop a RuntimeError is raised. This function can only be called from a coroutine or a callback.
+  - Run a loop:
+    - If you want to a long-running loop that keeps responding to events untils it's told to stop, use [`loop.run_forever()`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop.run_forever)
+    - If you want to compute some finite work using coroutines and then stop, use [`loop.run_until_complete(<future or coroutine>)`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop.run_until_complete).
+  - Stop a loop: [`loop.stop()`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop.stop).
+  - Get a loop to call an awaitable: Use [`asyncio.ensure_future`](https://docs.python.org/3/library/asyncio-task.html#asyncio.ensure_future).
+  - Run blocking code in another thread: If you need to call some blocking code from a coroutine, and don’t want to block the whole thread, you can make it run in another thread using coroutine [`loop.run_in_executor`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop.run_in_executor)
+
+  ```python
+  fn = functools.partial(method, *args)
+  result = await loop.run_in_executor(None, fn)
+  ```
+
+- For application developers, should typically use the high-levle asyncio functions `asyncio.run()`, and should rarely need to reference the loop object or call its method.
+  - `asyncio.run()`: always creates a new event loop and closes it at the end. It should be used as a main entry point for asyncio programs, and should ideally only be called once. [Python 3 docs](https://docs.python.org/3/library/asyncio-task.html)
+
+### 2.3. Task
+
+- Tasks provide a handle on independently scheduled and running coroutines and allow the task to be queried, canceled, and results and exceptions to be retrieved later.
+  - The _asyncio event loop_ manages _tasks_. As such, all _coroutines_ become and are managed as _tasks_ within the event loop.
