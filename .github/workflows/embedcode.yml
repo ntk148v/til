@@ -5,13 +5,13 @@ on:
     branches:
       - master
     paths:
-      - "**.md"
+      - "python/asyncio/README.md"
 
   push:
     branches:
       - master
     paths:
-      - "**.md"
+      - "python/asyncio/README.md"
 
 jobs:
   embed-code:
