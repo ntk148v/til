@@ -5,6 +5,7 @@ Source:
 - <https://superfastpython.com/python-asyncio/>
 - <http://masnun.rocks/2016/10/06/async-python-the-different-forms-of-concurrency/>
 - <https://cheat.readthedocs.io/en/latest/python/asyncio.html>
+- <https://bbc.github.io/cloudfit-public-docs/asyncio/asyncio-part-2.html>
 
 Table of content:
 
@@ -132,7 +133,9 @@ asyncio.run(m)
 ```
 
 - `asyncio` module provides functions for accessing and interacting with the event loop - low level.
+
   - Create/Get a loop:
+
     - [`asyncio.new_event_loop()`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.new_event_loop): create and return a new event loop object.
 
     ```python
@@ -148,6 +151,7 @@ asyncio.run(m)
     ```
 
     - [`asyncio.get_running_loop()`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.get_running_loop) (Python >= 3.7): returns the running event loop in the current OS thread. If there is no running event loop a RuntimeError is raised. This function can only be called from a coroutine or a callback.
+
   - Run a loop:
     - If you want to a long-running loop that keeps responding to events untils it's told to stop, use [`loop.run_forever()`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop.run_forever)
     - If you want to compute some finite work using coroutines and then stop, use [`loop.run_until_complete(<future or coroutine>)`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop.run_until_complete).
@@ -169,6 +173,7 @@ asyncio.run(m)
   - The _asyncio event loop_ manages _tasks_. As such, all _coroutines_ become and are managed as _tasks_ within the event loop.
   - A Future is a special
 - There are 2 main ways to create and schedule a task:
+
   - Create task with high-level API: [`asyncio.create_task`](https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task).
 
   ```python
@@ -180,6 +185,7 @@ asyncio.run(m)
   ```
 
   - Create task with low-level API:
+
     - [`asyncio.ensure_future`](https://docs.python.org/3/library/asyncio-future.html#asyncio.ensure_future)
 
     ```python
@@ -226,6 +232,7 @@ asyncio.run(main())
 ```
 
 - This is good to know task's life cycle:
+
   - You can check whether task is done or is canceled (`done()`, `canceled()`).
   - To get its result, use `result()`.
   - To get its exception, use `exception()`.
@@ -332,6 +339,7 @@ We will go through some common usage.
     - Mixture of tasks and coroutines
   - It returns an `asyncio.Future` object that represents the group of awaitables.
 - Run many coroutines:
+
   - Allow a program to prepare the tasks that are to be executed concurrently and then trigger their execution all at once and wait for them to complete.
 
   ```python
