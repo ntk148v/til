@@ -14,6 +14,8 @@ Table of content:
     - [2.1. Coroutine](#21-coroutine)
     - [2.2. Event loop](#22-event-loop)
     - [2.3. Task](#23-task)
+  - [3. Play with asyncio](#3-play-with-asyncio)
+    - [3.1. asyncio.gather()](#31-asynciogather)
 
 ## 1. Asynchronous Programming
 
@@ -316,3 +318,49 @@ asyncio.run(main())
 # > Task-8, <coroutine object task_coroutine at 0x7fbab0ea4cf0>
 # > Task-1, <coroutine object main at 0x7fbab1016650>
 ```
+
+## 3. Play with asyncio
+
+We will go through some common usage.
+
+### 3.1. asyncio.gather()
+
+- [`asyncio.gather()`](https://docs.python.org/3/library/asyncio-task.html#asyncio.gather): allows the caller to group multiple awaitables together.
+  - Call `gather()` with:
+    - Multiple tasks
+    - Multiple coroutines
+    - Mixture of tasks and coroutines
+  - It returns an `asyncio.Future` object that represents the group of awaitables.
+- Run many coroutines:
+  - Allow a program to prepare the tasks that are to be executed concurrently and then trigger their execution all at once and wait for them to complete.
+
+  ```python
+  import asyncio
+
+
+  async def task_coroutine(index):
+      print(f'> task {index} executing')
+      await asyncio.sleep(2)
+
+
+  async def main():
+      print('main coroutine started')
+      group_coros = [task_coroutine(i) for i in range(10)]
+      await asyncio.gather(*group_coros)
+      print('main done')
+
+  asyncio.run(main())
+
+  # main coroutine started
+  # > task 0 executing
+  # > task 1 executing
+  # > task 2 executing
+  # > task 3 executing
+  # > task 4 executing
+  # > task 5 executing
+  # > task 6 executing
+  # > task 7 executing
+  # > task 8 executing
+  # > task 9 executing
+  # main done
+  ```
