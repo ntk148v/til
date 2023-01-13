@@ -21,12 +21,19 @@ Table of content:
 ![](http://blogs.quovantis.com/wp-content/uploads/2015/08/Synchronous-vs.-asynchronous.jpg)
 
 - There are some terms you have to understand:
+
   - [**Asynchronous function call**](https://en.wikipedia.org/wiki/Asynchronous_procedure_call): request that a function is called at some time and in some manner, allowing the caller to resume and perform other activities.
   - **Future**: a handle on asynchronous function call allowing the status of the call to be checked and results to be retrieved.
   - **Asynchronous task**: used to refer to the aggregate of an asynchronous function call and resulting future.
   - **Non-blocking I/O**: performing I/O operations via asynchronous requests and responses, rather than waiting for operations to complete.
   - [**Asynchronous I/O**](https://en.wikipedia.org/wiki/Asynchronous_I/O): a shorthand that refers to combining asynchronous programming with non-blocking I/O.
-  - **Coroutine**: a function that can be suspended and resumed.
+  - [**Coroutine**](https://en.wikipedia.org/wiki/Coroutine):
+
+    - Computer program component that generalizes subroutines for non-preemptive multitasking, by allowing execution to be suspended and resumed.
+    - Or, this is _A function that can be suspended and resumed_.
+
+    ![](https://www.modernescpp.com/images/blog/Cpp20/co_return/FunctionsVersusCoroutines.png)
+
 - **Asynchronous programming** is the use of asynchronous techniques, such as issuing asynchronous tasks or function calls.
 - Next, let's consider asynchronous programming support in Python: [multiprocessing](https://docs.python.org/3/library/multiprocessing.html), [threading](https://docs.python.org/3/library/threading.html), and [asyncio](https://docs.python.org/3/library/asyncio.html).
 
@@ -57,8 +64,22 @@ Table of content:
 
 ### 2.1. Coroutine
 
-- A *coroutine* is a method that can be paused when we have a potentially long-running task and then resumed when that task is finished. In Python, the language implemented first-class support for coroutines and asynchronous programming when the keywords `async` and `await` were explicitly added to the language.
+- A _coroutine_ is a method that can be paused when we have a potentially long-running task and then resumed when that task is finished. In Python, the language implemented first-class support for coroutines and asynchronous programming when the keywords `async` and `await` were explicitly added to the language.
+- Coroutine vs Task:
+  - A Future-like object that runs a Python coroutine. [...] Tasks are used to run coroutines in event loop. ([Python 3 docs](https://docs.python.org/3/library/asyncio-task.html#asyncio.Task))
+  - A coroutine can be wrapped in an `asyncio.Task` object and executed independently, as opposed to being executed directly within a coroutine. We will learn more about Task later.
+- Coroutine vs Thread:
+  - A coroutine is defined as a function.
+  - A thread is an object created and managed by the underlying operating system and represented in Python as a `threading.Thread` object.
+  - This means that coroutines are typically faster than thread.
+  - Coroutine executes within one thread, therefore a single thread may execute many coroutines.
+- Coroutine vs Process:
+  - Processes, like threads, are created and managed by the underlying operating system and are represented by a `multiprocessing.Process` object.
+- Enough talking, show me code:
+
+```python ./custom_coro.py
+```
 
 ### 2.2. Event loop
 
-- Async code can only run inside an *event loop*. The event loop is the driver code that manages the [cooperative multitasking](https://en.wikipedia.org/wiki/Cooperative_multitasking).
+- Async code can only run inside an _event loop_. The event loop is the driver code that manages the [cooperative multitasking](https://en.wikipedia.org/wiki/Cooperative_multitasking).
