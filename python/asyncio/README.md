@@ -17,6 +17,15 @@ Table of content:
     - [2.3. Task](#23-task)
   - [3. Play with asyncio](#3-play-with-asyncio)
     - [3.1. asyncio.gather()](#31-asynciogather)
+    - [3.2. asyncio.wait() and asyncio.wait_for()](#32-asynciowait-and-asynciowait_for)
+    - [3.3. asyncio.shield()](#33-asyncioshield)
+    - [3.4. Blocking task in asyncio](#34-blocking-task-in-asyncio)
+    - [3.5. Handle exception](#35-handle-exception)
+    - [3.5. Common errors](#35-common-errors)
+
+> **NOTE**:
+> Most of examples in this post are taken from **Source**.
+> Always a WIP post
 
 ## 1. Asynchronous Programming
 
@@ -169,7 +178,7 @@ asyncio.run(m)
 
 ### 2.3. Task
 
-- Tasks provide a handle on independently scheduled and running coroutines and allow the task to be queried, canceled, and results and exceptions to be retrieved later.
+- Tasks provide a handle on independently scheduled and running coroutines and allow the task to be queried, cancelled, and results and exceptions to be retrieved later.
   - The _asyncio event loop_ manages _tasks_. As such, all _coroutines_ become and are managed as _tasks_ within the event loop.
   - A Future is a special
 - There are 2 main ways to create and schedule a task:
@@ -233,7 +242,7 @@ asyncio.run(main())
 
 - This is good to know task's life cycle:
 
-  - You can check whether task is done or is canceled (`done()`, `canceled()`).
+  - You can check whether task is done or is cancelled (`done()`, `cancelled()`).
   - To get its result, use `result()`.
   - To get its exception, use `exception()`.
 
@@ -372,3 +381,338 @@ We will go through some common usage.
   # > task 9 executing
   # main done
   ```
+
+### 3.2. asyncio.wait() and asyncio.wait_for()
+
+- [`asyncio.wait()`](https://docs.python.org/3/library/asyncio-task.html#asyncio.wait): wait for a collection of asyncio tasks to complete. The call to wait can be configured to wait for different conditions, such as all tasks being completed, the first task completed and the first task falling with an error.
+
+```python
+import asyncio
+import random
+
+
+async def task_coroutine(index):
+    value = random.random()
+    print(f'> task {index} executing')
+    await asyncio.sleep(value)
+    print(f'> task {index} done after sleep {value} seconds')
+
+
+async def main():
+    print('main coroutine started')
+    tasks = [asyncio.create_task(task_coroutine(i)) for i in range(10)]
+    # wait for all tasks to complete
+    done, pending = await asyncio.wait(tasks)
+    # wait for the first tasks to complete
+    # done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+    # wait for the first tasks to failed
+    # done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_EXCEPTION)
+    # you can play with done and pending
+    print('main done')
+
+asyncio.run(main())
+
+# main coroutine started
+# > task 0 executing
+# > task 1 executing
+# > task 2 executing
+# > task 3 executing
+# > task 4 executing
+# > task 5 executing
+# > task 6 executing
+# > task 7 executing
+# > task 8 executing
+# > task 9 executing
+# > task 4 done after sleep 0.02505134629289052 seconds
+# > task 0 done after sleep 0.15302129609152493 seconds
+# > task 8 done after sleep 0.1565534467066032 seconds
+# > task 5 done after sleep 0.1676313361328544 seconds
+# > task 1 done after sleep 0.3886707880704876 seconds
+# > task 3 done after sleep 0.45932413337182765 seconds
+# > task 6 done after sleep 0.5445482469243019 seconds
+# > task 2 done after sleep 0.6234779487073143 seconds
+# > task 9 done after sleep 0.7615839933532805 seconds
+# > task 7 done after sleep 0.7726912337045355 seconds
+# main done
+```
+
+- You can wait for an asyncio task or coroutine to complete _with a timeout_ using `asyncio.wait_for()` function.
+
+```python
+import asyncio
+
+
+async def task_coroutine(index):
+    print(f'> task {index} executing')
+    value = 2
+    await asyncio.sleep(value)
+    print(f'> task {index} done after sleep {value} seconds')
+
+
+async def main():
+    print('main coroutine started')
+    # create a task
+    task = task_coroutine(1)
+
+    try:
+        # you can change timeout and sleep (in task_coroutine)
+        # to play with it
+        await asyncio.wait_for(task, timeout=3)
+        print('main done')
+    except asyncio.TimeoutError:
+        print('main gave up waiting , task cancelled')
+
+asyncio.run(main())
+
+# main coroutine started
+# > task 1 executing
+# main gave up waiting , task cancelled
+```
+
+### 3.3. asyncio.shield()
+
+- Asyncio task can be cancelled by calling `cancel()` method, but you can protect a task from being cancelled by wrapping it to `asyncio.shield()`.
+
+```python
+import asyncio
+
+
+async def task_coroutine(index):
+    print(f'> task {index} executing')
+    value = 2
+    await asyncio.sleep(value)
+    print(f'> task {index} done after sleep {value} seconds')
+
+# cancel the given task after a moment
+
+
+async def cancel_task(task):
+    # block for a moment
+    await asyncio.sleep(1)
+    # cancel the task
+    cancelled = task.cancel()
+    print(f'cancelled: {cancelled}')
+
+
+async def main():
+    print('main coroutine started')
+    # create a task
+    coro = task_coroutine(1)
+    task = asyncio.create_task(coro)
+    shielded = asyncio.shield(task)
+    #  create a task to cancel the first task
+    asyncio.create_task(cancel_task(shielded))
+
+    try:
+        result = await shielded
+        print(f'> got: {result}')
+    except asyncio.cancelledError:
+        print('shield was cancelled')
+
+    await asyncio.sleep(0.5)
+    print(f'shielded: {shielded}')
+    print(f'task: {task}')
+    print('main done')
+
+asyncio.run(main())
+
+# main coroutine started
+# > task 1 executing
+# cancelled: True
+# shield was cancelled
+# shielded: <Future cancelled>
+# task: <Task pending name='Task-2' coro=<task_coroutine() running at .../shield.py:7> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+# main done
+```
+
+### 3.4. Blocking task in asyncio
+
+- The focus of asyncio is asynchronous programming and non-blocking IO. Nevertheless, we often need to execute a blocking function call within an asyncio program -> it will cause the event loop to stop, preventing any other coroutines from progressing.
+- asyncio provides 2 ways to solve this.
+
+  - [`asyncio.to_thread()`](https://docs.python.org/3/library/asyncio-task.html#asyncio.to_thread) (high level API):
+    - I/O Bound Task.
+
+  ```python
+  import asyncio
+  import time
+
+
+  def blocking_task():
+      print('> task starting')
+      time.sleep(2)
+      print('> task done')
+
+
+  async def main():
+      print('main running the blocking task')
+      # to_thread creates a ThreadPoolExecutor behind the scenes
+      # to execute blocking calls
+      coro = asyncio.to_thread(blocking_task)
+      task = asyncio.create_task(coro)
+      print('main doing other things')
+      await asyncio.sleep(1)
+      await task
+
+  # run the asyncio
+  asyncio.run(main())
+
+  # main running the blocking task
+  # main doing other things
+  # > task starting
+  # > task done
+  ```
+
+  - [`loop.run_in_executor`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.run_in_executor) (low level API): tasks an executor and a function to execute.
+
+  ```python
+  import asyncio
+  import time
+
+
+  def blocking_task():
+      print('> task starting')
+      time.sleep(2)
+      print('> task done')
+
+
+  async def main():
+      print('main running the blocking task')
+      loop = asyncio.get_running_loop()
+      # execute a function in a separate thread
+      # If None -> ThreadPoolExecutor
+      # Can pass ProcessPoolExecutor
+      await loop.run_in_executor(None, blocking_task)
+      print('main doing other things')
+      await asyncio.sleep(10)
+
+  # run the asyncio
+  asyncio.run(main())
+
+  # main running the blocking task
+  # > task starting
+  # > task done
+  # main doing other things
+  ```
+
+### 3.5. Handle exception
+
+- A coroutine wrapped by a task may raise an exception that is not handled. You can retrieve this kind of exception via `exception() method`.
+
+```python
+import asyncio
+
+
+async def task_coroutine():
+    print('> executing the task')
+    await asyncio.sleep(1)
+    raise Exception('Something went wrong')
+
+
+async def main():
+    print('main coroutine started')
+    task = asyncio.create_task(task_coroutine())
+    await asyncio.sleep(2)
+    ex = task.exception()
+    print(f'got exception: {ex}')
+    print('main coroutine done')
+
+asyncio.run(main())
+
+
+# main coroutine started
+# > executing the task
+# got exception: Something went wrong
+# main coroutine done
+
+# # Without exception() call
+# main coroutine started
+# > executing the task
+# main coroutine done
+# Task exception was never retrieved
+# future: <Task finished name='Task-2' coro=<task_coroutine() done, defined at ...exception.py:4> exception=Exception('Something went wrong')>
+# Traceback (most recent call last):
+#   File "...exception.py", line 7, in task_coroutine
+#     raise Exception('Something went wrong')
+# Exception: Something went wrong
+```
+
+- You can't retrieve an exception from a cancelled task. Instead, `CancelledError` exception is raised when calling the `exception()` method.
+- Awaiting a task that fails with an exception will cause the exception to be propagated to the caller. You have to handle with the try/except.
+
+```python
+import asyncio
+
+
+async def task_coroutine():
+    print('> executing the task')
+    await asyncio.sleep(1)
+    raise Exception('Something went wrong')
+
+
+async def main():
+    print('main coroutine started')
+    task = asyncio.create_task(task_coroutine())
+    try:
+        await task
+    except Exception as ex:
+        print(f'got exception: {ex}')
+    print('main coroutine done')
+
+asyncio.run(main())
+
+# main coroutine started
+# > executing the task
+# got exception: Something went wrong
+# main coroutine done
+```
+
+### 3.5. Common errors
+
+- Trying to run coroutines by calling them
+
+```python
+async def coro():
+    print('shit')
+
+# error attempt at calling  a coroutine like a function
+coro()
+
+# right thing to do
+# run a coroutine
+asyncio.run(coro())
+
+# suspend the current coroutine and schedule the other coroutine using await
+await coro()
+```
+
+- Not letting coroutines run in the event loop
+
+```python
+# create a coroutine object
+coro = coro()
+# got RuntimeError if you don't run it
+
+# right thing to do
+asyncio.run(coro)
+
+# schedule coroutine to run independently as a task
+task = asyncio.create_task(coro)
+```
+
+- Using the asyncio low-level API
+- Exiting the main coroutine too early: the main coroutine has nothing else to do, it should wait on the remaining tasks.
+
+```python
+all_tasks = asyncio.all_tasks()
+# get the current task
+current_task = asyncio.current_task()
+# remove the current task from the list of all tasks
+all_tasks.remove(current_task)
+# suspend until all tasks are completed
+await asyncio.wait(all_tasks)
+```
+
+- Assuming race conditions and deadlocks are not possible:
+  - A _race condition_ involves two or more units of concurrency executing the same ciritcal section at the same time and leaving a resource or data in an inconsitent or unexpected state. That can lead to data conrruption and data loss.
+  - A _deadlock_ is when a unit of concurrency waits for a condition that can never occur, such as for a resource to become available.
