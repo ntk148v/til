@@ -1,24 +1,9 @@
-[submodule "deep-learning/awesome-deep-learning"]
-	path = deep-learning/awesome-deep-learning
-	url = https://github.com/ChristosChristofidis/awesome-deep-learning
-[submodule "deep-learning/awesome-deep-learning-papers"]
-	path = deep-learning/awesome-deep-learning-papers
-	url = https://github.com/terryum/awesome-deep-learning-papers
 [submodule "prometheus/prometheus-example-queries"]
 	path = prometheus/prometheus-example-queries
 	url = https://github.com/infinityworks/prometheus-example-queries
-[submodule "prometheus/alertmanager-bot"]
-	path = prometheus/alertmanager-bot
-	url = https://github.com/metalmatze/alertmanager-bot
-[submodule "prometheus/prometheus-openstack-exporter"]
-	path = prometheus/prometheus-openstack-exporter
-	url = https://github.com/CanonicalLtd/prometheus-openstack-exporter
 [submodule "prometheus/prometheus"]
 	path = prometheus/prometheus
 	url = https://github.com/vegasbrianc/prometheus
 [submodule "golang"]
 	path = golang
 	url = https://github.com/ntk148v/lets-go
-[submodule "elasticsearch/compose-files/elastic-stack-docker"]
-	path = elasticsearch/compose-files/elastic-stack-docker
-	url = https://github.com/elastic/stack-docker
