@@ -1,6 +1,6 @@
 # How to invest in technical infrastructure
 
-[Source](https://lethain.com/how-to-invest-technical-infrastructure/)
+Source: <https://lethain.com/how-to-invest-technical-infrastructure/>
 
 ## What is technical infrastructure?
 
@@ -10,7 +10,7 @@ Technical infrastructure is the software and systems we use to create, evolve an
 
 This sort of infrastructure is a rare opportunity to do truly leveraged work.
 
-The consequences of doing infrastructure poorly are equally profound. 
+The consequences of doing infrastructure poorly are equally profound.
 
 Scaled company is an excellent infrastructure team doing remarkable things.
 
@@ -42,6 +42,7 @@ Combine these ideas:
 An important aspect of infrastructure engineeing: the percentage of work that simply must be done.
 
 Keypoints:
+
 * Prioritize as much work into the future as possible, shedding "forced" work.
 * Sometimes you can get creative, finding more leveraged approach. The goal here is to find work that addresses "forced" work that also reduces future "forced" work.
 * Do less.
@@ -54,6 +55,7 @@ Keypoints:
 Most infrastructure teams really struggle when they make the shift from the very clear focus created by emergencies to the oppressively board opportunity that comes from escaing the tyranny of forced, short-term work.
 
 Keypoints:
+
 * You're going to have be very intentional about determining what to work on and how to approach it.
 * The fundamentals of product management: discover problems, prioritize across them, validate your planned approach.
 
@@ -62,6 +64,7 @@ Keypoints:
 ![](https://lethain.com/static/blog/2019/ti-grid-good.png)
 
 Keypoints:
+
 * Identify broad categories that capture the different properties you want to maintain in your infrastructure.
 * Security, reliability, usability, efficiency and latency.
 * For each of these properties, you need to identify a baseline of what acceptable performance is.
@@ -71,6 +74,7 @@ Keypoints:
 There's no single approach to investing into infrastructure that's going to work for you all of the time. Identifying an effective approach depends on recognizing your current constraints, and then accounting for them properly.
 
 Good pattern to reuse:
+
 * If your team is doing forced, short-term work, then dig out by investing into your operational excellence.
 * If your team is just starting to experience the thrills of discretionary, long-term work, then invest into your product management skills.
 * If you have discretionary budget, but still find yourself running from one problem, then identify the principles to balance your approach, and set baselines for each principle.
