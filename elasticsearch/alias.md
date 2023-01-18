@@ -1,6 +1,6 @@
 # Index alias
 
-Source: https://spoon-elastic.com/all-elastic-search-post/elasticsearch-best-practices-index-alias/
+Source: <https://spoon-elastic.com/all-elastic-search-post/elasticsearch-best-practices-index-alias/>
 
 ## 1. What is an index alias?
 

@@ -19,4 +19,4 @@ path: consul/README.md
 
 ## 3. Pratical guide
 
-https://www.velotio.com/engineering-blog/hashicorp-consul-guide-1
+<https://www.velotio.com/engineering-blog/hashicorp-consul-guide-1>

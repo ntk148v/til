@@ -8,8 +8,8 @@ Source: <https://luis-sena.medium.com/the-complete-guide-to-increase-your-elasti
 
 ![](./images/es.jpg)
 
- - Each shard is a Lucene index, each one of those indexes can have multiple segment, each segment is an inverted index.
- - Segment is created during document ingestion and is immutable -> edit/delete -> a new segment is created -> ES doesn't support updates or even partial updates.
+- Each shard is a Lucene index, each one of those indexes can have multiple segment, each segment is an inverted index.
+- Segment is created during document ingestion and is immutable -> edit/delete -> a new segment is created -> ES doesn't support updates or even partial updates.
 
 - New document path during indexing:
   - New document is comitted to a transaction log called "translog" and to a in-memory buffer.
@@ -71,6 +71,6 @@ Source: <https://luis-sena.medium.com/the-complete-guide-to-increase-your-elasti
 
 ## 3. References
 
-- https://tech.ebayinc.com/engineering/elasticsearch-performance-tuning-practice-at-ebay
-- https://www.elastic.co/guide/en/elasticsearch/reference/master/tune-for-indexing-speed.html
-- https://logz.io/blog/elasticsearch-performance-tuning/
+- <https://tech.ebayinc.com/engineering/elasticsearch-performance-tuning-practice-at-ebay>
+- <https://www.elastic.co/guide/en/elasticsearch/reference/master/tune-for-indexing-speed.html>
+- <https://logz.io/blog/elasticsearch-performance-tuning/>

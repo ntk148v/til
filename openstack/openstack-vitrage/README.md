@@ -2,7 +2,7 @@
 
 - [OpenStack Vitrage- OpenStack Vitrage](#openstack-vitrage--openstack-vitrage)
   - [High Level Architecture](#high-level-architecture)
-  - [Templates Format & Usage](#templates-format--usage)
+  - [Templates Format \& Usage](#templates-format--usage)
     - [General template structure](#general-template-structure)
     - [Definition template structure](#definition-template-structure)
     - [Usage](#usage)
@@ -14,22 +14,23 @@
     - [Prometheus-Vitrage Configuration](#prometheus-vitrage-configuration)
 
 **Root Cause Analysis service** for:
-* Organizing OpenStack alarms & events.
-* Analyzing them.
-* Expanding the knowledge based on alarm & events.
+
+- Organizing OpenStack alarms & events.
+- Analyzing them.
+- Expanding the knowledge based on alarm & events.
 
 ## High Level Architecture
 
 ![high-level-architecture](https://docs.openstack.org/vitrage/latest/_images/vitrage_graph_architecture.png)
 
-* **Data Sources**: import information from different sources, regarding the state of the system.
-* **Graph**: Holds the information collected by the Data Sources, as well as their their inter-relations.
-* **Evaluator**: cooradiantes the analysis of changes to the Graph and processes the results of this analysis.
-* **Notifiers**: notify external systems of Vitrage alarms and states.
+- **Data Sources**: import information from different sources, regarding the state of the system.
+- **Graph**: Holds the information collected by the Data Sources, as well as their their inter-relations.
+- **Evaluator**: cooradiantes the analysis of changes to the Graph and processes the results of this analysis.
+- **Notifiers**: notify external systems of Vitrage alarms and states.
 
 ## Templates Format & Usage
 
-* YAML
+- YAML
 
 ### General template structure
 
@@ -69,7 +70,7 @@ scenarios:
       - action: ...
 ```
 
-* Example:
+- Example:
 
 ```yaml
 metadata:
@@ -99,9 +100,9 @@ scenarios:
 
 ### Definition template structure
 
-* There are separate files, which containts only definitions and can be included under the includes section in regular section.
-* YAML.
-* Same format as a regular template, except it **does not** contain a scenarios or an include section.
+- There are separate files, which containts only definitions and can be included under the includes section in regular section.
+- YAML.
+- Same format as a regular template, except it **does not** contain a scenarios or an include section.
 
 ### [Usage](https://docs.openstack.org/vitrage/latest/contributor/vitrage-template-format.html#usage)
 
@@ -120,8 +121,8 @@ Here is the update & more complete version of Common parameters section in [Usag
 | action            | properties/state    | N/A,OK,TRANSIENT,SUBOPTIMAL,ERROR,DELETED                                                                                                                                                                             | no comment                                                                                                                                                  |
 | action            | properties/severity | CRITICAL,SEVERE,WARNING,N/A,OK                                                                                                                                                                                        | no comment                                                                                                                                                  |
 
-* Action:
-    * `set_state`: Set state of specified entity. This will directly affect the state as seen in Vitrage, but will not impact the state at the relevant datasource of this entity.
+- Action:
+  - `set_state`: Set state of specified entity. This will directly affect the state as seen in Vitrage, but will not impact the state at the relevant datasource of this entity.
 
     ```yaml
     actions:
@@ -133,7 +134,7 @@ Here is the update & more complete version of Common parameters section in [Usag
             state: SUBOPTIMAL
     ```
 
-    * `raise_alarm`: Raise a Vitrage (deduced) alarm on a target entity.
+  - `raise_alarm`: Raise a Vitrage (deduced) alarm on a target entity.
 
     ```yaml
     actions:
@@ -146,7 +147,7 @@ Here is the update & more complete version of Common parameters section in [Usag
             severity: critical
     ```
 
-    * `mark_down`: Set an entity marked_down field. This can be used along with nova notifier to call force_down for a  host.
+  - `mark_down`: Set an entity marked_down field. This can be used along with nova notifier to call force_down for a  host.
 
     ```yaml
     action:
@@ -155,7 +156,7 @@ Here is the update & more complete version of Common parameters section in [Usag
              target: host # mandatory. entity (from the definitions section, only host) to be marked as down
     ```
 
-    * `execute_mistral`: Execute a Mistral workflow. If the Mistral notifier is used, the specified workflow will be executed with its parameters.
+  - `execute_mistral`: Execute a Mistral workflow. If the Mistral notifier is used, the specified workflow will be executed with its parameters.
 
     ```yaml
     actions:
@@ -167,7 +168,7 @@ Here is the update & more complete version of Common parameters section in [Usag
               host_name: host-name-ne
     ```
 
-    * `add_causal_relationship`: Add a causual relationship between alarms. Connect two alarms in the graph to indicate one cause other (RCA).
+  - `add_causal_relationship`: Add a causual relationship between alarms. Connect two alarms in the graph to indicate one cause other (RCA).
 
     ```yaml
     actions:
@@ -178,8 +179,8 @@ Here is the update & more complete version of Common parameters section in [Usag
             source: alarm2
     ```
 
-* Relationship type:
-    * `on`: common case - alarm *on* resource.
+- Relationship type:
+  - `on`: common case - alarm *on* resource.
 
     ```yaml
     relationships:
@@ -190,7 +191,7 @@ Here is the update & more complete version of Common parameters section in [Usag
           template_id: alarm_on_host
     ```
 
-    * `contains`: common case - resource A that contains other resources, for example, nova.host resource will contain nova.instance resource.
+  - `contains`: common case - resource A that contains other resources, for example, nova.host resource will contain nova.instance resource.
 
     ```yaml
     relationships:
@@ -201,8 +202,8 @@ Here is the update & more complete version of Common parameters section in [Usag
           template_id: host_contains_instance
     ```
 
-    * `causes`: no example, no clue (update later after dive into code)
-    * `attached`: common case - volume is attached to an instance. static switch that is attached to a router. The Switch is attached a Host that contains a Vm.
+  - `causes`: no example, no clue (update later after dive into code)
+  - `attached`: common case - volume is attached to an instance. static switch that is attached to a router. The Switch is attached a Host that contains a Vm.
 
     ```yaml
     relationships:
@@ -213,11 +214,11 @@ Here is the update & more complete version of Common parameters section in [Usag
          template_id : volume_attached_instance1
     ```
 
-    * `attached_public`: same as `caused`.
-    * `attached_private`: same as `caused`.
-    * `connect`: common case - Check if there is any edges between two resources.
-    * `managed_by`: same as `caused`.
-    * `comprised`: common case - Heat stack comprises an instance, K8s cluster comprises host. (comprised != contains? -> not know yet).
+  - `attached_public`: same as `caused`.
+  - `attached_private`: same as `caused`.
+  - `connect`: common case - Check if there is any edges between two resources.
+  - `managed_by`: same as `caused`.
+  - `comprised`: common case - Heat stack comprises an instance, K8s cluster comprises host. (comprised != contains? -> not know yet).
 
     ```yaml
      relationships:
@@ -235,7 +236,7 @@ Here is the update & more complete version of Common parameters section in [Usag
 
 ### Useful information you should know
 
-* `get_attr`: This function retrieves the value of an attribute of an entity that is defined in the template. It is supported only for `execute_mistral` action.
+- `get_attr`: This function retrieves the value of an attribute of an entity that is defined in the template. It is supported only for `execute_mistral` action.
 
 ```yaml
 scenario:
@@ -250,11 +251,11 @@ scenario:
           retries: 5
 ```
 
-* Condition Format: The condition which needs to be met will be phrased using the entities and relationships previously defined. An expression is either a single entity, or some logical combination of relationships. Expression can be combined using the following logical operators:
-    * “and” - indicates both expressions must be satisfied in order for the condition to be met.
-    * “or” - indicates at least one expression must be satisfied in order for the condition to be met (non-exclusive or).
-    * “not” - indicates that the expression must not be satisfied in order for the condition to be met.
-    * parentheses “()” - clause indicating the scope of an expression.
+- Condition Format: The condition which needs to be met will be phrased using the entities and relationships previously defined. An expression is either a single entity, or some logical combination of relationships. Expression can be combined using the following logical operators:
+  - “and” - indicates both expressions must be satisfied in order for the condition to be met.
+  - “or” - indicates at least one expression must be satisfied in order for the condition to be met (non-exclusive or).
+  - “not” - indicates that the expression must not be satisfied in order for the condition to be met.
+  - parentheses “()” - clause indicating the scope of an expression.
 
 ## Datasource configuration
 
@@ -264,14 +265,14 @@ scenario:
 
 ### Prometheus-Vitrage Configuration
 
-* Enable Prometheus datasource in vitrage.conf
+- Enable Prometheus datasource in vitrage.conf
 
 ```ini
 [datasources]
 types = nova.host,nova.instance,nova.zone,static,static_physical,neutron.network,neutron.port,prometheus
 ```
 
-* In Prometheus alertmanager config file, you should have a receiver for Vitrage. Please verify that it includes `send_resolved: true`. This is required for Prometheus to notify Vitrage when an alarm is resolved.
+- In Prometheus alertmanager config file, you should have a receiver for Vitrage. Please verify that it includes `send_resolved: true`. This is required for Prometheus to notify Vitrage when an alarm is resolved.
 
 ```yaml
 - name: <receiver name>
@@ -285,6 +286,7 @@ types = nova.host,nova.instance,nova.zone,static,static_physical,neutron.network
 ```
 
 > NOTE:
-* [Discussion](http://openstack.10931.n7.nabble.com/vitrage-I-have-some-problems-with-Prometheus-alarms-in-vitrage-td155306.html)
-* This guide will be outdated soon. Check the [spec](https://specs.openstack.org/openstack/vitrage-specs/specs/stein/approved/prometheus-datasource.html).
-* Related bugs. Number [1](https://review.openstack.org/#/c/629765/).
+
+- [Discussion](http://openstack.10931.n7.nabble.com/vitrage-I-have-some-problems-with-Prometheus-alarms-in-vitrage-td155306.html)
+- This guide will be outdated soon. Check the [spec](https://specs.openstack.org/openstack/vitrage-specs/specs/stein/approved/prometheus-datasource.html).
+- Related bugs. Number [1](https://review.openstack.org/#/c/629765/).

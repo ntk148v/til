@@ -1,6 +1,6 @@
 # Debugging rules
 
-http://debuggingrules.com/?page_id=40
+Source: <http://debuggingrules.com/?page_id=40>
 
 * Understand the system.
 * Make it fail.

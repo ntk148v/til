@@ -2,8 +2,8 @@
 
 Source:
 
-- https://konghq.com/blog/how-to-design-a-scalable-rate-limiting-algorithm
-- https://hechao.li/2018/06/25/Rate-Limiter-Part1/
+- <https://konghq.com/blog/how-to-design-a-scalable-rate-limiting-algorithm>
+- <https://hechao.li/2018/06/25/Rate-Limiter-Part1/>
 
 Rate limiting protectes APIs from overuse by limiting how often each user can call the API. This protects them from inadvertent or malicious overuse.
 

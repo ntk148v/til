@@ -1,6 +1,6 @@
 # Elegant Awk usage
 
-Source: https://sanctum.geek.nz/arabesque/elegant-awk-usage/
+Source: <https://sanctum.geek.nz/arabesque/elegant-awk-usage/>
 
 ```bash
 # Get a list of all the IP addresses and ports with open TCP connections

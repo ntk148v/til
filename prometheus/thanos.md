@@ -1,6 +1,6 @@
 # Thanos
 
-Source: https://banzaicloud.com/blog/multi-cluster-monitoring/
+Source: <https://banzaicloud.com/blog/multi-cluster-monitoring/>
 
 - [Thanos](#thanos)
   - [1. Components](#1-components)
@@ -37,7 +37,7 @@ Thanos is built from a handful of components, each with a dedicated role within 
 
 ## 2. How downsampling works?
 
-https://speakerdeck.com/bwplotka/thanos-deep-dive-look-into-distributed-system
+<https://speakerdeck.com/bwplotka/thanos-deep-dive-look-into-distributed-system>
 
 - Goal of downsampling: ~~save disk space~~. It provides a way to quicky evaluate queries with large time intervals, like months or years.
   - Downsampling doesn't save you any space but, instead, adds two new blocks for each raw block. These are slightly smaller than, or close to the size of raw blocks. This means that downsampling slightly increases the amount of storage space used, but it provides a massive performance and bandwidth use advantage when querying long intervals.

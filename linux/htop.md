@@ -1,3 +1,3 @@
 # Htop explained
 
-https://peteris.rocks/blog/htop/
+<https://peteris.rocks/blog/htop/>

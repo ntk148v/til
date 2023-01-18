@@ -1,6 +1,6 @@
 # Etcd V3 data model
 
-https://etcd.io/docs/v3.4.0/learning/data_model/
+<https://etcd.io/docs/v3.4.0/learning/data_model/>
 
 * Infrequently updated data.
 * Muti-version.
@@ -10,9 +10,9 @@ https://etcd.io/docs/v3.4.0/learning/data_model/
 
 * Flat binary key space.
 * The key space maintains multiple revisions.
-    * Each atomic mutative operation creates a new revision on the key space.
-    * All data held by previous revisions remains unchanged and be accessed.
-    * Store is compacted -> revisions > the compact revision - removed.
+  * Each atomic mutative operation creates a new revision on the key space.
+  * All data held by previous revisions remains unchanged and be accessed.
+  * Store is compacted -> revisions > the compact revision - removed.
 * A key's life spans a generation, from creation to deletion.
 * Each key may have one or multiple generations.
 
@@ -27,7 +27,7 @@ key = major + sub + type
         |      |      |
         |      |      |
         v      |      |
-store revision holding the key        
+store revision holding the key
                |      |
                |      |
                v      |

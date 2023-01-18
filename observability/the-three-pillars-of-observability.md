@@ -7,9 +7,9 @@ Logs, metrics, and traces are often known as the three pillars of observability.
 ## Event logs
 
 * An event log is an immutable, timestamped record of discrete events that happened over time. Event logs in general come in three forms but are fundamentally the same: a timestamp and a payload of some context. The three forms are:
-    * Plaintext: A log record might be free-form text. This is also the most common format of logs.
-    * Structured: Much evangelized and advocated for in recent days. Typically, these logs are emitted in the JSON format.
-    * Binary: Think logs in the Protobuf format, MySQL binlogs used for replication and point-in-time recovery, systemd journal logs, the pflog format used by the BSD firewall pf that often serves as a frontend to tcpdump.
+  * Plaintext: A log record might be free-form text. This is also the most common format of logs.
+  * Structured: Much evangelized and advocated for in recent days. Typically, these logs are emitted in the JSON format.
+  * Binary: Think logs in the Protobuf format, MySQL binlogs used for replication and point-in-time recovery, systemd journal logs, the pflog format used by the BSD firewall pf that often serves as a frontend to tcpdump.
 
 * Traces and metrics are an abstraction built on top of logs that pre-process and encode information along two orthogonal axes, one being request-centric (trace), the other being system-centric (metric).
 
@@ -51,16 +51,16 @@ Logs, metrics, and traces are often known as the three pillars of observability.
 
 * A trace is representation of a series of causally related distributed events that encode the end-to-end request flow through distributed system.
 * The basic idea behind tracing is identify specific points (function calls or RPC boundatries or segments of concurrency such as threads, continuations, or queues) in an application, proxy, framework, library, runtime, middleware, and anything else in the path of a request that represents the following:
-    * Forks in execution flow (OS thread or a green thread)
-    * A hop or a fan out across network or process boundaries
-* Having an understanding of the entire request lifecycle makes it possible to debug requests spanning multiple services to pinpoint the source of increased latency or resource utilization. 
+  * Forks in execution flow (OS thread or a green thread)
+  * A hop or a fan out across network or process boundaries
+* Having an understanding of the entire request lifecycle makes it possible to debug requests spanning multiple services to pinpoint the source of increased latency or resource utilization.
 * The use cases of distributed tracing are myriad. While used primarily for inter service dependency analysis, distributed profiling, and debugging steady-state problems, tracing can also help with chargeback and capacity planning.
 
 ### The Challenges of Tracing
 
 * Tracing is, by far, the hardest to retrofit into an existing infrastructure, because for tracing to be truly effective, every component in the path of a request needs to be modified to propagate tracing information.
 * The second problem with tracing instrumentation is that it’s not sufficient for developers to instrument their code alone.
-* The cost of tracing isn’t quite as catastrophic as that of logging, mainly because traces are almost always sampled heavily to reduce runtime overhead as well as storage costs. 
+* The cost of tracing isn’t quite as catastrophic as that of logging, mainly because traces are almost always sampled heavily to reduce runtime overhead as well as storage costs.
 
 ### Service Meshes: A new hop for the future
 
@@ -69,9 +69,9 @@ While tracing has been difficult to implement, the rise of [service meshes](http
 ## Conclusion
 
 * Logs, metrics, and traces serve their own unique purpose and are complementary. In unison, they provide maximum visibility into the behavior of distributed systems. For example, it makes sense to have the following:
-    * A counter and log at every major entry and exit point of a request
-    * A log and trace at every decision point of a request
+  * A counter and log at every major entry and exit point of a request
+  * A log and trace at every decision point of a request
 
 * It also makes sense to have all three semantically linked such that it becomes possible at the time of debugging:
-    * To reconstruct the codepath taken by reading a trace
-    * To dervive request or error ratios from any single point in the codepath
+  * To reconstruct the codepath taken by reading a trace
+  * To dervive request or error ratios from any single point in the codepath

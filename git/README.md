@@ -1,4 +1,4 @@
-# Let's Git!
+# Let's Git
 
 1. [git-tips](https://github.com/git-tips/tips)
 2. [git-flight-rules](https://github.com/k88hudson/git-flight-rules/)

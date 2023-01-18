@@ -1,14 +1,14 @@
-#Tìm hiểu về Zabbix.
+# Tìm hiểu về Zabbix
 
-##Giới thiệu.
+## Giới thiệu
 
 Zabbix là giải pháp mã nguồn mở cho việc giám sát tài nguyên phân tán.
 
 Phần mềm zabbix có thể theo dõi các thông số của mạng và tình trạng của server. Zabbix sử dụng các phương pháp cảnh báo linh hoạt, cho phép bạn cấu hình cảnh báo dựa trên email cho hầu hết các sự kiện xảy ra, nắm bắt nhanh các sự cố xảy ra của server. Ngoài ra, zabbix còn hỗ trợ chức năng báo cáo, tổng hợp và dự đoán dữ liệu tốt dựa trên những dữ liệu có sẵn đã được lưu trữ. Do đó, zabbix có khả năng lập kế hoạch cho khả năng đáp ứng của server.
 
-## Kiến trúc cơ bản.
+## Kiến trúc cơ bản
 
-##Khái niệm và thành phần cơ bản.
+## Khái niệm và thành phần cơ bản
 
 1. Zabbix Server.
 
@@ -42,24 +42,23 @@ Phần mềm zabbix có thể theo dõi các thông số của mạng và tình 
 
     - Zabbix Server thu thập thông tin từ Agent thông qua các item tương ứng.
     - Zabbix Passive Check -Pull.
-        + Service checks: HTTP, SSH, IMAP, NTP, etc.
-        + Script thực thi sử dụng SSH và Telnet.
-        + Zabbix Server yêu cầu thông tin đến Agent trong các khoảng thời gian được cấu hình (interval time).
-        + Agent lấy các thông tin đó, sau đó gửi trả về Server.
-        + Server khởi tạo kết nối, Agent ở chế độ lắng nghe kết nối từ Server
+        - Service checks: HTTP, SSH, IMAP, NTP, etc.
+        - Script thực thi sử dụng SSH và Telnet.
+        - Zabbix Server yêu cầu thông tin đến Agent trong các khoảng thời gian được cấu hình (interval time).
+        - Agent lấy các thông tin đó, sau đó gửi trả về Server.
+        - Server khởi tạo kết nối, Agent ở chế độ lắng nghe kết nối từ Server
     - Zabbix Active Check - Push.
-        + Zabbix Trapper and SNMP Traps.
-        + Agent chủ động yêu cầu thông tin về item cần báo cáo. (Thường được sử dụng khi Zabbix Server không thể kết nối trực tiếp đến Agent, có thể do firewall...)
-        + Server chỉ định sẵn, gửi trả danh sách cho Agent.
-        + Sau khi lấy được danh sách, Agent xử lý sau đó gửi trả tuần tự thông tin về Server.
-        + Server không khởi tạo kết nối, mà chỉ trả lời request item list và nhận thông tin trả về.
+        - Zabbix Trapper and SNMP Traps.
+        - Agent chủ động yêu cầu thông tin về item cần báo cáo. (Thường được sử dụng khi Zabbix Server không thể kết nối trực tiếp đến Agent, có thể do firewall...)
+        - Server chỉ định sẵn, gửi trả danh sách cho Agent.
+        - Sau khi lấy được danh sách, Agent xử lý sau đó gửi trả tuần tự thông tin về Server.
+        - Server không khởi tạo kết nối, mà chỉ trả lời request item list và nhận thông tin trả về.
 
-	![Zabbix Passive](https://camo.githubusercontent.com/bd41c14ab920462a11c818ecc5a62c3422d6d939/687474703a2f2f692e696d6775722e636f6d2f516130337948522e706e67)
+ ![Zabbix Passive](https://camo.githubusercontent.com/bd41c14ab920462a11c818ecc5a62c3422d6d939/687474703a2f2f692e696d6775722e636f6d2f516130337948522e706e67)
 
-	![Zabbix Active](https://camo.githubusercontent.com/e3b6e63cd8d40a5d198b1354018a18f241269b18/687474703a2f2f692e696d6775722e636f6d2f585570626a39532e706e67)
+ ![Zabbix Active](https://camo.githubusercontent.com/e3b6e63cd8d40a5d198b1354018a18f241269b18/687474703a2f2f692e696d6775722e636f6d2f585570626a39532e706e67)
 
-	![Active vs Passive](http://image.slidesharecdn.com/fisl2015workshoponproblemdetection-150710104738-lva1-app6892/95/zabbix-smart-problem-detection-fisl-2015-workshop-8-638.jpg?cb=1436526745)
-
+ ![Active vs Passive](http://image.slidesharecdn.com/fisl2015workshoponproblemdetection-150710104738-lva1-app6892/95/zabbix-smart-problem-detection-fisl-2015-workshop-8-638.jpg?cb=1436526745)
 
 7. Item.
 
@@ -75,15 +74,15 @@ Phần mềm zabbix có thể theo dõi các thông số của mạng và tình 
     - Trigger dependencies: nhiều khi sự khả dụng của host A tồn tại vào host B. Ví dụ, 1 server nằm sau 1 router sẽ không thể truy cập được nếu như router chết.
     - Trigger severity - mức độ nghiêm trọng: Not classified, Information, Warning, Average, High, Disater.
     - Predictive trigger functions: dựa vào lịch sử dữ liệu để dự đoán.[Tài liệu](http://zabbix.org/mw/images/1/18/Prediction_docs.pdf)
-        + Cần biết: làm thế nào để xác định được trạng thái lỗi và khoảng thời gian cần để thực hiện việc detect.
-        + Có 2 cách để kích hoạt trigger:
+        - Cần biết: làm thế nào để xác định được trạng thái lỗi và khoảng thời gian cần để thực hiện việc detect.
+        - Có 2 cách để kích hoạt trigger:
             - forecast (sec|#num,<time_shift>,time,<fit>,<mode>): dự đoán giá trị item sau khoảng thời gian time dựa trên dữ liệu của khoảng thời gian sec hoặc #num mới nhất trước đó. Ví dụ:  forecast(1h,,30m) → dự đoán giá trị item sau 30' dựa trên dữ liệu của 1h. Nếu giá trị thật sự khác giá trị dự đoán --> Problem.
             - timeleft (sec|#num,<time_shift>,threshold,<fit>): tính toán thời gian cần thiết để giá trị item đạt ngưỡng threshold dựa trên dữ liệu . Ví dụ:  timeleft(1h,,100) → thời gian cần để item đạt giá trị 100 dựa trên dữ liệu 1h trước đó.
-        + Lựa chọn interval và forecast horizon.
-        + Dự đoán trong thực tế (và nó ảnh hưởng như thế nào đến interval).
-        + Khi nào và tại sao nên sử dụng timeshift.
-        + Xác định tham số fit.
-        + Khi nào và tại sao sử dụng các mode khác ngoài "value" (min(), max(), avg(), delta())
+        - Lựa chọn interval và forecast horizon.
+        - Dự đoán trong thực tế (và nó ảnh hưởng như thế nào đến interval).
+        - Khi nào và tại sao nên sử dụng timeshift.
+        - Xác định tham số fit.
+        - Khi nào và tại sao sử dụng các mode khác ngoài "value" (min(), max(), avg(), delta())
 
 9. Proxy.
 
@@ -99,7 +98,7 @@ Phần mềm zabbix có thể theo dõi các thông số của mạng và tình 
 
     - Tính năng:
 
-	![zabbix-proxy-features](https://github.com/ntk148v/zabbix_research/blob/master/images/Screenshot%20from%202017-01-13%2010-11-18.png?raw=true)
+ ![zabbix-proxy-features](https://github.com/ntk148v/zabbix_research/blob/master/images/Screenshot%20from%202017-01-13%2010-11-18.png?raw=true)
 
     - Do proxy chỉ cân duy nhất 1 kết nối TCP đến Zabbix Server. --> dễ cấu
       hình firewall hơn.
@@ -110,19 +109,20 @@ Phần mềm zabbix có thể theo dõi các thông số của mạng và tình 
     - Zabbix Proxy chỉ là _thành phần thu thập dữ liệu_ , không xử lý việc
       tính toán triggers, xử lý events hay gửi alert.
 
-##Cài đặt.
+## Cài đặt
 
 Sử dụng script install\_zabbix\_server.sh để cài đặt (Zabbix 3.2 - Centos 7)
 
-	# chmod +x install_zabbix.sh
-	# ./install_zabbix.sh
+# chmod +x install_zabbix.sh
 
-##Cấu hình gửi mail dùng gmail.
+# ./install_zabbix.sh
+
+## Cấu hình gửi mail dùng gmail
 
     # chmod +x configure_smtp.sh
     # ./configure_smtp.sh
 
-##Yêu cầu bài toán.
+## Yêu cầu bài toán
 
 1. Monitoring:
     - Host vật lý:  Disk, RAM, CPU, Network
@@ -133,6 +133,6 @@ Sử dụng script install\_zabbix\_server.sh để cài đặt (Zabbix 3.2 - Ce
     - Email.
     - SMS.
 
-##Tài liệu tham khảo.
+## Tài liệu tham khảo
 
 1. [Zabbix Documentation](https://www.zabbix.com/documentation/3.2/)

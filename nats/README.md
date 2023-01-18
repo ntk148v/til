@@ -144,4 +144,4 @@ time.us.east.atlanta
 
 ## 5. NATS vs X
 
-- Apache Kafka and NATS: https://www.quora.com/What-is-the-difference-between-Apache-Kafka-and-NATS
+- Apache Kafka and NATS: <https://www.quora.com/What-is-the-difference-between-Apache-Kafka-and-NATS>

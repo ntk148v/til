@@ -1,6 +1,6 @@
 # FZF
 
-A command-line fuzzy finder: https://github.com/junegunn/fzf
+A command-line fuzzy finder: <https://github.com/junegunn/fzf>
 
 - Fzf completion completion trigger: `**`
 

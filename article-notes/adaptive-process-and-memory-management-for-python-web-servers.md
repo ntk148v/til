@@ -1,6 +1,6 @@
 # Adaptive process and memory management for Python web servers
 
-[Source](https://instagram-engineering.com/adaptive-process-and-memory-management-for-python-web-servers-15b0c410a043)
+Source: <https://instagram-engineering.com/adaptive-process-and-memory-management-for-python-web-servers-15b0c410a043>
 
 ## Respawning in the uWSGI process model
 
@@ -13,10 +13,12 @@
 ### The previous approach
 
 Use 2/worker thresholds to control respawn: reload-on-rss and evil-reload-on-rss.
+
 1. Initially, the master process allocates a piece of shared memory which contains an entry for each worker.
 2. A worker process starts a background thread to collect its RSS usage and updates its entry in shared memory.
 3. At the end of each request, a worker process checks whether its RSS is higher than reload-on-rss. If yes, the worker process performs some cleanup tasks, sets a deadline for itself and calls exit().
 4. The master process checks the status of the workers against the following conditions:
+
 * If a worker initiated the exit process but didn't finish before the deadline, the master process will sigkill it to avoid bigger issues.
 * If the RSS of a worker exceeds evil-reload-on-rss, master process will sigkill it too.
 
@@ -29,6 +31,7 @@ Use 2/worker thresholds to control respawn: reload-on-rss and evil-reload-on-rss
 ## Solutions
 
 Guiding principles were:
+
 * Reduce uWSGI respawn rate.
 * Prevent resource waste.
 * Have a tight control on host memory usage to ensure the health of the system.

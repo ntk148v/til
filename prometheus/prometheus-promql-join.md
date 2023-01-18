@@ -2,8 +2,8 @@
 
 Sources:
 
-- https://www.robustperception.io/left-joins-in-promql
-- https://www.robustperception.io/using-group_left-to-calculate-label-proportions
+- <https://www.robustperception.io/left-joins-in-promql>
+- <https://www.robustperception.io/using-group_left-to-calculate-label-proportions>
 
 PromQL doesn't have a feature called "joins", however does have "vector matching" which is a similar idea.
 
@@ -47,5 +47,5 @@ node_memory_Active_bytes * on(instance) group_left(nodename) (node_uname_info)
 Prometheus gets the `nodename` from `node_uname_info` and add into the final results:
 
 ```
-{instance="localhost:9100",job="node-exporter",nodename="your-first-vm"}	36917006336
+{instance="localhost:9100",job="node-exporter",nodename="your-first-vm"} 36917006336
 ```

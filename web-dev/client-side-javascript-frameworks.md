@@ -4,7 +4,7 @@
   - [1. Introduction](#1-introduction)
   - [2. Framework main features](#2-framework-main-features)
 
-Source: https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks
+Source: <https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks>
 
 ## 1. Introduction
 

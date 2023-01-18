@@ -1,6 +1,6 @@
 # Drawing From the Shoulder vs. Drawing From the Wrist
 
-Source: https://design.tutsplus.com/articles/drawing-from-the-shoulder-vs-drawing-from-the-wrist-pros-and-cons--cms-24173
+Source: <https://design.tutsplus.com/articles/drawing-from-the-shoulder-vs-drawing-from-the-wrist-pros-and-cons--cms-24173>
 
 ## 1. Drawing From the Wrist
 
@@ -28,7 +28,6 @@ When to Use It?
 - When you want to fix something.
 - When you have a small workspace.
 - When you know exactly what you want to draw and you need precision for it.
-
 
 ## 2. Drawing From the Elbow
 

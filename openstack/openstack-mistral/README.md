@@ -1,4 +1,4 @@
-## OpenStack Mistral
+# OpenStack Mistral
 
 > Just a clone of OpenStack Mistral official documentation.
 
@@ -61,15 +61,15 @@ actions: # Dictionary containting ad-hoc action definitions. Optional
 * Workflow represents a process that can be described in a various number of ways and that can do some jobs. Each workflows consists of tasks (at least one) describing what exact steps should be made during workflow execution.
 
 * Common workflow attributes
-    * **type**: Workflow type ('direct'/'reverse').
-    * **description**: Arbitrary text containing workflow description.
-    * **input**: List defining required input parameter names and optionally their default values.
-    * **output**: Any data structure arbitrarily containing YAQL/Jinja2 expressions that defines workflow output. May be nested.
-    * **output-on-error**: Similar with output that defines output of workflow to be returned if it error state.
-    * **task-defaults**: Default settings for some of task attributes defined at workflow level. Corresponding attribute defined for a specific task always takes precedence.
-        * on-error: List of tasks which will run after the task has completed with an error (*direct workflow only*).
-        * on-success: List of tasks which will run after the task has completed successfully (*direct workflow only*).
-        * on-complete: List of tasks which will run after the task has completed regardless of whether it is successful or not (*direct workflow only*).
+  * **type**: Workflow type ('direct'/'reverse').
+  * **description**: Arbitrary text containing workflow description.
+  * **input**: List defining required input parameter names and optionally their default values.
+  * **output**: Any data structure arbitrarily containing YAQL/Jinja2 expressions that defines workflow output. May be nested.
+  * **output-on-error**: Similar with output that defines output of workflow to be returned if it error state.
+  * **task-defaults**: Default settings for some of task attributes defined at workflow level. Corresponding attribute defined for a specific task always takes precedence.
+    * on-error: List of tasks which will run after the task has completed with an error (*direct workflow only*).
+    * on-success: List of tasks which will run after the task has completed successfully (*direct workflow only*).
+    * on-complete: List of tasks which will run after the task has completed regardless of whether it is successful or not (*direct workflow only*).
 
         ```python
         try:
@@ -81,10 +81,10 @@ actions: # Dictionary containting ad-hoc action definitions. Optional
             # on-complete
         ```
 
-        * requires: List of tasks that a task depends on (*reverse workflow only*).
-        * pause-before, wait-before, wait-after, timeout, retry, concurrency, safe-return: Configures X policy.
+    * requires: List of tasks that a task depends on (*reverse workflow only*).
+    * pause-before, wait-before, wait-after, timeout, retry, concurrency, safe-return: Configures X policy.
 
-    * **tasks**: Dictionay containing workflow tasks.
+  * **tasks**: Dictionay containing workflow tasks.
 
 * **Direct workflow**: consists of tasks combined in a graph where every next task after another one depending on produced result. Direct workflow is considered to be completed if there aren't any transitions left that could be used to jump to next tasks.
 
@@ -119,7 +119,7 @@ create_vm_and_send_email:
 ```
 
 * **Reverse workflow**: all relationships in workflow task graph are dependencies. In order to run this type of workflow we need to specify a task that needs to be completed - `target task`.
-    * Task T1 is chosen a target task. So when the workflow starts Mistral will run only tasks T7, T8, T5, T6, T2 and T1 in the specified order (starting from the tasks that have no dependencies).
+  * Task T1 is chosen a target task. So when the workflow starts Mistral will run only tasks T7, T8, T5, T6, T2 and T1 in the specified order (starting from the tasks that have no dependencies).
 
 ![reverse-workflow](https://docs.openstack.org/mistral/latest/_images/Mistral_reverse_workflow.png)
 
@@ -155,21 +155,21 @@ create_vm_and_send_email:
 
 * Actions are a particular instruction associated with a task that will be performed when the task runs (running a shell script, making an HTTP request, or sending a signal to an external system)
 * Actions can be synchronous or asynchronous:
-    * Synchronous action:
+  * Synchronous action:
 
     ![sync-action](https://docs.openstack.org/mistral/latest/_images/Mistral_actions.png)
 
-    * Asynchronous action:
+  * Asynchronous action:
 
     ![async-action](https://docs.openstack.org/mistral/latest/_images/Mistral_actions.png)
 
 * Action defines what exactly needs to be done when task starts. Action is similar to a regular function in general purpose programming language like Python.
-    * System actions: are provided by Mistral out of the box and can be used by anyone.
-    * Ad-hoc actions: A special type of action that can be created by user. Ad-hoc action is always created as a wrapper around any other existing system action and its main gola to simplify using same actions many times with simialar pattern.
+  * System actions: are provided by Mistral out of the box and can be used by anyone.
+  * Ad-hoc actions: A special type of action that can be created by user. Ad-hoc action is always created as a wrapper around any other existing system action and its main gola to simplify using same actions many times with simialar pattern.
 
 * System actions
-    * [std actions](https://docs.openstack.org/mistral/latest/user/wf_lang_v2.html#system-actions)
-    * [openstack actions](./mapping.json)
+  * [std actions](https://docs.openstack.org/mistral/latest/user/wf_lang_v2.html#system-actions)
+  * [openstack actions](./mapping.json)
 
 * Ad-hoc actions
 
@@ -205,21 +205,21 @@ std.wait_ssh:
 
 * Executions are runtime objects and they reflect the information about the progress and state of concrete execution type.
 * **Workflow execution**
-    * A particular execution of specific workflow.
-    * User submits a workflow to run -> An object is created in db for execution of this workflow.
-    * It containts all information about workflow itself, about execution progress, state, input and output data.
-    * `Workflow execution = (task execution)+`.
+  * A particular execution of specific workflow.
+  * User submits a workflow to run -> An object is created in db for execution of this workflow.
+  * It containts all information about workflow itself, about execution progress, state, input and output data.
+  * `Workflow execution = (task execution)+`.
 
 * **Task execution**
-    * Defines a workflow execution steps.
-    * It has a state and result.
-    * All the actual task states belonging to current execution are persisted in DB.
-    * Task result is an aggregation of all *action executions* belonging to current *task execution*.
-    * `Task execution = (action execution)+`.
+  * Defines a workflow execution steps.
+  * It has a state and result.
+  * All the actual task states belonging to current execution are persisted in DB.
+  * Task result is an aggregation of all *action executions* belonging to current *task execution*.
+  * `Task execution = (action execution)+`.
 
 * **Action execution**
-    * Execution of specific action.
-    * Action execution has a state, input and output data.
+  * Execution of specific action.
+  * Action execution has a state, input and output data.
 
 ### Cron-triggers
 
@@ -235,8 +235,8 @@ std.wait_ssh:
 ### Task affinity
 
 * A feature which could be useful for executing particular tasks on specific Mistral executors:
-    * You need to execute the task on a single executor.
-    * You need to execute the task on any executor within a named group.
+  * You need to execute the task on a single executor.
+  * You need to execute the task on any executor within a named group.
 
 * Similar to Nova Host aggregates.
 
@@ -245,11 +245,11 @@ std.wait_ssh:
 * Any Mistral task regardless of its workflow type can optionally have configured policies.
 * Policies control the flow of the task - for example, a policy can delay task execution before the task starts of after the task completes.
 * Different types of policies:
-    * pause-before
-    * wait-before
-    * wait-after
-    * timeout
-    * retry
+  * pause-before
+  * wait-before
+  * wait-after
+  * timeout
+  * retry
 
 ### Join
 
@@ -277,5 +277,5 @@ max_finished_executions = 500
 ```
 
 * This policy defines:
-    * The maximum age of an execution since the last updated (in minutes).
-    * The maximum number of finished executions.
+  * The maximum age of an execution since the last updated (in minutes).
+  * The maximum number of finished executions.

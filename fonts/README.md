@@ -18,7 +18,7 @@ A quick summary of the most import classification:
 
 - **Script fonts** are modeled after 17th century handwriting styles. Like most font types, script has its own subsets, broken into formal and casual variants.
 
-_Source_: https://www.wix.com/blog/2018/01/how-to-choose-best-fonts-website
+_Source_: <https://www.wix.com/blog/2018/01/how-to-choose-best-fonts-website>
 
 ## 2. Font file types
 

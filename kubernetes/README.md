@@ -2,7 +2,7 @@
 
 - [Kubernetes](#kubernetes)
   - [1. Introduction](#1-introduction)
-  - [2. Architecture & internals](#2-architecture--internals)
+  - [2. Architecture \& internals](#2-architecture--internals)
     - [2.1. Control plane](#21-control-plane)
     - [2.2. Workload plane](#22-workload-plane)
     - [2.3. Add-ons](#23-add-ons)
@@ -17,7 +17,7 @@
     - [3.3. Replica Sets](#33-replica-sets)
     - [3.4. Deployment](#34-deployment)
     - [3.5. Service](#35-service)
-    - [3.6. Label & Selector](#36-label--selector)
+    - [3.6. Label \& Selector](#36-label--selector)
     - [3.7. Persistent Volume](#37-persistent-volume)
     - [3.8. Secrets](#38-secrets)
     - [3.9. Namespaces](#39-namespaces)
@@ -27,7 +27,6 @@
   - [4. Security](#4-security)
     - [4.1. Kubernetes API Server Control access](#41-kubernetes-api-server-control-access)
     - [4.2. Secure Pod and Container](#42-secure-pod-and-container)
-
 
 ## 1. Introduction
 
@@ -625,7 +624,7 @@ spec:
 ```
 
 - ClusterIP, NodePort, LoadBalancer or Ingress? The full article [here](https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0).
-  
+
 | Type                      | Uses                                                                                                                                         |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | ClusterIP - kubectl proxy | Debug your services, or connecting to them direclty from laptop for some reason. Allowing internal traffic, display internal dashboard, etc. |

@@ -6,6 +6,7 @@ path: feynam-algorithm/README.md
 Source: <http://wiki.c2.com/?FeynmanAlgorithm>
 
 The Feynman Algorithm:
+
 - Write down the problem.
 - Think real hard.
 - Write down the solution.

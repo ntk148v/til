@@ -1,6 +1,6 @@
 # Access Kafka
 
-Source: https://strimzi.io/blog/2019/04/17/accessing-kafka-part-1/
+Source: <https://strimzi.io/blog/2019/04/17/accessing-kafka-part-1/>
 
 ![](https://strimzi.io/assets/images/posts/2019-04-17-connecting-to-leader.png)
 

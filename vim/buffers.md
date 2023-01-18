@@ -1,6 +1,6 @@
 # Buffers vs Tab Pages
 
-Source: https://joshldavis.com/2014/04/05/vim-tab-madness-buffers-vs-tabs/
+Source: <https://joshldavis.com/2014/04/05/vim-tab-madness-buffers-vs-tabs/>
 
 ## 1. Buffers
 

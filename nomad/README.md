@@ -107,17 +107,17 @@ job "docs" {
 ## 3. Installation
 
 - Just follow [Nomad documentation](https://www.nomadproject.io/docs/install).
-- Once you have the Nomad agent running, you can access the web UI by visiting http://<ip-or-localhost>:4646. Take a look at the [Web UI tutorial](https://learn.hashicorp.com/nomad/getting-started/ui).
+- Once you have the Nomad agent running, you can access the web UI by visiting <http://<ip-or-localhost>:4646>. Take a look at the [Web UI tutorial](https://learn.hashicorp.com/nomad/getting-started/ui).
 
 ## 4. http-echo job
 
 - [http-echo](https://github.com/hashicorp/http-echo) is a tiny go web server that echos what you start it with.
-- Check then run [first simple job](./jobs/echo-simple.hcl) -> access http://<ip-or-localhost>:8080 endpoint.
+- Check then run [first simple job](./jobs/echo-simple.hcl) -> access <http://<ip-or-localhost>:8080> endpoint.
 
 ```
 Hello and welcome to 127.0.0.1 running on port 8080
 ```
 
-- Check and edit your current job with [scaled up dynamic job version](./jobs/echo-scaled-up-dynamic.hcl). Nomad will start up 5 instances of the application, and assign a random port to each -> access http://<ip-or-localhost>:<dynamic-port> endpoint.
+- Check and edit your current job with [scaled up dynamic job version](./jobs/echo-scaled-up-dynamic.hcl). Nomad will start up 5 instances of the application, and assign a random port to each -> access <http://<ip-or-localhost>:<dynamic-port>> endpoint.
 - We're able to access these endpoints, but in the real life scenario, no one does the same -> [service discovery](https://en.wikipedia.org/wiki/Service_discovery) -> use [Consul](https://www.consul.io/) - service discovery tool made by Hashicorp. Consul installation isn't coverred in this guide, just do it yourself, it's quite easy as same as Nomad. Check and edit your current job with [consul job version](./jobs/echo-scaled-up-dynamic-consul.hcl).
 - While it is relatively easy to query Consul via DNS or API to retrieve these port numbers, web browsers themselves are not able to easily perform this action and route between the various running instances of our application. To solve this limitation, use load balancer -> [Fabio](https://fabiolb.net/). Run [fabio job](./jobs/fabio.hcl), then [fabio consul job version](./jobs/echo-consul-fabio.hcl)].

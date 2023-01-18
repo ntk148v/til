@@ -2,7 +2,7 @@
 
 ## Overview
 
-* Metricbeat is a *lightweight* shipper that you can install on your servers to periodically collect *metrics from the operating systems and from services* running on the server. 
+* Metricbeat is a *lightweight* shipper that you can install on your servers to periodically collect *metrics from the operating systems and from services* running on the server.
 
 * Metricbeat can insert the collected metrics directly into Elasticsearch or send them to Logstash, Redis or Kafka.
 

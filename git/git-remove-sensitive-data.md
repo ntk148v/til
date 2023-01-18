@@ -1,6 +1,6 @@
 # Remove sensitive data from a repository
 
-Source: https://docs.github.com/en/github/authenticating-to-github/removing-sensitive-data-from-a-repository
+Source: <https://docs.github.com/en/github/authenticating-to-github/removing-sensitive-data-from-a-repository>
 
 ## 1. Intro
 
@@ -11,8 +11,8 @@ To entirely remove unwanted files from a repository's history you can use [git f
 - Get a local copy of repository with sensitive data in history.
 
 ```bash
-$ git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
-$ cd YOUR-REPOSITORY
+git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+cd YOUR-REPOSITORY
 ```
 
 - Run the following command, replacing `PATH-TO-YOUR-FILE-WITH-SENSITIVE-DATA` with the **path to the file you want to remove, not just its filename**.

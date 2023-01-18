@@ -20,7 +20,7 @@ events {
 - Note that, you have to enable debug mode in Nginx. If you're using Docker image to provision Nginx, you can use `nginx-debug` binary that produces verbose output when using higher log levels.
 
 ```bash
-$ docker run --name my-nginx -v /host/path/nginx.conf:/etc/nginx/nginx.conf:ro -d nginx nginx-debug -g 'daemon off;'
+docker run --name my-nginx -v /host/path/nginx.conf:/etc/nginx/nginx.conf:ro -d nginx nginx-debug -g 'daemon off;'
 ```
 
 ```yaml

@@ -1,6 +1,6 @@
 # Autoscaling with OpenStack Heat
 
-## Ref articles:
+## Ref articles
 
 * [IBM Bluebox support - Using Heat for autoscaling](https://ibm-blue-box-help.github.io/help-documentation/heat/autoscaling-with-heat/)
 * [Cloudify - Autoscaling your Apps with OpenStack Heat](https://cloudify.co/2015/05/20/openstack-summit-vancouver-cloud-network-orchestration-automation-heat-scaling.html)
@@ -8,7 +8,7 @@
 * [Keith Tenzer - Auto Scaling Instances with OpenStack](https://keithtenzer.com/2015/09/02/auto-scaling-instances-with-openstack)
 * [Rackspace - OpenStack Orchestration In Depth, Part IV: Scaling](https://developer.rackspace.com/blog/openstack-orchestration-in-depth-part-4-scaling/)
 
-## Resource types:
+## Resource types
 
 ### OS::Heat::AutoScalingGroup
 
@@ -57,6 +57,7 @@ scaling_adjustment
     # Number value expected
     # Can be updated without replacement
 ```
+
 ### OS::Aodh::GnocchiAggregationByMetricsAlarm
 
 A resource that implements alarm with specified metrics, allows to use specified by user metrics in metrics list.
@@ -75,8 +76,6 @@ granularity
     # The time range in seconds
     # Integer value expected
     # Can be updated without replacement
-    # NOTE: The alarm granularity must match the granularities of the 
+    # NOTE: The alarm granularity must match the granularities of the
     # metric configured in Gnocchi. Should be careful when set its value.
 ```
-
-

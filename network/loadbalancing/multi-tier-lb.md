@@ -1,6 +1,7 @@
 # Multi-tier load-balancing with Linux
 
 Source:
+
 - <https://vincent.bernat.ch/en/blog/2018-multi-tier-loadbalancer>
 
 ## 1. [Tier 0] DNS load-balancing
@@ -26,7 +27,7 @@ Source:
 
 ![](https://d2pzklc15kok91.cloudfront.net/images/multitier-lb-ecmp-failure1.svg)
 
-  - Each router may choose its own routes. When a router becomes unavailable, the second one maay route the same flows differently.
+- Each router may choose its own routes. When a router becomes unavailable, the second one maay route the same flows differently.
 
 ![](https://d2pzklc15kok91.cloudfront.net/images/multitier-lb-ecmp-failure2.svg)
 

@@ -16,4 +16,4 @@ To automate a set of **tasks**, you need to create **workflows** in your Github 
 
 ## 3. Tutorial
 
-Follow: https://lab.github.com/githubtraining/github-actions:-hello-worl
+Follow: <https://lab.github.com/githubtraining/github-actions:-hello-worl>

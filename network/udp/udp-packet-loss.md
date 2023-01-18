@@ -86,14 +86,14 @@ $ ethtool -G eth0 rx 8192
 - Change to make it effective immediately.
 
 ```bash
-$ sysctl -w net.core.rmem_max=26214400 # 25M
+sysctl -w net.core.rmem_max=26214400 # 25M
 ```
 
 - If a message is too large, split the data on the sender side to ensure that each message is within the MTU size.
 - `netdev_max_backlog`: the number of messages that the Linux kernel can cache after reading messages from the NIC driver, default 1000.
 
 ```bash
-$ sudo sysctl -w net.core.netdev_max_backlog=2000
+sudo sysctl -w net.core.netdev_max_backlog=2000
 ```
 
 ### 4.4. System load is too high

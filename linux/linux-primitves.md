@@ -22,15 +22,15 @@ Apps <--> GNU libc and other userspace libraries
 ### Data Structures
 
 * Both thread and processes are *tasks*.
-    * task struct - has fields - notable fields: \*user, pid, tgid, \*files, \*fs, \*nsproxy
-    * fs struct holds information on current root
-    * pid struct maps processes to one or more tasks
+  * task struct - has fields - notable fields: \*user, pid, tgid, \*files, \*fs, \*nsproxy
+  * fs struct holds information on current root
+  * pid struct maps processes to one or more tasks
 
 ### Fork & Exec
 
 * \*nixs creted new processes using:
-    * *fork()* - Duplicate the current **process**. glibc's fork() and pthread\_create() both call clone() syscall. *clone()* create a new task struct from parent.
-    * *exec()* - Replace text/data/bss/stack with new program
+  * *fork()* - Duplicate the current **process**. glibc's fork() and pthread\_create() both call clone() syscall. *clone()* create a new task struct from parent.
+  * *exec()* - Replace text/data/bss/stack with new program
 
 ## Users
 
@@ -61,10 +61,10 @@ Map a file system to a directory
 * A mount maps some inode in the VFS tree to a file system
 * bind mounts map inode in VFS to another inode.
 * Mounts can be:
-    * shared - all replicas are the same
-    * slave - only receives mount/umount events
-    * private - doesn't forward or receive propagations
-    * unbindable - private + unbindable
+  * shared - all replicas are the same
+  * slave - only receives mount/umount events
+  * private - doesn't forward or receive propagations
+  * unbindable - private + unbindable
 
 ## chroot(new\_root)
 
@@ -89,7 +89,7 @@ Map a file system to a directory
 * Consistent world view - needed for Checkpoint/Restore, Process migration
 * Isolation, access control
 * APIs:
-    * clone: create a new process in a new namespace
-    * unshare: create a new namespace for current process
-    * setns: set process namespace from existing ns fd
-    * /proc/<pid>/ns: fd to process namespace
+  * clone: create a new process in a new namespace
+  * unshare: create a new namespace for current process
+  * setns: set process namespace from existing ns fd
+  * /proc/<pid>/ns: fd to process namespace

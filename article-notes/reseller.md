@@ -7,5 +7,5 @@ path: article-notes/reseller.md
 
 ## Reseller model & SaaS
 
-1. https://www.quora.com/Why-is-reseller-model-ineffective-with-SaaS
-2. https://www.slideshare.net/sbweb/growing-your-saas-sales-through-channel-partners
+1. <https://www.quora.com/Why-is-reseller-model-ineffective-with-SaaS>
+2. <https://www.slideshare.net/sbweb/growing-your-saas-sales-through-channel-partners>

@@ -41,8 +41,8 @@ After Elasticsearch 6.5, garbage first garbage collector (G1GC) is started to su
 
 - For details check:
 
-  - https://www.oracle.com/technical-resources/articles/java/g1gc.html
-  - http://itdoc.hitachi.co.jp/manuals/link/has_v101001/0341420De/0027.HTM
+  - <https://www.oracle.com/technical-resources/articles/java/g1gc.html>
+  - <http://itdoc.hitachi.co.jp/manuals/link/has_v101001/0341420De/0027.HTM>
 
 - Important defaults:
 

@@ -1,6 +1,6 @@
 # Capacity planning
 
-Ref: https://docs.bonsai.io/article/123-capacity-planning
+Ref: <https://docs.bonsai.io/article/123-capacity-planning>
 
 ## 1. Disk
 

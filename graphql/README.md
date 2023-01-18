@@ -1,6 +1,6 @@
 # GraphQL
 
-Source: https://www.howtographql.com/
+Source: <https://www.howtographql.com/>
 
 - [GraphQL](#graphql)
   - [1. Introduction](#1-introduction)

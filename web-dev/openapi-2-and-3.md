@@ -15,7 +15,7 @@ The 3.0 release includes extended support for JSON Schema, which means you can u
 - anyOf
 - allOf
 
-OpenAPI 2.0 does not support the oneOf or anyOf keywords, but you can use these keywords with version 3.0. 
+OpenAPI 2.0 does not support the oneOf or anyOf keywords, but you can use these keywords with version 3.0.
 
 ## Examples Overhauled for Easy Reusability
 
@@ -25,4 +25,4 @@ Version 3.0 includes improvements to parameter descriptions. The `body` and `for
 
 ## More
 
-Source: https://blog.stoplight.io/difference-between-open-v2-v3-v31
+Source: <https://blog.stoplight.io/difference-between-open-v2-v3-v31>

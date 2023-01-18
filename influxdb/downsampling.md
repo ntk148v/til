@@ -10,4 +10,4 @@ more data points -> storage concerns -> downsample data
 
 - [Retention policy (RP)](https://docs.influxdata.com/influxdb/v1.8/query_language/manage-database/#retention-policy-management) is the part of InfluxDB data structure that describes for how long InfluxDB keeps data.
 
-## 2. 
+## 2. ???

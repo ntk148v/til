@@ -1,6 +1,6 @@
 # Kafka in a nutshell
 
-Source: https://sookocheff.com/post/kafka/kafka-in-a-nutshell/
+Source: <https://sookocheff.com/post/kafka/kafka-in-a-nutshell/>
 
 - Explain the various terms of Kafka in order to fully understand its characteristics:
   - Broker: The server processes messages in Kafka.

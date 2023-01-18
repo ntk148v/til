@@ -1,6 +1,6 @@
 # Best practices for REST API design
 
-Source: https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/
+Source: <https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/>
 
 - [Best practices for REST API design](#best-practices-for-rest-api-design)
   - [1. Accept and respond with JSON](#1-accept-and-respond-with-json)

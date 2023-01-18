@@ -63,7 +63,7 @@ state = flow.run()
 state.result[result]
 ```
 
-  - Build flow with **imperative API**.
+- Build flow with **imperative API**.
 
 ```python
 flow = Flow("My imperative flow!")
@@ -86,7 +86,7 @@ second_add.bind(x=add, y=100, flow=flow)
 say_hello.bind(person=name, flow=flow)
 ```
 
-  - Can leverage a ready-to-use state database and UI backend that already works perfectly to orchestrate any of flows and make monitoring and orchestration easy.
+- Can leverage a ready-to-use state database and UI backend that already works perfectly to orchestrate any of flows and make monitoring and orchestration easy.
 
 ```python
 # Before registering, call `perfect backend server` to configure Perfect for local orchestration

@@ -1,6 +1,7 @@
 # TiDB
 
 Source:
+
 - <https://docs.pingcap.com/tidb/stable>
 
 ## 1. Introduction

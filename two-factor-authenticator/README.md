@@ -1,6 +1,6 @@
 # Two-Factor Authenticator
 
-Source: https://blog.gojekengineering.com/a-diy-two-factor-authenticator-in-golang-32e5641f6ec5
+Source: <https://blog.gojekengineering.com/a-diy-two-factor-authenticator-in-golang-32e5641f6ec5>
 
 ## 1. Introduction
 

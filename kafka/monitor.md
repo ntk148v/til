@@ -12,4 +12,3 @@
 ![](https://downloads.lightbend.com/website/blog/monitor-Kafka-consumer-group-latency-with-Kafka-lag-exporter/consumer-lag.png)
 
 - Having a large consumer group lag -> how far behind your application is in processing up-to-date information.
-

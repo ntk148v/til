@@ -27,8 +27,6 @@ scape_configs:
 {% endfor %}
 ```
 
-
-
 ### File
 
 * File SD
@@ -66,8 +64,6 @@ scrape_configs:
 
 * Providing the targets with a file means it could come from templating in a configuration management system, a daemon that writes it out regularly, or even from a web service via a cronjob using wget.
 * Changes are picked up automatically using inotify.
-
-
 
 ### Consul
 

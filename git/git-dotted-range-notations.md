@@ -1,6 +1,6 @@
 # Git two-dot vs three-dot
 
-Source: https://stackoverflow.com/questions/462974/what-are-the-differences-between-double-dot-and-triple-dot-in-git-com
+Source: <https://stackoverflow.com/questions/462974/what-are-the-differences-between-double-dot-and-triple-dot-in-git-com>
 
 ## Concepts
 

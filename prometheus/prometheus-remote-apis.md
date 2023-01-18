@@ -48,5 +48,5 @@ Problems:
 
 ## 4. Source
 
-- https://prometheus.io/docs/practices/remote_write/
-- https://prometheus.io/blog/2019/10/10/remote-read-meets-streaming/
+- <https://prometheus.io/docs/practices/remote_write/>
+- <https://prometheus.io/blog/2019/10/10/remote-read-meets-streaming/>

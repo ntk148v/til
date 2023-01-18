@@ -107,7 +107,7 @@ class MyEchoAction(Action):
         return (False, message)
 ```
 
-- Pre-defined actions: `core` pack (`core.local, core.remote, core.http`) 
+- Pre-defined actions: `core` pack (`core.local, core.remote, core.http`)
 
 ### 3.2. Sensors and Triggers
 

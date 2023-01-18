@@ -2,7 +2,7 @@
 
 ## Analysing Prometheus Memory Usage
 
-https://www.robustperception.io/analysing-prometheus-memory-usage
+<https://www.robustperception.io/analysing-prometheus-memory-usage>
 
 Prometheus is linked with [pprof](https://golang.org/pkg/net/http/pprof/), a Go profiling tool that makes it easy to look at CPU and memory usage. To use it against a Prometheus server to investigate memory usage, ensure you have a working Go install and then run:
 

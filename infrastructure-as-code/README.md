@@ -1,6 +1,6 @@
 # Infrastructure as Code
 
-Source: https://www.ibm.com/cloud/learn/infrastructure-as-code
+Source: <https://www.ibm.com/cloud/learn/infrastructure-as-code>
 
 - [Infrastructure as Code](#infrastructure-as-code)
   - [1. What is Infrastructure as Code (IaC)?](#1-what-is-infrastructure-as-code-iac)

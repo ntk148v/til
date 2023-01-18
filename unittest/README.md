@@ -88,7 +88,6 @@ Integration test kết hợp các thành phần của một ứng dụng và ki�
 - Unittest2.
 - Mock.
 
-
 ## 4. Thư viện Unit Test trong Python
 
 ### 4.1. Workflow chuẩn
@@ -185,7 +184,7 @@ Unittest hỗ trợ test discorvery đơn giản - cho phép chạy nhiều test
             self.assertEqual(widget.size(), (50, 50))
   ```
 
-- Test có thể là số nhiều, được lặp lại. Sử dụng `setUp()` để định nghĩa các đối tượng đầu vào sử dụng trong test(kiểu như tạo môi trường cho test). Ví dụ, ở đây có thể *widget- được sử dụng trong nhiều phương thức test(trong cùng 1 test case) --> cần tối ưu hóa bằng việc thiết lập 1 đối tượng *widget- chung. Nếu `setUp()` raise 1 ngoại lệ khi test đang chạy --> Lỗi, test không được thực hiện.
+- Test có thể là số nhiều, được lặp lại. Sử dụng `setUp()` để định nghĩa các đối tượng đầu vào sử dụng trong test(kiểu như tạo môi trường cho test). Ví dụ, ở đây có thể *widget- được sử dụng trong nhiều phương thức test(trong cùng 1 test case) --> cần tối ưu hóa bằng việc thiết lập 1 đối tượng*widget- chung. Nếu `setUp()` raise 1 ngoại lệ khi test đang chạy --> Lỗi, test không được thực hiện.
 
   ```python
     import unittest

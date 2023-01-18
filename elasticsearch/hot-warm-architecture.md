@@ -1,6 +1,6 @@
 # Elasticsearch Hot-Warm architecture
 
-Ref: https://www.elastic.co/blog/sizing-hot-warm-architectures-for-logging-and-metrics-in-the-elasticsearch-service-on-elastic-cloud
+Source: <https://www.elastic.co/blog/sizing-hot-warm-architectures-for-logging-and-metrics-in-the-elasticsearch-service-on-elastic-cloud>
 
 - [Elasticsearch Hot-Warm architecture](#elasticsearch-hot-warm-architecture)
   - [1. The basic architecture](#1-the-basic-architecture)

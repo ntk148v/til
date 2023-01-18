@@ -3,24 +3,12 @@
 Source: <https://www.datadoghq.com/blog/elasticsearch-unassigned-shards/>
 
 - [Resolve unassigned shards in Elastisearch](#resolve-unassigned-shards-in-elastisearch)
-
   - [1. Reason 1: Shard allocation is purposefully delayed](#1-reason-1-shard-allocation-is-purposefully-delayed)
   - [2. Reason 2: Too many shards, not enough nodes](#2-reason-2-too-many-shards-not-enough-nodes)
   - [3. Reason 3: You need to re-enable shard allocation](#3-reason-3-you-need-to-re-enable-shard-allocation)
   - [4. Reason 4: Shard data no longer exists in the cluster](#4-reason-4-shard-data-no-longer-exists-in-the-cluster)
   - [5. Reason 5: Low disk latency](#5-reason-5-low-disk-latency)
-
-- In Elasticsearch, a healthy cluster is a balanced cluster: primary and replica shards are distributed across all nodes for durable reliability in case of node failure.
-- But what should you do when you see shards lingering in an `UNASSIGNED` state?
-- Pinpointing problematic shards:
-
-  - Elasticsearch's cat shards API/cluster allocation explain API will tell you which shards are unassigned, and why:
-
-  ```bash
-  curl -XGET localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason| grep UNASSIGNED
-  # For Elasticsearch 5+
-  curl -XGET localhost:9200/_cluster/allocation/explain?pretty
-  ```
+  - [6. Reason 6: Multiple Elasticsearch versions](#6-reason-6-multiple-elasticsearch-versions)
 
 ## 1. Reason 1: Shard allocation is purposefully delayed
 

@@ -113,14 +113,14 @@ echo 1 > /proc/sys/net/core/bpf_jit_enable
   - eBPF prohibits loops and other high-level constructs -> simple and restricted -> want more control over how the programs are executed, write a kernel module.
   - Executing eBPF consumes CPU cycles -> a high CPU usage.
 
-## 4. Hello World!
+## 4. Hello World
 
 - Writing an eBPF directly in the bytecode is extremely hard -> write in other languages and compile it to the eBPF bytecode -> use [BCC (BPF Compiler Collection)](https://github.com/iovisor/bcc) and [libbpf](https://github.com/libbpf/libbpf).
 
-### 4.1. Hello World with BCC!
+### 4.1. Hello World with BCC
 
 - BCC is a toolset based on eBPF that allows you to analyze both OS and network performance of Linux distros with ease.
-- [Install BCC(https://github.com/iovisor/bcc/blob/master/INSTALL.md).
+- [Install BCC(<https://github.com/iovisor/bcc/blob/master/INSTALL.md>).
 - Create python file:
 
 ```python

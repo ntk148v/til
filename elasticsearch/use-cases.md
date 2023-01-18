@@ -3,12 +3,12 @@
 Source: <https://www.elastic.co/blog/found-uses-of-elasticsearch>
 
 - Elasticsearch is used for a lot of different use cases:
-    - Classical full text search
-    - Analytics store
-    - Auto completer
-    - Spell checker
-    - Alerting engine
-    - General document store
+  - Classical full text search
+  - Analytics store
+  - Auto completer
+  - Spell checker
+  - Alerting engine
+  - General document store
 
 ## 1. You know, for search (and counting)
 

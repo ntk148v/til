@@ -1,6 +1,6 @@
 The Update Framework - TUF
 
-https://theupdateframework.com/
+<https://theupdateframework.com/>
 
 - [1. Overview](#1-overview)
 - [2. Roles and metdata](#2-roles-and-metdata)

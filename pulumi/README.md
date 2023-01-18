@@ -61,7 +61,7 @@ $ pulumi stack rm --force
   ```
 
   ```bash
-  $ pulumi stack output url
+  pulumi stack output url
   ```
 
 - Stack references: allow you to access the outputs of one stack from another stack. For example:

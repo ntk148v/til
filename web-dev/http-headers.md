@@ -3,7 +3,7 @@ title: HTTP Headers
 path: web-dev/http-headers.md
 ---
 
-Source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+Source: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers>
 
 **HTTP headers** let the client and the server pass additional information with an HTTP request or response.
 

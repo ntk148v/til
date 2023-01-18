@@ -3,22 +3,17 @@
 Source: <https://github.blog/2018-08-08-glb-director-open-source-load-balancer/>
 
 - [GLB: Github's load balancer](#glb-githubs-load-balancer)
-
   - [1. Scaling an IP using ECMP](#1-scaling-an-ip-using-ecmp)
   - [2. Split director/proxy load balancer design](#2-split-directorproxy-load-balancer-design)
   - [3. Removing all state from the director tier](#3-removing-all-state-from-the-director-tier)
   - [4. Maintaining invariants: rendezvous hashing](#4-maintaining-invariants-rendezvous-hashing)
-
-  - [1. Scaling an IP using ECMP](#1-scaling-an-ip-using-ecmp)
-  - [2. Split director/proxy load balancer design](#2-split-directorproxy-load-balancer-design)
-  - [3. Removing all state from the director tier](#3-removing-all-state-from-the-director-tier)
-
-  - [1. Scaling an IP using ECMP](#1-scaling-an-ip-using-ecmp)
-  - [2. Split director/proxy load balancer design](#2-split-directorproxy-load-balancer-design)
-  - [3. Removing all state from the director tier](#3-removing-all-state-from-the-director-tier)
-
-- GLB Director is a Layer 4 load balancer which scales a single IP address across a large number of physical machine while attempting to minimise connection disruption during any change in servers.
-- It is a alyer in front of these services (or any TCP service) that allows them to scale across multiple physical machines without requiring each machine to have unique IP addresses.
+  - [5. Draining, filling, adding and removing proxies](#5-draining-filling-adding-and-removing-proxies)
+  - [6. Encapsulation within the datacenter](#6-encapsulation-within-the-datacenter)
+  - [7. DPDK for 10G+ line rate packet processing](#7-dpdk-for-10g-line-rate-packet-processing)
+  - [8. Bringing test suites to DPDK with Scapy](#8-bringing-test-suites-to-dpdk-with-scapy)
+  - [9. Healthchecking of proxies for auto-failover](#9-healthchecking-of-proxies-for-auto-failover)
+  - [10. Second chance on proxies with iptables](#10-second-chance-on-proxies-with-iptables)
+  - [11. Overview](#11-overview)
 
 ## 1. Scaling an IP using ECMP
 

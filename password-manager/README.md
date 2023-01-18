@@ -3,6 +3,7 @@
 ## Why Pass?
 
 Why Pass? Why not other password manager like KeePass, LastPass...?
+
 * It's simple and lightweight.
 * It uses existing tools like GnuPG, tree and Git.
 * I can play with it through terminal. It looks cool :relieved: :relieved:
@@ -17,7 +18,7 @@ Password management should be simple and follow Unix philosophy. With pass, each
 
 `pass` is a simple password manager for the command line. Pass is a shell script that makes use of existing tools like GnuPG, tree and Git.
 
-## Installation.
+## Installation
 
 Nothing much to write here, install `pass` is quite simple. Just follow the official website, you can get it.
 
@@ -35,6 +36,7 @@ $ pass insert Gmail/my-fancy-email
 # gpg: [stdin]: encryption failed: No public key
 # Uh oh what happened?
 ```
+
 Double check man page, figure out that I have to use gpg-id, but I haven't had one yet.
 
 ```
@@ -60,31 +62,31 @@ sub   rsa2048/E5F492AB 2018-09-03 [E]
 Now I have one GPG key with the ID C8DC0750. Re-initializing pass
 
 ```
-$ pass init C8DC0750
+pass init C8DC0750
 ```
 
 ### Insert a Password into Pass
 
 ```
-$ pass insert Working/secret-thing
+pass insert Working/secret-thing
 ```
 
 ### Generate a new random password
 
 ```
-$ pass generate Working/secret-thing-2
+pass generate Working/secret-thing-2
 ```
 
 ### Retrieve a password
 
 ```
-$ pass Working/secret-thing
+pass Working/secret-thing
 ```
 
 ### Remove a password
 
 ```
-$ pass remove Working/secret-thing
+pass remove Working/secret-thing
 ```
 
 ### Central git server for Pass in combination with GnuPG

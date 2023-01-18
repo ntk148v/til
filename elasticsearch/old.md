@@ -7,7 +7,7 @@
     - [1.3. Node](#13-node)
     - [1.4. Index](#14-index)
     - [1.5. Document](#15-document)
-    - [1.6. Shards & Replicas](#16-shards--replicas)
+    - [1.6. Shards \& Replicas](#16-shards--replicas)
   - [2. Dive deep into Shard - Shard Primer](#2-dive-deep-into-shard---shard-primer)
   - [3. Reducing Shard Usage](#3-reducing-shard-usage)
   - [4. Limiting Memory Usage](#4-limiting-memory-usage)
@@ -90,7 +90,7 @@ index  shard pri rep state   docs store ip              node
 
 - Deleting Unneeded Indices
 - Use a Different sharding scheme.
-  _ Reduce replication
+  _Reduce replication
   _ Data collocation
 
 - How to change the default amount of shards and replicas of indices? \* Option 1: Change in `elasticsearch.yml` file:
@@ -100,7 +100,7 @@ index  shard pri rep state   docs store ip              node
   index.number_of_replicas: 2
   ```
 
-      	* Option 2: Use index template
+       * Option 2: Use index template
 
   ```
   PUT _template/all

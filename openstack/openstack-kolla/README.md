@@ -1,2 +1,1 @@
-# Research about OpenStack Kolla.
-
+# Research about OpenStack Kolla

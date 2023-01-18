@@ -1,6 +1,7 @@
 # Four Data Sharding Strategies
 
 Source:
+
 - <https://blog.yugabyte.com/four-data-sharding-strategies-we-analyzed-in-building-a-distributed-sql-database/>
 - <https://medium.com/@jeeyoungk/how-sharding-works-b4dec46b3f6>
 
@@ -27,7 +28,7 @@ Source:
 ![](https://blog.yugabyte.com/wp-content/uploads/2020/01/image5.png)
 
 - Pros:
-  -  The type of sharding allows efficiently querying a range of rows by the primary key values while enabling pre-splitting of the table into multiple shards.
+  - The type of sharding allows efficiently querying a range of rows by the primary key values while enabling pre-splitting of the table into multiple shards.
 - Cons:
   - This sharding strategy was problematic because it was impossible to pick good shard split boundaries ahead of time.
 

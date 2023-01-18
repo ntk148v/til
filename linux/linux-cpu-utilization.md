@@ -9,6 +9,7 @@ Display the current CPU utilization, as a percentage, calculated from `/proc/sta
 Most Linux kernels provide a virtual [/proc](https://www.kernel.org/doc/Documentation/filesystems/proc.txt) filesystem, providing an interface to various internal data structures.
 
 One of these internal structures (`/proc/stat`) includes information on the amount of time (in `USER_HZ`) spent in various states. To determine the current level of CPU utilization from this information:
+
 1. read the 1st line of `/proc/stat`
 2. discard the first word of that first line (`cpu`)
 3. sum all of the times found on that first line to get the total time

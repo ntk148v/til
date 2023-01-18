@@ -1,6 +1,5 @@
 # Tuning Envoy for Performance
 
-
 Well, when you try to find Nginx or HAproxy performance tuning, the results are detailed documentations: [this](https://www.nginx.com/blog/tuning-nginx/), [this](https://www.cloudbees.com/blog/performance-tuning-haproxy), [this](https://www.freecodecamp.org/news/how-we-fine-tuned-haproxy-to-achieve-2-000-000-concurrent-ssl-connections-d017e61a4d27/),...
 
 Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide to write this guide.
@@ -13,6 +12,10 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
     - [2.3. Ephemeral ports](#23-ephemeral-ports)
     - [2.4. TCP buffer](#24-tcp-buffer)
   - [3. Tuning Envoy](#3-tuning-envoy)
+    - [3.1. Concurrency](#31-concurrency)
+    - [3.2. SO\_REUSEPORT](#32-so_reuseport)
+    - [3.3. Listen connection balancing](#33-listen-connection-balancing)
+    - [3.4. Limits tuning](#34-limits-tuning)
 
 ## 1. Getting started
 
@@ -164,8 +167,8 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
 
 - How:
   - Config `enable_reuse_port` option (version >= 1.20). If you use the older version (1.18 for example), you can check `reuse_port`:
-    - https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/listener/v3/listener.proto
-    - https://www.envoyproxy.io/docs/envoy/v1.18.3/api-v3/config/listener/v3/listener.proto
+    - <https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/listener/v3/listener.proto>
+    - <https://www.envoyproxy.io/docs/envoy/v1.18.3/api-v3/config/listener/v3/listener.proto>
 
 ### 3.3. Listen connection balancing
 

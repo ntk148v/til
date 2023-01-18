@@ -2,7 +2,7 @@
 
 WAL = Write-ahead-log
 
-Source: https://www.robustperception.io/how-much-space-does-the-wal-take-up
+Source: <https://www.robustperception.io/how-much-space-does-the-wal-take-up>
 
 All samples that are ingested by Prometheus are written to the WAL, so that on restart in-memory state which hasn't made it to a block yet can be reconstructed.
 

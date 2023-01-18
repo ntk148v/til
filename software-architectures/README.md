@@ -26,7 +26,10 @@
       - [5.3.9. Infrastructure over Libraries](#539-infrastructure-over-libraries)
       - [5.3.10. Organizational Considerations](#5310-organizational-considerations)
     - [5.4. Design Patterns](#54-design-patterns)
-    - [5.5. Concerns?](#55-concerns)
+    - [5.5. Domain modeling for microservices](#55-domain-modeling-for-microservices)
+      - [5.5.1. Introduction](#551-introduction)
+      - [5.5.2. Analyze the domain](#552-analyze-the-domain)
+    - [5.6. Concerns?](#56-concerns)
 
 ![](./overview.svg)
 
@@ -39,7 +42,7 @@ Source:
 - <https://martinfowler.com/microservices/>
 - <https://www.cio.com/article/2434865/top-10-reasons-why-people-are-making-soa-fail.html>
 - <https://towardsdatascience.com/microservice-architecture-a-brief-overview-and-why-you-should-use-it-in-your-next-project-a17b6e19adfd>
-- https://johanlouwers.blogspot.com/2017/02/functional-decomposition-for.html
+- <https://johanlouwers.blogspot.com/2017/02/functional-decomposition-for.html>
 
 - An application architecture describes the patterns and techniques used to design and build an application. The architecture gives you a roadmap and best practices to follow when building an application, so that you end up with a well-structured app.
 - Choosing an application
@@ -174,7 +177,7 @@ According to [microservices.io](https://microservices.io/patterns/microservices.
 - Decompose by **verb or use case** and define services that are responsible for particular actions. e.g. a Shipping Service that’s responsible for shipping complete orders.
 - Decompose by **by nouns or resource**s by defining a service that is responsible for all operations on entities/resources of a given type. e.g. an Account Service that is responsible for managing user accounts.
 
-https://docs.microsoft.com/en-us/learn/modules/microservices-architecture/5-analyze-decompose
+<https://docs.microsoft.com/en-us/learn/modules/microservices-architecture/5-analyze-decompose>
 
 ### 5.3. Best practices
 

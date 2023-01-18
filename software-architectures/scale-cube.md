@@ -1,6 +1,6 @@
 # Scale Cube - three dimension scalability model
 
-Source: http://theartofscalability.com/
+Source: <http://theartofscalability.com/>
 
 ![](https://microservices.io/i/DecomposingApplications.021.jpg)
 

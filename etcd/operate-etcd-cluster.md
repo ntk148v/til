@@ -1,6 +1,6 @@
 # Operate Etcd cluster
 
-https://ntk148v.github.io/blog/posts/operate-etcd-cluster/
+Source: <https://ntk148v.github.io/blog/posts/operate-etcd-cluster/>
 
 > **NOTE**: This is my perspective aggregation. You can easily find these such of knowledges in [the references](#5-references).
 
@@ -33,6 +33,7 @@ Etcd Version `v3.4.0`.
 $ fio --rw=write --ioengine=sync --fdatasync=1 --directory=test-data \
     --size=22m --bs=2300 --name=mytest
 ```
+
 * **SSD** is recommended.
 
 ### 2.5. Network
@@ -55,7 +56,7 @@ $ fio --rw=write --ioengine=sync --fdatasync=1 --directory=test-data \
   * Default: **1000ms**.
   * Best practice: **>= 10 x RTT and < 50s**.
 * The heartbeat interval and election timeout value should be **the same for all members in one cluster**.
-  
+
 ```bash
 # Command line arguments:
 $ etcd --heartbeat-interval=100 --election-timeout=500
@@ -79,7 +80,7 @@ $ sudo ionice -c2 -n0 -p `pgrep etcd`
 * Solution: Make periodic snapshots (save the current and remove old logs).
 * Default: make snapshots after every **10 000 changes**.
 * Tuning: Just in case that etcd's memory and disk usage is too high, lower threshold.
-  
+
 ```bash
 # Command line arguments:
 $ etcd --snapshot-count=5000
@@ -111,13 +112,13 @@ $ etcd --auto-compaction-retention=1 --auto-compaction-mode=periodic
 * Solution: Release this space back to the filesystem with defrag.
 
 ```bash
-$ etcdctl defrag
+etcdctl defrag
 ```
 
 * It should be run rather infrequently, as there is always going to be an unavoidable pause.
 
 ## 5. References
 
-* Etcd hardware: https://github.com/etcd-io/etcd/blob/master/Documentation/op-guide/hardware.md
-* Etcd tuning: https://github.com/etcd-io/etcd/blob/master/Documentation/tuning.md
-* Etcd maintainence: https://etcd.io/docs/v3.4.0/op-guide/maintenance/
+* Etcd hardware: <https://github.com/etcd-io/etcd/blob/master/Documentation/op-guide/hardware.md>
+* Etcd tuning: <https://github.com/etcd-io/etcd/blob/master/Documentation/tuning.md>
+* Etcd maintainence: <https://etcd.io/docs/v3.4.0/op-guide/maintenance/>

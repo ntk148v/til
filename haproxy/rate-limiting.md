@@ -1,6 +1,6 @@
 # HAProxy Rate Limiting
 
-Source: https://www.haproxy.com/blog/four-examples-of-haproxy-rate-limiting/
+Source: <https://www.haproxy.com/blog/four-examples-of-haproxy-rate-limiting/>
 
 ## Intro
 
@@ -41,7 +41,6 @@ frontend website
 | key                 | value                          |
 | ------------------- | ------------------------------ |
 | client's IP address | counters (HTTP request/client) |
-
 
 ## Rate Limit by Fixed Time Window
 
@@ -131,4 +130,4 @@ frontend website
 
 ## More
 
-https://gist.github.com/procrastinatio/6b6579230d99be5bfa26d04acd788e7a
+<https://gist.github.com/procrastinatio/6b6579230d99be5bfa26d04acd788e7a>

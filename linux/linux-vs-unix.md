@@ -5,7 +5,7 @@
   - [2. What is Linux?](#2-what-is-linux)
   - [3. Linux vs.Unix kernel](#3-linux-vsunix-kernel)
 
-https://www.softwaretestinghelp.com/unix-vs-linux/
+<https://www.softwaretestinghelp.com/unix-vs-linux/>
 
 People do confuse a lot between the terms Unix and Linux. Linux and Unix are different but they do have a relationship with each other as Linux is derived from Unix.
 

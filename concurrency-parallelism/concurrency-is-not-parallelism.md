@@ -27,7 +27,7 @@ Rob Pike (Unix, Golang, UTF-8 and Plan 9 Software Engineer) explains this well i
 
 * Concurrency is about structure, parallelism is about execution.
 
-## But...
+## But
 
 This is too abstract. Let's get concrete! You're assigned the task to build 2 parallel walls starting from a pile of bricks at one end. What are you going to finish the task?
 

@@ -14,7 +14,7 @@ storage. It is limited in its scalability & durability.
 
 So the problem is how to solve the durable trouble?
 
-## Option 1: Still use local storage.
+## Option 1: Still use local storage
 
 - We use local storage, increase retention time (When to remove old data.
   Defaults to `15d`) with option `--storage.tsdb.retention` if you want.
@@ -26,7 +26,7 @@ So the problem is how to solve the durable trouble?
 - That strategy stills has drawback: when to backup data? If local storage is
   corrupted right before the backup, how is it going?
 
-## Option 2: Remote storage.
+## Option 2: Remote storage
 
 ### Option 2.1: InfluxDB
 

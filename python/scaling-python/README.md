@@ -4,16 +4,16 @@
 
 ## Chapter 1: Scaling?
 
-### 1.1 Across CPU.
+### 1.1 Across CPU
 
-### 1.2. Distributed Systems.
+### 1.2. Distributed Systems
 
 * Advantages:
-    * Horizontal scalability
-    * Fault tolerance
+  * Horizontal scalability
+  * Fault tolerance
 * Drawbacks:
-    * Multithreading, concurrency & parallelism come into play and complicate the workflow (e.g locking usage).
-    * What can fail will fail, such as random node in the middle of an operation or a laggy network, so tolerance for failure must be built-in.
+  * Multithreading, concurrency & parallelism come into play and complicate the workflow (e.g locking usage).
+  * What can fail will fail, such as random node in the middle of an operation or a laggy network, so tolerance for failure must be built-in.
 * Approach to writing distributed system is to make them purely functional, i.e. without any shared state -> **Stateless**
 
 ### 1.3 Service-Oriented Architecture
@@ -43,4 +43,3 @@
 * Future object owns the promise of the work to be completed.
 
 ### 2.4 Adavanced futures usage
-

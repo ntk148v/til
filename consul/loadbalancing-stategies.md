@@ -9,8 +9,9 @@
   - [6. Traefik](#6-traefik)
 
 Source:
-- https://www.hashicorp.com/blog/load-balancing-strategies-for-consul
-- https://learn.hashicorp.com/collections/nomad/load-balancing
+
+- <https://www.hashicorp.com/blog/load-balancing-strategies-for-consul>
+- <https://learn.hashicorp.com/collections/nomad/load-balancing>
 
 ## 1. Consul directly
 
@@ -133,4 +134,3 @@ http {
   - Less flexibility over failure scenarios than Consul Template
 
 ## 6. Traefik
-

@@ -5,6 +5,7 @@ A few questions to consider
 ## How easy is the solution to implement, configure and maintain?
 
 With increasingly complex environments of today's applications, ease of implementation and ease of use become more than just nice-to-haves - they are esstential.
+
 * auto-discovery for your cloud environment.
 * auto-baselining.
 * automatic root cause analysis.
@@ -38,6 +39,6 @@ With increasingly complex environments of today's applications, ease of implemen
 ## Will the monitoring solution scale with your business needs?
 
 * Modern cloud environments run thousands of nodes with hunderds of technologies, distributed across datacenters around the globe.
-    * How far will this scale?
-    * How long until I'll need a newer, faster, biggesr one?
+  * How far will this scale?
+  * How long until I'll need a newer, faster, biggesr one?
 * Picking a monitoring solution that gives you real-time insights into your cloud components is important, but ensuring that it will not crash and burn as you expand your environment is crucial.

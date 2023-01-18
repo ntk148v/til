@@ -7,8 +7,8 @@
   - [4. Swagger + Django](#4-swagger--django)
     - [4.1. Installation and quick start](#41-installation-and-quick-start)
     - [4.2. Customize Swagger spec](#42-customize-swagger-spec)
-      - [4.2.1 Using `swagger_auto_schema` decorator directly](#421-using-swaggerautoschema-decorator-directly)
-      - [4.2.2. Using the wrapper decorator of `swagger_auto_schema`](#422-using-the-wrapper-decorator-of-swaggerautoschema)
+      - [4.2.1 Using `swagger_auto_schema` decorator directly](#421-using-swagger_auto_schema-decorator-directly)
+      - [4.2.2. Using the wrapper decorator of `swagger_auto_schema`](#422-using-the-wrapper-decorator-of-swagger_auto_schema)
 
 Make sure that you already knew what API is. This guideline assumes intermediate level knowledge of API and RESTful.
 

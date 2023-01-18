@@ -1,6 +1,6 @@
 # Top Strategic Technology Trends for 2022
 
-Source: https://www.gartner.com/en/information-technology/insights/top-technology-trends
+Source: <https://www.gartner.com/en/information-technology/insights/top-technology-trends>
 
 ## 1. Data fabric
 

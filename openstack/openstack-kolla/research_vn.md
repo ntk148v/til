@@ -1,7 +1,6 @@
-# Tìm hiểu về OpenStack Kolla.
+# Tìm hiểu về OpenStack Kolla
 
-
-## Vấn đề của OpenStack.
+## Vấn đề của OpenStack
 
 - OpenStack trong lý thuyết: Các service tách biệt, kiến trúc rất đơn giản.
 
@@ -21,35 +20,35 @@
 
 - Nhiều vấn đề bắt đầu nảy sinh:
 
-    + Làm thế nào để tôi có thể nhiều node hoặc cả hệ thống mới vào cluster của mình.
+  - Làm thế nào để tôi có thể nhiều node hoặc cả hệ thống mới vào cluster của mình.
 
-    + Nếu tôi chạy `apt-get update` hoặc `yum update` tại 1 node, chuyện gì sẽ xảy ra? Trạng thái của hệ thống OpenStack.
+  - Nếu tôi chạy `apt-get update` hoặc `yum update` tại 1 node, chuyện gì sẽ xảy ra? Trạng thái của hệ thống OpenStack.
 
-    + Làm thế nào đồng bộ những config đến toàn bộ môi trường OpenStack?
+  - Làm thế nào đồng bộ những config đến toàn bộ môi trường OpenStack?
 
-    + Làm thế nào để tôi thực hiện upgrade chỉ 1 phần/1 service của OpenStack để sửa lỗi?
+  - Làm thế nào để tôi thực hiện upgrade chỉ 1 phần/1 service của OpenStack để sửa lỗi?
 
-    + Tôi muốn test việc sửa lỗi của tôi một cách riêng biệt mà không ảnh hưởng đến toàn bộ hệ thống.
+  - Tôi muốn test việc sửa lỗi của tôi một cách riêng biệt mà không ảnh hưởng đến toàn bộ hệ thống.
 
-    + Làm thế nào để tôi quay lại trạng thái trước khi sửa lỗi nếu việc sửa lỗi không thành công, sinh ra nhiều vấn đề khác?
+  - Làm thế nào để tôi quay lại trạng thái trước khi sửa lỗi nếu việc sửa lỗi không thành công, sinh ra nhiều vấn đề khác?
 
-    + Làm thế nào để update phiên bản OpenStack từ A lên B (Kilo lên Mitaka chăng hạn) với downtime = 0?
+  - Làm thế nào để update phiên bản OpenStack từ A lên B (Kilo lên Mitaka chăng hạn) với downtime = 0?
 
-    + Và còn rất nhiều vấn đề khác...
+  - Và còn rất nhiều vấn đề khác...
 
 --> __Những câu hỏi trên bắt đầu có câu trả lời khi triển khai OpenStack trên Cơ sở hạ tầng không thay đổi.(immutable infrastructure).__
 
 --> __Dockerizing OpenStack.__
 
-## Giới thiệu chung về Kolla.
+## Giới thiệu chung về Kolla
 
 Kolla cung cấp Docker container và Ansible playbooks. Sứ mệnh của Kolla là cung cấp container và công cụ triển khai nền tảng đám mây OpenStack.
 
 Kolla cho phép tùy biến tùy biến tối đa. Điều này cho phép operator ít kinh nghiệm có thể triển khai OpenStack một cách nhanh chóng cũng như những người giàu kinh nghiệm hơn có thể tùy chỉnh cấu hình nhằm phù hợp với từng yêu cầu đặt ra.
 
-## Kiến trúc Kolla.
+## Kiến trúc Kolla
 
-## Tài liệu tham khảo.
+## Tài liệu tham khảo
 
 1. [Kolla's Documentation](http://docs.openstack.org/developer/kolla/)
 

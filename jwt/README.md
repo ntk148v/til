@@ -7,7 +7,7 @@
     - [Payload](#payload)
     - [Signature](#signature)
   - [How it works?](#how-it-works)
-  - [Implementation in <put-a-programming-language-here>](#implementation-in-put-a-programming-language-here)
+  - [Implementation in ](#implementation-in-)
 
 ## What is it?
 
@@ -25,8 +25,8 @@ Want more, check the [official JWT introduction](https://jwt.io/introduction/).
 
 ```json
 {
-	"alg": "HS256", # The signing algorithm being used (HMAC SHA256/RSA)
-	"typ": "JWT" # The type of token
+ "alg": "HS256", # The signing algorithm being used (HMAC SHA256/RSA)
+ "typ": "JWT" # The type of token
 }
 ```
 

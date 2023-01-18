@@ -1,3 +1,3 @@
 # Idiomatic Vimrc
 
-Source: https://github.com/romainl/idiomatic-vimrc
+Source: <https://github.com/romainl/idiomatic-vimrc>

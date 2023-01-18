@@ -1,8 +1,9 @@
 # Web services
 
-Source: https://www.guru99.com/webservice-testing-beginner-guide.html
+Source: <https://www.guru99.com/webservice-testing-beginner-guide.html>
 
 Web services can be implemented in different ways, but the following two are the popular implementations approaches:
+
 * SOAP
 * REST
 
@@ -12,7 +13,7 @@ SOAP is a standard protocol defined by the W3C Standard for sending and receivin
 
 SOAP uses the XML format to send and receive the request and hence the data is platform independent data. SOAP messages are exchanged between the provider applications and receiving application within the SOAP envelops.
 
-As SOAP uses the simple http transport protocol, its messages are not got blocked by the firewalls.  
+As SOAP uses the simple http transport protocol, its messages are not got blocked by the firewalls.
 
 ![](https://www.researchgate.net/publication/327054573/figure/fig1/AS:660230866231298@1534422713647/SOAP-protocol-SOAP-is-the-master-leader-in-communications-Its-main-purpose-is-to-send.png)
 

@@ -2,8 +2,8 @@
 
 Source:
 
-- https://docs.bonsai.io
-- https://www.elastic.co/guide/index.html
+- <https://docs.bonsai.io>
+- <https://www.elastic.co/guide/index.html>
 
 - [Basic Concepts](#basic-concepts)
   - [1. Shared nothing architecture](#1-shared-nothing-architecture)

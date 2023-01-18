@@ -1,6 +1,6 @@
 # Prometheus Histogram
 
-Source: https://www.robustperception.io/how-does-a-prometheus-histogram-work
+Source: <https://www.robustperception.io/how-does-a-prometheus-histogram-work>
 
 ## First look
 

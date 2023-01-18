@@ -1,6 +1,6 @@
 # Reduce Shard Usage
 
-Source: https://docs.bonsai.io/article/124-reducing-shard-usage
+Source: <https://docs.bonsai.io/article/124-reducing-shard-usage>
 
 - [Reduce Shard Usage](#reduce-shard-usage)
   - [1. Deleting Unneeded Indices](#1-deleting-unneeded-indices)
@@ -27,7 +27,7 @@ green  open   tomcat-2020.05.24         IS1w3pRjQ6mZLMPQLhNnIQ 5   2       1138 
 
 - The number of primary shards can not be changed once an index has been created. To fix this, you will need to manually [create a new index with the desired shard scheme](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/indices-create-index.html) and [reindex](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/docs-reindex.html) the data.
 - Quickly apply to new indices with [template](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/indices-templates.html).
-- Shrink API: https://blog.ruanbekker.com/blog/2019/04/06/shrink-your-elasticsearch-index-by-reducing-the-shard-count-with-the-shards-api/
+- Shrink API: <https://blog.ruanbekker.com/blog/2019/04/06/shrink-your-elasticsearch-index-by-reducing-the-shard-count-with-the-shards-api/>
 
 ## Reduce replication
 

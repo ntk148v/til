@@ -130,7 +130,7 @@ Network bandwidth is another consideration. Prometheus usually uses compression 
 
 ## When does CPU matter?
 
-https://giedrius.blog/2018/12/16/capacity-planning-of-prometheus-2-4-2-thanos-sidecar-0-1-0/
+<https://giedrius.blog/2018/12/16/capacity-planning-of-prometheus-2-4-2-thanos-sidecar-0-1-0/>
 
 Prometheus is relatively light on CPU, the CPU usage is deeply impacted by the actual content of the PromQL queries that are being executed. To be even more exact, what matters is what kind of (if any) aggregation operators or math functions you are using in the queries --> `CPU - calculation`.
 
@@ -156,7 +156,6 @@ To avoid recalculating the same thing over and over, you can use `recording rule
 <aggr-op>([parameter,] <vector expression>) [without|by (<label list>)]
 ```
 
-
 ## Authentication and encryption for Prometheus and its exporters
 
-Source: https://0x63.me/tls-between-prometheus-and-its-exporters/
+Source: <https://0x63.me/tls-between-prometheus-and-its-exporters/>

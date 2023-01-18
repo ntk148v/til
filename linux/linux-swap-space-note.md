@@ -1,6 +1,6 @@
 # Swap space note
 
-https://ntk148v.github.io/blog/posts/linux-swap-space-note/
+<https://ntk148v.github.io/blog/posts/linux-swap-space-note/>
 
 ## 1. What is Swap?
 

@@ -10,7 +10,7 @@
 
 ## 1. A better pip workflow
 
-Source: https://www.kennethreitz.org/essays/a-better-pip-workflow
+Source: <https://www.kennethreitz.org/essays/a-better-pip-workflow>
 
 ### 1.1. Requirements file form
 
@@ -53,4 +53,4 @@ It automatically creates and manages a virtualenv for your projects, as well as 
 - Give you insight into your dependency graph (e.g. \$ pipenv graph).
 - Streamline development workflow by loading .env files.
 
-https://medium.com/@grassfedcode/goodbye-virtual-environments-b9f8115bc2b6
+<https://medium.com/@grassfedcode/goodbye-virtual-environments-b9f8115bc2b6>

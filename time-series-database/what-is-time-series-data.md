@@ -2,8 +2,8 @@
 
 Source:
 
-- https://blog.timescale.com/what-the-heck-is-time-series-data-and-why-do-i-need-a-time-series-database-dcf3b1b18563/)
-- https://www.alibabacloud.com/blog/key-concepts-and-features-of-time-series-databases_594734
+- <https://blog.timescale.com/what-the-heck-is-time-series-data-and-why-do-i-need-a-time-series-database-dcf3b1b18563/>)
+- <https://www.alibabacloud.com/blog/key-concepts-and-features-of-time-series-databases_594734>
 
 Time-series data is starting to play a larger role in our world.
 

@@ -13,7 +13,7 @@
   * “Match on any event matching a given filter” (`any` type)
   * “Match when a field has two different values within some time” (`change`type)
 * Alerts are responsible for taking action based on a match (a dictionary containing values from a document in Elasticsearch, but may contain arbitrary data added by the rule type).
-* Enhancements are a way of intercepting an alert and modifying or enhancing it in some way. 
+* Enhancements are a way of intercepting an alert and modifying or enhancing it in some way.
 
 ## Running ElastAlert
 

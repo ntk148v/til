@@ -3,6 +3,7 @@
 Source: <https://www.shortcutfoo.com/blog/top-50-vim-configuration-options/>
 
 - [Basic configuration options](#basic-configuration-options)
+  - [Basic thing](#basic-thing)
   - [Mapping modes](#mapping-modes)
   - [Indention Options](#indention-options)
   - [Search Options](#search-options)

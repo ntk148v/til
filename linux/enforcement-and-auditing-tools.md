@@ -6,7 +6,6 @@ With Golang demonstration
 
 **Enforcement tools** use the policy to change behavior of a process by preventing system calls from succeeding, or in the some cases, killing the process. Seccomp, seccomp-bpf, SELinux, and AppArmor are examples of enforcement tools.
 
-
 **Auditing tools** use the policy to monitor the behavior of a process and notify when its behavior steps outside the policy. Auditd and Falco are examples of auditing tools.
 
 ## seccomp
@@ -25,39 +24,39 @@ The goal of sandboxing is to reduce the potential attack surface by reducing the
 package main
 
 import (
-	"fmt"
-	"os"
+ "fmt"
+ "os"
 
-	"golang.org/x/sys/unix"
+ "golang.org/x/sys/unix"
 )
 
 func main() {
-	f, err := os.OpenFile("output.txt", os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer f.Close()
+ f, err := os.OpenFile("output.txt", os.O_WRONLY, 0644)
+ if err != nil {
+  fmt.Println(err)
+  return
+ }
+ defer f.Close()
 
-	fmt.Println("Calling prctl() to send seccomp strict mode...")
-	if err = unix.Prctl(unix.PR_SET_SECCOMP, unix.SECCOMP_MODE_STRICT, 0, 0, 0); err != nil {
-		fmt.Println(err)
-		return
-	}
+ fmt.Println("Calling prctl() to send seccomp strict mode...")
+ if err = unix.Prctl(unix.PR_SET_SECCOMP, unix.SECCOMP_MODE_STRICT, 0, 0, 0); err != nil {
+  fmt.Println(err)
+  return
+ }
 
-	fmt.Println("Writing to an already open file...")
-	if _, err = f.WriteString("test"); err != nil {
-		fmt.Println(err)
-		return
-	}
+ fmt.Println("Writing to an already open file...")
+ if _, err = f.WriteString("test"); err != nil {
+  fmt.Println(err)
+  return
+ }
 
-	fmt.Println("Trying to open file for reading...")
-	f, err = os.OpenFile("output.txt", os.O_RDONLY, 0644)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("You will not see this message. The process will be killed first")
+ fmt.Println("Trying to open file for reading...")
+ f, err = os.OpenFile("output.txt", os.O_RDONLY, 0644)
+ if err != nil {
+  fmt.Println(err)
+  return
+ }
+ fmt.Println("You will not see this message. The process will be killed first")
 }
 ```
 
@@ -93,17 +92,17 @@ CONFIG_SECCOMP_FILTER=y
 package main
 
 import (
-	"fmt"
-	"syscall"
+ "fmt"
+ "syscall"
 )
 
 func main() {
-	err := syscall.Mkdir("/tmp/moo", 0755)
-	if err != nil {
-		panic(err)
-	} else {
-		fmt.Println("I just created a folder")
-	}
+ err := syscall.Mkdir("/tmp/moo", 0755)
+ if err != nil {
+  panic(err)
+ } else {
+  fmt.Println("I just created a folder")
+ }
 }
 ```
 
@@ -141,51 +140,51 @@ I just created a folder
 package main
 
 import (
-	"fmt"
-	"syscall"
+ "fmt"
+ "syscall"
 
-	libseccomp "github.com/seccomp/libseccomp-golang"
+ libseccomp "github.com/seccomp/libseccomp-golang"
 )
 
 // whitelist - syscalls contains the names of the syscalls
 // that we want to our process to have access to.
 func whiteList(syscalls []string) {
-	// Apply a "deny all" filter
-	filter, err := libseccomp.NewFilter(libseccomp.ActErrno.SetReturnCode(int16(syscall.EPERM)))
-	if err != nil {
-		fmt.Printf("Error creating filter: %s\n", err)
-	}
-	// Add elements to whitelist
-	for _, element := range syscalls {
-		fmt.Printf("[+] Whitelisting: %s\n", element)
-		syscallID, err := libseccomp.GetSyscallFromName(element)
-		if err != nil {
-			panic(err)
-		}
-		filter.AddRule(syscallID, libseccomp.ActAllow)
-	}
-	// Load the filter which applies the filter we just created
-	filter.Load()
+ // Apply a "deny all" filter
+ filter, err := libseccomp.NewFilter(libseccomp.ActErrno.SetReturnCode(int16(syscall.EPERM)))
+ if err != nil {
+  fmt.Printf("Error creating filter: %s\n", err)
+ }
+ // Add elements to whitelist
+ for _, element := range syscalls {
+  fmt.Printf("[+] Whitelisting: %s\n", element)
+  syscallID, err := libseccomp.GetSyscallFromName(element)
+  if err != nil {
+   panic(err)
+  }
+  filter.AddRule(syscallID, libseccomp.ActAllow)
+ }
+ // Load the filter which applies the filter we just created
+ filter.Load()
 }
 
 func main() {
-	// A string array contains the names of syscalls extracted
-	// from `strace` output.
-	var syscalls = []string{
-		"write", "mmap", "rt_sigaction", "rt_sigprocmask",
-		"clone", "execve", "fcntl", "sigaltstack", "arch_prctl",
-		"gettid", "gettid", "futex", "sched_getaffinity",
-		"mkdirat", "readlinkat", "exit_group",
-	}
+ // A string array contains the names of syscalls extracted
+ // from `strace` output.
+ var syscalls = []string{
+  "write", "mmap", "rt_sigaction", "rt_sigprocmask",
+  "clone", "execve", "fcntl", "sigaltstack", "arch_prctl",
+  "gettid", "gettid", "futex", "sched_getaffinity",
+  "mkdirat", "readlinkat", "exit_group",
+ }
 
-	whiteList(syscalls)
+ whiteList(syscalls)
 
-	err := syscall.Mkdir("/tmp/moo", 0755)
-	if err != nil {
-		panic(err)
-	} else {
-		fmt.Println("I just created a folder")
-	}
+ err := syscall.Mkdir("/tmp/moo", 0755)
+ if err != nil {
+  panic(err)
+ } else {
+  fmt.Println("I just created a folder")
+ }
 }
 ```
 
@@ -217,13 +216,13 @@ I just created a folder
     // Create folder source
     ....
     // Attempt to execute a shell command
-	// Force remove the /tmp/moo first
-	err = syscall.Rmdir("/tmp/moo")
-	if err != nil {
-		panic(err)
-	} else {
-		fmt.Println("I just removed a folder")
-	}
+ // Force remove the /tmp/moo first
+ err = syscall.Rmdir("/tmp/moo")
+ if err != nil {
+  panic(err)
+ } else {
+  fmt.Println("I just removed a folder")
+ }
 ```
 
 ```bash
@@ -249,11 +248,11 @@ panic: operation not permitted
 
 goroutine 1 [running]:
 main.main()
-	/home/kiennt/Workspace/github.com/ntk148v/testing/golang/seccomp-bpf/main.go:53 +0x172
+ /home/kiennt/Workspace/github.com/ntk148v/testing/golang/seccomp-bpf/main.go:53 +0x172
 exit status 2
 ```
 
-## Resources:
+## Resources
 
-1. Sysdig: https://sysdig.com/blog/selinux-seccomp-falco-technical-discussion/
-2. Heroku: https://blog.heroku.com/applying-seccomp-filters-on-go-binaries
+1. Sysdig: <https://sysdig.com/blog/selinux-seccomp-falco-technical-discussion/>
+2. Heroku: <https://blog.heroku.com/applying-seccomp-filters-on-go-binaries>

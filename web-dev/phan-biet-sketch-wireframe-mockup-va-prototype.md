@@ -2,7 +2,7 @@
 title: Phân biệt Sketch, Wireframe, Mockup, và Prototype
 path: web-dev/phan-biet-sketch-wireframe-mockup-va-prototype.md
 ---
-Source: https://thinhnotes.com/chuyen-nghe-ba/phan-biet-sketch-wireframe-mockup-va-prototype/
+Source: <https://thinhnotes.com/chuyen-nghe-ba/phan-biet-sketch-wireframe-mockup-va-prototype/>
 
 ![image](https://user-images.githubusercontent.com/10803803/130196277-b0eb6dd5-c55f-49ac-bc78-b7b392e43e98.png)
 

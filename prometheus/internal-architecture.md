@@ -7,8 +7,9 @@
 ![overall-prometheus-architecture](https://github.com/prometheus/prometheus/raw/master/documentation/images/internal_architecture.svg?sanitize=true)
 
 > NOTE:
->   * Code links and explanations are based on Prometheus v2.3.1
->   * Arrows indicate request or connection initiation direction, not necessary dataflow direction.
+>
+> * Code links and explanations are based on Prometheus v2.3.1
+> * Arrows indicate request or connection initiation direction, not necessary dataflow direction.
 
 ## Main function
 

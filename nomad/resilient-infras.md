@@ -2,7 +2,7 @@
 
 ## 1. Restarting tasks
 
-Source: https://www.hashicorp.com/blog/resilient-infrastructure-with-nomad-restarting-tasks
+Source: <https://www.hashicorp.com/blog/resilient-infrastructure-with-nomad-restarting-tasks>
 
 - Nomad Job workflow (simplified)
 
@@ -60,7 +60,7 @@ group "cache" {
 
 ## 2. Scheduling and self-healing
 
-Source: https://www.hashicorp.com/blog/resilient-infrastructure-with-nomad-scheduling
+Source: <https://www.hashicorp.com/blog/resilient-infrastructure-with-nomad-scheduling>
 
 - Nomad client agent
 

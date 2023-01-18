@@ -7,8 +7,8 @@ Authored by [Tom Preston-Werner](http://tom.preston-werner.com/).
 ## Introduction
 
 * Dependency hell: the bigger your system grows and the more packages you integrate into your software, the more likely you are to find yourself, one day, in this put of despair.
-    * Dependency specifications are too tight -> version lock (the inability to upgrade a package without having to release new versions of every dependent package).
-    * Dependency specifications are too loosely -> version promiscuity (assuming compatibility with more future versions than is reasonable).
+  * Dependency specifications are too tight -> version lock (the inability to upgrade a package without having to release new versions of every dependent package).
+  * Dependency specifications are too loosely -> version promiscuity (assuming compatibility with more future versions than is reasonable).
 
 * Solution: A simple set of rules and requirements that dictate how version numbers are assigned and incremented -> Sematic Versioning (SemVer).
 
@@ -21,6 +21,7 @@ Authored by [Tom Preston-Werner](http://tom.preston-werner.com/).
 ```
 MAJOR.MINOR.PATCH
 ```
+
 * MAJOR version when you make incompatible API changes.
 * MINOR version when you add functionality in a backwards-compatible manner.
 * PATCH version when you make backwards-compatible bug fixes.

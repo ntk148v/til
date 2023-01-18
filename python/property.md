@@ -84,7 +84,6 @@ property(fget=None, fset=None, fdel=None, doc=None)
 
 A property object has 3 methods, `getter()`, `setter()` and `deleter()` to specify `fget`, `fset` and `fdel`.
 
-
 ```python
 temperature = property(get_temperature,set_temperature)
 # Break down!

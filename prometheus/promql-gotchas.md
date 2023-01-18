@@ -32,7 +32,7 @@ range vector -> instant vector
 - Never compare raw counters - use rate().
 - Be careful with label sets when using binary operators.
 
-https://promcon.io/2019-munich/slides/promql-for-mere-mortals.pdf
+<https://promcon.io/2019-munich/slides/promql-for-mere-mortals.pdf>
 
 ## Filtering by regexps on metric name
 
@@ -81,7 +81,7 @@ Idelta / (Tcurr-1 - Tcurr-2)
 (Vcurr-1 - Vcurr-2)
 ```
 
-https://github.com/prometheus/prometheus/blob/master/promql/functions.go#L135
+<https://github.com/prometheus/prometheus/blob/master/promql/functions.go#L135>
 
 ## Combining multiple series
 

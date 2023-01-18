@@ -9,7 +9,7 @@
     - [2.4. Application-level metrics](#24-application-level-metrics)
   - [3. Some notes](#3-some-notes)
 
-Source: https://www.rabbitmq.com/monitoring.html
+Source: <https://www.rabbitmq.com/monitoring.html>
 
 ## 1. Infrastructure and kernel metrics
 

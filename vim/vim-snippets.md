@@ -1,8 +1,9 @@
 # Vim snippets
 
 Source:
-- https://github.com/honza/vim-snippets
-- https://bhupesh-v.github.io/learn-how-to-use-code-snippets-vim-cowboy/
+
+- <https://github.com/honza/vim-snippets>
+- <https://bhupesh-v.github.io/learn-how-to-use-code-snippets-vim-cowboy/>
 
 ## 1. Getting started
 

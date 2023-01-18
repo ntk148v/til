@@ -10,7 +10,7 @@
     - [5.2. HTTP/2 in a Nutshell](#52-http2-in-a-nutshell)
   - [6. Types of gRPC applications](#6-types-of-grpc-applications)
   - [7. Sync vs Async](#7-sync-vs-async)
-  - [8. Deadlines & timeouts](#8-deadlines--timeouts)
+  - [8. Deadlines \& timeouts](#8-deadlines--timeouts)
   - [9. RPC termination](#9-rpc-termination)
   - [10. Channels](#10-channels)
   - [Refs](#refs)

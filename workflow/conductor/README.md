@@ -7,15 +7,15 @@ Source: <https://conductor.netflix.com/>
   - [2. Basic](#2-basic)
     - [2.1. Concepts](#21-concepts)
     - [2.2. Client](#22-client)
+  - [2.3. Architecture](#23-architecture)
 
 > Conductor is a platform created by Netflix to orchestrate workflows that span across microservices.
 
 ## 1. Setup
 
 - Follow [Getting stared guide](https://conductor.netflix.com/gettingstarted/docker.html) and [Docker images and compose files here](https://github.com/ntk148v/dockerfiles/tree/master/conductor).
-- Conductor server url: http://localhost:8080/
-- Conductor UI url: http://localhost:5000/
-
+- Conductor server url: <http://localhost:8080/>
+- Conductor UI url: <http://localhost:5000/>
 
 ## 2. Basic
 

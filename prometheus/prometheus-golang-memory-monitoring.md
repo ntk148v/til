@@ -1,7 +1,7 @@
 # Prometheus or Golang applicaions memory leak troubleshooting
 
 - [Prometheus or Golang applicaions memory leak troubleshooting](#prometheus-or-golang-applicaions-memory-leak-troubleshooting)
-  - [1. Environment, version & issue](#1-environment-version--issue)
+  - [1. Environment, version \& issue](#1-environment-version--issue)
     - [1.1. Environment](#11-environment)
     - [1.2. Issue](#12-issue)
   - [2. Troubleshooting](#2-troubleshooting)

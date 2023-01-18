@@ -1,6 +1,6 @@
 # HTTP/2.0
 
-Source: https://developers.google.com/web/fundamentals/performance/http2
+Source: <https://developers.google.com/web/fundamentals/performance/http2>
 
 - [HTTP/2.0](#http20)
   - [1. Introduction](#1-introduction)

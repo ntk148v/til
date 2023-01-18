@@ -5,6 +5,7 @@ Over the years, companies have relied on traditional approaches like virtual pri
 <blah blah - WIP!>
 
 Tools:
+
 - Teleport
 - Boundary (Hashicorp)
 - StrongDM

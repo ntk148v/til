@@ -1,6 +1,6 @@
 # The ~~Twelve~~Fifteen-factor app
 
-https://12factor.net/
+<https://12factor.net/>
 
 ## Codebase
 
@@ -23,9 +23,9 @@ https://12factor.net/
 > Store config in environment
 
 * App's config varies across deploys:
-	* Resource handles to the database, Memcached and other backing services.
-	* Credentials to external services such as Amazon S3 or Twitter.
-	* Per-deploy values such as the canonical hostname for the deploy.
+  * Resource handles to the database, Memcached and other backing services.
+  * Credentials to external services such as Amazon S3 or Twitter.
+  * Per-deploy values such as the canonical hostname for the deploy.
 * Stores config in environment variables.
 
 ## Backing services
@@ -43,9 +43,9 @@ https://12factor.net/
 > Strictly separate build and run stages
 
 * A codebase is transformed into deploy through 3 stages:
-	* The *build stage* converts a code repo into an executable bundle known as a *build*.
-	* The *release stage* takes the build produced by the build stage and combines it with the deploy's current config.
-	* The *run stage* runs the app in the execution environment.
+  * The *build stage* converts a code repo into an executable bundle known as a *build*.
+  * The *release stage* takes the build produced by the build stage and combines it with the deploy's current config.
+  * The *run stage* runs the app in the execution environment.
 * The twelve-factor app uses strict separation between the build, release and run stages.
 
 ![release](https://12factor.net/images/release.png)
@@ -88,9 +88,9 @@ https://12factor.net/
 > Keep development, staging, and production as similar as possible
 
 * Gaps between development and production:
-    * The time gap: A developer may work on code that takes days, weeks or even months to ggo into production. -> a developer may write code and have it deployed.
-    * The personnel gap: Developers write code, ops engineers deploy it. -> developers who wrote code are closely involved in deploying it and watching its behavior in production.
-    * The tools gap: Developers may be using a stack like Nginx, SQLite... while the production deploy use Apache, MySQL, Linux. -> Keep development and production as similar as possible.
+  * The time gap: A developer may work on code that takes days, weeks or even months to ggo into production. -> a developer may write code and have it deployed.
+  * The personnel gap: Developers write code, ops engineers deploy it. -> developers who wrote code are closely involved in deploying it and watching its behavior in production.
+  * The tools gap: Developers may be using a stack like Nginx, SQLite... while the production deploy use Apache, MySQL, Linux. -> Keep development and production as similar as possible.
 * Design for continuous deployment by keeping the gap between development and production small.
 * Tools: Chef, Docker, Vagrant...
 
@@ -100,8 +100,8 @@ https://12factor.net/
 
 * Never concerns itself with routing or storage of its output stream.
 * ~~logfile~~, each running process writes its event stream, unbuffered to `stdout`.
-    * Local development: developer will view stream in the foreground.
-    * Staging or production deploys: each process's stream will be captured by the execution environment, collated together with all other streams from the app, and routed to one or more final destinations for viewing and long-term archival -> Fluentd, Logstash...
+  * Local development: developer will view stream in the foreground.
+  * Staging or production deploys: each process's stream will be captured by the execution environment, collated together with all other streams from the app, and routed to one or more final destinations for viewing and long-term archival -> Fluentd, Logstash...
 * The stream can be sent to a log indexing and analysis system -> ELK for e.x
 
 ## Admin processes

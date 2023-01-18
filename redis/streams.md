@@ -1,9 +1,10 @@
 # Redis streams
 
 Source:
-- https://redis.io/topics/streams-intro
-- https://www.infoworld.com/article/3320021/how-to-use-redis-streams.html
-- https://media.trustradius.com/product-downloadables/Z4/F7/0H6ACUNFBHQJ.pdf
+
+- <https://redis.io/topics/streams-intro>
+- <https://www.infoworld.com/article/3320021/how-to-use-redis-streams.html>
+- <https://media.trustradius.com/product-downloadables/Z4/F7/0H6ACUNFBHQJ.pdf>
 
 - [Redis streams](#redis-streams)
   - [1. What is Redis streams?](#1-what-is-redis-streams)

@@ -44,7 +44,6 @@ docker ps
 # initial process that runs in the infra container does effectively nothing
 # since its sole purpose is to act as the home for the namespaces.
 
-
 #
 # Working with Deployment and ReplicaSet
 #
@@ -112,7 +111,7 @@ kubectl get pods -l "project=pilot,environment=production"
 cat templates/countdown-job.yaml
 kubectl create -f templates/countdown-job.yaml
 kubectl describe jobs countdown
-pods=$(kubectl get pods  --show-all --selector=job-name=countdown --output=jsonpath={.items..metadata.name})
+pods=$(kubectl get pods --show-all --selector=job-name=countdown --output=jsonpath={.items..metadata.name})
 echo $pods
 kubectl logs $pods
 
