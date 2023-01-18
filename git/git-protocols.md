@@ -28,7 +28,9 @@ $ git remote add local_proj /srv/git/project.git
 ## 2. HTTP protocols
 
 - Git can communicate over HTTP using 2 different modes:
+
   - Dumb HTTP:
+
     - Dumb protocol exptects the bare Git repository to be served like normal files from the web server.
     - To allow read access to repository over HTTP:
 
@@ -42,6 +44,7 @@ $ git remote add local_proj /srv/git/project.git
 
   - Smart HTTP:
     - Run over standard HTTPS ports and can use various HTTP authentication mechanisms.
+
 - Pros:
   - The simplicity of having a single URL for all types of access and having the server prompt only when authentication is needed makes things very easy for the end user.
   - Secure.

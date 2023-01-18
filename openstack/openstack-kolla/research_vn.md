@@ -36,9 +36,9 @@
 
   - Và còn rất nhiều vấn đề khác...
 
---> __Những câu hỏi trên bắt đầu có câu trả lời khi triển khai OpenStack trên Cơ sở hạ tầng không thay đổi.(immutable infrastructure).__
+--> **Những câu hỏi trên bắt đầu có câu trả lời khi triển khai OpenStack trên Cơ sở hạ tầng không thay đổi.(immutable infrastructure).**
 
---> __Dockerizing OpenStack.__
+--> **Dockerizing OpenStack.**
 
 ## Giới thiệu chung về Kolla
 

@@ -77,7 +77,7 @@ job "docs" {
 
 - `allocation`: a mapping between a task group in a job and a client node.
 - `evaluation`: Allocations are created by the Nomad servers as part of scheduling decisions made during an `evalution`.
-- `resources`: the requirements a task needs to  execute such as memory, network, CPU and more.
+- `resources`: the requirements a task needs to execute such as memory, network, CPU and more.
 
 ```hcl
 job "docs" {

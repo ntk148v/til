@@ -24,4 +24,4 @@ Source: <https://www.mongodb.com/docs/manual/core/gridfs/>
   - When you want to keep your files and metadata automatically synced and deployed across a number of systems of facilities, you can use GridFS.
 - When not to use GridFS
   - If you need to update the content of the entire file atomically -> Store multiple versions of each file and specify the current version of the file in the metadata.
-  - If your files are all smaller than the 16MB BSON Document Size limit -> store each file in a single document instead of using  GridFS.
+  - If your files are all smaller than the 16MB BSON Document Size limit -> store each file in a single document instead of using GridFS.

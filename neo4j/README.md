@@ -17,7 +17,7 @@ Source:
 | Constraints      | Relationships             |
 | Joins            | Traversal                 |
 
-- Neo4j uses a *property graph* database.
+- Neo4j uses a _property graph_ database.
   - The model represents data in Nodes, Relationships and Properties
   - Properties are key-value pairs
   - Nodes are represented using circle and Relationships are represented using arrow keys
@@ -30,6 +30,7 @@ Source:
 
 - Neo4j uses Native GPE (Graph Processing Engine) to work with its Native graph storage format.
 - Concepts:
+
   - **Node**: represents entity (discrete object) of a domain. Node can have labels (Labels shape the domain by grouping (classifying) nodes into sets where all nodes with a certain label belong to the same set).
 
   ![](https://neo4j.com/docs/getting-started/current/_images/graph_single_node.svg)
@@ -46,6 +47,7 @@ Source:
   - **Properties**: key-value pairs that are used for storing data on nodes and relationships.
   - **Traversals and paths**: a traversal is how you query a graph in order to find answers to question.
   - **Schema**: refer to indexes and constrains (optional).
+
 - Naming convention.
 
 | Graph entity      | Recommended style                                       | Example       |
@@ -59,18 +61,18 @@ Source:
 Checkout [Neo4j documentation](https://neo4j.com/docs/operations-manual/current/installation/).
 
 ```yaml
-version: '3'
+version: "3"
 services:
   neo4j:
     image: neo4j:4.4
     container_name: neo4j
     ports:
-      - '7474:7474'
-      - '7473:7473'
-      - '7687:7687'
+      - "7474:7474"
+      - "7473:7473"
+      - "7687:7687"
     volumes:
-      - 'neo4j_data:/data'
-      - 'neo4j_logs:/logs'
+      - "neo4j_data:/data"
+      - "neo4j_logs:/logs"
 volumes:
   neo4j_data:
     driver: local

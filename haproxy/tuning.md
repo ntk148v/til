@@ -9,6 +9,7 @@ Source: <https://medium.com/@pawilon/tuning-your-linux-kernel-and-haproxy-instan
 - Every incoming/outgoing connection needs to open a socket and each socket is a file on a Linux system.
 - If you're configuring a loadbalancer serving content from backend servers then each incoming connections will open a minimum of two sockets, or even more, depending on the loadbalacing configuration.
 - Two ways to configure max open files, depending on whether your distribution uses systemd or not.
+
   - Edit `/etc/security/limits.conf`.
 
   ```

@@ -81,7 +81,7 @@ $ ethtool -G eth0 rx 8192
 - Check parameters:
   - /proc/sys/net/core/rmem_max: the maximum value of receive buffer allowed to be set
   - /proc/sys/net/core/rmem_default: the default receive buffer value to be used
-  - /proc/sys/net/core/wmem_max: the maximum value of send buffer allowed * /proc/sys/net/core/wmem_max: the maximum value of send buffer allowed
+  - /proc/sys/net/core/wmem_max: the maximum value of send buffer allowed \* /proc/sys/net/core/wmem_max: the maximum value of send buffer allowed
   - /proc/sys/net/core/wmem_dafault: the maximum value of send buffer to be used by default
 - Change to make it effective immediately.
 

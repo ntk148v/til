@@ -28,7 +28,7 @@ Source: <https://developers.google.com/web/fundamentals/performance/http2>
 
 - HTTP/1.x drawbacks:
   - Clients need to use multiple connections to achieve concurrency and reduce latency.
-  - Does not compress request and response headers ->  unncessary network traffic.
+  - Does not compress request and response headers -> unncessary network traffic.
   - Does not allow effective resource prioritization, resulting in poor use of the underlying TCP connection.
 - HTTP/2.0:
   - Introduce header field compression.
@@ -49,16 +49,16 @@ Source: <https://developers.google.com/web/fundamentals/performance/http2>
 ### 2.2. Streams, messages, and frames
 
 - HTTP/2 terminology:
-  - *Stream*: A bidirectional flow of bytes within an established connection, which may carry one or more messages.
-  - *Message*: A complet sequence of frames that map to a logical request or response message.
-  - *Frame*: The smallest unit of communication in HTTP/2, each containing a frame header, which at a minimum identitifes the stream to which the frame belongs.
+  - _Stream_: A bidirectional flow of bytes within an established connection, which may carry one or more messages.
+  - _Message_: A complet sequence of frames that map to a logical request or response message.
+  - _Frame_: The smallest unit of communication in HTTP/2, each containing a frame header, which at a minimum identitifes the stream to which the frame belongs.
 
 ![](https://developers.google.com/web/fundamentals/performance/http2/images/streams_messages_frames01.svg)
 
-- All communication is perfomed over a sinle TCP connection that can carry any number of bidirectional *streams*.
-- Each *stream* has a unique identifier and optional priority information that is used to carry bidirectional *messages*.
-- Each *message* is a logical HTTP message, such as a request/response, which consists of one or more *frames*.
-- The *frame* is the smallest unit of communication that carries a specific type of data—e.g., HTTP headers, message payload, and so on. Frames from different streams may be interleaved and then reassembled via the embedded stream identifier in the header of each frame.
+- All communication is perfomed over a sinle TCP connection that can carry any number of bidirectional _streams_.
+- Each _stream_ has a unique identifier and optional priority information that is used to carry bidirectional _messages_.
+- Each _message_ is a logical HTTP message, such as a request/response, which consists of one or more _frames_.
+- The _frame_ is the smallest unit of communication that carries a specific type of data—e.g., HTTP headers, message payload, and so on. Frames from different streams may be interleaved and then reassembled via the embedded stream identifier in the header of each frame.
 
 ### 2.3. Request and response multiplexing
 
@@ -69,6 +69,7 @@ Source: <https://developers.google.com/web/fundamentals/performance/http2>
 ### 2.4. Stream prioritization
 
 - The HTTP/2 standard allows each stream to have an associated weight and dependency:
+
   - Each stream may be assigned an interger weight (>=1 and <= 256>).
   - Each stream may be given an explicit dependency on another stream.
 
@@ -76,8 +77,8 @@ Source: <https://developers.google.com/web/fundamentals/performance/http2>
 
 ![](https://developers.google.com/web/fundamentals/performance/http2/images/stream_prioritization01.svg)
 
-- *The parent stream should be allocated resources ahead of its dependencies*.
-- *Streams that share the same parent (in other words, sibling streams) should be allocated resources in proportion to their weight*.
+- _The parent stream should be allocated resources ahead of its dependencies_.
+- _Streams that share the same parent (in other words, sibling streams) should be allocated resources in proportion to their weight_.
 
 ### 2.5. One connection per origin
 

@@ -17,7 +17,7 @@ Source:
 
 ## 1. What is Redis streams?
 
-Redis Streams is a Redis data type that represents a log, so you can add new information and message in an append-only mode (Note: This is not 100% accurate, since you can remove messages from the log, but it’s close enough.)  Redis Streams lets you build “Kafka-like” applications, which can:
+Redis Streams is a Redis data type that represents a log, so you can add new information and message in an append-only mode (Note: This is not 100% accurate, since you can remove messages from the log, but it’s close enough.) Redis Streams lets you build “Kafka-like” applications, which can:
 
 - Create applications that publish and consume messages. Nothing extraordinary here, you could already do that with Redis Pub/Sub.
 - Consume messages that are published even when the client application (consumer) is not running. This is a big difference from Redis Pub/Sub.
@@ -53,7 +53,7 @@ All [commands of Redis streams](https://redis.io/commands#stream) are documented
 - A consumer group allows consumers of that group to share the task of consuming messages from a stream. Thus, a message in a stream can be consumed by only one consumer in that consumer group (When the task at hand is to consume the same stream from different clients, then XREAD already offers a way to fan-out to N clients, however in certain problems what we want to do is not to provide the same stream of messages to many clients, but to provide a different subset of messages from the same stream to many clients - that of messages which are slow to process -> create N different workers -> scale message processing)
 - `XGROUP` creates a consumer group. A consumer is added to a group the first time it calls `XREADGROUP` (identify itself with a unique consumer name).
 - A stream can have multiple groups. Each consumer group tracks the ID of the last consumed message which is shared by all consumers of the group.
-- Once a consumer reads a message, its ID is added to *Pending Entries List (PEL)*. The consumer must *acknowledge* that it has processed the message, using `XACK` command. Once acknowledged, the PEL is updated. Another consumer can *claim* a pending message using `XCLAIM` command and begin processing it -> recovering from failures. Can use `XAUTOCLAIM` = `XPENDING` + `XCLAIM`.
+- Once a consumer reads a message, its ID is added to _Pending Entries List (PEL)_. The consumer must _acknowledge_ that it has processed the message, using `XACK` command. Once acknowledged, the PEL is updated. Another consumer can _claim_ a pending message using `XCLAIM` command and begin processing it -> recovering from failures. Can use `XAUTOCLAIM` = `XPENDING` + `XCLAIM`.
 - A consumer can choose to use the `NOACK` subcommand of `XREADGROUP` if high reliability is not important.
 
 ## 5. Usage

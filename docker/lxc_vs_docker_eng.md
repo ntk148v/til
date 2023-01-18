@@ -15,7 +15,7 @@ Table of content:
 
 ![lxc vs docker ](http://i.stack.imgur.com/a5Neb.png)
 
-*This is a 2 part series exploring Linux containers, container managers like LXC and Docker and the potential of containers as lightweight alternatives to virtualization*
+_This is a 2 part series exploring Linux containers, container managers like LXC and Docker and the potential of containers as lightweight alternatives to virtualization_
 
 ## Intro about both of them
 
@@ -57,7 +57,7 @@ Beyond that Docker uses layers and disables storage persistence. LXC supports la
 
 Both Docker and LXC set up a default NAT network. Docker additionally setups port forwarding to the host with the -p flag for instance '-p 80:80' forwards 80 from the host to the container. Given NAT containers can be accessed directly by the local host by their IPs and only need port forwarding when consumed by external services which can be done simply by an iptables rule when required, the reason for doing this is not very clear.
 
-To compound matters Docker gives you very little control of the IP and hosts file and you can't set static IPs for containers which makes assigning services to IPs a bit of a conundrum.  You need to use a '--links' flag to connect containers which adds an entry in the the /etc/hosts file of the linked container. The need to abstract away basic networking in this way seems a bit pointless and adds a needless layer of complexity.
+To compound matters Docker gives you very little control of the IP and hosts file and you can't set static IPs for containers which makes assigning services to IPs a bit of a conundrum. You need to use a '--links' flag to connect containers which adds an entry in the the /etc/hosts file of the linked container. The need to abstract away basic networking in this way seems a bit pointless and adds a needless layer of complexity.
 
 With LXC it's a much simpler to assign static IPs, routable IPs, use multiple network devices, manage the /etc/hosts file and basically use the full stack of Linux network capabilities with no limitations. Want to connect containers across hosts? Users can setup quick overlays using GRE, L2TPV3 or VXLAN tunnels or any networking technology they are using currently. LXC containers will work for whatever works for VMs seamlessly.
 

@@ -39,7 +39,7 @@ Source:
 - Ensure all members take the same scheduling decision for an incoming packet.
 - 2 options:
   - stateful L4 load-balancing with state synchronization across the members
-  - stateless L4 load-balancing with consistent hashing (*)
+  - stateless L4 load-balancing with consistent hashing (\*)
 - Solutions:
   - [IPVS](http://www.linuxvirtualserver.org/software/ipvs.html) + Keepalived + Google Maglev scheduler
   - XDP + Consistent hashing + [Katran](https://engineering.fb.com/open-source/open-sourcing-katran-a-scalable-network-load-balancer/)

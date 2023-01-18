@@ -57,7 +57,7 @@ Copilot is an extremely fun-to-use tool. At first glance, it's really enjoyable 
 - One more thing is Copilot doesn't test any of code it's suggesting to you. Those suggestions may not actually compile or run.
 - It might suggest code snippets using old libraries or modules.
 - In other hand, Copilot may suggest code you may not understand.
-- *Don't forget to review each large bunch of code Copilot offers up!*.
+- _Don't forget to review each large bunch of code Copilot offers up!_.
 
 ### 3.3. Licensing
 
@@ -72,7 +72,7 @@ Copilot is an extremely fun-to-use tool. At first glance, it's really enjoyable 
 
 ### 3.4. Does Copilot actually help me work faster?
 
-- Most time coding is not take up in *writing code*, but with *designing, debugging, and maintaining code*.
+- Most time coding is not take up in _writing code_, but with _designing, debugging, and maintaining code_.
 - Copilot gives you some lines of code, it's a `wow` at the first glance, but after that, you nearly always to have to verify and modify these.
 - As a rule of thumb, less code means less to maintain and understand. Copilot's code is verbose, and it's so easy to generate lots of it that you're likely to end up with a lot of code!
 

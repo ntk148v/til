@@ -3,7 +3,7 @@
 ## Definitions
 
 - Monitoring: Collecting, processing, aggregating, and displaying real-time
-  *quantitative* data about a system, such as query counts and types, error
+  _quantitative_ data about a system, such as query counts and types, error
   counts and types, processing times, and server lifetimes.
 - White-box monitoring: Monitoring based on metrics exposed by the internals
   of the system, including logs, interfaces or HTTP handler that emits
@@ -44,7 +44,7 @@
 - [Rackspace Cloud Monitoring](https://github.com/rcbops/rpc-maas)
 - [OpenNMS](https://www.opennms.org/en)
 - [Shinken](http://www.shinken-monitoring.org)(<https://github.com/naparuba/shinken>)
-...
+  ...
 
 ## Comprasion
 
@@ -53,7 +53,7 @@
 ## Requirements
 
 - Physical (SNMP), Virtualization (agent/agent less), Container (CoE
-integration)
+  integration)
 - Metric store/query, event, alert (SMS, Mail, Slack, Telegram,...)
 - 2 Part: Log - Monitor
 

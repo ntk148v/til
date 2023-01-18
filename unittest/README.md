@@ -93,15 +93,15 @@ Integration test kết hợp các thành phần của một ứng dụng và ki�
 ### 4.1. Workflow chuẩn
 
 - You define your own class derived from unittest.TestCase.
-- Then you fill it with functions that start with ‘test_’.
+- Then you fill it with functions that start with ‘test\_’.
 - You run the tests by placing unittest.main() in your file, usually at the bottom.
 
 ### 4.2. Một số định nghĩa quan trọng
 
-- *test fixture- : cho biết mọi sự chuẩn bị cần thiết để thực hiện các bài test.
-- *test case- : đơn vị(unit) test nhỏ nhất, kiểm tra response cụ thể cho tập các đầu vào.  `unittest` cung cấp 1 class cơ bản, `TestCase`, được sử dụng để tạo ra các test cases.
-- *test suite- : tập hợp các test cases, test suite hoặc cả 2. Thường được sử dụng khi có những test cần kết hợp cùng nhau.
-- *test runner- : thành phần điều phối việc thực hiện test và biểu diễn kết quả cho user. Runner có thể có giao diện đồ họa, giao diện văn bản hoặc đơn thuần trả về một giá trị đặc biệt để cho biết kết quả thực hiện các test.
+- \*test fixture- : cho biết mọi sự chuẩn bị cần thiết để thực hiện các bài test.
+- \*test case- : đơn vị(unit) test nhỏ nhất, kiểm tra response cụ thể cho tập các đầu vào. `unittest` cung cấp 1 class cơ bản, `TestCase`, được sử dụng để tạo ra các test cases.
+- \*test suite- : tập hợp các test cases, test suite hoặc cả 2. Thường được sử dụng khi có những test cần kết hợp cùng nhau.
+- \*test runner- : thành phần điều phối việc thực hiện test và biểu diễn kết quả cho user. Runner có thể có giao diện đồ họa, giao diện văn bản hoặc đơn thuần trả về một giá trị đặc biệt để cho biết kết quả thực hiện các test.
 
 ![Core classes in unittest.](http://twimgs.com/ddj/images/article/2014/0114/PythonUnitTest1.gif)
 
@@ -111,41 +111,41 @@ Module `unittest` cung cấp tập các công cụ cho việc xây dựng và ch
 
 Ví dụ:
 
-  ```python
-    import unittest
+```python
+  import unittest
 
-    class FooTest(unittest.TestCase):
-        """Sample test case"""
+  class FooTest(unittest.TestCase):
+      """Sample test case"""
 
-        # preparing to test
-        def setUp(self):
-            """ Setting up for the test """
-            print "FooTest:setUp_:begin"
-            ## do something...
-            print "FooTest:setUp_:end"
+      # preparing to test
+      def setUp(self):
+          """ Setting up for the test """
+          print "FooTest:setUp_:begin"
+          ## do something...
+          print "FooTest:setUp_:end"
 
-        # ending the test
-        def tearDown(self):
-            """Cleaning up after the test"""
-            print "FooTest:tearDown_:begin"
-            ## do something...
-            print "FooTest:tearDown_:end"
+      # ending the test
+      def tearDown(self):
+          """Cleaning up after the test"""
+          print "FooTest:tearDown_:begin"
+          ## do something...
+          print "FooTest:tearDown_:end"
 
-        # test routine A
-        def testA(self):
-            """Test routine A"""
-            print "FooTest:testA"
+      # test routine A
+      def testA(self):
+          """Test routine A"""
+          print "FooTest:testA"
 
-        # test routine B
-        def testB(self):
-            """Test routine B"""
-            print "FooTest:testB"
-  ```
+      # test routine B
+      def testB(self):
+          """Test routine B"""
+          print "FooTest:testB"
+```
 
 ![FooTest behavior](http://twimgs.com/ddj/images/article/2014/0114/PythonUnitTest3.gif)
 
 - testcase được tạo ra bằng cách kế thừa `unittest.TestCase`.
-- Phương thức bắt đầu bằng tiền tố test_.
+- Phương thức bắt đầu bằng tiền tố test\_.
 - Phần then chốt là việc gọi đến các phương thức `assert*()`.
 - Phương thức `setUp()` và `tearDown()` cho phép định nghĩa hướng dẫn sẽ được thực hiện trước và sau mỗi phương thức test.
 - `unittest.main()` để chạy test.
@@ -154,17 +154,17 @@ Ví dụ:
 
 Có thể sử dụng giao diện command-line để chạy test từ modules, lớp hoặc từng phương thức test bất kỳ:
 
-  ```bash
-    python -m unittest test_module1 test_module2
-    python -m unittest test_module.TestClass
-    python -m unittest test_module.TestClass.test_method
-  ```
+```bash
+  python -m unittest test_module1 test_module2
+  python -m unittest test_module.TestClass
+  python -m unittest test_module.TestClass.test_method
+```
 
 Các options: -b, -c, -f có thể thấy được khi chạy:
 
-  ```bash
-    python -m unittest -h
-  ```
+```bash
+  python -m unittest -h
+```
 
 ### 4.5. Test Discovery
 
@@ -172,8 +172,8 @@ Unittest hỗ trợ test discorvery đơn giản - cho phép chạy nhiều test
 
 ### 4.6. Tổ chức test code
 
-- Như đã nói ở trên, test cases được biểu diễn bởi nittest.TestCase` instances. Vì vậy, mọi test case đều phải kế thừa `TestCase` hoặc `FunctionTestCase`.
-- Subclass đơn giản của `TestCase` chỉ là thực thi 1 phương thức test (test_*).
+- Như đã nói ở trên, test cases được biểu diễn bởi nittest.TestCase`instances. Vì vậy, mọi test case đều phải kế thừa`TestCase`hoặc`FunctionTestCase`.
+- Subclass đơn giản của `TestCase` chỉ là thực thi 1 phương thức test (test\_\*).
 
   ```python
     import unittest
@@ -204,7 +204,7 @@ Unittest hỗ trợ test discorvery đơn giản - cho phép chạy nhiều test
   ```
 
 - Tương tự, ta có `tearDown()` để dọn dẹp, xóa bỏ môi trường test. Nếu `setUp()` chạy thành công, `tearDown()` sẽ được chạy bất kể phương thức test có thành công hay không.
-- Test case instances được nhóm lại với nhau dựa trên feature chúng test. `unittest` cung cấp cơ chế: *test suite*- - `unittest.TestSuite`. Trong phần lớn trường hợp, gọi `unittest.main()` sẽ thu thập các module test case và thực thi.
+- Test case instances được nhóm lại với nhau dựa trên feature chúng test. `unittest` cung cấp cơ chế: _test suite_- - `unittest.TestSuite`. Trong phần lớn trường hợp, gọi `unittest.main()` sẽ thu thập các module test case và thực thi.
 - Muốn tự xây dựng bộ test suite? Có thể sử dụng cách sau:
 
   ```python
@@ -224,14 +224,14 @@ Unittest hỗ trợ test discorvery đơn giản - cho phép chạy nhiều test
 - Unittest cho phép việc bỏ qua phương thức test và có thể cả lớp test. Thêm vào đó, unittest hỗ trợ đánh dấu 1 test chấp nhận lỗi, nếu test đó fail cũng không tính như là 1 failure trong `TestResult`.
 - Sử dụng decorator.
 
-    | Decorator                               | Giải thích                                                                     |
-    | --------------------------------------- | ------------------------------------------------------------------------------ |
-    | @unittest.skip(reason)                  | Bỏ qua vô điều kiện test, reason nên mô tả lí do bỏ qua.                       |
-    | @unittest.skipIf(condition, reason)     | Bỏ qua test, nếu condition trả về True                                         |
-    | @unittest.skipUnless(condition, reason) | Bỏ qua test trừ khi condition trả về True                                      |
-    | @unittest.expectedFailure               | Đánh dấu test là chấp nhận Failure, nếu test fail sẽ không bị tính vào failure |
+  | Decorator                               | Giải thích                                                                     |
+  | --------------------------------------- | ------------------------------------------------------------------------------ |
+  | @unittest.skip(reason)                  | Bỏ qua vô điều kiện test, reason nên mô tả lí do bỏ qua.                       |
+  | @unittest.skipIf(condition, reason)     | Bỏ qua test, nếu condition trả về True                                         |
+  | @unittest.skipUnless(condition, reason) | Bỏ qua test trừ khi condition trả về True                                      |
+  | @unittest.expectedFailure               | Đánh dấu test là chấp nhận Failure, nếu test fail sẽ không bị tính vào failure |
 
-**Các lớp và hàm*- _ [Here](https://docs.python.org/3.4/library/unittest.html#classes-and-functions)
+\*_Các lớp và hàm_- \_ [Here](https://docs.python.org/3.4/library/unittest.html#classes-and-functions)
 
 | Method                    | Checks that      | New in |
 | ------------------------- | ---------------- | ------ |
@@ -248,13 +248,13 @@ Unittest hỗ trợ test discorvery đơn giản - cho phép chạy nhiều test
 | assertIsInstance(a, b)    | isinstance(a, b) | 3.2    |
 | assertNotIsInstance(a, b) |                  | 3.2    |
 
-| Method                                        | Checks that                                                    | New in |
-| --------------------------------------------- | -------------------------------------------------------------- | ------ |
-| assertRaises(exc, fun, *args, **kwds)         | fun(*args, **kwds) raises exc                                  |        |
-| assertRaisesRegex(exc, r, fun, *args, **kwds) | fun(*args, **kwds) raises exc and the message matches regex r  | 3.1    |
-| assertWarns(warn, fun, *args, **kwds)         | fun(*args, **kwds) raises warn                                 | 3.2    |
-| assertWarnsRegex(warn, r, fun, *args, **kwds) | fun(*args, **kwds) raises warn and the message matches regex r | 3.2    |
-| assertLogs(logger, level)                     | The with block logs on logger with minimumlevel                | 3.4    |
+| Method                                           | Checks that                                                       | New in |
+| ------------------------------------------------ | ----------------------------------------------------------------- | ------ |
+| assertRaises(exc, fun, \*args, \*\*kwds)         | fun(\*args, \*\*kwds) raises exc                                  |        |
+| assertRaisesRegex(exc, r, fun, \*args, \*\*kwds) | fun(\*args, \*\*kwds) raises exc and the message matches regex r  | 3.1    |
+| assertWarns(warn, fun, \*args, \*\*kwds)         | fun(\*args, \*\*kwds) raises warn                                 | 3.2    |
+| assertWarnsRegex(warn, r, fun, \*args, \*\*kwds) | fun(\*args, \*\*kwds) raises warn and the message matches regex r | 3.2    |
+| assertLogs(logger, level)                        | The with block logs on logger with minimumlevel                   | 3.4    |
 
 | Method                     | Checks that                                                                  | New in |
 | -------------------------- | ---------------------------------------------------------------------------- | ------ |
@@ -298,12 +298,12 @@ Về sự khác nhau giữa `state verification` và `behavior verification`:
 
 4 kiểu Test Double:
 
-- *Dummy- object được pass, tuy nhiên không bao giờ được dùng thực sự. Thông thường chỉ được sử dụng để điền vào danh sách tham số.
-- *Stubs- cung cấp câu trả lời được "đóng lại" để gọi trong lúc test, thường không phản hồi lại bất cứ thứ gì ngoài những thứ đã được lập trình sẵn trong test. Stubs cũng có thể ghi lại bản ghi thông tin về những lần gọi đến, chẳng hạn như 1 email gateway stub có thể ghi nhớ lại msgs mà nó gửi đi, hoặc số msgs nó gửi đi. Nói cách khác, stub biểu diễn 1 tập các phương thức interfaces cho test subject(tập các phương thức tương tự có thể thấy trong subject thực sự?). Khi test subject gọi đến phương thức stub, stub sẽ phản hồi lại với tập các kết quả đã định trước. Nó có thể sinh ra lỗi hoặc ngoại lệ, điều này cũng đã được định trước. Stub có thể theo dõi sự tương tác của nó với test subject, tuy nhiên chỉ trong phạm vi chương trình test.
-- *Fake- object thực sự được sử dụng, tuy nhiên thường có 1 số shortcut khiến nó không thích hợp cho việc sản xuất ???(memory database). Fake biểu diễn 1 tập các phương thức interfaces, theo dõi sự tương tác với test subject. Không giống stub, fake thực xử lý dữ liệu đầu vào từ test subject, và đưa ra được kết quả dựa trên dữ liệu đó. __In short, a fake is a functional, but non-production version of the actual test resource. It lacks the checks and balances found in resource?__ Sử dụng thuật toán đơn giản, hiếm khi hoặc không bao giờ lưu trữ và dịch chuyển dữ liệu.
---> Với fake và stub, có thể test xem test subject gọi đúng phương thức với đầu vào đúng. Có thẻ test làm thế nào subject xử lý kết quả và lỗi/ngoại lệ. --> `state verification`.
---> Nếu muốn biết nếu test subject gọi đến cùng 1 phương thức 2 lần, hoặc phương thức được thực hiện đúng thứ tự? --> `behavior verification`
-- *Mock- : đối tượng được xác định những kì vọng cần đạt được.
+- \*Dummy- object được pass, tuy nhiên không bao giờ được dùng thực sự. Thông thường chỉ được sử dụng để điền vào danh sách tham số.
+- \*Stubs- cung cấp câu trả lời được "đóng lại" để gọi trong lúc test, thường không phản hồi lại bất cứ thứ gì ngoài những thứ đã được lập trình sẵn trong test. Stubs cũng có thể ghi lại bản ghi thông tin về những lần gọi đến, chẳng hạn như 1 email gateway stub có thể ghi nhớ lại msgs mà nó gửi đi, hoặc số msgs nó gửi đi. Nói cách khác, stub biểu diễn 1 tập các phương thức interfaces cho test subject(tập các phương thức tương tự có thể thấy trong subject thực sự?). Khi test subject gọi đến phương thức stub, stub sẽ phản hồi lại với tập các kết quả đã định trước. Nó có thể sinh ra lỗi hoặc ngoại lệ, điều này cũng đã được định trước. Stub có thể theo dõi sự tương tác của nó với test subject, tuy nhiên chỉ trong phạm vi chương trình test.
+- \*Fake- object thực sự được sử dụng, tuy nhiên thường có 1 số shortcut khiến nó không thích hợp cho việc sản xuất ???(memory database). Fake biểu diễn 1 tập các phương thức interfaces, theo dõi sự tương tác với test subject. Không giống stub, fake thực xử lý dữ liệu đầu vào từ test subject, và đưa ra được kết quả dựa trên dữ liệu đó. **In short, a fake is a functional, but non-production version of the actual test resource. It lacks the checks and balances found in resource?** Sử dụng thuật toán đơn giản, hiếm khi hoặc không bao giờ lưu trữ và dịch chuyển dữ liệu.
+  --> Với fake và stub, có thể test xem test subject gọi đúng phương thức với đầu vào đúng. Có thẻ test làm thế nào subject xử lý kết quả và lỗi/ngoại lệ. --> `state verification`.
+  --> Nếu muốn biết nếu test subject gọi đến cùng 1 phương thức 2 lần, hoặc phương thức được thực hiện đúng thứ tự? --> `behavior verification`
+- \*Mock- : đối tượng được xác định những kì vọng cần đạt được.
 
 With fakes and stubs, you can test if the test subject called the right method with the right input. You can test how the subject handles the result and how it reacts to an error or exception. These tests are known as state verification. But what if you want to know if the test subject called the same method twice? What if you want to know if it called several methods in the proper order? Such tests are known as behavior verification, and to do them, you need mocks.
 
@@ -314,7 +314,7 @@ With fakes and stubs, you can test if the test subject called the right method w
 
 ### 5.2. Mock trong Python
 
-*Note: `mock` có trong bộ thư viện chuẩn từ Python3.3. Còn từ 3.3 đổ về 2.7, có trong thư viện `unittest.mock*
+_Note: `mock` có trong bộ thư viện chuẩn từ Python3.3. Còn từ 3.3 đổ về 2.7, có trong thư viện `unittest.mock_
 
 - Sử dụng Decorator, tuy nhiên phải chú ý đến thứ tự, theo chiều ngược lại. Ví dụ:
 
@@ -337,7 +337,7 @@ With fakes and stubs, you can test if the test subject called the right method w
 
 ![Basic structure](http://twimgs.com/ddj/images/article/2014/0514/Python2.gif)
 
-`Mock` class(green) có 2 lớp cha `NoneCallableMock` và `CallableMixin`. `NoneCallableMock` xác định ra routine cần thiết bằng các mock object. Nó sẽ ghi đè 1 số magic methods, cho chúng behavior mặc định? Và nó cũng cung cấp assert routines nhằm theo dõi, lần theo behavior của mock.  Đối với `CallableMixin`, nó cập nhật các magic methods giúp cho mock object có thể gọi được.
+`Mock` class(green) có 2 lớp cha `NoneCallableMock` và `CallableMixin`. `NoneCallableMock` xác định ra routine cần thiết bằng các mock object. Nó sẽ ghi đè 1 số magic methods, cho chúng behavior mặc định? Và nó cũng cung cấp assert routines nhằm theo dõi, lần theo behavior của mock. Đối với `CallableMixin`, nó cập nhật các magic methods giúp cho mock object có thể gọi được.
 
 ## 6. Tài liệu tham khảo
 

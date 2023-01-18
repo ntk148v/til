@@ -10,11 +10,12 @@ Source:
 
 - Zeebe is a workflow engine for microservices orchestration. Zeebe ensures that, once started, flows are always carried out fully, retrying steps in case of failures. Along the way, Zeebe maintains a complete audit log so that the progress of flows can be monitored. Zeebe is fault tolerant and scales seamlessly to handle growing transaction volumes.
 - It leverages [event sourcing](https://martinfowler.com/eaaDev/EventSourcing.html), instead of database tables.
+
   - Traditional workflow engines capture the current state of a workflow instance in a database table.
 
   ![](https://media-exp1.licdn.com/dms/image/C4D12AQHhFrqzALwFwg/article-inline_image-shrink_1000_1488/0/1564999156954?e=1666224000&v=beta&t=OYeaNZjenFPQ5XWaNzgWW7H0nWHP8EPb3gpxRDeCVWM)
 
-  - All changes to the workflow state are captured as *events* and thse events are stored in an event log alongside commands.
+  - All changes to the workflow state are captured as _events_ and thse events are stored in an event log alongside commands.
 
   ![](https://media-exp1.licdn.com/dms/image/C4D12AQFZjsMSFbv4hA/article-inline_image-shrink_1000_1488/0/1564999185089?e=1666224000&v=beta&t=u86tsHpOHiTxbLAwgC-6olrjnKCowEfDFq6aFKZnt28)
 
@@ -45,7 +46,8 @@ Source:
   - submitting the workflow to Zeebe.
   - creating job workers that can request jobs from Zeebe and complete them.
 - Zeebe uses **visual workflow definitions** in the ISO standard BPMN, which can be modeled graphically with Zeebe Modeler.
-- A workflow can include so called *service tasks*. When an instance reaches these tasks some of your code needs to be executed. This is done by creating *Jobs* which are fetched by *JobWorkers* in your applications.
+- A workflow can include so called _service tasks_. When an instance reaches these tasks some of your code needs to be executed. This is done by creating _Jobs_ which are fetched by _JobWorkers_ in your applications.
+
   - For example, Go:
 
   ```go

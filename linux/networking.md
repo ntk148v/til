@@ -3,6 +3,7 @@
 ## 1. POSIX sockets and Packet flows
 
 - Futher reading:
+
   - <https://blog.packagecloud.io/eng/2017/02/06/monitoring-tuning-linux-networking-stack-sending-data/>
   - <https://blog.packagecloud.io/eng/2016/06/22/monitoring-tuning-linux-networking-stack-receiving-data/>
   - <https://blog.packagecloud.io/eng/2016/10/11/monitoring-tuning-linux-networking-stack-receiving-data-illustrated/>
@@ -18,7 +19,7 @@
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/InternetSocketBasicDiagram_zhtw.png/220px-InternetSocketBasicDiagram_zhtw.png)
 
-- Most in-kernel network stacks implement POSIX socket operations as *system calls* (both control plane operations (`socket()`), and data plane operations (`sendmsg()`)). System calls -> context switching, CPU cache pollution.
+- Most in-kernel network stacks implement POSIX socket operations as _system calls_ (both control plane operations (`socket()`), and data plane operations (`sendmsg()`)). System calls -> context switching, CPU cache pollution.
 - Socket API pushes the OS to adopt a design, which demands dynamic memory allocation and locking. When a packet arrives on the NIC, the OS first wraps the packet in a buffer object, called a socket buffer (`skb`) in Linux. The allocation of the buffer object puts much stress on the OS dynamic memory allocator. Once allocated, the OS then passes the buffer object down the in-kernel network stack for further processing. The buffer object lives until the application consumes all the data it holds with the `recvmsg()` system call. As the buffer object can be forwarded between CPU cores and accessed from multiple threads, locks must be used to protect against concurrent access.
 - Packet processing overheads in the kernel
   - Too many context switches between kernel and userspace.

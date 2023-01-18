@@ -58,6 +58,7 @@ Quick views:
 - **An action runner** is the execution environment for user-implemented actions.
 
 - An action is composed of two parts:
+
   - A YAML metadata file which describes the action, and its inputs.
   - A script file which implements the action logic.
 
@@ -65,11 +66,12 @@ Quick views:
 
 - Parameters of runners can be overridden but not all attributes for runner parameters can be overridden.
 
-- **Environment Variables Available to Actions:
-  - ST2\_ACTION\_PACK\_NAME: name of the pack which the currently executed action belongs to.
-  - ST2\_ACTION_\_EXECUTION\_ID: execution id of the action being currently executed.
-  - ST2\_ACTION\_API\_URL: full url to the public API endpoint.
-  - ST2\_ACTION\_AUTH\_TOKEN: auth token which is available to the action until it completes. When the action completes, the token gets revoked.
+- \*\*Environment Variables Available to Actions:
+
+  - ST2_ACTION_PACK_NAME: name of the pack which the currently executed action belongs to.
+  - ST2_ACTION\_\_EXECUTION_ID: execution id of the action being currently executed.
+  - ST2_ACTION_API_URL: full url to the public API endpoint.
+  - ST2_ACTION_AUTH_TOKEN: auth token which is available to the action until it completes. When the action completes, the token gets revoked.
 
 - Convert Existing scripts into Actions:
   - Make sure the script conforms to conventions.
@@ -85,11 +87,11 @@ description: "Print message to standard output."
 enabled: true
 entry_point: "my_echo_action.py"
 parameters:
-    message:
-        type: "string"
-        description: "Message to print."
-        required: true
-        position: 0
+  message:
+    type: "string"
+    description: "Message to print."
+    required: true
+    position: 0
 ```
 
 ```python
@@ -116,20 +118,19 @@ class MyEchoAction(Action):
 ```yaml
 # metadata file
 ---
-  class_name: "SampleSensor"
-  entry_point: "sample_sensor.py"
-  description: "Sample sensor that emits triggers."
-  trigger_types:
-    -
-      name: "event"
-      description: "An example trigger."
-      payload_schema:
-        type: "object"
-        properties:
-          executed_at:
-            type: "string"
-            format: "date-time"
-            default: "2014-07-30 05:04:24.578325"
+class_name: "SampleSensor"
+entry_point: "sample_sensor.py"
+description: "Sample sensor that emits triggers."
+trigger_types:
+  - name: "event"
+    description: "An example trigger."
+    payload_schema:
+      type: "object"
+      properties:
+        executed_at:
+          type: "string"
+          format: "date-time"
+          default: "2014-07-30 05:04:24.578325"
 ```
 
 ```python
@@ -151,13 +152,14 @@ class SamplePollingSensor(PollingSensor):
 - Sensor service provides different services to the sensor via public methods.
 
 - Common operations:
+
   - `dispatch(trigger, payload, trace_tag)`: Allows the sensor to inject trigger into the system.
   - `get_logger(name)`: Allows the sensor instance to retrieve the logger instance which is specific to that sensor.
 
 - Datastore management operations:
   - `list_values(local=True, prefix=None)`: Allows to list the values in the datastore.
   - `get_value(name, local=True, decrypt=False)`: Allows to retrive a single value from the datastore.
-  - `set_value(name, value, ttl=None), local=True, encrypt=False)`: Allows to store (set_) a value in the datastore.
+  - `set_value(name, value, ttl=None), local=True, encrypt=False)`: Allows to store (set\_) a value in the datastore.
   - `delete_value(name, local=True)`: Allows to delete an existing value from the datastore.
 
 ### 3.3. Rules
@@ -167,33 +169,33 @@ class SamplePollingSensor(PollingSensor):
 
 ```yaml
 ---
-    name: "rule_name"                      # required
-    pack: "examples"                       # optional
-    description: "Rule description."       # optional
-    enabled: true                          # required
+name: "rule_name" # required
+pack: "examples" # optional
+description: "Rule description." # optional
+enabled: true # required
 
-    trigger:                               # required
-        type: "trigger_type_ref"
+trigger: # required
+  type: "trigger_type_ref"
 
-    criteria:                              # optional
-        trigger.payload_parameter_name1:
-            type: "regex"
-            pattern : "^value$"
-        trigger.payload_parameter_name2:
-            type: "iequals"
-            pattern : "watchevent"
+criteria: # optional
+  trigger.payload_parameter_name1:
+    type: "regex"
+    pattern: "^value$"
+  trigger.payload_parameter_name2:
+    type: "iequals"
+    pattern: "watchevent"
 
-    action:                                # required
-        ref: "action_ref"
-        parameters:                        # optional
-            foo: "bar"
-            baz: "{{ trigger.payload_parameter_1 }}"
+action: # required
+  ref: "action_ref"
+  parameters: # optional
+    foo: "bar"
+    baz: "{{ trigger.payload_parameter_1 }}"
 ```
 
 - Trigger in a rule specifics which incoming events should be inspected for potential match against this rule.
 - Criteria are the rule(s) needed to be matched against (logical `AND`). You can achieve logical `OR` behavior by creating multiple independent rules (one per criteria expression).
 - Action: subsequent action/workflow to be executed on succesful match of a trigger and an optional set of criteria.
-- The rules engine is able to interpolate variables by leveraging *Jinja templating syntax*.
+- The rules engine is able to interpolate variables by leveraging _Jinja templating syntax_.
 - Rule Location: `/opt/stackstorm/packs/<pack-name>/rules`
 - Test with `st2-rule-tester`.
 - Timers allow running a particular action repeatedly based on a defined time interval, or at one particular date and time.
@@ -214,8 +216,8 @@ class SamplePollingSensor(PollingSensor):
 
 - A Pack is the unit of deployment for integrations and automations that extend StackStorm.
 - A pack can contain Actions, Workflows, Rules, Sensors, and Aliases
-- *Integration packs- - packs extend StackStorm to integrate it with external systems. Integration packs can be shared and reused by anyone who uses the service that pack is built for.
-- *Automation packs- - packs capture automation patterns - they contain workflows, rules, and actions for a specific automation process. Automation packs are often very site-specific and have a little use outside of a particular team or company.
+- \*Integration packs- - packs extend StackStorm to integrate it with external systems. Integration packs can be shared and reused by anyone who uses the service that pack is built for.
+- \*Automation packs- - packs capture automation patterns - they contain workflows, rules, and actions for a specific automation process. Automation packs are often very site-specific and have a little use outside of a particular team or company.
 
 ### 3.6. Webhooks
 
@@ -250,4 +252,4 @@ formats:
   - "run {{cmd}} on {{hosts}}"
 ```
 
-- Notifications require an action that is registered  with StackStorm and a notification rule to go with it. Notifications are implemented as triggers, rules and actions.
+- Notifications require an action that is registered with StackStorm and a notification rule to go with it. Notifications are implemented as triggers, rules and actions.

@@ -36,107 +36,107 @@
 
   - And on and on.
 
---> __The questions start having answers when deploy OpenStack following the tenents of [immutable infrastructure](https://sdake.io/2015/11/11/the-tldr-on-immutable-infrastructure/)__
+--> **The questions start having answers when deploy OpenStack following the tenents of [immutable infrastructure](https://sdake.io/2015/11/11/the-tldr-on-immutable-infrastructure/)**
 
---> __Dockerizing OpenStack.__
+--> **Dockerizing OpenStack.**
 
 ## Dockerizing OpenStack
 
 1. Why Docker?
 
-    - Pros:
+   - Pros:
 
-        - Immutable.
+     - Immutable.
 
-        - Portable.
+     - Portable.
 
-        - Fast.
+     - Fast.
 
-        - App focused experience.
+     - App focused experience.
 
-        - Massive community.
+     - Massive community.
 
-        - Branding.
+     - Branding.
 
-        - Growth.
+     - Growth.
 
-    - Cons:
+   - Cons:
 
-        - Green - Kolla is even greener.
+     - Green - Kolla is even greener.
 
-        - Additional complexity.
+     - Additional complexity.
 
-        - Difficult to audit.
+     - Difficult to audit.
 
 2. What does it mean?
 
-    Create Docker images for all OpenStack components.
+   Create Docker images for all OpenStack components.
 
-    - OpenStack has __many__ services: Keystone, Nova, Swift, Cinder,...
+   - OpenStack has **many** services: Keystone, Nova, Swift, Cinder,...
 
-    - Each service can have one or more components. For ex Nova: api, scheduler, condutor,...
+   - Each service can have one or more components. For ex Nova: api, scheduler, condutor,...
 
-    - Docker best practices calls one function/proccess per container. All of this boils down to having to create a significant number of docker images (around 45 for the base services).
+   - Docker best practices calls one function/proccess per container. All of this boils down to having to create a significant number of docker images (around 45 for the base services).
 
-    - This now presents with a new problem, managing a large amount of Docker containers over many hosts.
+   - This now presents with a new problem, managing a large amount of Docker containers over many hosts.
 
 3. What does it buy you?
 
-    - Simplify deployments and ongoing operations. Breaking up the OpenStack services up into the micro services (Docker containers) each micro service becomes an atomic unit of management such as deployment, upgrading, scaling,...
+   - Simplify deployments and ongoing operations. Breaking up the OpenStack services up into the micro services (Docker containers) each micro service becomes an atomic unit of management such as deployment, upgrading, scaling,...
 
-    - Repeatable, reliale and fast. As long as the Docker container are idemponent:
+   - Repeatable, reliale and fast. As long as the Docker container are idemponent:
 
-        - Patching, upgrading the docker containers are atomic.
+     - Patching, upgrading the docker containers are atomic.
 
-        - The patches are applied upstream to docker image. Tags are then used for rolling forward and backward.
+     - The patches are applied upstream to docker image. Tags are then used for rolling forward and backward.
 
 ## Introduction
 
 1. What exactly is it?
 
-    - Openstack Kolla is a recent project to come under the Openstack Big Tent and aims to provide production-ready, ansible-based, declarative deployment of Openstack entirely in Docker containers.
+   - Openstack Kolla is a recent project to come under the Openstack Big Tent and aims to provide production-ready, ansible-based, declarative deployment of Openstack entirely in Docker containers.
 
-    - OpenSource project is hosted on StackForge.
+   - OpenSource project is hosted on StackForge.
 
-    - Goal: Scalable, fast, reliable and upgradable OpenStack clouds using community best practices.
+   - Goal: Scalable, fast, reliable and upgradable OpenStack clouds using community best practices.
 
-    - Kolla provides Docker containers and Ansible playbooks to meet Kolla’s mission. Kolla’s mission is to provide production-ready containers and deployment tools for operating OpenStack clouds.
+   - Kolla provides Docker containers and Ansible playbooks to meet Kolla’s mission. Kolla’s mission is to provide production-ready containers and deployment tools for operating OpenStack clouds.
 
-    - Kolla is highly opinionated out of the box, but allows for complete customization. This permits operators with minimal experience to deploy OpenStack quickly and as experience grows modify the OpenStack configuration to suit the operator’s exact requirements.
+   - Kolla is highly opinionated out of the box, but allows for complete customization. This permits operators with minimal experience to deploy OpenStack quickly and as experience grows modify the OpenStack configuration to suit the operator’s exact requirements.
 
-    - Docker images: View the available images on [Docker Hub](https://hub.docker.com/u/kolla/)
+   - Docker images: View the available images on [Docker Hub](https://hub.docker.com/u/kolla/)
 
 2. What does it do?
 
-    - Provide all the Dockerfiles to build the OpenStack services Docker container images.
+   - Provide all the Dockerfiles to build the OpenStack services Docker container images.
 
-        - A simple Python script to build all the images using the Dockerfiles and optionally push them to a private registry.
+     - A simple Python script to build all the images using the Dockerfiles and optionally push them to a private registry.
 
-        - Can build from both source (pull from github) or binary (RPMs/Debs - for example RDO). Source builds allow the build to pick up patches/releases that have not yet made it into the distros yet.
+     - Can build from both source (pull from github) or binary (RPMs/Debs - for example RDO). Source builds allow the build to pick up patches/releases that have not yet made it into the distros yet.
 
-    - Provide start/config scripts that live inside the images to start/config the specific OpenStack service.
+   - Provide start/config scripts that live inside the images to start/config the specific OpenStack service.
 
 3. Current Status.
 
-    - Core Services Containers completed.
+   - Core Services Containers completed.
 
-    - Kolla is tested on CentOS, Oracle Linux, RHEL and Ubuntu as both container OS platforms and bare metal deployment targets.
+   - Kolla is tested on CentOS, Oracle Linux, RHEL and Ubuntu as both container OS platforms and bare metal deployment targets.
 
-    - Single Node & MultiNode installation with Ansible completed.
+   - Single Node & MultiNode installation with Ansible completed.
 
-    - Configuration management for core services with Ansible is done.
+   - Configuration management for core services with Ansible is done.
 
-    - Templating Dockerfiles is done too.
+   - Templating Dockerfiles is done too.
 
 4. Contribution Summary.
 
-    - Contribution by companies.
+   - Contribution by companies.
 
-    ![Contribution by companies](https://github.com/ntk148v/research_about_kolla/blob/master/images/contribution_by_companies.png?raw=true)
+   ![Contribution by companies](https://github.com/ntk148v/research_about_kolla/blob/master/images/contribution_by_companies.png?raw=true)
 
-    - Contribution by contributors.
+   - Contribution by contributors.
 
-    ![Contribution by contributors](https://github.com/ntk148v/research_about_kolla/blob/master/images/contribution_by_contributors.png?raw=true)
+   ![Contribution by contributors](https://github.com/ntk148v/research_about_kolla/blob/master/images/contribution_by_contributors.png?raw=true)
 
 ## Architecture
 
@@ -178,15 +178,15 @@
 
 ## Source Directories
 
-Note: Ocata - ``ansible`` directory is split to [openstack kolla-ansible](http://github.com/openstack/kolla-ansible)
+Note: Ocata - `ansible` directory is split to [openstack kolla-ansible](http://github.com/openstack/kolla-ansible)
 
-- ``contrib`` - Contains demos scenarios for Heat and Murano and a development environment for Vagrant
-- ``doc`` - Contains documentation.
-- ``docker`` - Contains jinja2 templates for the docker build system.
-- ``etc`` - Contains a reference etc directory structure which requires configuration of a small number of configuration variables to achieve working All-in-One (AIO) deployment.
-- ``tests`` - Contains functional testing tools.
-- ``tools`` - Contains tools for interacting with Kolla.
-- ``specs`` - Contains the Kolla communities key arguments about architectural shifts in the code base.
+- `contrib` - Contains demos scenarios for Heat and Murano and a development environment for Vagrant
+- `doc` - Contains documentation.
+- `docker` - Contains jinja2 templates for the docker build system.
+- `etc` - Contains a reference etc directory structure which requires configuration of a small number of configuration variables to achieve working All-in-One (AIO) deployment.
+- `tests` - Contains functional testing tools.
+- `tools` - Contains tools for interacting with Kolla.
+- `specs` - Contains the Kolla communities key arguments about architectural shifts in the code base.
 
 ## Problems
 
@@ -194,26 +194,27 @@ Note: Ocata - ``ansible`` directory is split to [openstack kolla-ansible](http:/
 
 - Problem with MTU value:
 
-    OpenStack network seems to use lower MTU values (<1500) and Docker does not infer the MTU settings from the host's network card [since 1.10](https://github.com/docker/docker/issues/22028). So the solution is running docker daemon with custom MTU settings. To do it, open this file:
+  OpenStack network seems to use lower MTU values (<1500) and Docker does not infer the MTU settings from the host's network card [since 1.10](https://github.com/docker/docker/issues/22028). So the solution is running docker daemon with custom MTU settings. To do it, open this file:
 
-    > $ sudo vim /lib/systemd/system/docker.service
+  > $ sudo vim /lib/systemd/system/docker.service
 
-    Then edit a line to look like this:
+  Then edit a line to look like this:
 
-    > ExecStart=/usr/bin/dockerd -H fd:// --mtu=1454
+  > ExecStart=/usr/bin/dockerd -H fd:// --mtu=1454
 
-    MTU=1454 is the value that seems to be common with OpenStack. After that, you can look it up in your host using ifconfig or ip a.
+  MTU=1454 is the value that seems to be common with OpenStack. After that, you can look it up in your host using ifconfig or ip a.
 
-    Finally restart Docker:
+  Finally restart Docker:
 
-    > $ sudo systemctl daemon-reload
- > $ sudo service docker restart
+  > $ sudo systemctl daemon-reload
+  > $ sudo service docker restart
 
- But why? Let me explain. Because HTTPS servers set the DF or Do Not Fragment IP flag on packets and regular HTTP servers do not. This matters because HTTP and HTTPS usually transfer a lot of data. That means that the packets are usually quite large and are often the maximum allowed size. So if a server sends out a very big HTTP packet and it goes through a route on the network that does not allow packets that size, then the router in question simply breaks the packet up. But if a server sends out a big HTTPS packet and it hits a route that doesn’t allow packets that size, the routers on that route can’t break the packet up. So they drop the packet and send back an ICMP message telling the machine that sent the big packet to adjust it’s MTU (maximum transfer unit) size and resend the packet. This is called [Path MTU Discovery](https://en.wikipedia.org/wiki/Path_MTU_Discovery). [More details here](http://markmaunder.com/2009/10/20/routers-treat-https-and-http-traffic-differently/)
+But why? Let me explain. Because HTTPS servers set the DF or Do Not Fragment IP flag on packets and regular HTTP servers do not. This matters because HTTP and HTTPS usually transfer a lot of data. That means that the packets are usually quite large and are often the maximum allowed size. So if a server sends out a very big HTTP packet and it goes through a route on the network that does not allow packets that size, then the router in question simply breaks the packet up. But if a server sends out a big HTTPS packet and it hits a route that doesn’t allow packets that size, the routers on that route can’t break the packet up. So they drop the packet and send back an ICMP message telling the machine that sent the big packet to adjust it’s MTU (maximum transfer unit) size and resend the packet. This is called [Path MTU Discovery](https://en.wikipedia.org/wiki/Path_MTU_Discovery). [More details here](http://markmaunder.com/2009/10/20/routers-treat-https-and-http-traffic-differently/)
 
- These links make my day:
-  - [HTTPS connection failing for Docker >= 1.10](https://bugs.launchpad.net/neutron/+bug/1595762)
-  - [Docker container not connecting to https endpoints](http://stackoverflow.com/questions/35300497/docker-container-not-connecting-to-https-endpoints)
+These links make my day:
+
+- [HTTPS connection failing for Docker >= 1.10](https://bugs.launchpad.net/neutron/+bug/1595762)
+- [Docker container not connecting to https endpoints](http://stackoverflow.com/questions/35300497/docker-container-not-connecting-to-https-endpoints)
 
 ## References
 

@@ -14,7 +14,7 @@ An Operator is an application-specific controller that extends the Kubernetes AP
 
 ## How is an Operator Built?
 
-- Operator build upon 2 central Kubernetes concepts: Resources and Controllers and adds a set of knowledge or configuration that allows the Operator to execute common application tasks. For example, when scaling an etcd cluster manually, a user has to perform a number of steps: create a DNS name for the new etcd member, launch the new etcd instance, and then use the etcd administrative tools (etcd member add) to tell the existing cluster about this new mebmber. Instead with the *etcd Operator- a user can simply increase the etcd cluster size field by 1.
+- Operator build upon 2 central Kubernetes concepts: Resources and Controllers and adds a set of knowledge or configuration that allows the Operator to execute common application tasks. For example, when scaling an etcd cluster manually, a user has to perform a number of steps: create a DNS name for the new etcd member, launch the new etcd instance, and then use the etcd administrative tools (etcd member add) to tell the existing cluster about this new mebmber. Instead with the \*etcd Operator- a user can simply increase the etcd cluster size field by 1.
 
 ![backup-triggered-by-a-user](https://coreos.com/sites/default/files/inline-images/Operator-scale.png)
 

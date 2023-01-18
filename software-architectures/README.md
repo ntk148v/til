@@ -74,20 +74,20 @@ Source:
 
 - Defines a way to make software components reusable and interoperable via service interfaces - a communication protocol over a network.
 - **9 main elements**:
-  - *Standardized Service* Contract where services are defined making it easier for client applications to understand the purpose of the service.
-  - *Loose Coupling* is a way to interconnecting components within the system or network so that the components can depend on one another to the least extent acceptable.
-  - *Service Abstraction* hides the logic behind what the application is doing.
-  - *Service Reusability* divides the services with the intent of reusing as much as possible to avoid spending resources on building the same code and configurations.
-  - *Service Autonomy* ensures the logic of a task or a request is completed within the code.
-  - *Service Statelessness* whereby services do not withhold information from one state to another in the client application.
-  - *Service Discoverability* allows services to be discovered via a service registry.
-  - *Service Composability* breaks down larger problems into smaller elements, segmenting the service into modules, making it more manageable.
-  - *Service Interoperability* governs the use of standards (e.g. XML) to ensure larger usability and compatibility.
+  - _Standardized Service_ Contract where services are defined making it easier for client applications to understand the purpose of the service.
+  - _Loose Coupling_ is a way to interconnecting components within the system or network so that the components can depend on one another to the least extent acceptable.
+  - _Service Abstraction_ hides the logic behind what the application is doing.
+  - _Service Reusability_ divides the services with the intent of reusing as much as possible to avoid spending resources on building the same code and configurations.
+  - _Service Autonomy_ ensures the logic of a task or a request is completed within the code.
+  - _Service Statelessness_ whereby services do not withhold information from one state to another in the client application.
+  - _Service Discoverability_ allows services to be discovered via a service registry.
+  - _Service Composability_ breaks down larger problems into smaller elements, segmenting the service into modules, making it more manageable.
+  - _Service Interoperability_ governs the use of standards (e.g. XML) to ensure larger usability and compatibility.
 - There are **3 roles** in each of the SOA building blocks.
-  - *Service provider* works in conjunction with the service registry, debating the whys and hows of the services being offered, such as security, availability, what to charge, and more. This role also determines the service category and if there need to be any trading agreements.
-  - *Service registry/broker/repository* makes information regarding the service available to those requesting it. The scope of the broker is determined by whoever implements it.
-  - *Service consumer* locates entries in the broker registry and then binds them to the service provider. They may or may not be able to access multiple services; that depends on the capability of the service requester.
-- SOA was an overused term and has meant different things to different people. But as a common denominator, SOA means that *you structure your application by decomposing it into multiple services (most commonly as HTTP services) that can be classified as different types like subsystems or tiers*. Those services can now be deployed as Docker containers, which solves deployment issues, because all the dependencies are included in the container image --> scale up issue if you're deploying based on single Docker host --> Docker clustering software/an orchestrator.
+  - _Service provider_ works in conjunction with the service registry, debating the whys and hows of the services being offered, such as security, availability, what to charge, and more. This role also determines the service category and if there need to be any trading agreements.
+  - _Service registry/broker/repository_ makes information regarding the service available to those requesting it. The scope of the broker is determined by whoever implements it.
+  - _Service consumer_ locates entries in the broker registry and then binds them to the service provider. They may or may not be able to access multiple services; that depends on the capability of the service requester.
+- SOA was an overused term and has meant different things to different people. But as a common denominator, SOA means that _you structure your application by decomposing it into multiple services (most commonly as HTTP services) that can be classified as different types like subsystems or tiers_. Those services can now be deployed as Docker containers, which solves deployment issues, because all the dependencies are included in the container image --> scale up issue if you're deploying based on single Docker host --> Docker clustering software/an orchestrator.
 - Microservices derive from SOA, but SOA is different from microservices architecture. Features like large central broker, central orchestrators at the organization level, and the Enterprise Service Bus are typical in SOA but in most cases, there are anti-patterns in the microservice community.
 
 ### 3.2. How it works?
@@ -134,9 +134,9 @@ Source:
   - This is a messaging infrastructure based on subscriptions to an event stream. With this model, after an event occurs, or is published, it is sent to subscribers that need to be informed.
 - **Event streaming** model.
   - With an event streaming model, events are written to a log. Event consumers don’t subscribe to an event stream. Instead, they can read from any part of the stream and can join the stream at any time.
-    - *Event stream processing* uses a data streaming platform, like Apache Kafka, to ingest events and process or transform the event stream. Event stream processing can be used to detect meaningful patterns in event streams.
-    - *Simple event processing* is when an event immediately triggers an action in the event consumer.
-    - *Complex event processing* requires an event consumer to process a series of events in order to detect patterns.
+    - _Event stream processing_ uses a data streaming platform, like Apache Kafka, to ingest events and process or transform the event stream. Event stream processing can be used to detect meaningful patterns in event streams.
+    - _Simple event processing_ is when an event immediately triggers an action in the event consumer.
+    - _Complex event processing_ requires an event consumer to process a series of events in order to detect patterns.
 
 ### 4.3. Benefits of event-driven architecture
 
@@ -217,7 +217,7 @@ Source: <https://towardsdatascience.com/effective-microservices-10-best-practice
 
 #### 5.3.7. Asynchronous Communication
 
-- How will the services communicate and share data among themselves?  (when each microservice has its own data storage).
+- How will the services communicate and share data among themselves? (when each microservice has its own data storage).
 - The easiest and most common way to communicate between microservices is via Synchronous REST API -> latency adds up + failure cascading + tight coupling between microservices.
 - Microservices should communicate Asynchronous (Message Queue or asynchronous REST or CQRS).
 
@@ -425,10 +425,10 @@ Source: <https://towardsdatascience.com/effective-microservices-10-best-practice
 
 ### 5.6. Concerns?
 
-- *How big is a microservice?* Or how do I scope my microservice?
-- *How do I decompose our application?* Althought I have read multiple patterns, in the actual case, sometimes it isn't simple and clear as the guide.
-- *SOA and Microservice*: You can check section 3.3. This is IBM's classification. But some others consider [SOA is just a concept, about arraging an application as a collection of sub services. And microservices is a one form of it as well as ESB](https://herbertograca.com/2017/11/09/service-oriented-architecture-soa/).
-- *Microservice? Or Miniservices?*:
+- _How big is a microservice?_ Or how do I scope my microservice?
+- _How do I decompose our application?_ Althought I have read multiple patterns, in the actual case, sometimes it isn't simple and clear as the guide.
+- _SOA and Microservice_: You can check section 3.3. This is IBM's classification. But some others consider [SOA is just a concept, about arraging an application as a collection of sub services. And microservices is a one form of it as well as ESB](https://herbertograca.com/2017/11/09/service-oriented-architecture-soa/).
+- _Microservice? Or Miniservices?_:
   - Check out this [article](https://thenewstack.io/miniservices-a-realistic-alternative-to-microservices/).
   - Miniservices is all about performing one function as a service.
-- *Shared Database*: A shared database is considered an anti-pattern. Althought, it's debatable. The point is that when using a shared database, the microservices lose their core properties: scalability, resilience, and independence. Therefore, a shared database is rarely used with microservices.
+- _Shared Database_: A shared database is considered an anti-pattern. Althought, it's debatable. The point is that when using a shared database, the microservices lose their core properties: scalability, resilience, and independence. Therefore, a shared database is rarely used with microservices.

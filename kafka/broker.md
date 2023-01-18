@@ -10,6 +10,7 @@ Source: <https://developer.confluent.io/learn-kafka/architecture/broker/>
 
 - Client requests fall into 2 categories: produce requests and fetch requests.
 - The Produce request:
+
   - Partition assignment: when a producer is ready to send an event record, it will use a configurable partitioner to determine the topic partition to assign to the record. If the record has a key, then the default partitioner will use a hash of the key to determine the correct partition -> any records with the same key will always be assigned to the same partition. If the record has no key then a partition strategy is used to balance the data in the partitions.
   - Record batching: the producer will accumulate the records assigned to a given partition into batches (+ compression). The producer has 2 main configurations that is uses to determine when to send batches to the broker: `batch.size` determines the minimum size of the batch, `linger.ms` specifies the maximum amount of time to wait for the batch to reach tat size. When either the batch size requirement is met, or the wait time has been reached, the batch is sent to the broker.
 

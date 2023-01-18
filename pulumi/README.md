@@ -8,7 +8,7 @@ Source: <https://www.pulumi.com/docs/get-started/>
   - [3. Pulumi vs. X](#3-pulumi-vs-x)
     - [3.1. Terraform](#31-terraform)
 
-> Modern infrastructure as Code platform that allows you to use familiar programming languages (TypeScript, JavaScript, Python, Go, .NET, Java), markup languages (YAML) ,  and tools to build, deploy, and manage cloud infrastructure.
+> Modern infrastructure as Code platform that allows you to use familiar programming languages (TypeScript, JavaScript, Python, Go, .NET, Java), markup languages (YAML) , and tools to build, deploy, and manage cloud infrastructure.
 
 ## 1. How it works
 
@@ -54,6 +54,7 @@ $ pulumi stack rm --force
 ```
 
 - Stack outputs:
+
   - A stack can export values as stack outputs. For example:
 
   ```go
@@ -75,8 +76,8 @@ otherOutput := other.GetOutput(pulumi.String("x"))
 ```
 
 - State and backend:
-  - Pulumi stores metadata (*state*) about infrastructure so that it can manage cloud resources. Each stack hash its own state.
-  - Pulumi stores state in a *backend*. A backend is an API and storage endpoint used by the CLI to coordinate updates, and read and write stack stack state whenever appropriate.
+  - Pulumi stores metadata (_state_) about infrastructure so that it can manage cloud resources. Each stack hash its own state.
+  - Pulumi stores state in a _backend_. A backend is an API and storage endpoint used by the CLI to coordinate updates, and read and write stack stack state whenever appropriate.
   - Backend:
     - Service: a managed cloud experience using the online or self-hosted Pulumi service application.
     - Self-managed: AWS S3 (and compatible server such as Minio, Ceph), Microsoft Azure Blob Storage, Google Cloud Storage, or a local filesystem.
@@ -98,5 +99,5 @@ otherOutput := other.GetOutput(pulumi.String("x"))
 | Documentation          | Limited, with best resources found on Pulumi slack and Github              | Excellent official documentation                                                    |
 | Testing and validation | Unit, property, and integration testing. Supports popular test frameworks  | Intergration testing only                                                           |
 | Secrets management     | Yes, secrets are encrypted in transit and in the state file.               | No, secrets are stored in Vault. There is no way to encrypt them in the state file. |
-| Deploying to the cloud | Can be done from a local service                                           | Must be done through  the SaaS platform                                             |
+| Deploying to the cloud | Can be done from a local service                                           | Must be done through the SaaS platform                                              |
 | Modularity             | Problematic with higher-level Pulumi extensions                            | Ideal due to reusable components                                                    |

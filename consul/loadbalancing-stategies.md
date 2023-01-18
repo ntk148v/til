@@ -125,6 +125,7 @@ http {
 ## 5. HAProxy 1.8
 
 - Pros
+
   - No external tools - just run HAProxy and point directly to Consul
   - Handles graceful reloads, TTLs, etc
   - Supports Kubernetes and Docker Swarm service discovery too

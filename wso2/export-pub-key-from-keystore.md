@@ -2,6 +2,7 @@
 title: Export public key from WSO2 keystore
 path: wso2/export-pub-key-from-keystore.md
 ---
+
 1. By default, the WSO2 Identity Server keystore is located at `<IS_HOME>/repository/resources/security/wso2carbon.jks`.
 2. Convert keystore to `pkcs12` format. Default password is `wso2carbon`.
 

@@ -12,7 +12,7 @@ Source:
 
 ## 1. Introduction
 
-- SDP is a way to hide Internet-connected infrastructure so that external parties and attackers cannot see it, whether it is hosted on-premise  or in the cloud.
+- SDP is a way to hide Internet-connected infrastructure so that external parties and attackers cannot see it, whether it is hosted on-premise or in the cloud.
 - The goal: to base the network perimeter on software instead of hardware.
 - A software-defined perimeter forms a virtual boundary around company assets at the network layer, not the application layer.
 - The protocol is divied into 2 sections:
@@ -51,7 +51,7 @@ Source:
   - Enterprise application isolation
   - Private Cloud and Hybrid Cloud
   - Software as a Service
-  - Infrastructure  as a Service
+  - Infrastructure as a Service
   - Platform as a Service
   - Cloud-based VDI
   - Internet-of-things

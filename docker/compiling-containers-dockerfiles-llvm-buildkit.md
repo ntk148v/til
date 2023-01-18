@@ -33,8 +33,8 @@ Source: https://blog.earthly.dev/compiling-containers-dockerfiles-llvm-and-build
 ![](https://blog.earthly.dev/content/images/2021/03/frontends-2.png)
 
 - Images, unlike executables, have their own isolated filesystem.
-    - The task of building an image can have varying syntax and the result must target several machine architectures.
-    - BuildKit has its own IR, LLB. LLB is to Dockerfile what LLVM IR is to C.
+  - The task of building an image can have varying syntax and the result must target several machine architectures.
+  - BuildKit has its own IR, LLB. LLB is to Dockerfile what LLVM IR is to C.
 
 ![](https://blog.earthly.dev/content/images/2021/03/LLB-IR.png)
 

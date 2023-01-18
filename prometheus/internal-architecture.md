@@ -8,10 +8,10 @@
 
 > NOTE:
 >
-> * Code links and explanations are based on Prometheus v2.3.1
-> * Arrows indicate request or connection initiation direction, not necessary dataflow direction.
+> - Code links and explanations are based on Prometheus v2.3.1
+> - Arrows indicate request or connection initiation direction, not necessary dataflow direction.
 
 ## Main function
 
-* Initializes and run alls other Prometheus server components + connect interdependent components to each other.
-* 1st: `main()` defines and parses the
+- Initializes and run alls other Prometheus server components + connect interdependent components to each other.
+- 1st: `main()` defines and parses the

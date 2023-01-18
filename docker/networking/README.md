@@ -76,13 +76,13 @@ virbr0            8000.52540011765c   yes             virbr0-nic
 ## 3. Docker networking subsystem
 
 - Docker’s networking subsystem is pluggable, using drivers. Several drivers exist by default, and provide core networking functionality.
-- The following networks are available to you *by default*, when you install Docker on your computer:
+- The following networks are available to you _by default_, when you install Docker on your computer:
   - `bridge`: The default network driver. If you don't specify a driver, this is the type of network are creating. Bridge networks are usually used when your applications run in standalone containers that need to communicate.
-  - `host` - Uses host network: For standalone containers, remove network isolation  between container and the Docker host, the use the host's networking directly.
-  - `none` - isolated/no networking: 
-- Other Docker network available, but  are not covered in this document:
+  - `host` - Uses host network: For standalone containers, remove network isolation between container and the Docker host, the use the host's networking directly.
+  - `none` - isolated/no networking:
+- Other Docker network available, but are not covered in this document:
   - `overlay` - Swarm mode: Overlay networks connect multiple Docker daemons together and enable swarm services to communicate with each other. You can also use overlay networks to facilitate communication between a swarm service and a standalone container, or between two standalone containers on different Docker daemons. This strategy removes the need to do OS-level routing between these containers
-  - `macvlan` - legacy applications needing direct connection to physical network:  Macvlan networks allow you to assign a MAC address to a container, making it appear as a physical device on your network. The Docker daemon routes traffic to containers by their MAC addresses. Using the macvlan driver is sometimes the best choice when dealing with legacy applications that expect to be directly connected to the physical network, rather than routed through the Docker host’s network stack.
+  - `macvlan` - legacy applications needing direct connection to physical network: Macvlan networks allow you to assign a MAC address to a container, making it appear as a physical device on your network. The Docker daemon routes traffic to containers by their MAC addresses. Using the macvlan driver is sometimes the best choice when dealing with legacy applications that expect to be directly connected to the physical network, rather than routed through the Docker host’s network stack.
   - `ipvlan`: IPvlan networks give users total control over both IPv4 and IPv6 addressing. The VLAN driver builds on top of that in giving operators complete control of layer 2 VLAN tagging and even IPvlan L3 routing for users interested in underlay network integration.
   - 3rd party network plugins.
 
@@ -152,7 +152,7 @@ tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      
 ```
 
 - The `/etc/resolv.conf` says that the DNS is available at `127.0.0.1:53` but the netstat output doesn't show any process listening on port 53.
-- Create a new container with more *powers*.
+- Create a new container with more _powers_.
   - The ports 33715 and 41120 do not look like DNS server ports.
   - Check iptables magic: Any DNS query traffic looking for `127.0.0.1:53` is redirected to `127.0.0.1:33715` (TCP), and to `127.0.0.1:41120` (UDP).
   - There is a Docker process running on these ports inside the container, which are actually Docker's embedded DNS's hooks.
@@ -288,7 +288,7 @@ $ docker inspect mynet
 
 ## 4. Deep dive - How can containers transfer data to the kernel, and from there, to outside world?
 
-- Port forwarding (bridge network):  forwards traffic on a **specific** port from a container to the kernel.
+- Port forwarding (bridge network): forwards traffic on a **specific** port from a container to the kernel.
 - Host networking (host network): disables the **network namepspace stack** isolation from the Docker host.
 - You can see 5 rule sections (chains): **PREROUTING**, INPUT, OUTPUT, **POSTROUTING** and **DOCKER**.
   - PREROUTING: rules altering packets before they come into the network stack (immediately after being received by an interface).
@@ -438,8 +438,8 @@ Serving HTTP on 0.0.0.0 port 5000 (http://0.0.0.0:5000/) ...
 ## 5. Restrict connections - Docker and iptables
 
 - On Linux, Docker manipulates `iptables` rules to provide network isolation.
-- Docker install 2 custom iptables chains named `DOCKER-USER` and `DOCKER`, and it ensures that incoming packets are *always* checked by these two chains first.
-- All of Docker's `iptables` rules are added to the `DOCKER` chain -> Do not manipulate this chain manually -> *Must* change `DOCKER-USER` chain instead (apply before any rules Docker creates automatically).
+- Docker install 2 custom iptables chains named `DOCKER-USER` and `DOCKER`, and it ensures that incoming packets are _always_ checked by these two chains first.
+- All of Docker's `iptables` rules are added to the `DOCKER` chain -> Do not manipulate this chain manually -> _Must_ change `DOCKER-USER` chain instead (apply before any rules Docker creates automatically).
 - Rules added to the `FORWARD` chain (manually/by tools) - are evaluated after these chains.
 
 ```shell

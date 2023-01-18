@@ -17,7 +17,7 @@ Source:
 - A tool for managing OCI containers and images, volumes mounted into those containers, and pods made from groups of containers.
 - Based on libpod, a library for container lifecycle management that is also contained in this repository.
 - Relies on an OCI compliant Container Runtime (runc, crun, runv, etc) to interface with the operating system and create the running containers.
-- Able to run rootless containers. A rootless container is a concept of running and managing containers without root privileges. From a security standpoint, rootless containers add an additional layer of security by no allowing root access even if the containers gets  compromised by an attacker. (FYI, Docker also supports rootless mode)
+- Able to run rootless containers. A rootless container is a concept of running and managing containers without root privileges. From a security standpoint, rootless containers add an additional layer of security by no allowing root access even if the containers gets compromised by an attacker. (FYI, Docker also supports rootless mode)
 - Move from Docker CLI to Podman.
 
 ```shell
@@ -36,7 +36,7 @@ alias docker=podman
 | Can deploy pods with multiple containers. The same pod manifest can be used in Kubernetes. Also, you can deploy Kubernetes pod manifest as a Pod pod                                          | There is no concept of a pod in Docker                                                                                                                                   |
 | Can run rootless without any additional configurations                                                                                                                                        | Docker rootless mode requires additional configurations                                                                                                                  |
 | Podman uses [buildah](https://buildah.io/) to build container images, and [skopeo](https://github.com/containers/skopeo) for moving container images between registries and container engines | Docker daemon can do all of these tasks                                                                                                                                  |
-| Podman uses systemd to create control units  for existing containers or to generate new ones.                                                                                                 | Docker uses its daemon                                                                                                                                                   |
+| Podman uses systemd to create control units for existing containers or to generate new ones.                                                                                                  | Docker uses its daemon                                                                                                                                                   |
 
 ## 3. Usage
 

@@ -31,6 +31,7 @@ tcp 0 0 127.0.0.1:3306 0.0.0.0:* LISTEN -
 ```
 
 - Pipelines in Bash.
+
   - Bash has a variable called `PIPESTATUS`, which contains a list of exit staus from the processes in the most recently executed pipeline
 
     ```bash
@@ -39,7 +40,7 @@ tcp 0 0 127.0.0.1:3306 0.0.0.0:* LISTEN -
     1 2 3 4 5
     ```
 
-  - The return status of the execution of the whole pipeline will depend on the `pipefail` variable's status. If this variable is set, the return status of the pipeline  will be the exit status of the rightmost command with a non-zero status or will be zero if all commands exit successfully. With the `pipefail` disabled, the return status of the pipe will be the exit status of the last command
+  - The return status of the execution of the whole pipeline will depend on the `pipefail` variable's status. If this variable is set, the return status of the pipeline will be the exit status of the rightmost command with a non-zero status or will be zero if all commands exit successfully. With the `pipefail` disabled, the return status of the pipe will be the exit status of the last command
 
     ```bash
     $ set -o pipefail

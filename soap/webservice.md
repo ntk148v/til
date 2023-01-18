@@ -4,8 +4,8 @@ Source: <https://www.guru99.com/webservice-testing-beginner-guide.html>
 
 Web services can be implemented in different ways, but the following two are the popular implementations approaches:
 
-* SOAP
-* REST
+- SOAP
+- REST
 
 ## SOAP (Simple Object Access Protocol)
 
