@@ -51,7 +51,7 @@ Source:
 - If it's a new session - from 5 tuples in the packet, calculate a hash value.
 - Using this hash value - pick a real server.
 - Update session table with this lookup information so that katran can simply lookup this information for the next packet in the session and not calculate the hash again.
-Encapsulate packet in another IP packet and send to the real.
+  Encapsulate packet in another IP packet and send to the real.
 
 ### 3.2. Load balacing failure scenario
 

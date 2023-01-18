@@ -10,7 +10,7 @@ Source: <https://docs.docker.com/config/containers/runmetrics/#control-groups>
   - [Running Docker on cgroup v2](#running-docker-on-cgroup-v2)
   - [Find the cgroup for a given container](#find-the-cgroup-for-a-given-container)
 
-Linux Containers rely on control groups which not only track groups of processes, but also expose metrics about CPU, memory, and block I/O  usage.
+Linux Containers rely on control groups which not only track groups of processes, but also expose metrics about CPU, memory, and block I/O usage.
 
 Control groups are exposed through a pseudo-filesystem. In recent distros, you should find this filesystem under `/sys/fs/cgroup`. Under that directory, you see multiple sub-directories, called devices, freezer, blkio, etc.; each sub-directory actually corresponds to a different cgroup hierarchy.
 
@@ -65,7 +65,7 @@ Docker supports cgroup v2 since Docker 20.10. Running Docker on cgroup v2 also r
 - containerd: v1.4 or later
 - runc: v1.0.0-rc91 or later
 - Kernel: v4.15 or later (v5.2 or later is recommended)
-Note that the cgroup v2 mode behaves slightly different from the cgroup v1 mode:
+  Note that the cgroup v2 mode behaves slightly different from the cgroup v1 mode:
 
 - The default cgroup driver (dockerd --exec-opt native.cgroupdriver) is “systemd” on v2, “cgroupfs” on v1.
 - The default cgroup namespace mode (docker run --cgroupns) is “private” on v2, “host” on v1.

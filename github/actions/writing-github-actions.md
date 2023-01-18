@@ -1,5 +1,5 @@
 ---
-title:  Writing GitHub Actions in Go
+title: Writing GitHub Actions in Go
 path: github/actions/writing-github-actions.md
 ---
 

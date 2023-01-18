@@ -49,7 +49,7 @@ class Celsius:
 
 Please note that private variables don't exist in Python. The language itself don't apply any restrictions.
 
-But the above update still has a big problem, all users who implemented class Celsius have to modify their code from `obj.temperature` to `obj.get_temperature()`... In other words, it means this refactoring was not  backward compatible.
+But the above update still has a big problem, all users who implemented class Celsius have to modify their code from `obj.temperature` to `obj.get_temperature()`... In other words, it means this refactoring was not backward compatible.
 
 ## The Power of @property
 

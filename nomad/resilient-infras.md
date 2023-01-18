@@ -8,11 +8,11 @@ Source: <https://www.hashicorp.com/blog/resilient-infrastructure-with-nomad-rest
 
 ![](https://www.datocms-assets.com/2885/1534979559-nomad-resiliency-part01-job-workflow.png?fit=max&q=80&w=2000)
 
-- Nomad makes task workloads resilient by allowing job authors to specify strategies for *automatically* restarting failed and unresponsive tasks as well as automatically rescheduling repeatedly failing tasks to other nodes.
+- Nomad makes task workloads resilient by allowing job authors to specify strategies for _automatically_ restarting failed and unresponsive tasks as well as automatically rescheduling repeatedly failing tasks to other nodes.
 
 ![](https://www.datocms-assets.com/2885/1534979778-nomad-resiliency-part01-restarts.png?fit=max&q=80&w=2000)
 
-- Nomad *restarts failed tasks* on the same node according to the directives in the [restart](https://www.nomadproject.io/docs/job-specification/restart.html) stanza of the job file.
+- Nomad _restarts failed tasks_ on the same node according to the directives in the [restart](https://www.nomadproject.io/docs/job-specification/restart.html) stanza of the job file.
 
 ```hcl
 group "cache" {
@@ -29,7 +29,7 @@ group "cache" {
 }
 ```
 
-- Nomad *restarts unresponsive tasks* according to the directives in the [check_restart](https://www.nomadproject.io/docs/job-specification/check_restart.html) stanza.
+- Nomad _restarts unresponsive tasks_ according to the directives in the [check_restart](https://www.nomadproject.io/docs/job-specification/check_restart.html) stanza.
 
 ```hcl
 task "redis" {
@@ -66,6 +66,6 @@ Source: <https://www.hashicorp.com/blog/resilient-infrastructure-with-nomad-sche
 
 ![](https://www.datocms-assets.com/2885/1535497620-nomad-resiliency-part02-architecture.png?fit=max&q=80&w=2000)
 
-- Scheduling is the process of determining the appropriate allocations and is done as part of an *evaluation*.
+- Scheduling is the process of determining the appropriate allocations and is done as part of an _evaluation_.
 
 ![](https://www.datocms-assets.com/2885/1535497633-nomad-resiliency-part02-scheduling.png?fit=max&q=80&w=2000)

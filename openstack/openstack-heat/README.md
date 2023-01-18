@@ -4,18 +4,18 @@ Some tips to write a flexible HOT template
 
 ## 1. Hot Template spec
 
-* [Check this link](https://docs.openstack.org/heat/queens/template_guide/hot_spec.html#hot-spec)
+- [Check this link](https://docs.openstack.org/heat/queens/template_guide/hot_spec.html#hot-spec)
 
 ## 2. Hot Template example
 
-* [Check this](https://github.com/openstack/heat-templates/tree/master/hot)
+- [Check this](https://github.com/openstack/heat-templates/tree/master/hot)
 
-## 3. Write a complex HOT Template with user\_data
+## 3. Write a complex HOT Template with user_data
 
-* Use `user_data`:
-  * `user_data` completely in RAW format and `str\_replace`, for [example](https://github.com/openstack/heat-templates/blob/master/hot/autoscaling.yaml#L81)
-  * `user_data` + `get_file`, write all execuable commands to file and just get it.
-  * `user_data` + RAW format + `OS::Heat::MultipartMime`: We can split scripts to multiple file scripts. For example
+- Use `user_data`:
+  - `user_data` completely in RAW format and `str\_replace`, for [example](https://github.com/openstack/heat-templates/blob/master/hot/autoscaling.yaml#L81)
+  - `user_data` + `get_file`, write all execuable commands to file and just get it.
+  - `user_data` + RAW format + `OS::Heat::MultipartMime`: We can split scripts to multiple file scripts. For example
 
 ```
 complex-server:

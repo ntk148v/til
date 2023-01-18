@@ -4,9 +4,9 @@
 
 Why Pass? Why not other password manager like KeePass, LastPass...?
 
-* It's simple and lightweight.
-* It uses existing tools like GnuPG, tree and Git.
-* I can play with it through terminal. It looks cool :relieved: :relieved:
+- It's simple and lightweight.
+- It uses existing tools like GnuPG, tree and Git.
+- I can play with it through terminal. It looks cool :relieved: :relieved:
 
 ## Introduce
 

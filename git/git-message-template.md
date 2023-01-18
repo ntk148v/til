@@ -33,6 +33,7 @@
 ```bash
 git config --global commit.template ~/.gitmessage
 ```
+
 - When you run `git commit`, you will see a message consists of two parts: template, then Git's standard message asking to "Please enter the commit message".
-- Note that, *do not* use `git commit -m "Commit message"`.
+- Note that, _do not_ use `git commit -m "Commit message"`.
 - Share this template with your team, everyone should follow the rules.

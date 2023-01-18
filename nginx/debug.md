@@ -28,7 +28,7 @@ web:
   image: nginx
   volumes:
     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  command: [nginx-debug, '-g', 'daemon off;']
+  command: [nginx-debug, "-g", "daemon off;"]
 ```
 
 - Restart Nginx and access website again to reproduce the http 400 error. This request will be logged in detail!

@@ -87,14 +87,14 @@ definitions:
         template_id: host_in_error
 scenarios:
   scenario:
-    condition: host_in_error  # uses template_id
+    condition: host_in_error # uses template_id
     actions:
       - action:
           type: raise_alarm
           target:
             target: host_in_error # uses template_ids
             properties:
-              alarm_type: host_malfunctioning   # any string
+              alarm_type: host_malfunctioning # any string
               severity: critical
 ```
 
@@ -122,6 +122,7 @@ Here is the update & more complete version of Common parameters section in [Usag
 | action            | properties/severity | CRITICAL,SEVERE,WARNING,N/A,OK                                                                                                                                                                                        | no comment                                                                                                                                                  |
 
 - Action:
+
   - `set_state`: Set state of specified entity. This will directly affect the state as seen in Vitrage, but will not impact the state at the relevant datasource of this entity.
 
     ```yaml
@@ -147,7 +148,7 @@ Here is the update & more complete version of Common parameters section in [Usag
             severity: critical
     ```
 
-  - `mark_down`: Set an entity marked_down field. This can be used along with nova notifier to call force_down for a  host.
+  - `mark_down`: Set an entity marked_down field. This can be used along with nova notifier to call force_down for a host.
 
     ```yaml
     action:
@@ -180,7 +181,8 @@ Here is the update & more complete version of Common parameters section in [Usag
     ```
 
 - Relationship type:
-  - `on`: common case - alarm *on* resource.
+
+  - `on`: common case - alarm _on_ resource.
 
     ```yaml
     relationships:
@@ -208,10 +210,10 @@ Here is the update & more complete version of Common parameters section in [Usag
     ```yaml
     relationships:
       - relationship:
-         source: volume1
-         relationship_type: attached
-         target: instance1
-         template_id : volume_attached_instance1
+          source: volume1
+          relationship_type: attached
+          target: instance1
+          template_id: volume_attached_instance1
     ```
 
   - `attached_public`: same as `caused`.
@@ -221,17 +223,17 @@ Here is the update & more complete version of Common parameters section in [Usag
   - `comprised`: common case - Heat stack comprises an instance, K8s cluster comprises host. (comprised != contains? -> not know yet).
 
     ```yaml
-     relationships:
+    relationships:
       - relationship:
-         source: heat_stack
-         relationship_type: comprised
-         target: instance
-         template_id : heat_comprised_instance
+          source: heat_stack
+          relationship_type: comprised
+          target: instance
+          template_id: heat_comprised_instance
       - relationship:
-         source: k8s_cluster
-         relationship_type: comprised
-         target: host
-         template_id : k8s_cluster_comprised_host
+          source: k8s_cluster
+          relationship_type: comprised
+          target: host
+          template_id: k8s_cluster_comprised_host
     ```
 
 ### Useful information you should know
@@ -277,7 +279,7 @@ types = nova.host,nova.instance,nova.zone,static,static_physical,neutron.network
 ```yaml
 - name: <receiver name>
   webhook_configs:
-    - url: <vitrage event url>  # example: 'http://127.0.0.1:8999/v1/event'
+    - url: <vitrage event url> # example: 'http://127.0.0.1:8999/v1/event'
       send_resolved: true
       http_config:
         basic_auth:

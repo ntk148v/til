@@ -39,7 +39,7 @@
 
 - Consists of one input, one output and multiple fully-connected hidden layers
   between. Each layer is represented as a series of neurons and `progessively
-  extracts higher and higher-level features` of the inout until the final layer
+extracts higher and higher-level features` of the inout until the final layer
   essentially makes a decision about what input shows. The more layers the
   network has, the higher level features it will learn.
 
@@ -80,7 +80,7 @@
 
 - Learns by generating an error signal that measures the difference between
   the predictions of the network and the desired values and then `using this
-  error signal to change the weights` or (parameters) so that predictions get
+error signal to change the weights` or (parameters) so that predictions get
   more accurate.
 
 ### Gradient Descent
@@ -96,7 +96,7 @@
 ### Deep Autoencoders
 
 - Composed of two symmetrical deep-belief networks. `The encoding network
-  learns to compresses the input to a condensed vector` (dimensionality
+learns to compresses the input to a condensed vector` (dimensionality
   reduction). The decoding network can be used to reconstruct the data.
 
 ![deep autoencoders](./images/deep-autoencoders.png)
@@ -105,11 +105,11 @@
 
 - CNN learn a complex representation of visual data using vast amount of data.
   They are `inspired by the human visual system` and learn `multiple layers of
-  transformations`, which are applied on top of each other to extract a
+transformations`, which are applied on top of each other to extract a
   progessively more `sophisticated representation of the input`.
 
 ![cnn](./images/cnn.png)
 
 - Every layer of a CNN `takes a 3D volume of numbers and outputs a 3D volume
-  of numbers`. E.g Image is a 224\*224\*3 (RGB) cube and will be transformed
+of numbers`. E.g Image is a 224\*224\*3 (RGB) cube and will be transformed
   to 1\*1000 vectir if probabilities.

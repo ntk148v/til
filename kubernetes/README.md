@@ -62,6 +62,7 @@
   - Read and store the configuration
   - Command line interface
 - `kube-api-server`: exposes the Kubernetes API.
+
   - The API is the front end for the Kubernetes control plane.
   - Kubernetes system components communicate only with the API server. API server is the only component that communicates with etcd.
   - Flow:
@@ -71,6 +72,7 @@
   ```
 
 - `etcd`: Consistent and highly-available key-value store used as Kubernetes's backing store for all cluster data.
+
   - Explore the Kubernetes configuration and status in etcd:
 
   ```bash
@@ -110,7 +112,7 @@ kubectl get componentstatuses
 - `kubelet`:
   - The component responsible for everything running on a worker node.
   - Register the node it's running on by createing a Node resource in the API server.
-  - Continuously monitor the API server  for Pods that have been scheduled to the node, and start the pod's containers (via container runtime)
+  - Continuously monitor the API server for Pods that have been scheduled to the node, and start the pod's containers (via container runtime)
   - Monitor running containers and report their status, events, and resource consumption to the API server.
   - Running static pods without the API server: put the pod manifest into the Kubelet's manifest directory.
 - `kube-proxy`: a network proxy, implementing part of the Kubernetes Service concept.
@@ -208,6 +210,7 @@ kubectl get ev --field-selector type=Warning
 - Each pods gets its own unique IP address and can communicate with all other pods through a flat, NAT-less network.
 - The network is set up by the system administrator or by a Container Network Interface (CNI) plugin, not by Kubernetes itself.
 - For example, CNI Flannel:
+
   - Read more [here](https://chunqi.li/2015/10/10/Flannel-for-Docker-Overlay-Network/)
   - Network communicate - multihost.
   - Flannel also uses etcd to configure the settings and store the status.
@@ -232,7 +235,7 @@ kubectl get ev --field-selector type=Warning
 - **Pod State**:
   - Pods have a status field (`kubectl get pods`).
   - Valid statuses:
-    - **running**: pods has been bound to a node + all containers have been created +_ at least one container is still running/starting/restarting.
+    - **running**: pods has been bound to a node + all containers have been created +\_ at least one container is still running/starting/restarting.
     - **pending**: pods has been accepted but is not running.
     - **succeeded**: all containers within this pod have been terminated successfully and will not be restarted.
     - **failed**: all containers within this pod have been Terminated + at least one container returned a failure code.
@@ -304,10 +307,10 @@ spec:
   - When using a **Replication Controller**, pods are **terminated** and created during scaling operations.
   - When using **Deployments**, when **updating** the image version, pods are **terminated** and new pods take the place of older posts.
 - That's why Pods should never be accessed directly, but always through a **Service**.
-- It is an abstraction which defines a logical set of Pods and a policy by which to access them - sometimes called a micro-service. A service is the **logical service** between the "mortal" pods  and other **services** or **end-users**.
+- It is an abstraction which defines a logical set of Pods and a policy by which to access them - sometimes called a micro-service. A service is the **logical service** between the "mortal" pods and other **services** or **end-users**.
 - Use `kubectl expose` command.
 - The set of Pods targeted by a **Service** is (usually) determined by Label Selector.
-  - **ClusterIP**: Exposes the service on a cluster-internal IP. A virtual IP address only reachable from within the cluster (*default*).
+  - **ClusterIP**: Exposes the service on a cluster-internal IP. A virtual IP address only reachable from within the cluster (_default_).
   - **NodePort**: Exposes the service on each Node's IP at a static port. A porta that is the same on each node that is also reachable externally.
   - **LoadBalancer**: Exposes the service externally using a cloud provider's load balancer. A LoadBalancer created by the cloud provider that route external traffic to every node on the NodePort (ELB on AWS for example)
   - **ExternalName**: Maps the service to the contents of the externalName. This only works when **DNS add-on** is enabled.
@@ -392,6 +395,7 @@ spec:
   - downwardAPI
 - A **PersistentVolume** object represents a storage volume available in the clsuter that can be used to persist application data.
 - A pod transitively references a persistent volume and its underlying storage by referring to a **PersistentVolumeClaim** object that references the **PersistentVolume** object, which then references the underlying storage. This allows the ownership of the persistent volume to be decoupled from the lifecyle of the pod.
+
   - A **PersistentVolumeClaim** represents a user's claim on the persistent volume.
 
   ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/8.4.png)
@@ -399,6 +403,7 @@ spec:
 - Benefits of using persistent volumes and claims:
   - The infrastructure-specific details are now decoupled from the application represents by the pod.
 - Example:
+
   - Create PersistentVolume:
 
   ```yaml
@@ -494,12 +499,13 @@ volumeBindingMode: WaitForFirstConsumer # How volumes of this class are provisio
 ### 3.8. Secrets
 
 - Secrets provides a way in Kubernetes to distribute **sensitive data** to the pods.
-- There are still other ways container  can get its secrets: using an external vault services.
+- There are still other ways container can get its secrets: using an external vault services.
 - Secrets can be used:
   - As environment variables.
   - As a file in a pod (via volumes).
   - External image to pull secrets.
-- Generate  secrets:
+- Generate secrets:
+
   - Using files.
 
   ```bash
@@ -559,6 +565,7 @@ kubectl apply -f ns-test2.yaml
 ```
 
 - Understanding the (lack of) isolation between namespaces:
+
   - When two pods created in different namespaces are scheduled to the same cluster node, they both run in the same OS kernel -> an application that break out of its container or consumes too much of the node's resources can ffect the operation of the other application.
 
   ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/10.3.png)
@@ -629,7 +636,7 @@ spec:
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | ClusterIP - kubectl proxy | Debug your services, or connecting to them direclty from laptop for some reason. Allowing internal traffic, display internal dashboard, etc. |
 | NodePort                  | Many downsides: can only one service/port, only use ports in range 30000-32767, deal with Node/VM IP changes...                              |
-| LoadBalancer              | No filtering, no routing, etc. Can use  Need a LoadBalancer per exposed service -> can get expensive                                         |
+| LoadBalancer              | No filtering, no routing, etc. Can use Need a LoadBalancer per exposed service -> can get expensive                                          |
 | Ingress                   | There are many types of Ingress controllers. Use L7 protocol.                                                                                |
 
 ### 3.11. ConfigMap
@@ -681,7 +688,7 @@ spec:
   - If you don't specify a liveness probe, kublet will decide whether to restart the container based on the status of the container's PID 1 process.
 - The kubelet uses readiness to know when a container is ready to start accepting traffic. A Pod is considered ready when all of its containers are ready. One use of this signal is to control which Pods are used as backends for Services. When a Pod is not ready, it is removed from Service load balancers.
   - If you don't specify a readiness probe, OpenShift will assume that the container is ready to receive traffic as soon as PID 1 has started. This is never what you want.
-- The kubelet uses startup probes to know when a container application has started. If such a probe is configured, it disables liveness and readiness checks until it succeeds, making sure those probes don't  interfere with the application startup. This can be used to adopt liveness checks on slow stasrting containers, avoiding them getting killed by the kubelet before they are up and running.
+- The kubelet uses startup probes to know when a container application has started. If such a probe is configured, it disables liveness and readiness checks until it succeeds, making sure those probes don't interfere with the application startup. This can be used to adopt liveness checks on slow stasrting containers, avoiding them getting killed by the kubelet before they are up and running.
 - Check [RedHat's blog](https://developers.redhat.com/blog/2020/11/10/you-probably-need-liveness-and-readiness-probes#example_2__a_jobs_server__no_rest_api_)
 
 ## 4. Security
@@ -695,16 +702,17 @@ spec:
 - An authentication plugin returns the username and group(s) of the authenticated user.
 - Kubernetes distinguishes between 2 kinds of clients connecting to the API server.
   - Actual human (users): be managed by an external system.
-  - Pods: mechanism called *service account* - created and stored in **ServiceAcount** resources.
+  - Pods: mechanism called _service account_ - created and stored in **ServiceAcount** resources.
 - Built-in groups:
-  - *system:unauthenticated*: unauthenticated user.
-  - *system:authenticated*: user was authenticated successfully -> assign
-  - *system:serviceaccounts*: all ServiceAccounts  in the system.
-  - *system:serviceaccounts:\<namespace\>*: includes all ServiceAccounts in a specific namespace.
+  - _system:unauthenticated_: unauthenticated user.
+  - _system:authenticated_: user was authenticated successfully -> assign
+  - _system:serviceaccounts_: all ServiceAccounts in the system.
+  - _system:serviceaccounts:\<namespace\>_: includes all ServiceAccounts in a specific namespace.
 - ServiceAccounts:
+
   - Every Pod is associated with a ServiceAccount, which represents the identity of the app running in the pod.
   - Token file: `/var/run/secrets/kubernetes.io/serviceaccount/token`.
-  - ServiceAccount's username: *system:serviceaccount:\<namespace\>:\<service account name\>*
+  - ServiceAccount's username: _system:serviceaccount:\<namespace\>:\<service account name\>_
   - A default ServiceAccount is automatically created for each namespace. A pod can only use a ServiceAccount from the same namespace, if not assign use default ServiceAccount.
 
   ```bash
@@ -717,7 +725,9 @@ spec:
   ```
 
   - Use ServiceAccount to enforce mountable Secrets or to provide image pull Secrets through the ServiceAccount.
+
 - Authorization plugin - Role-based access control:
+
   - Use user roles as the key factor in determining whether the user may perform the action or not. A subject is associated with one or more roles and each role is allowed to perform certain verbs on certain resources.
   - RBAC authorization rules are configured through 4 resources, which can be grouped into 2 groups:
     - **Role** and **ClusterRoles**, which specify which verbs can be performed on which resources.
@@ -793,6 +803,7 @@ kubectl exec pod-with-host-network ifconfig
 ```
 
 - Binding to a host port without using the host's network namespace.
+
   - **NodePort** vs **hostPort**: **hostPort** a connection to the node's port is forwarded directly to the pod running on that node, whereas with a Nodeport service, a connection to the node's port is forwarded to a randomly selected pod.
 
   ![](https://t1.daumcdn.net/cfile/tistory/99F6953F5F1FB6001A)
@@ -800,6 +811,7 @@ kubectl exec pod-with-host-network ifconfig
   ![](https://t1.daumcdn.net/cfile/tistory/999DA53E5F1FB61E1A)
 
   - Only one instance of the pod can be scheduled to each node.
+
 - Container's security context.
 
 ```yaml
@@ -825,8 +837,10 @@ spec:
 ```
 
 - Security-related features in pods:
+
   - **PodSecurityPolicy** is a cluster-level resource, which defines what security-related features users can or can't use in their pods.
   - **PodSecurityPolicy** resource defines things:
+
     - Whether a pod can use the host's IPC, PID, or Network namespaces.
     - Which host ports a pod can bind to.
     - What user IDs a container can run as.
@@ -849,6 +863,7 @@ spec:
     ```
 
 - Isolate the pod network:
+
   - How the network between pods can be secured by limiting which pods can talk to which pods -> depends on which container networking plugin is used in the cluster -> If plugin supports it, configure network isolation with **NetworkPolicy** resources.
 
   - Deny all:

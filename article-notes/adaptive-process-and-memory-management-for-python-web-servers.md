@@ -19,8 +19,8 @@ Use 2/worker thresholds to control respawn: reload-on-rss and evil-reload-on-rss
 3. At the end of each request, a worker process checks whether its RSS is higher than reload-on-rss. If yes, the worker process performs some cleanup tasks, sets a deadline for itself and calls exit().
 4. The master process checks the status of the workers against the following conditions:
 
-* If a worker initiated the exit process but didn't finish before the deadline, the master process will sigkill it to avoid bigger issues.
-* If the RSS of a worker exceeds evil-reload-on-rss, master process will sigkill it too.
+- If a worker initiated the exit process but didn't finish before the deadline, the master process will sigkill it to avoid bigger issues.
+- If the RSS of a worker exceeds evil-reload-on-rss, master process will sigkill it too.
 
 ## Problems
 
@@ -32,9 +32,9 @@ Use 2/worker thresholds to control respawn: reload-on-rss and evil-reload-on-rss
 
 Guiding principles were:
 
-* Reduce uWSGI respawn rate.
-* Prevent resource waste.
-* Have a tight control on host memory usage to ensure the health of the system.
+- Reduce uWSGI respawn rate.
+- Prevent resource waste.
+- Have a tight control on host memory usage to ensure the health of the system.
 
 ### 1. Host memory-based respawn
 

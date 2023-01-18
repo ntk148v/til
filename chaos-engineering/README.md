@@ -35,7 +35,7 @@ Netflix là công ty tiên phong trong Chaos Engineering. Năm 2009, Netflix b�
 
 Chaos Monkey đơn giản là tắt máy ảo, dịch vụ,... trên môi trường production một cách ngẫu nhiên (đương nhiên là có kế hoạch) để đảm bảo dịch vụ vẫn hoạt động tốt trong trường hợp có lỗi, sự cố.
 
-*Chaos Engineering (Kỹ thuật hỗn loạn) là một phương pháp thử nghiệm hệ thống phân tán bằng cách định nghĩa, đưa ra và mô phỏng các tình huống lỗi vào hệ thống một cách có chủ đích. Thay vì chờ đợi lỗi xảy ra, các kỹ sư có thể thực hiện các bước có chủ đích để gây ra (hoặc mô phỏng) lỗi trong một môi trường được kiểm soát. Nói cách khác, "break things on purpose" (cố ý phá hỏng) nhằm xây dựng được một hệ thống đáng tin cậy hơn.*
+_Chaos Engineering (Kỹ thuật hỗn loạn) là một phương pháp thử nghiệm hệ thống phân tán bằng cách định nghĩa, đưa ra và mô phỏng các tình huống lỗi vào hệ thống một cách có chủ đích. Thay vì chờ đợi lỗi xảy ra, các kỹ sư có thể thực hiện các bước có chủ đích để gây ra (hoặc mô phỏng) lỗi trong một môi trường được kiểm soát. Nói cách khác, "break things on purpose" (cố ý phá hỏng) nhằm xây dựng được một hệ thống đáng tin cậy hơn._
 
 ## 2. Các nguyên tắc của Chaos Engineering
 
@@ -43,7 +43,7 @@ Chaos Engineering liên quan đến việc chạy các thử nghiệm (experimen
 
 Một thử nghiệm thường bao gồm 4 bước:
 
-- Xác định *trạng thái ổn định* (steady-state) của hệ thống bằng cách đo lường các thông số: thông lượng (throughput), tỉ lệ lỗi (error rates), độ trễ..., với giá trị như nào thì hệ thống được coi là ổn định, hoạt động bình thường.
+- Xác định _trạng thái ổn định_ (steady-state) của hệ thống bằng cách đo lường các thông số: thông lượng (throughput), tỉ lệ lỗi (error rates), độ trễ..., với giá trị như nào thì hệ thống được coi là ổn định, hoạt động bình thường.
 - Đưa ra giả thuyết rằng cả hệ thống thử nghiệm (experimental group) và hệ thống ổn định (stable control group) luôn ở trạng thái ổn định.
 - Đưa các sự kiện thực tế (được mô phỏng) vào hệ thống thử nghiệm: máy chủ gặp sự cố, phản hồi không đúng định dạng (malformed response), hoặc lưu lượng truy cập tăng đột biến.
 - Kiểm tra, đánh giá lại giả thuyết bằng cách so sánh trạng thái ổn định của hệ thống ổn định và thử nghiệm. Càng ít khác biệt càng tốt.

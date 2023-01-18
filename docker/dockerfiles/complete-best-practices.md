@@ -43,7 +43,7 @@ Trước khi bắt đầu với những quy chuẩn, người đọc cần nắm
 
 - Dockerfile là file dạng text bao gồm các dòng đặc tả về Docker image, tuân theo định dạng [Dockerfile](https://docs.docker.com/engine/reference/builder/).
 - Docker thực hiện tự động build images bằng cách đọc các đặc tả `Dockerfile`.
-- Docker image được cấu thành bởi nhiều *read-only layers* (image layers), mỗi layer tương ứng mới một dòng đặc tả trong Dockerfile. Layer được xếp chồng lên nhau dạng stack, mỗi layer chứa các thay đổi so với layer trước nó.
+- Docker image được cấu thành bởi nhiều _read-only layers_ (image layers), mỗi layer tương ứng mới một dòng đặc tả trong Dockerfile. Layer được xếp chồng lên nhau dạng stack, mỗi layer chứa các thay đổi so với layer trước nó.
 - Ví dụ:
 
 ```Dockerfile
@@ -55,11 +55,11 @@ RUN apt-get install -y curl  # One layer
 
 ![](https://www.codeproject.com/KB/Articles/1133826/Docker-layers.png)
 
-- Khi chạy một image thành container, bản chất là thêm một *read-write layer* (container layer) ở trên các image layers. Mọi thay đổi ở container (ghi file mới, thay đổi file, xóa file,...) đều được ghi vào container layer.
+- Khi chạy một image thành container, bản chất là thêm một _read-write layer_ (container layer) ở trên các image layers. Mọi thay đổi ở container (ghi file mới, thay đổi file, xóa file,...) đều được ghi vào container layer.
 
 ### 1.2. Giới thiệu về build context
 
-- Thư mục chạy `docker build` command gọi là *build context*. Mặc định, đây là thư mực chứa Dockerfile, tuy nhiên có thể chỉ định đường dẫn của Dockerfile bằng option `-f`.
+- Thư mục chạy `docker build` command gọi là _build context_. Mặc định, đây là thư mực chứa Dockerfile, tuy nhiên có thể chỉ định đường dẫn của Dockerfile bằng option `-f`.
 - Build context bao gồm tất cả nội dung của các file và thư mục con của thư mục hiện tại, được gửi về Docker daemon trong quá trình build.
 - Docker hỗ trợ build images bằng cách piping Dockerfile thông qua stdin. Khi đó, nội dung Dockerfile được đọc trực tiếp mà không cần lưu lại dưới dạng file trong ổ đĩa. Tuy nhiên, trong giới hạn tài liệu này, chúng ta chỉ lấy ví dụ Dockerfile dạng file bình thường.
 
@@ -150,15 +150,16 @@ CMD ["--help"]
 
 ### 2.6. Giảm thiểu tối đa số lượng layers
 
-- Như đã nói ở phần 0, Docker image được cấu thành từ nhiều layers. Các layer không phải là *free*. Chúng chiếm dụng không gian và khi layer xếp chồng lên nhau ngày càng nhiều thì kích thước image cuối cùng của bạn cũng tăng lên. Nguyên nhân là do hệ thống sẽ lưu giữ tất cả các thay đổi giữa các đặc tả Dockerfile khác nhau. Do vậy. giảm số lượng layer là điều cần làm khi muốn giảm kích thước images.
+- Như đã nói ở phần 0, Docker image được cấu thành từ nhiều layers. Các layer không phải là _free_. Chúng chiếm dụng không gian và khi layer xếp chồng lên nhau ngày càng nhiều thì kích thước image cuối cùng của bạn cũng tăng lên. Nguyên nhân là do hệ thống sẽ lưu giữ tất cả các thay đổi giữa các đặc tả Dockerfile khác nhau. Do vậy. giảm số lượng layer là điều cần làm khi muốn giảm kích thước images.
 - Các đặc tả `RUN`, `COPY`, `ADD` tạo ra layer vì chúng thay đổi file system. Các đặc tả khác tạo ra các layer tạm, không làm ảnh hưởng đến kích thước của image.
+
   - Lấy ví dụ một Dockerfile đơn giản như sau:
-  
+
   ```Dockerfile
   FROM ubuntu:18.04
-  
+
   WORKDIR /var/www
-  
+
   RUN apt-get update
   RUN apt-get -y install curl
   RUN apt-get -y install vim
@@ -167,16 +168,16 @@ CMD ["--help"]
   - Thực hiện build image và kiểm tra các layers được tạo ra:
 
   ```shell
-  docker history ubuntu:example  
+  docker history ubuntu:example
   IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
-  3254f0ec9c48        8 minutes ago       /bin/sh -c apt-get -y install vim               54.8MB             
-  dac7e4ba12f9        8 minutes ago       /bin/sh -c apt-get -y install curl              14.3MB             
-  be0ed9278c8f        2 hours ago         /bin/sh -c apt-get update                       34.1MB             
-  a6494da55123        2 hours ago         /bin/sh -c #(nop) WORKDIR /var/www              0B                 
-  56def654ec22        2 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/bash"]            0B                 
-  <missing>           2 weeks ago         /bin/sh -c mkdir -p /run/systemd && echo 'do…   7B                 
-  <missing>           2 weeks ago         /bin/sh -c [ -z "$(apt-get indextargets)" ]     0B                 
-  <missing>           2 weeks ago         /bin/sh -c set -xe   && echo '#!/bin/sh' > /…   745B               
+  3254f0ec9c48        8 minutes ago       /bin/sh -c apt-get -y install vim               54.8MB
+  dac7e4ba12f9        8 minutes ago       /bin/sh -c apt-get -y install curl              14.3MB
+  be0ed9278c8f        2 hours ago         /bin/sh -c apt-get update                       34.1MB
+  a6494da55123        2 hours ago         /bin/sh -c #(nop) WORKDIR /var/www              0B
+  56def654ec22        2 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/bash"]            0B
+  <missing>           2 weeks ago         /bin/sh -c mkdir -p /run/systemd && echo 'do…   7B
+  <missing>           2 weeks ago         /bin/sh -c [ -z "$(apt-get indextargets)" ]     0B
+  <missing>           2 weeks ago         /bin/sh -c set -xe   && echo '#!/bin/sh' > /…   745B
   <missing>           2 weeks ago         /bin/sh -c #(nop) ADD file:4974bb5483c392fb5…   63.2MB
   ```
 
@@ -184,7 +185,7 @@ CMD ["--help"]
 
   ```Dockerfile
   FROM ubuntu:18.04
-  
+
   WORKDIR /var/www
 
   RUN apt-get update && \
@@ -249,6 +250,7 @@ ENV https_proxy https://proxy
 
 - Theo một [báo cáo của Sysdig](https://sysdig.com/blog/sysdig-2021-container-security-usage-report/), có đến 58% images đang dùng entrypoint chạy bằng **root** (**UID 0**).
 - Để chạy rootless container, cần lưu ý:
+
   - Đảm bảo user chỉ định tại USER tồn tại.
   - Cung cấp quyền thích hợp cho files tại nơi process thực hiện đọc/ghi. Ví dụ, process thực hiện ghi log vào file, phải có quyền đọc ghi.
 
@@ -261,7 +263,7 @@ ENV https_proxy https://proxy
   ENTRYPOINT ["/myapp"]
   ```
 
-- Container có thể chạy dùng root user, sau đó sử dụng [gosu](https://github.com/tianon/gosu) hoặc  [su-exec](https://github.com/ncopa/su-exec) để chuyển sang user thường.
+- Container có thể chạy dùng root user, sau đó sử dụng [gosu](https://github.com/tianon/gosu) hoặc [su-exec](https://github.com/ncopa/su-exec) để chuyển sang user thường.
 
 #### 4.2.2. Các file thực thi thuộc sở hữu của root và không cấp quyền sửa đổi
 

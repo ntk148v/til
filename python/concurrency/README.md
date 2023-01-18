@@ -19,9 +19,11 @@ Conccurency (n - computing): the ability to execute more than one program or tas
 ```
 
 - In Python, the things that are occurring simultaneously are called by differented names (thread, task, process).
-- *Same same but different*: These things are only the same if you view from the a high level. Once you start digging into the details, they all represent sightly different thing:
+- _Same same but different_: These things are only the same if you view from the a high level. Once you start digging into the details, they all represent sightly different thing:
+
   - `mutiprocessing` actually runs at literally the same time.
   - `threading` and `asyncio` both run on a single processor and therefore only run one at time. But these things are different:
+
     - `threading`: Threads follow the model of [preemptive multitasking](https://en.wikipedia.org/wiki/Preemption_%28computing%29#Preemptive_multitasking). Each thread executes one task. OS schedule a thread on a CPU, and after a fixed interval (or when the thread gets blocked typically due to an IO operation, whichever happens first), OS interrupts the thread and schedules another waiting thread on CPU.
     - `asyncio`: In [cooperative multitasking](https://en.wikipedia.org/wiki/Cooperative_multitasking), there is a queue of tasks. When a task is scheduled for execution, it executes till a point of its choice (typically an IO wait) and yields control back to the event loop scheduler, which puts it the waiting queue, and schedules another tasks. At any time, only one task is executing, but it gives an appearance of concurrency.
 
@@ -157,6 +159,7 @@ Conccurency (n - computing): the ability to execute more than one program or tas
   - Problem: Threads can interact in ways that are subtle and hard to detect. These interactions can cause race conditions that frequently result in random, intermittent bugs that can be quite difficult to find.
 
 - [`asyncio` version](./io_bound_asyncio.py).
+
   - A single Python object - event loop, controls how and when each task gets run. The event loop is aware of each task and knows what state it's in.
   - The tasks never give up control without intentionally doing so.
   - The main flow:
@@ -330,6 +333,7 @@ Conccurency (n - computing): the ability to execute more than one program or tas
   ```
 
   - Threading version shows a slower result. Because threads (and tasks) run on the same CPU in the same process. That means that the one CPU is doing all of the work of the non-concurrent code + the extra work of setting up threads or tasks.
+
 - [`multiprocessing` version](./cpu_bound_multiprocessing.py)
 
   ```python

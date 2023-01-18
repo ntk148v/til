@@ -33,8 +33,8 @@ Sources:
 - Accoring to [Gartner](https://www.gartner.com/en/information-technology/glossary/enterprise-architecture-ea), Enterprise Architecture (EA) is a discipline for proactively and holistically leading enterprise responses to disruptive forces by identifying and analyzing the execution of change toward desired business vision and outcomes.
   - Defines, organises, standardizes, and documents the whole architecture and all important elements of the respective organisation, covering relevant domains such as business, digital, physical , or organisational.
   - The relations and interactions between elements that belong to those domains, such as porocesses, functions, applications events, data, or technologies.
-- According to the standard [ISO/IEC/IEEE 42010](https://en.wikipedia.org/wiki/ISO/IEC_42010), the product used to describe the architecture of a system is called an *architectural description*.
-- A methodology for developing and using architecture to guide the transformation of a business from a baseline state to a target state, sometimes through several transition states, is usually known as an *enterprise architecture framework*.
+- According to the standard [ISO/IEC/IEEE 42010](https://en.wikipedia.org/wiki/ISO/IEC_42010), the product used to describe the architecture of a system is called an _architectural description_.
+- A methodology for developing and using architecture to guide the transformation of a business from a baseline state to a target state, sometimes through several transition states, is usually known as an _enterprise architecture framework_.
 
 ## 2. Enterprise Architecture Framework (EA Framework)
 
@@ -124,6 +124,7 @@ Sources:
 </table>
 
 - TOGAF Architecture developement model (ADM):
+
   - The framework specifies how the architecture is to be created. This specification is called the ADM.
   - An 8-phase, sequential process.
 
@@ -136,14 +137,15 @@ Sources:
   - More details [here](https://pubs.opengroup.org/architecture/togaf9-doc/arch/).
 
 - Limitations:
-  - TOGAF is good for implementing *very big systems in very big companies*.
-  - It's designed for companies that are *hierarchical and departmentalized*.
-  - It *takes a lot of time* to learn the specification's details.
+  - TOGAF is good for implementing _very big systems in very big companies_.
+  - It's designed for companies that are _hierarchical and departmentalized_.
+  - It _takes a lot of time_ to learn the specification's details.
 
 #### 2.3.2. The Zachman Framework
 
 - Zachman Framework uses the method of taxonomy to organize a massive variety of documents and materials into categories that suit them.
 - Structure:
+
   - A two dimensional classification scheme for descriptive representations of an Enterprise that is structured as a matrix containing 36 cells, each of them focusing on one dimension or perspective of the enterprise. Rows are often presented as different viewpoints involved in the systems development process, while columns represent different perspectives of the stakeholders involved in the organization.
 
   ![](https://cdn-images.visual-paradigm.com/guide/enterprise-architecture/what-is-zachman-framework/01-zachman-framework.png)
@@ -162,6 +164,7 @@ Sources:
     - Implementer's View (Technology Physics)
     - Sub-Constructor's View (Component Assembles)
     - User's View (Operation Classes)
+
 - Rules.
   - Each cell in the Zachman Framework must be aligned with the cells immediately above and below it.
   - All the cells in each row also must be aligned with each other.

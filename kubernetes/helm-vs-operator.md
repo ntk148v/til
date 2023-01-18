@@ -7,7 +7,7 @@ The manual method of creating a YAML files for each deployment or configuration 
 ## 1. What is Helm?
 
 - Helm is a tool that enables users to manage Kubernetes applications. It allows users to package and share Kubernetes appications, facilitating easy deployment, update, and maintainance of K8s applications.
-- The basic idea of Helm is to enable  reusability of Kubernetes YAMl artifacts through templatization.
+- The basic idea of Helm is to enable reusability of Kubernetes YAMl artifacts through templatization.
 - Charts are the packaging format used by Helm. A Helm chart contains configuration files and template files that define an application along with the correspoding Kubernetes resources.
 - Helm project solves one of the key problems that enterprises face - creating custom YAMLs for deploying the same application workload with different settings, or deploying it in different environments (dev/test/prod).
 

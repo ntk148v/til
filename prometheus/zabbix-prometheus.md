@@ -2,7 +2,7 @@
 
 1. Zabbix.
 
-- Has core written in C and  webUI based on PHP.
+- Has core written in C and webUI based on PHP.
 - Classic-monitoring.
 - Use agents. Zabbix by default uses "pull" model when a server connects to
   agents on each monitoring machine, agents periodically gather the info and
@@ -23,7 +23,7 @@
   is needed.
 - Requires an application to be instrumented with Prometheus client library
   for preparing metrics. But for monitoring software or system that can't be
-  instrusmented, there is an official [blackbox\_exporter](https://github.com/prometheus/blackbox_exporter)
+  instrusmented, there is an official [blackbox_exporter](https://github.com/prometheus/blackbox_exporter)
   that allows probing endpoints over a range of protocols; additionally, a
   wide spraed of [3rd party exporters](https://prometheus.io/docs/instrumenting/exporters/)
   and tools are available to help expose metrics for Prometheus.

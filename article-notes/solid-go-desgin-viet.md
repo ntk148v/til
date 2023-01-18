@@ -10,4 +10,4 @@ Có bao nhiên lập trình viên Golang trên toàn thế giới? Hãy nghĩ đ
 
 Những ai ở đây phải thực hiện review code mỗi ngày? (Toàn bộ khán phòng đều giơ tay, wow). Okay, vậy tại sao bạn lại review code? (Ai đó nói vọng lên "Để chặn đứng việc code xấu xuất hiện trong mã nguồn").
 
-Nếu như review code là để bắt code *xấu*, vậy dựa vào đâu để đánh giá code là *xấu* hay *tốt*?
+Nếu như review code là để bắt code _xấu_, vậy dựa vào đâu để đánh giá code là _xấu_ hay _tốt_?

@@ -14,7 +14,7 @@ It's a way to create maps of your code, at various levels of detail, in the same
 - C4 model is an "abstraction-first" approach to diagramming software architecture, based upon abstractions that reflect how software architects and developers think about and build software.
 - C4 model considers the static structures of a **software system** in terms of **containers**, **component**, and **code**.
   - Software system: describes something that delivers value to its users, whether they are human of not (includes the software system you are modelling, and the other software systems upon which your software system depends).
-  - Container (*Not Container in Docker!*): represents an application or a data store. A cotnainer is something that needs to be running order for the overall software system to work:
+  - Container (_Not Container in Docker!_): represents an application or a data store. A cotnainer is something that needs to be running order for the overall software system to work:
     - Server-side web application.
     - Client-side web application.
     - Mobile app.
