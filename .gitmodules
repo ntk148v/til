@@ -1,9 +1,3 @@
-[submodule "prometheus/prometheus-example-queries"]
-	path = prometheus/prometheus-example-queries
-	url = https://github.com/infinityworks/prometheus-example-queries
-[submodule "prometheus/prometheus"]
-	path = prometheus/prometheus
-	url = https://github.com/vegasbrianc/prometheus
 [submodule "golang"]
 	path = golang
 	url = https://github.com/ntk148v/lets-go
