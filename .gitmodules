@@ -10,9 +10,6 @@
 [submodule "prometheus/alertmanager-bot"]
 	path = prometheus/alertmanager-bot
 	url = https://github.com/metalmatze/alertmanager-bot
-[submodule "prometheus/prompose"]
-	path = prometheus/prompose
-	url = https://github.com/ntk148v/prompose
 [submodule "prometheus/prometheus-openstack-exporter"]
 	path = prometheus/prometheus-openstack-exporter
 	url = https://github.com/CanonicalLtd/prometheus-openstack-exporter
