@@ -89,5 +89,4 @@ DevSecOps requires planning application and infrastructure security from the sta
 
 ### 2.5. Deploy
 
-
 ### 2.6. Monitoring and Alerting
