@@ -58,7 +58,7 @@ DevSecOps requires planning application and infrastructure security from the sta
     - How attackers can abuse that application's design
     - How to fix vulnerabilities
     - How important it is to fix issues
-  - There are published approaches for threat modeling that range from simple question and answer methods to detailed tool-based analysis. You can base your approach on methodologies like the [STRIDE model](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats), the [DREAD model](https://en.wikipedia.org/wiki/DREAD_(risk_assessment_model)), or [OWASP threat modeling](https://owasp.org/www-community/Threat_Modeling).
+  - There are published approaches for threat modeling that range from simple question and answer methods to detailed tool-based analysis. You can base your approach on methodologies like the [STRIDE model](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats), the [DREAD model](<https://en.wikipedia.org/wiki/DREAD_(risk_assessment_model)>), or [OWASP threat modeling](https://owasp.org/www-community/Threat_Modeling).
 - Secure SDLC: separate development, testing, and production environments and also have autorization processes that control the deployment promotion from one environment to another.
 
 ### 2.2. Develop
