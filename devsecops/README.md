@@ -17,6 +17,8 @@ Table of content:
     - [2.2. Develop](#22-develop)
     - [2.3. Build and code analysis](#23-build-and-code-analysis)
     - [2.4. Test](#24-test)
+    - [2.5. Deploy](#25-deploy)
+    - [2.6. Monitoring and Alerting](#26-monitoring-and-alerting)
 
 ## 1. Overview
 
@@ -70,12 +72,22 @@ DevSecOps requires planning application and infrastructure security from the sta
 
 ### 2.3. Build and code analysis
 
-- Static application security testing (SAST): scans the application source files, accurately identifies the root cause and helps remediate the underlying security flaws.
-  - To introduce static code analysis inside of CI. This method verifies security as soon as code changes happen.
+- Software composition analysis (SCA):
+  - Open source software often times includes security vulnerabilities, so a complete security approach includes a solution that tracks OSS libraries, and reports vulnerabilities and license violations.
+  - SCA automates the visibility into open source software for the purpose of risk management, security and license compliance.
+  - [OWASP Dependency Check](https://owasp.org/www-project-dependency-check/)
+- Static application security testing (SAST):
+  - SAST scans the application source files, accurately identifies the root cause and helps remediate the underlying security flaws.
+  - It analyzes the code based on predefined rule sets.
+  - [SonarQube](https://github.com/SonarSource/sonarqube)
 
 ### 2.4. Test
 
 - Dynamic application security testing (DAST): simulates controlled attacks on a running web apoplication or service to identify exploitable vulnerabilities in a running environment.
   - DAST is a web application security test that finds security issues in the running application.
+  - [List of DAST scanning tools provided by OWASP](https://owasp.org/www-community/Vulnerability_Scanning_Tools)
 
-// **WIP**
+### 2.5. Deploy
+
+
+### 2.6. Monitoring and Alerting
