@@ -40,4 +40,14 @@ _Source_: <https://www.wix.com/blog/2018/01/how-to-choose-best-fonts-website>
 
 ### 2.4. OTF/TTF
 
-- OpenType Font and TrueType Font.
+- TrueType Font (TTF):
+  - A joint effort by Apple and Microsoft (late 1980s)
+  - Include both the screen and the printer font data in a single file.
+- OpenType Font (OTF):
+  - A joint effort by Adobe and Microsoft.
+  - Cross platform.
+  - Include the display and printer font data in a single package
+  - OTF extended TTF by offering many capabilities that the latter wasn't capable of providing. For example, OTF featured a format that allowed for the storage of up to 65,000 characters.
+- For designers, both amateur and professional, the main useful difference between OTF and TTF is in the advanced typesetting features. In addition, OTF features embellishments like ligatures and alternate characters—also known as glyphs—that exist to give designers more options to work with.
+- For most of us non-designers, the additional options will likely go unused.
+- In other words, OTF is indeed the "better" of the two due to the additional features and options, but for the average computer user, those differences don't really matter.
