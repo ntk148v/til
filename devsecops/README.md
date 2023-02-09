@@ -2,91 +2,235 @@
 
 Source:
 
-- <https://www.redhat.com/en/topics/devops/what-is-devsecops>
-- <https://www.synopsys.com/glossary/what-is-devsecops.html>
-- <https://www.microfocus.com/en-us/what-is/devsecops>
-- <https://www.infracloud.io/blogs/implement-devsecops-secure-ci-cd-pipeline/>
-- <https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/secure/devsecops-controls>
+- <https://github.com/OWASP/DevSecOpsGuideline>
 
 Table of content:
 
 - [DevSecOps](#devsecops)
-  - [1. Overview](#1-overview)
-  - [2. DevSecOps lifecycle and key components](#2-devsecops-lifecycle-and-key-components)
-    - [2.1. Plan/Design](#21-plandesign)
-    - [2.2. Develop](#22-develop)
-    - [2.3. Build and code analysis](#23-build-and-code-analysis)
-    - [2.4. Test](#24-test)
-    - [2.5. Deploy](#25-deploy)
-    - [2.6. Monitoring and Alerting](#26-monitoring-and-alerting)
 
-## 1. Overview
+  - [0. Introduction](#0-introduction)
+  - [0. Threat modeling](#0-threat-modeling)
+  - [2. Pre-commit](#2-pre-commit)
+  - [](#)
 
-- DevSecOps stands for _development, security, and operations_.
-- DevSecOps automates the integration of security at every phase of the software development lifecycle (SDLC), from initial design through integration, testing, deployment, and software delivery.
-- In the past, the role of security was isolated to a specific team in the final stage of development.
+- Today, DevOps is empowering an organization to deploy changes to production environments at blazing rates -> "How I can secure this process/How much our deliverable products are secure?".
+- DevSecOps: embeded security-related steps entire DevOps process to perform some automated tests:
 
-![](https://www.redhat.com/cms/managed-files/styles/wysiwyg_full_width/s3/devsecops-linear-405x259.png?itok=1jsWGdOF)
+  - DevSecOps is all about putting security into DevOps. But to keep up with the pace of CI/CD, security has to be injected early into software writing and testing.
 
-- Now, in the collaborative framework of DevOps, secuirty is a shared responsibility integrated from end to end. It's a mindset that is so important, it led some to coin the term "DevSecOps" to emphasize the need to build a security foundation into DevOps initiatives.
+  ![](https://github.com/OWASP/DevSecOpsGuideline/raw/master/assets/images/DevSecOps-cycle.png)
 
-![](https://www.redhat.com/cms/managed-files/styles/wysiwyg_full_width/s3/devsecops-collab-405x308.png?itok=VsZ8waJV)
+  - The Ideal goal is **“detect security issues (by design or application vulnerability) as fast as possible.”**
 
-- DevSecOps enables seamless application security earlier in the SDLC, rather than at the end when vulnerability findings requiring mitigation are more difficult and costly to implement. It also means automating some security gates to keep the DevOps workflow from slowing down.
-- DevSecOps is an extension of Devops, and is sometimes referred to as Secure DevOps, which means DevSecOps is about integrating Security into CI/CD pipeline.
+- DevSecOps culture helps to promote the **shift-left security strategy**.
+- **Shift-left security strategy**: a way or solution to embedding security as a part of software development lifecycle (SDLC) and consider security from the inception steps of application or system design.
 
-![](https://snyk.io/wp-content/uploads/DevSecOps-Pipeline-1240x670.png)
+  - Security is responsible for everyone who works in SDLC.
 
-- Benefits of the DevSecOps model:
-  - Faster delivery.
-  - Improved security posture.
-  - Reduced costs.
-  - Enhancing the value of DevOps.
-  - Improving security integration and pace.
-  - Enabling greater overall business success.
+  ![](https://www.klogixsecurity.com/hs-fs/hubfs/Shift%20Left.png?width=1984&name=Shift%20Left.png)
 
-## 2. DevSecOps lifecycle and key components
+- DevSecOps - Dev+Sec+Ops:
 
-DevSecOps requires planning application and infrastructure security from the start.
+```shell
+The purpose and intent of DevSecOps is to build on the mindset that “everyone is responsible for security” with the goal of safely distributing security decisions at speed and scale to those who hold the highest level of context without sacrificing the safety required.”
 
-![](https://dlhr6gotgr9bx.cloudfront.net/2021-11/devsec.png)
+-- Shannon Lietz - founder at DevSecOps foundation --
+```
 
-![](https://d33wubrfki0l68.cloudfront.net/2d13f6c9c86cf550d671b50107181fdf3dc51c72/68c99/assets/img/blog/devsecops-pipeline/devsecops-pipeline-1600x350.svg)
+- DevSecOps culture: introducing security earlier in the process instead of having it in the final steps. Considering security in design by threat modeling and break down huge security tests in smaller security testing and integrating them in the development pipeline.
 
-### 2.1. Plan/Design
+![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/DevOps%20vs%20DevSecOps.png)
 
-- Threat modeling: It effectively puts you in the mindset of an attacker and allow us to see the application through the attacker's eyes and block their attack before they get a chance to do anything about it.
-  - Threat modeling is a simple concept, though it can be detailed and technical if need be. It reveals and documents a realistic security view of application that includes:
-    - How attackers can abuse that application's design
-    - How to fix vulnerabilities
-    - How important it is to fix issues
-  - There are published approaches for threat modeling that range from simple question and answer methods to detailed tool-based analysis. You can base your approach on methodologies like the [STRIDE model](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats), the [DREAD model](<https://en.wikipedia.org/wiki/DREAD_(risk_assessment_model)>), or [OWASP threat modeling](https://owasp.org/www-community/Threat_Modeling).
-- Secure SDLC: separate development, testing, and production environments and also have autorization processes that control the deployment promotion from one environment to another.
+- DevSecOps is about injecting security in software writing and testing, so let's talk about testing.
 
-### 2.2. Develop
+  - Testing strategies:
+    - Positive testing: Positive testing assumes that, under normal conditions and inputs, everything will _behave as expected_.
+    - Negative testing: Negative testing checks the system behavior _under unexpected conditions_.
+  - Methods of testing:
 
-- IDE security plugins and [pre-commit](https://pre-commit.com/).
-- Peer code review: It's good practice to have a security champion or knowledgeable security teammate who can guide the developer during the peer review process.
-- [Secure coding practice guidelines](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/) help developers learn essential secure coding principles and how should applied.
-- Code repository - Secret management
+    - Static testing (Static application security testing - SAST):
 
-### 2.3. Build and code analysis
+      - Checks software defects without executing the application code.
+      - Performed in the early stage of development to avoid errors, as it is easier to find souces of failures and it can be fixed easily.
+      - Issues: hard coded credentials, deprecated encryption algorithms, 2nd order injections, weak random,...
+      - Scope: 1 component at time.
 
-- Software composition analysis (SCA):
-  - Open source software often times includes security vulnerabilities, so a complete security approach includes a solution that tracks OSS libraries, and reports vulnerabilities and license violations.
-  - SCA automates the visibility into open source software for the purpose of risk management, security and license compliance.
-  - [OWASP Dependency Check](https://owasp.org/www-project-dependency-check/)
-- Static application security testing (SAST):
-  - SAST scans the application source files, accurately identifies the root cause and helps remediate the underlying security flaws.
-  - It analyzes the code based on predefined rule sets.
-  - [SonarQube](https://github.com/SonarSource/sonarqube)
+      ![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/sast_scanning.png)
 
-### 2.4. Test
+    - Dynamic testing (Dynamic application security testing - DAST):
 
-- Dynamic application security testing (DAST): simulates controlled attacks on a running web apoplication or service to identify exploitable vulnerabilities in a running environment.
-  - DAST is a web application security test that finds security issues in the running application.
-  - [List of DAST scanning tools provided by OWASP](https://owasp.org/www-community/Vulnerability_Scanning_Tools)
+      - Analyzes the behavior of the application code at runtime.
+      - Scanners specially crafted requests to the target application. Request parameters are constantly modified during testing to try and expose a range of vulnerabilities. Based on the response of the application the tool can then identify potential vulnerabilities and report back.
+      - Issues: cliend side vulnerabilities like authentication & session issues, sensitive data sent in plain text,...
+      - Scope: mutiple components at once.
 
-### 2.5. Deploy
+      ![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/dast_scanning.png)
 
-### 2.6. Monitoring and Alerting
+    - Interactive analysis (Interactive Application Security Testig (IAST) ):
+
+      - Monitors the application (using sensors/agents deploy with the application) while other systems interact with it and observe vulnerabilities.
+      - Scope: 1 component/multiple components (agents/sensors are deployed on all components) at once.
+
+      ![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/iast_analysis.png)
+
+## 0. Threat modeling (Design)
+
+- What: A systematically listing all the potential ways one can attack an application - a process for looking at attacks actively.
+  - Output:
+    - Diagrams
+    - Security requirements
+    - Non-requirements
+    - List of threats / vulnerabilties
+- Why:
+  - Pro-active approach to finding threats
+  - Increasing efficiency by reducing costs
+  - A better prioritization based on bugs and mitigation plan
+  - A better understanding of the system
+- Who: It depends on the organization.
+  - Artitect.
+  - Developer
+  - Tester
+  - Security expert
+- When: Threat Modeling should be as early as possible in the software design process.
+- How:
+
+  - Approaches:
+    - Attacker-centric approach: producing steps:
+      - Create a list of assets
+      - Draw assets, components and data flows
+      - For each element, check for threats
+    - Asset-centric approach: producing steps:
+      - Create a list of threat actors: motive, means, opportunity
+      - Create a list of threats
+    - Application-centric approach: producing steps:
+      - Draw a diagram of the application
+      - List threats for each element: STRIDE, OWASP Top 10
+      - Rank threats using a classification model\
+  - Methodology: according to the approaches, there is a list of methodology:
+    - PASTA
+    - Microsoft Threat Modeling
+    - OCTAVE
+    - TRIKE
+      - VAST
+
+- Pipeline:
+
+  ![](https://github.com/OWASP/DevSecOpsGuideline/raw/master/assets/images/DevSecOps-pipeline.png)
+
+  - Pipeline with tools:
+
+  ![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/Pipeline-view.png)
+
+## 1. Pre-commit
+
+- Pre-commit phase is important because it can prevent security issues before they are submitted to a central Git repository.
+- Different types of pre-commit actions:
+  - **Secrets management**: make sure that there are no secrets in the code.
+    - Approach: scanning the repo for sensitive information, and then remove them; note that when a credential is leaked, it is already compromised and should be invalidated.
+    - Detecting secrets in several locations:
+      - Detecing existing secrets by searching in a repository for existing secrets
+      - Using Pre-commit hooks in order to prevent secrets for entering code base
+      - Detecting secrets in pipeline
+    - The best location is the _pre-commit_ location. Another locatiotn is the build server or the _build_ process.
+    - Tools: [gittyleaks](https://github.com/kootenpv/gittyleaks), [git-secrets](https://github.com/awslabs/git-secrets), [repo-supervisor](https://github.com/auth0/repo-supervisor),...
+  - **Linting code**:
+    - The automated checking of source code for _programmatic and stylistic errors_ - using lint tool (linter)
+      - Detect _errors_ in a code and errors that can lead to a security vulnerabilities
+      - Detect _formatting or styling issues_
+      - Suggest _best practices_
+      - Increase _overall quality of code_
+      - Make _maintenance of code_ easier.
+    - Issues with linters:
+      - Not every language has "quality" standard linter tools available, each framework usually has one or several linters
+      - Different versions or configurations can lead to different results
+      - Since some linters are very verbose and information overload can lead to focusing on "unimportant" issues
+    - Perform it in the _pre-commit_ phase. Another phase: _build_ phase.
+
+![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/pre-commit.png)
+
+- Tools: [Pre-commit](https://pre-commit.com/) - A framework for managing and maintaining multi-language pre-commit hooks.
+
+## 2. Vulnerability Scanning
+
+- Vulnerability scanning is an inspection of the potential points of exploit on a computer, application, endpoints, and IT infrastructure (including network) to identify security holes.
+- Different types of vulnerability scanning:
+  - Static Application Security Test - SAST
+  - Dynamic Application Security Test - DAST
+  - Interactive Application Security Testing - IAST
+  - Software Composition Analysis - SCA
+  - Infrastructure Vulnerability Scanning
+  - Container Vulnerability Scanning
+
+### 2.1. Static Application Security Test - SAST
+
+![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/Static%20scanning.png)
+
+- _Static Code Analysis_ or _Source Code Analysis_ is usually part of Code Review (_white-box testing_) and it is a method of computer program debugging that is done by examining the code without executing the program.
+  - Syntax violations
+  - Security vulnerabilities
+  - Programming errors
+  - Coding standard violations
+  - Undefined values
+- To achieve a better result, combine static security scanning, 3rd party code (open-source libraries) scanning, IaC (Infrastructure as Code) security scan.
+  - Static Code Analysis (known as SAST):
+    - [SonarQube](https://www.sonarqube.org/): An open-source web-based tool, extending its coverage to more than 20 languages, and also allows a number of plugins.
+    - [Veracode](https://www.veracode.com/security/static-analysis-tool): A static analysis tool that is built on the SaaS model. This tool is mainly used to analyze the code from a security point of view
+    - [Checkmarx SAST](https://checkmarx.com/cxsast-source-code-scanning/): A static analysis security vulnerability scanner
+  - Open-source libraries (3rd party / dependency) scanning (known as SCA):
+  - IaC Security scanning:
+    - [Checkov](https://github.com/bridgecrewio/checkov): Prevent cloud misconfigurations during build-time for Terraform, Cloudformation, Kubernetes, Serverless framework and other infrastructure-as-code-languages.
+    - [ansible-lint](https://github.com/ansible-community/ansible-lint): Best practices checker for Ansible.
+
+### 2.2. Dynamic Application Security Testing (DAST)
+
+- DAST is a _black-box testing_, can find vulnerabilities and weaknesses in a running application by injecting malicious payloads to identify potential flaws that allow for attacks like SQL injections or cross-site scripting (XSS),...
+  - Input or output validation
+  - Authentication issues
+  - Server configuration mistakes
+- DAST tools allow for sophisticated scans on the client side and server side without needing the source code or the framework the application is built on.
+- Tools:
+  - [ZED Attack Proxy](https://www.zaproxy.org/): It is an open source tool which is offered by OWASP for performing security testing
+  - [Acunetix](https://www.acunetix.com/): An automatic web security testing scanner that accurately scans and audits all web applications, including HTML5, JavaScript and Single Page applications (SPAs)
+  - [Netsparker](https://www.netsparker.com/): It can identify vulnerabilities in all types of modern web applications, regardless of the underlying architecture or platform
+  - [Veracode Dynamic Analysis](https://www.veracode.com/products/dynamic-analysis-dast): Veracode Dynamic Analysis helps companies scan their web applications for exploitable vulnerabilities at scale
+  - [Checkmarx DAST](https://checkmarx.com/checkmarx-dast/):
+
+### 2.3. Interactive Application Security Testing (IAST)
+
+- IAST is an application security testing method that tests the application while the app is run by an automated test, human tester, or any activity "interacting" with the application functionality.
+- The core is sensor modules, software libraries included in the application code.
+- Tools:
+  - [Checkmarx Interactive Application Security Testing(CxIAST)](https://www.checkmarx.com/products/interactive-application-security-testing/)
+  - [Contrast Community Edition](https://www.contrastsecurity.com/contrast-community-edition)
+
+### 2.4. Software Component/Composition Analysis (SCA)
+
+- _Component Analysis_ is the process of automating application security for managing third-party and open source components of codebase. SCA will find any potential vulnerable components in our codebase to prevent high security risks like Supply-Chain Attack, not only that but also provide licensing about each components
+- Should put the SCA earlier, before security testing like SAST, DAST to prevent any vulnerable libraries pushed to production.
+- Tools:
+  - [OWASP Dependency-check](https://owasp.org/www-project-dependency-check)
+  - [Safety](https://github.com/pyupio/safety)
+  - [Synopsys BlackDuck](https://www.blackducksoftware.com/)
+  - [Snyk](https://snyk.io/)
+
+### 2.5. Infrastructure Vulnerability Scanning
+
+- To make sure the infrastructure where deploy code is safe, incorporate vulnerability scanning into your pipeline.
+- A vulnerability scanner is a computer program designed to assess computers, networks or applications for known weaknesses.
+- Modern vulnerability scanners:
+  - Allow for both authenticated and unauthenticated scans.
+    - Authenticated scans allow for the scanner to directly access network based assets using remote administrative protocols such as secure shell (SSH) or remote desktop protocol (RDP) and authenticate using provided system credentials.
+    - Unauthenticated scans is a method that can result in a high number of false positives and is unable to provide detailed information about the assets OS and installed software.
+  - Typically available as SaaS
+  - Able to customize vulnerability reports as well as the installed software, open ports, certificates and other host information that can be queried as part of its workflow.
+- Tools:
+  - [Nessus](https://www.tenable.com/products/nessus/nessus-professional)
+  - [SAINT](https://www.carson-saint.com/)
+  - [Nikto](http://www.cirt.net/nikto2)
+
+### 2.6. Container Vulnerability Scanning
+
+- As containers become an almost ubiquitous method of packaging and deploying applications, the instances of malware have increased. Securing containers is now a top priority for DevOps engineers. Fortunately, a number of open source programs are available that scan containers and container images.
+  - Detect secure containers: outdated libraries, incorrectly configured containers, outdated OS
+  - Detect compliance validations
+  - Suggest best practices
