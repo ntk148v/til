@@ -7,29 +7,17 @@ Source:
 Table of content:
 
 - [DevSecOps](#devsecops)
-
-  - [0. Introduction](#0-introduction)
-  - [0. Threat modeling](#0-threat-modeling)
-  - [2. Pre-commit](#2-pre-commit)
-  - [](#)
-
-- Today, DevOps is empowering an organization to deploy changes to production environments at blazing rates -> "How I can secure this process/How much our deliverable products are secure?".
-- DevSecOps: embeded security-related steps entire DevOps process to perform some automated tests:
-
-  - DevSecOps is all about putting security into DevOps. But to keep up with the pace of CI/CD, security has to be injected early into software writing and testing.
-
-  ![](https://github.com/OWASP/DevSecOpsGuideline/raw/master/assets/images/DevSecOps-cycle.png)
-
-  - The Ideal goal is **“detect security issues (by design or application vulnerability) as fast as possible.”**
-
-- DevSecOps culture helps to promote the **shift-left security strategy**.
-- **Shift-left security strategy**: a way or solution to embedding security as a part of software development lifecycle (SDLC) and consider security from the inception steps of application or system design.
-
-  - Security is responsible for everyone who works in SDLC.
-
-  ![](https://www.klogixsecurity.com/hs-fs/hubfs/Shift%20Left.png?width=1984&name=Shift%20Left.png)
-
-- DevSecOps - Dev+Sec+Ops:
+  - [0. Threat modeling (Design)](#0-threat-modeling-design)
+  - [1. Pre-commit](#1-pre-commit)
+  - [2. Vulnerability Scanning](#2-vulnerability-scanning)
+    - [2.1. Static Application Security Test - SAST](#21-static-application-security-test---sast)
+    - [2.2. Dynamic Application Security Testing (DAST)](#22-dynamic-application-security-testing-dast)
+    - [2.3. Interactive Application Security Testing (IAST)](#23-interactive-application-security-testing-iast)
+    - [2.4. Software Component/Composition Analysis (SCA)](#24-software-componentcomposition-analysis-sca)
+    - [2.5. Infrastructure Vulnerability Scanning](#25-infrastructure-vulnerability-scanning)
+    - [2.6. Container Vulnerability Scanning](#26-container-vulnerability-scanning)
+    - [2.7. Privacy](#27-privacy)
+  - [3. Compliance Auditing](#3-compliance-auditing)
 
 ```shell
 The purpose and intent of DevSecOps is to build on the mindset that “everyone is responsible for security” with the goal of safely distributing security decisions at speed and scale to those who hold the highest level of context without sacrificing the safety required.”
@@ -234,3 +222,37 @@ The purpose and intent of DevSecOps is to build on the mindset that “everyone 
   - Detect secure containers: outdated libraries, incorrectly configured containers, outdated OS
   - Detect compliance validations
   - Suggest best practices
+- Use it at the _build_ phase when you're actually building for instance a Dockerfile and looking the resulting image that you're creating. Another location to perform would be when you _push_ an image to the registry or when you _pull_ an image from a registry. However, a good approach is scanning before pushing into a trusted container registry.
+
+![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/container-security-pipeline.png)
+
+- Tools:
+  - [Clair](https://github.com/quay/clair)
+  - [Falco](https://falco.org/)
+  - [Harbor](https://goharbor.io/)
+  - [Trivy](https://aquasecurity.github.io/trivy/)
+
+### 2.7. Privacy
+
+- Privacy has become an important aspect of application security.
+  - GDPR, LGPD, CCPA and other laws and regulations have impose several controls over processing _PII (Personally Identifiable Information)_. What is considered PII?
+    - First and last name
+    - Identifiable email (name.lastname@domain.com)
+    - Identify card numbers
+    - Location data (mobile)
+    - IP address
+    - Racial or ethnic origin
+    - Political opinions
+    - ...
+  - To comply with those regulations, DevSecOps have to be sure to use PII accordingly and protect data agains leaking.
+  - Create a PII data flow to make sure you apply the required protection to the data thru its lifecycle.
+  - All PII data processing requirements have to be specified. you have to create an inventory of all PII and evaluate the processing activity to make sure it follows all requirementes, such as:
+    - Lawfulness, fairness and transparency
+    - Purpose limitation
+    - Data minimization
+    - Accuracy
+    - Storage limitation
+    - Integrity and confidentiality (security)
+    - Accountability
+
+## 3. Compliance Auditing
