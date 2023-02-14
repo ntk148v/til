@@ -15,10 +15,5 @@ jobs:
           submodules: true # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
       - name: Check broken links
-        run: find **/*.md -exec npx markdown-link-check {} \;
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
