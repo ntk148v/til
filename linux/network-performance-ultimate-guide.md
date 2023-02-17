@@ -265,7 +265,7 @@ Source:
 22. Enqueue the packet to the receive buffer and sized as `tcp_rmem` rules
     - If `tcp_moderate_rcvbuf is enabled kernel will auto-tune the receive buffer
     - `tcp_rmem`: Contains 3 values that represent the minimum, default and maximum size of the TCP socket receive buffer.
-    - `net.core.rmem_max`: the upper limit of the TCP receive buffer size.
+    - `net.core.rmem_max`: the upper limit of the TCP receive buffer size. Between `net.core.rmem_max` and `net.ipv4.tcp-rmem`'max value, the bigger value [takes precendence](https://github.com/torvalds/linux/blob/master/net/ipv4/tcp_output.c#L241).
     - `SO_RECVBUF` sets the fixed size of the TCP receive buffer, it will override `tcp_rmem`, and the kernel will no longer dynamically adjust the buffer. The maximum value set by `SO_RECVBUF` cannot exceed `net.core.rmem_max`. Normally, we will not use it.
 23. Kernel will signalize that there is data available to apps (epoll or any polling system)
 24. Application wakes up and reads the data
