@@ -9,6 +9,7 @@ Source:
 - <https://blog.cloudflare.com/how-to-receive-a-million-packets/>
 - <https://beej.us/guide/bgnet/html/>
 - <https://blog.csdn.net/armlinuxww/article/details/111930788>
+- <https://www.ibm.com/docs/en/linux-on-systems?topic=recommendations-network-performance-tuning>
 
 Table of Contents:
 
@@ -17,6 +18,11 @@ Table of Contents:
     - [1.1. Linux network packet reception](#11-linux-network-packet-reception)
     - [1.2. Linux kernel network transmission](#12-linux-kernel-network-transmission)
   - [2. Network Performance tuning](#2-network-performance-tuning)
+    - [2.0. Quick HOWTO](#20-quick-howto)
+      - [2.0.1. `/proc/net/softnet_stat` \& `/proc/net/sockstat`](#201-procnetsoftnet_stat--procnetsockstat)
+      - [2.0.2. `ss`](#202-ss)
+      - [2.0.3. `netstat`](#203-netstat)
+      - [2.0.4. `sysctl`](#204-sysctl)
     - [2.1. The NIC Ring Buffer](#21-the-nic-ring-buffer)
     - [2.2. Interrupt Coalescence (IC) - rx-usecs, tx-usecs, rx-frames, tx-frames (hardware IRQ)](#22-interrupt-coalescence-ic---rx-usecs-tx-usecs-rx-frames-tx-frames-hardware-irq)
     - [2.3. IRQ Affinity](#23-irq-affinity)
@@ -60,6 +66,8 @@ Source:
 - Linux queue:
 
 ![](https://github.com/leandromoreira/linux-network-performance-parameters/raw/master/img/linux_network_flow.png)
+
+**NOTE**: The follow sections will heavily use `sysctl`. If you don't familiar with this command, take a look at [HOWTO#sysctl section](#204-sysctl).
 
 ### 1.1. Linux network packet reception
 
@@ -265,8 +273,13 @@ Source:
 22. Enqueue the packet to the receive buffer and sized as `tcp_rmem` rules
     - If `tcp_moderate_rcvbuf is enabled kernel will auto-tune the receive buffer
     - `tcp_rmem`: Contains 3 values that represent the minimum, default and maximum size of the TCP socket receive buffer.
-    - `net.core.rmem_max`: the upper limit of the TCP receive buffer size. Between `net.core.rmem_max` and `net.ipv4.tcp-rmem`'max value, the bigger value [takes precendence](https://github.com/torvalds/linux/blob/master/net/ipv4/tcp_output.c#L241).
-    - `SO_RECVBUF` sets the fixed size of the TCP receive buffer, it will override `tcp_rmem`, and the kernel will no longer dynamically adjust the buffer. The maximum value set by `SO_RECVBUF` cannot exceed `net.core.rmem_max`. Normally, we will not use it.
+      - min: minimal size of receive buffer used by TCP sockets. It is guaranteed to each TCP socket, even under moderate memory pressure. Default: 4 KB.
+      - default: initial size of receive buffer used by TCP sockets. This value overrides `net.core.rmem_default` used by other protocols. Default: 131072 bytes. This value results in initial window of 65535.
+      - max: maximal size of receive buffer allowed for automatically selected receiver buffers for TCP socket. This value does not override `net.core.rmem_max`. Calling `setsockopt()` with `SO_RCVBUF` disables automatic tuning of that socket’s receive buffer size, in which case this value is ignored. `SO_RECVBUF` sets the fixed size of the TCP receive buffer, it will override `tcp_rmem`, and the kernel will no longer dynamically adjust the buffer. The maximum value set by `SO_RECVBUF` cannot exceed `net.core.rmem_max`. Normally, we will not use it. Default: between 131072 and 6MB, depending on RAM size.
+    - `net.core.rmem_max`: the upper limit of the TCP receive buffer size.
+      - Between `net.core.rmem_max` and `net.ipv4.tcp-rmem`'max value, the bigger value [takes precendence](https://github.com/torvalds/linux/blob/master/net/ipv4/tcp_output.c#L241).
+      - Increase this buffer to enable scaling to a larger window size. Larger windows increase the amount of data to be transferred before an acknowledgement (ACK) is required. This reduces overall latencies and results in increased throughput.
+      - This setting is typically set to a very conservative value of 262,144 bytes. It is recommended this value be set as large as the kernel allows. 4.x kernels accept values over 16 MB.
 23. Kernel will signalize that there is data available to apps (epoll or any polling system)
 24. Application wakes up and reads the data
 
@@ -283,6 +296,9 @@ Although simpler than the ingress logic, the egress is still worth acknowledging
 3. It enqueues skb to the socket write buffer of `tcp_wmem` size
 
    - `tcp_wmem`: Contains 3 values that represent the minimum, default and maximum size of the TCP socket send buffer.
+     - min: amount of memory reserved for send buffers for TCP sockets. Each TCP socket has rights to use it due to fact of its birth. Default: 4K
+     - default: initial size of send buffer used by TCP sockets. This value overrides net.core.wmem_default used by other protocols. It is usually lower than `net.core.wmem_default`. Default: 16K
+     - max: maximal amount of memory allowed for automatically tuned send buffers for TCP sockets. This value does not override net.core.wmem_max. Calling `setsockopt()` with `SO_SNDBUF` disables automatic tuning of that socket’s send buffer size, in which case this value is ignored. `SO_SNDBUF` sets the fixed size of the send buffer, it will override `tcp_wmem`, and the kernel will no longer dynamically adjust the buffer. The maximum value set by SO_SNDBUF cannot exceed `net.core.wmem_max`. Normally, we will not use it. Default: between 64K and 4MB, depending on RAM size.
    - Check command:
 
    ```shell
@@ -291,8 +307,7 @@ Although simpler than the ingress logic, the egress is still worth acknowledging
    ```
 
    - The size of the TCP send buffer will be dynamically adjusted between min and max by the kernel. The initial size is default.
-   - `net.core.wmem_max`: the upper limit of the TCP send buffer size.
-   - `SO_SNDBUF` sets the fixed size of the send buffer, it will override `tcp_wmem`, and the kernel will no longer dynamically adjust the buffer. The maximum value set by SO_SNDBUF cannot exceed `net.core.wmem_max`. Normally, we will not use it.
+   - `net.core.wmem_max`: the upper limit of the TCP send buffer size. Similar to `net.core.rmem_max` (but for transimission).
 
 4. Builds the TCP header (src and dst port, checksum)
 5. Calls L3 handler (in this case `ipv4` on `tcp_write_xmit` and `tcp_transmit_skb`)
@@ -323,7 +338,9 @@ There are factors should be considered for network performance tuning. Note that
 
 Ok, let's follow through the Packet reception (and transmission) and do some tuning.
 
-**NOTE**:
+### 2.0. Quick HOWTO
+
+#### 2.0.1. `/proc/net/softnet_stat` & `/proc/net/sockstat`
 
 Before we continue, let's discuss about `/proc/net/softnet_stat` & `/proc/net/sockstat` as these files will be used a lot then.
 
@@ -358,6 +375,96 @@ FRAG: inuse 0 memory 0
 
 - Check `mem` field. It is calculated simply by summing `sk_buff->truesize` for all sockets.
 - More detail [here](https://unix.stackexchange.com/questions/419518/how-to-tell-how-much-memory-tcp-buffers-are-actually-using)
+
+#### 2.0.2. `ss`
+
+- `ss` is another utility to investigate sockets. It is used to dump socket statistics. It allows showing information similar to `netstat`. IT can display more TCP and state information than other tools.
+- For more you should look at man page: `man ss`.
+- For example, to check socket memory usage:
+
+```shell
+ss -tm
+
+#  -m, --memory
+#         Show socket memory usage. The output format is:
+
+#         skmem:(r<rmem_alloc>,rb<rcv_buf>,t<wmem_alloc>,tb<snd_buf>,
+#                       f<fwd_alloc>,w<wmem_queued>,o<opt_mem>,
+#                       bl<back_log>,d<sock_drop>)
+
+#         <rmem_alloc>
+#                the memory allocated for receiving packet
+
+#         <rcv_buf>
+#                the total memory can be allocated for receiving packet
+
+#         <wmem_alloc>
+#                the memory used for sending packet (which has been sent to layer 3)
+
+#         <snd_buf>
+#                the total memory can be allocated for sending packet
+
+#         <fwd_alloc>
+#                the  memory  allocated  by  the  socket as cache, but not used for receiving/sending packet yet. If need memory to send/receive packet, the memory in this
+#                cache will be used before allocate additional memory.
+
+#         <wmem_queued>
+#                The memory allocated for sending packet (which has not been sent to layer 3)
+
+#         <ropt_mem>
+#                The memory used for storing socket option, e.g., the key for TCP MD5 signature
+
+#         <back_log>
+#                The memory used for the sk backlog queue. On a process context, if the process is receiving packet, and a new packet is received, it will be put into  the
+#                sk backlog queue, so it can be received by the process immediately
+
+#         <sock_drop>
+#                the number of packets dropped before they are de-multiplexed into the socket
+
+#  -t, --tcp
+#         Display TCP sockets.
+
+State       Recv-Q Send-Q        Local Address:Port        Peer Address:Port
+ESTAB       0      0             192.168.56.102:ssh        192.168.56.1:56328
+skmem:(r0,rb369280,t0,tb87040,f0,w0,o0,bl0,d0)
+
+# rcv_buf: 369280 bytes
+# snd_buf: 87040 bytes
+```
+
+#### 2.0.3. `netstat`
+
+- A command-line utility which can print information about open network connections and protocol stack statistics. It retrieves information about the networking subsystem from the `/proc/net/` file system. These files include:
+  - `/proc/net/dev` (device information)
+  - `/proc/net/tcp` (TCP socket information)
+  - `/proc/net/unix` (Unix domain socket information)
+- For more information about `netstat` and its referenced files from `/proc/net/`, refer to the `netstat` man page: `man netstat`.
+
+#### 2.0.4. `sysctl`
+
+- Rather than modifying system variables by `echo`-ing values in the `/proc` file system directly:
+
+```shell
+echo "value" > /proc/sys/location/variable
+```
+
+- The `sysctl` command is available to change system /network settings. It provides methods of overriding default settings values on a temporary basis for evaluation purposes as well as changing values permanently that persist across system restarts.
+
+```shell
+# To display a list of available sysctl variables
+sysctl -a | less
+# To only list specific variables use
+sysctl variable1 [variable2] [...]
+# To change a value temporarily use the sysctl command with the -w option:
+sysctl -w variable=value
+# To override the value persistently, the /etc/sysctl.conf file must be changed. This is the recommend method. Edit the /etc/sysctl.conf file.
+vi /etc/sysctl.conf
+# Then add/change the value of the variable
+variable = value
+# Save the changes and close the file. Then use the -p option of the sysctl command to load the updated sysctl.conf settings:
+sysctl -p or sysctl -p /etc/sysctl.conf
+# The updated sysctl.conf values will now be applied when the system restarts.
+```
 
 ### 2.1. The NIC Ring Buffer
 
