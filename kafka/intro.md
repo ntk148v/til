@@ -43,11 +43,6 @@
 - A topic is divided into 1 or more partitions, enabling producer and consumer loads to be scaled.
 - Partitions allow topics to be parallelized by splitting the data into a particular topic across multiple brokers.
 - Replication is implemented at the partition level.
-
-![](https://24b4dt1v60e526bo2p349l4c-wpengine.netdna-ssl.com/wp-content/uploads/2021/07/image-9-640x357.png)
-
-![](https://24b4dt1v60e526bo2p349l4c-wpengine.netdna-ssl.com/wp-content/uploads/2021/07/image-10-640x405.png)
-
 - Partition: leader and followers. Leader handles all read-write requests, the followers replicate the follower. Leader fails -> 1 of the followers becomes the leader.
 - All records with the same key will arrive at the same partition.
 

@@ -124,7 +124,7 @@ Source:
 - With an event-driven system, the capture, communication, processing, and persistence of events are the core structure of the solution. This differs from a traditional request-driven model.
 - Event-driven architecture enables minimal coupling, which makes it a good option for modern, distributed application architectures.
 
-![](https://hazelcast.com/wp-content/uploads/2020/02/20_EventDrivenArchitecture.png)
+![](https://hazelcast.com/wp-content/uploads/2021/12/20_EventDrivenArchitecture.png)
 
 - Event-driven architecture is made up of event producers and event consumers. An event producer detects or senses an event and represents the event as a message. It does not know the consumer of the event, or the outcome of an event.
 

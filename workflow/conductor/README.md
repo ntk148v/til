@@ -13,7 +13,7 @@ Source: <https://conductor.netflix.com/>
 
 ## 1. Setup
 
-- Follow [Getting stared guide](https://conductor.netflix.com/gettingstarted/docker.html) and [Docker images and compose files here](https://github.com/ntk148v/dockerfiles/tree/master/conductor).
+- Follow [Getting stared guide](https://conductor.netflix.com/devguide/concepts/index.html) and [Docker images and compose files here](https://github.com/ntk148v/dockerfiles/tree/master/conductor).
 - Conductor server url: <http://localhost:8080/>
 - Conductor UI url: <http://localhost:5000/>
 
@@ -48,14 +48,14 @@ Definitions 1->N Excutions
 
 ## 2.3. Architecture
 
-![](https://conductor.netflix.com/img/conductor-architecture.png)
+![](https://conductor.netflix.com/devguide/architecture/conductor-architecture.png)
 
 - Runtime Model:
   - RPC based communication model.
   - Workers are running on a separrate machine from the server.
   - Workers communicate with server over HTTP based endpoints and employs polling model for managing work queues.
 
-![](https://conductor.netflix.com/img/overview.png)
+![](https://conductor.netflix.com/devguide/architecture/overview.png)
 
 - Worker is responsible for executing a task. Each worker embodies Microservice design pattern and follows certain basic principles:
   - Stateless.
