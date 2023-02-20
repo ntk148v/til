@@ -18,7 +18,7 @@
 
 ### 2.1. Architecture
 
-![](https://learn.hashicorp.com/img/nomad/get-started/nomad-architecture-region.png)
+![](https://content.hashicorp.com/api/assets?product=tutorials&version=main&asset=public%2Fimg%2Fnomad%2Fproduction%2Fnomad_fault_tolerance.png)
 
 - `agent`: process running in server or client mode. Agents are the basic building blocks of a Nomad cluster. `dev-agent` is for development and experimental use only.
 - `server`: a Nomad agent running in server mode:

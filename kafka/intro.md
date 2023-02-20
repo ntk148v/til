@@ -68,23 +68,23 @@
 - Kafka consumers are typically part of a consumer group. When multiple consumers are subscribed to a topic and belong to the same consumer group, each consumer in the group will receive messages from a different subset of the partitions in the topic.
 - 1 consumer group with 4 partitions.
 
-![](https://www.oreilly.com/library/view/kafka-the-definitive/9781491936153/assets/ktdg_04in01.png)
+![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in01.png)
 
 - 4 partitions split to 2 consumers in a group.
 
-![](https://www.oreilly.com/library/view/kafka-the-definitive/9781491936153/assets/ktdg_04in02.png)
+![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in02.png)
 
 - 4 consumers 4 partitions.
 
-![](https://www.oreilly.com/library/view/kafka-the-definitive/9781491936153/assets/ktdg_04in03.png)
+![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in03.png)
 
 - 5 consumers 4 partitions (1 idle).
 
-![](https://www.oreilly.com/library/view/kafka-the-definitive/9781491936153/assets/ktdg_04in04.png)
+![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in04.png)
 
 - 2 consumer groups 1 topics.
 
-![](https://www.oreilly.com/library/view/kafka-the-definitive/9781491936153/assets/ktdg_04in05.png)
+![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in05.png)
 
 - Create a new consumer group for each application that needs all the messages from one or more topics. Add consumers to an existing consumer group to scale the reading and processing of messages from the topics, so each additional consumer in a group will only get a subset of the messages.
 
