@@ -14,6 +14,7 @@ Table of content:
     - [2.1. Getting started](#21-getting-started)
     - [2.2. Custom Docker image](#22-custom-docker-image)
     - [2.3. Test an existing role](#23-test-an-existing-role)
+    - [2.4. Test Cluster](#24-test-cluster)
 
 ## 0. Problem
 
@@ -46,6 +47,8 @@ So the question is: "What is Molecule?"
 - Molecule supports only the latest _two major versions of Ansible (N/N-1)_, meaning that if the latest version is 2.9.x, we will also test our code with 2.8.x.
 
 ## 2. Play with Molecule
+
+> Source can be found [here](https://github.com/ntk148v/testing/tree/master/ansible/molecule/example).
 
 ### 2.1. Getting started
 
@@ -463,4 +466,82 @@ TASK [Build an Ansible compatible image (new)] *********************************
 
 ### 2.3. Test an existing role
 
-If you want to initialize Molecule within an existing role, you would use the `molecule init  scenario -r my_role_name -s my_scenario` command from within the role's directory.
+If you want to initialize Molecule within an existing role, you would use the `molecule init scenario -r my_role_name my_scenario` command from within the role's directory.
+
+### 2.4. Test Cluster
+
+- Create new scenario:
+
+```shell
+$ molecule init scenario -d docker cluster
+```
+
+- Modify `example/molecule/cluster/molecule.yml` to create 3 hosts:
+
+```yml
+platforms:
+  - name: instance-0
+    image: quay.io/centos/centos:stream8
+    pre_build_image: true
+  - name: instance-1
+    image: quay.io/centos/centos:stream8
+    pre_build_image: true
+  - name: instance-2
+    image: quay.io/centos/centos:stream8
+    pre_build_image: true
+```
+
+- You can also take advantage of yaml [anchor and merge key features](https://learnxinyminutes.com/docs/yaml/) to make it shorter (if your instance definition is complicated, and you don't to waste your time repeat it):
+  - Note: anchors and merge keys can only be used in the same yaml file. So this will not work between different scenario.
+
+```yml
+platforms:
+  - &default-instance
+    name: instance-0
+    image: quay.io/centos/centos:stream8
+    pre_build_image: true
+    groups:
+      - test
+    # command: /sbin/init
+    # volumes:
+    #   - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    # networks:
+    #   - name: net1
+  - <<: *default-instance
+    name: instance-1
+  - <<: *default-instance
+    name: instance-2
+```
+
+- Start instances:
+
+```shell
+$ molecule create -s cluster
+
+$ molecule list -s cluster
+
+  Instance Name │ Driver Name │ Provisioner Name │ Scenario Name │ Created │ Converged
+╶───────────────┼─────────────┼──────────────────┼───────────────┼─────────┼───────────╴
+  instance-0    │ docker      │ ansible          │ cluster       │ true    │ false
+  instance-1    │ docker      │ ansible          │ cluster       │ true    │ false
+  instance-2    │ docker      │ ansible          │ cluster       │ true    │ false
+                ╵             ╵                  ╵               ╵         ╵
+
+$ docker ps
+CONTAINER ID   IMAGE                           COMMAND                  CREATED          STATUS          PORTS     NAMES
+8fe77dd8e250   quay.io/centos/centos:stream8   "bash -c 'while true…"   34 seconds ago   Up 33 seconds             instance-2
+0dee3cd04c07   quay.io/centos/centos:stream8   "bash -c 'while true…"   35 seconds ago   Up 34 seconds             instance-1
+9004da1f541d   quay.io/centos/centos:stream8   "bash -c 'while true…"   36 seconds ago   Up 35 seconds             instance-0
+```
+
+- Molecule doesn't have an inventory file, so you must define host group in `example/molecule/cluster/molecule.yml` file.
+
+```yaml
+platforms:
+  - &default-instance
+    name: instance-0
+    image: quay.io/centos/centos:stream8
+    pre_build_image: true
+    groups:
+      - test # <-- your group
+```
