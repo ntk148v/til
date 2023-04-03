@@ -2,7 +2,7 @@
 
 Source: <https://www.percona.com/blog/2012/03/21/troubleshooting-mysql-memory-usage/>
 
-Table of content:
+Table of contents:
 
 - [Troubleshooting MySQL memory usage](#troubleshooting-mysql-memory-usage)
   - [1. Plot Memory Usage](#1-plot-memory-usage)
