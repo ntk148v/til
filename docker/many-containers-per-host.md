@@ -2,7 +2,7 @@
 
 Source: <https://sven.stormbind.net/blog/posts/docker_from_30_to_230/>
 
--Conntrack table: Since the defaut docker networking setup involves a shitload of NAT, it shouldn't bet surprising that nf_conntrack will start to drop packets at some point.
+- Conntrack table: Since the defaut docker networking setup involves a shitload of NAT, it shouldn't bet surprising that nf_conntrack will start to drop packets at some point.
 
 ```bash
 net.netfilter.nf_conntrack_max = 524288 # May be larger

@@ -1,6 +1,6 @@
 # Architecting Containers Part 1: Why Understanding User Space vs. Kernel Space Matters
 
-Source: https://www.redhat.com/en/blog/architecting-containers-part-1-why-understanding-user-space-vs-kernel-space-matters
+Source: <https://www.redhat.com/en/blog/architecting-containers-part-1-why-understanding-user-space-vs-kernel-space-matters>
 
 - All applications, inclusive of containerd applications, rely on the underlying kernel.
 - The kernel provides an API to these applications via system calls.

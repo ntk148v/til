@@ -1,6 +1,6 @@
 # Compiling Containers - Dockerfiles, LLVM and BuildKit
 
-Source: https://blog.earthly.dev/compiling-containers-dockerfiles-llvm-and-buildkit/
+Source: <https://blog.earthly.dev/compiling-containers-dockerfiles-llvm-and-buildkit/>
 
 - An image ~ an executable, a container ~ a process. Run multiple containers from 1 image, a running image isn't an image at all but a container.
 

@@ -75,7 +75,7 @@ Using the concept of "software as an onion," it's a very common flow to troubles
 
 This is the general flow from the outside working in:
 
-```
+```shell
 $ docker service ls
 $ docker service ps <service>
 $ docker service inspect <service>
@@ -90,7 +90,7 @@ In the following examples we'll use the `ucp-agent` as our problem service.
 
 `docker service ls` tells us the full list of service running in Swarm. It's very helpful for showing whether desired amount of replicas for a service are actually running. For example:
 
-```
+```shell
 $ docker service ls
 ID                  NAME                MODE                REPLICAS            IMAGE                          PORTS
 o1rttg33awmd        ucp-agent           global              2/2                 docker/ucp-agent:2.2.4
@@ -104,7 +104,7 @@ o1rttg33awmd        ucp-agent           global              2/2                 
 
 `docker service inspect` tells us all the specified configuration values for a given service. For example:
 
-```
+```shell
 $ docker service inspect ucp-agent
 [
     {
@@ -145,7 +145,7 @@ $ docker service inspect ucp-agent
 
 These values can be retrieved individually with the following commands:
 
-```
+```shell
 docker service inspect ucp-agent | jq -r '.[].CreatedAt'
 2017-11-10T23:51:39.6345829Z
 
@@ -159,7 +159,7 @@ JSON representation is useful with tools like [jq](https://stedolan.github.io/jq
 
 This command displays a list of tasks for a given service. This is helpful in determining if there were failures in the past or if tasks are currently running or restarting. Swarm stores a certain amount of history for a service which shows some tasks whose containers are no longer running. For example:
 
-```
+```shell
 $ docker service ps ucp-agent
 ID                  NAME                                      IMAGE                    NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
 pw6u97k0th7q        ucp-agent.ung2hozu917ekkrx8zy3kxt2f       docker/ucp-agent:2.2.4   ip-172-31-17-19     Running             Running 3 minutes ago
@@ -174,7 +174,7 @@ A large list of failed tasks and tasks that are being created and exiting freque
 
 All Docker commands can use the `--format "{{json .}}"` option to print the output in JSON representation. For example:
 
-```
+```shell
 $ docker service ps ucp-agent --format "{{json .}}"
 {"CurrentState":"Running 9 minutes ago","DesiredState":"Running","Error":"","ID":"pw6u97k0th7q","Image":"docker/ucp-agent:2.2.4","Name":"ucp-agent.ung2hozu917ekkrx8zy3kxt2f","Node":"ip-172-31-17-19","Ports":""}
 {"CurrentState":"Complete 9 minutes ago","DesiredState":"Shutdown","Error":"","ID":"tzi0i0nuwnc1","Image":"docker/ucp-agent:2.2.4","Name":"ucp-agent.ung2hozu917ekkrx8zy3kxt2f","Node":"ip-172-31-17-19","Ports":""}
@@ -194,7 +194,7 @@ pw6u97k0th7q
 
 Using the Task IDs from `docker service ps`, we can pull out the container IDs to identify which containers belong to a given service. Once we have the container ID for a given task, we can get container logs or view specific information about the container configuration.
 
-```
+```shell
 $ docker inspect pw6u97k0th7q | jq -r '.[].Status.ContainerStatus.ContainerID'
 90cbc98062c82e7fddac3e883f9dac26773bf426704dfc3307abc5b327eb304d
 ```
@@ -205,8 +205,8 @@ The output from `docker inspect <container>` is very large and detailed, but it 
 
 ##### Container State
 
-```
-docker inspect 90cbc98062c8 | jq '.[].State'
+```shell
+$ docker inspect 90cbc98062c8 | jq '.[].State'
 {
   "Status": "running",
   "Running": true,
@@ -229,8 +229,8 @@ docker inspect 90cbc98062c8 | jq '.[].State'
 
 ##### Node
 
-```
-docker inspect 90cbc98062c8 | jq '.[].Node'
+```shell
+$ docker inspect 90cbc98062c8 | jq '.[].Node'
 {
   "ID": "I2B6:36YM:QBX5:7T4V:VGJU:UNFF:MW6V:GOYG:7WAG:MWK6:SJNL:3ZGR|172.31.17.19:12376",
   "IP": "172.31.17.19",
@@ -252,7 +252,7 @@ docker inspect 90cbc98062c8 | jq '.[].Node'
 
 ##### Network Settings
 
-```
+```shell
 $ docker inspect 90cbc98062c8 | jq '.[].NetworkSettings'
 {
   "Bridge": "",
