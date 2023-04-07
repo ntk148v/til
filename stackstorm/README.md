@@ -89,15 +89,15 @@ Quick views:
 
 ```yaml
 ---
-name: 'echo_action'
-runner_type: 'python-script'
-description: 'Print message to standard output.'
+name: "echo_action"
+runner_type: "python-script"
+description: "Print message to standard output."
 enabled: true
-entry_point: 'my_echo_action.py'
+entry_point: "my_echo_action.py"
 parameters:
   message:
-    type: 'string'
-    description: 'Message to print.'
+    type: "string"
+    description: "Message to print."
     required: true
     position: 0
 ```
@@ -126,19 +126,19 @@ class MyEchoAction(Action):
 ```yaml
 # metadata file
 ---
-class_name: 'SampleSensor'
-entry_point: 'sample_sensor.py'
-description: 'Sample sensor that emits triggers.'
+class_name: "SampleSensor"
+entry_point: "sample_sensor.py"
+description: "Sample sensor that emits triggers."
 trigger_types:
-  - name: 'event'
-    description: 'An example trigger.'
+  - name: "event"
+    description: "An example trigger."
     payload_schema:
-      type: 'object'
+      type: "object"
       properties:
         executed_at:
-          type: 'string'
-          format: 'date-time'
-          default: '2014-07-30 05:04:24.578325'
+          type: "string"
+          format: "date-time"
+          default: "2014-07-30 05:04:24.578325"
 ```
 
 ```python
@@ -177,27 +177,27 @@ class SamplePollingSensor(PollingSensor):
 
 ```yaml
 ---
-name: 'rule_name' # required
-pack: 'examples' # optional
-description: 'Rule description.' # optional
+name: "rule_name" # required
+pack: "examples" # optional
+description: "Rule description." # optional
 enabled: true # required
 
 trigger: # required
-  type: 'trigger_type_ref'
+  type: "trigger_type_ref"
 
 criteria: # optional
   trigger.payload_parameter_name1:
-    type: 'regex'
-    pattern: '^value$'
+    type: "regex"
+    pattern: "^value$"
   trigger.payload_parameter_name2:
-    type: 'iequals'
-    pattern: 'watchevent'
+    type: "iequals"
+    pattern: "watchevent"
 
 action: # required
-  ref: 'action_ref'
+  ref: "action_ref"
   parameters: # optional
-    foo: 'bar'
-    baz: '{{ trigger.payload_parameter_1 }}'
+    foo: "bar"
+    baz: "{{ trigger.payload_parameter_1 }}"
 ```
 
 - Trigger in a rule specifics which incoming events should be inspected for potential match against this rule.
@@ -252,12 +252,12 @@ action: # required
 
 ```yaml
 ---
-name: 'remote_shell_cmd'
-pack: 'examples'
-action_ref: 'core.remote'
-description: 'Execute a command on a remote host via SSH.'
+name: "remote_shell_cmd"
+pack: "examples"
+action_ref: "core.remote"
+description: "Execute a command on a remote host via SSH."
 formats:
-  - 'run {{cmd}} on {{hosts}}'
+  - "run {{cmd}} on {{hosts}}"
 ```
 
 - Notifications require an action that is registered with StackStorm and a notification rule to go with it. Notifications are implemented as triggers, rules and actions.
