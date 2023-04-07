@@ -19,23 +19,31 @@ StackStorm is a platform for integration and automation across services and tool
 
 StackStorm helps automate common operational patterns:
 
-- Facilitataed Troubleshooting.
-- Automated remediation.
-- Continuos Deployment.
+- **Facilitated Troubleshooting**: triggering on system failures captured by Nagios, Sensu, New Relic and other monitoring, running a series of diagnostic checks on physical nodes, OpenStack or Amazon instances, and application components, and posting results to a shared communication context, like Slack or JIRA..
+- **Automated remediation**: identifying and verifying hardware failure on OpenStack compute node, properly evacuating instances and emailing VM about potential downtime, but if anything goes wrong - freezing the workflow and calling PagerDuty to wake up a human..
+- **Continuos deployment**: build and test with Jenkins, provision a new AWS cluster, turn on some traffic with the load balancer, and roll-forth or roll-back based on NewRelic app performance data..
 
 ## 2. How it works?
+
+StackStorm is a service with modular architecture. It is comprised of loosely coupled microservice components that communicate over a message bus, and scales horizontally to deliver automation at scale. StackStorm has a full REST API, CLI client, and web UI for admins and users to operate it locally or remotely, as well as Python client bindings for developer convenience.
 
 ![stackstorm-architecture](https://docs.stackstorm.com/_images/architecture_diagram.jpg)
 
 StackStorm plugs into the environment via the extensible set of adapters containing sensors and actions.
 
-- Sensors: Python plugins for either inbound or outbound integration that receives or watches for events respectively.
-- Triggers: StackStorm representations of external events.
-- Actions: StackStorm outbound integrations.
-- Rules: map triggers to actions (or to workflows), applying matching criteria and mapping trigger payload to action inputs.
-- Workflows: stich actions together into "uber-actions", defining the order, transition conditions, and passing the data.
-- Packs: the units of content deployment.
-- Audit trail: of action executions, manual or automated, is recorded and stored with full detilas of triggering context and execution results.
+- **Sensors** are Python plugins for inbound integration that watch for events from external systems and fire a StackStorm trigger when an event happens.
+
+- **Triggers** are StackStorm representations of external events. There are generic triggers (e.g., timers, webhooks) and integration triggers (e.g., Sensu alert, JIRA issue updated). A new trigger type can be defined by writing a sensor plugin.
+
+- **Actions** are StackStorm outbound integrations. There are generic actions (SSH, HTTP request), integrations (OpenStack, Docker, Puppet), or custom actions. Actions are either Python plugins, or any scripts, consumed into StackStorm by adding a few lines of metadata. Actions can be invoked directly by user via CLI, API, or the web UI, or used and called as part of automations - rules and workflows.
+
+- **Rules** map triggers to actions (or to workflows), applying matching criterias and map trigger payload data to action inputs.
+
+- **Workflows** stitch actions together into "uber-actions", defining the order, transition conditions, and passing context data from one action to the next. Most automations are multi-step (eg: more than one action). Workflows, just like "atomic" actions, are available in the action library, and can be invoked manually or triggered by rules.
+
+- **Packs** are the units of content deployment. They simplify the management and sharing of StackStorm pluggable content by grouping integrations (triggers and actions) and automations (rules and workflows). A growing number of packs is available on the StackStorm Exchange. Users can create their own packs, share them on GitHub, or submit them to the StackStorm Exchange organization.
+
+- **Audit trail** is the historical list of action executions, manual or automated, and is recorded and stored with full details of triggering context and execution results. It is also captured in audit logs for integrating with external logging and analytical tools: LogStash, Splunk, statsd, or syslog.
 
 ## 3. Automation basics
 
@@ -81,15 +89,15 @@ Quick views:
 
 ```yaml
 ---
-name: "echo_action"
-runner_type: "python-script"
-description: "Print message to standard output."
+name: 'echo_action'
+runner_type: 'python-script'
+description: 'Print message to standard output.'
 enabled: true
-entry_point: "my_echo_action.py"
+entry_point: 'my_echo_action.py'
 parameters:
   message:
-    type: "string"
-    description: "Message to print."
+    type: 'string'
+    description: 'Message to print.'
     required: true
     position: 0
 ```
@@ -118,19 +126,19 @@ class MyEchoAction(Action):
 ```yaml
 # metadata file
 ---
-class_name: "SampleSensor"
-entry_point: "sample_sensor.py"
-description: "Sample sensor that emits triggers."
+class_name: 'SampleSensor'
+entry_point: 'sample_sensor.py'
+description: 'Sample sensor that emits triggers.'
 trigger_types:
-  - name: "event"
-    description: "An example trigger."
+  - name: 'event'
+    description: 'An example trigger.'
     payload_schema:
-      type: "object"
+      type: 'object'
       properties:
         executed_at:
-          type: "string"
-          format: "date-time"
-          default: "2014-07-30 05:04:24.578325"
+          type: 'string'
+          format: 'date-time'
+          default: '2014-07-30 05:04:24.578325'
 ```
 
 ```python
@@ -169,27 +177,27 @@ class SamplePollingSensor(PollingSensor):
 
 ```yaml
 ---
-name: "rule_name" # required
-pack: "examples" # optional
-description: "Rule description." # optional
+name: 'rule_name' # required
+pack: 'examples' # optional
+description: 'Rule description.' # optional
 enabled: true # required
 
 trigger: # required
-  type: "trigger_type_ref"
+  type: 'trigger_type_ref'
 
 criteria: # optional
   trigger.payload_parameter_name1:
-    type: "regex"
-    pattern: "^value$"
+    type: 'regex'
+    pattern: '^value$'
   trigger.payload_parameter_name2:
-    type: "iequals"
-    pattern: "watchevent"
+    type: 'iequals'
+    pattern: 'watchevent'
 
 action: # required
-  ref: "action_ref"
+  ref: 'action_ref'
   parameters: # optional
-    foo: "bar"
-    baz: "{{ trigger.payload_parameter_1 }}"
+    foo: 'bar'
+    baz: '{{ trigger.payload_parameter_1 }}'
 ```
 
 - Trigger in a rule specifics which incoming events should be inspected for potential match against this rule.
@@ -244,12 +252,12 @@ action: # required
 
 ```yaml
 ---
-name: "remote_shell_cmd"
-pack: "examples"
-action_ref: "core.remote"
-description: "Execute a command on a remote host via SSH."
+name: 'remote_shell_cmd'
+pack: 'examples'
+action_ref: 'core.remote'
+description: 'Execute a command on a remote host via SSH.'
 formats:
-  - "run {{cmd}} on {{hosts}}"
+  - 'run {{cmd}} on {{hosts}}'
 ```
 
 - Notifications require an action that is registered with StackStorm and a notification rule to go with it. Notifications are implemented as triggers, rules and actions.
