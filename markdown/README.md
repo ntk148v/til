@@ -37,3 +37,7 @@ A footnote can also have multiple lines[^2].
 [^2]:
     To add line breaks within a footnote, prefix new lines with 2 spaces.
     This is a second line.
+
+## 4. Keyboard
+
+If you want to render keyboard shortcuts, use this: <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Space</kbd>
