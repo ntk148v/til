@@ -34,3 +34,22 @@ Build cache usage: 0B
 
 CACHE ID   CACHE TYPE   SIZE      CREATED   LAST USED   USAGE     SHARED
 ```
+
+## 3. Build image behind proxy with cert (workaround)
+
+- Download your certificate file in the same directoryy as Dockerfile, named it as `your_cert.crt`.
+- Create the Dockerfile:
+
+```Dockerfile
+FROM alpine
+COPY your_cert.crt /usr/local/share/ca-certificates/your_cert.crt
+RUN cat /usr/local/share/ca-certificates/your_cert.crt > /etc/ssl/certs/ca-certificates.crt
+RUN apk add --no-cache curl
+# ...
+```
+
+- Build it:
+
+```shell
+docker build --build-arg HTTP_PROXY=$http_proxy --build-arg HTTPS_PROXY=$http_proxy --build-arg NO_PROXY="$no_proxy" --build-arg http_proxy=$http_proxy --build-arg https_proxy=$http_proxy --build-arg no_proxy="$no_proxy" -t your-image .
+```
