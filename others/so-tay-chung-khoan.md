@@ -8,7 +8,7 @@
       - [2.1.2. Trái phiếu](#212-trái-phiếu)
     - [2.2. Chứng khoán phái sinh](#22-chứng-khoán-phái-sinh)
       - [2.2.1. Hợp đồng tương lai chỉ số VN30](#221-hợp-đồng-tương-lai-chỉ-số-vn30)
-    - [2.2.2. Chứng quyền có bảo đảm](#222-chứng-quyền-có-bảo-đảm)
+      - [2.2.2. Chứng quyền có bảo đảm](#222-chứng-quyền-có-bảo-đảm)
     - [2.3. Chứng chỉ quỹ ETFs](#23-chứng-chỉ-quỹ-etfs)
 
 ## 1. Thị trường chứng khoán
@@ -28,7 +28,7 @@
   - Nơi cổ phiếu được mua bán lại sau khi đã được phát hành trên thị trường sơ cấp. Đây là nơi mà những nhà đầu tư nhỏ lẻ có thể tham gia với số vốn ít, việc giao dịch dễ dàng hơn.
 - Cơ cấu các chủ thể tham gia trên Thị trường chứng khoán Việt Nam (TTCKVN):
 
-  ![](https://taichinhvadautublog.com/wp-content/uploads/2021/04/cautructhitruongchungkhoanvietnam.png)
+    ![](https://taichinhvadautublog.com/wp-content/uploads/2021/04/cautructhitruongchungkhoanvietnam.png)
 
   - Bộ Tài chính: Cơ quan tài chính của Chính phủ Việt Nam - có trách nhiệm quản lý, giám sát thị trường chứng khoán, ngân sách Nhà nước, quản lý thuế, giá cả,...
   - Ủy ban chứng khoán Nhà nước: Trực thuộc bộ tài chính - có trách nhiệm quản lý, giám sát thị trường chứng khoán.
@@ -38,7 +38,6 @@
   - Các công ty chứng khoán: các tổ chức tham gia kinh doanh trên thị trường chứng khoán ví dụ như SSI, VNDirect, VPS... Công việc chủ yếu của họ là tư vấn phát hành chứng khoán, môi giới chứng khoán, kết nối đến các nhà đầu tư, cung cấp các công cụ cho nhà đầu tư, trực tiếp tham gia đầu tư chứng khoán,...
   - Tổ chức phát hành: Các công ty, tập đoàn muốn huy động vốn thông qua thị trường chứng khoán bằng cách phát hành cổ phiếu, trái phiếu,...
   - Nhà đầu tư: Những người trực tiếp mua và bán chứng khoán trên thị trường chứng khoán bao gồm các nhà đầu tư cá nhân, nhà đầu tư nước ngoài, nhà đầu tư có tổ chức và các quỹ đầu tư
-
 - Nguồn: <https://www.vietcap.com.vn/tin-tuc/kien-thuc-co-ban-ve-chung-khoan-nha-dau-tu-nhat-dinh-phai-biet>
 - // WIP
 
@@ -56,7 +55,7 @@
 ![](https://i0.wp.com/online.hsc.com.vn/upload/so-sanh-dac-diem-cua-cac-san-pham-dau-tu.jpg?w=1200&ssl=1)
 
 ### 2.1. Chứng khoán cơ sở
-
+  
 - Chứng khoán cơ sở được hiểu rộng là một cổ phiếu, trái phiếu, chỉ số,... mà các tài sản này là tham chiếu cho sự hình thành của các công cụ phái sinh như hợp đồng tương lai, ETFs hay hợp đồng quyền chọn.
 - Ở thị trường Việt Nam, chứng khoán cở sở có 2 loại:
 
@@ -64,18 +63,17 @@
 
 - Một loại chứng khoán được biết đến như một giấy chứng nhận số tiền mà nhà đầu tư đã đóng cho doanh nghiệp phát hành, nhằm mục đích xác nhận quyền sở hữu một hay một số cổ phần của công ty.
 - Có 2 loại cổ phiếu:
-  - _Cổ phiếu thường_ (Cổ phiếu phổ thông): dùng để xác định quyền sở hữu của các cổ đông.
-  - _Cổ phiếu ưu đãi_: cổ phiếu mà người nắm giữ có thể nhận ưu đãi về cổ tức được xác định bằng một số tiền nhất định in trên cổ phiếu hoặc tính theo tỷ lệ phần trăm cố định theo mệnh giá cổ phiếu.
+  - *Cổ phiếu thường* (Cổ phiếu phổ thông): dùng để xác định quyền sở hữu của các cổ đông.
+  - *Cổ phiếu ưu đãi*: cổ phiếu mà người nắm giữ có thể nhận ưu đãi về cổ tức được xác định bằng một số tiền nhất định in trên cổ phiếu hoặc tính theo tỷ lệ phần trăm cố định theo mệnh giá cổ phiếu.
 - Chỉ số cổ phiếu:
   - Chỉ số cổ phiếu thống kê, đo lường sự biến động của một số danh mục cổ phiếu. Dựa vào chỉ số này mà nhà đầu tư đánh giá mức độ tiềm năng, định giá cổ phiếu trong tương lai, khả năng sinh lời của cổ phiếu.
   - Các chỉ số cơ bản:
     - Chỉ số P/E – Price to Earning: Là chỉ số đánh giá mối quan hệ giữa giá thị trường của cổ phiếu với thu nhập trên một cổ phiếu. Nếu chỉ số P/E thấp chứng tỏ cổ phiếu đang bị định giá thấp, có lợi cho nhà đầu tư.
     - Chỉ số EPS – Earning per Share: Thu nhập trên mỗi cổ phần hay lợi nhuận sau thuế trên mỗi cổ phần sẽ nhận được sau khi công ty đã chia hết tiền lãi cho cổ đông. EPS cao chứng tỏ công ty đang có tốc độ phát triển tốt, ổn định.
-    - Chỉ số P/B – Price to Book Value Ratio: Tỷ lệ giá trên số sách. Chỉ số này dùng để so sánh giá trị thực tế của một cổ phiếu so với giá trị ghi sổ của cổ phiếu đó. Chỉ số P/B càng thấp chứng tỏ nhà đầu tư đang trả ít hơn so với giá trị sổ sách ghi nhận.
+    - Chỉ số P/B – Price to Book Value Ratio: Tỷ lệ giá trên số sách. Chỉ số này dùng để so sánh giá trị thực tế của một cổ phiếu so với giá trị ghi sổ  của cổ phiếu đó. Chỉ số P/B càng thấp chứng tỏ nhà đầu tư đang trả ít hơn so với giá trị sổ sách ghi nhận.
     - Chỉ số DPR – Tỷ lệ chi trả cổ tức: Thể hiện mức chi trả cổ tức cho các cổ đông so với mức mà công ty kiếm được. Số tiền không được trả cho các cổ đông được công ty giữ lại để tái đầu tư tăng trưởng, trả nợ hoặc thêm vào lợi nhuận giữ lại. Chỉ số DPR cao cho thấy công ty đang phát triển và tạo ra lợi nhuận tốt.
 - Giá cổ phiếu là mức giá của cổ phiếu tại một thời điểm nhất định, có nghĩa là số tiền mà nhà đầu tư cần bỏ ra để sở hữu cổ phiếu đang giao dịch trên thị trườnG. Chỉ số giá biến động hằng ngày và chịu ảnh hưởng của nhiều yếu tố khác nhau: Thị trường và kinh tế, quy luật cung cầu, kết quả hoạt động kinh doanh của doanh nghiệp, tâm lý nhà đầu tư.
 - Các loại giá cổ phiếu:
-
   - Giá tham chiếu là mức giá cơ sở để tính giới hạn giá cổ phiếu giao động trong phiên giao dịch, dựa vào đây để xác định giá sàn và giá dịch của ngày giao dịch hiện tại. Trong đó, giá tham chiếu ở các sàn giao dịch sẽ khác nhau:
     - Tại sàn HOSE và HNX: Giá tại thời điểm đóng cửa của ngày giao dịch liền kề trước đó.
     - Tại sàn Upcom: Mức bình quân gia quyền của giá giao dịch thực hiện theo phương pháp khớp lệnh cuối cùng của ngày giao dịch trước đó.
@@ -110,8 +108,8 @@
 #### 2.2.1. Hợp đồng tương lai chỉ số VN30
 
 - Tham chiếu dựa vào tài sản cơ sở là chỉ số VN30 với 4 kỳ hạn.
-
-### 2.2.2. Chứng quyền có bảo đảm
+  
+#### 2.2.2. Chứng quyền có bảo đảm
 
 - Nguồn:
   - <https://hsc.com.vn/chung-quyen-co-bao-dam/kien-thuc-ve-chung-quyen.html>
@@ -129,7 +127,6 @@
 
 - Giá trị thời gian của CW là chênh lệch giữa giá của chứng quyền trên thị trường và giá trị nội tại của chứng quyền đó. Một chứng quyền ở trạng thái lỗ (OTM) sẽ không có giá trị nội tại mà chỉ có giá trị thời gian. Giá trị thời gian của CW sẽ giảm theo thời gian và bằng 0 vào ngày đáo hạn của CW.
 - Ví dụ minh họa:
-
   - Ngày 01/04/2019, một nhà đầu tư mua chứng quyền CVNM1901 (Chứng quyền mua cổ phiếu VNM phát hành đợt 1 của năm phát hành 2019) với các tham số như sau:
     - Thời gian còn lại: 5 tháng
     - Giá VNM tại ngày 01/4/2019: S = 200,000 đ
@@ -137,7 +134,6 @@
     - Giá thực hiện: 220,000 đ
     - Ngày đáo hạn: 1/11/19
   - Trường hợp 1: Nhà đầu tư giữ Chứng quyền đến đáo hạn:
-
     - Vào ngày đáo hạn (1/11/2019), khoản lãi/lỗ đối với nhà đầu tư phụ thuộc vào giá VNM. Cụ thể:
 
     | Giá VNM tại ngày đáo hạn | Trạng thái chứng quyền | Khoản tiền thanh toán cho chứng quyền | khoản lời/lỗ              | %Lợi nhuận/lỗ               |
@@ -149,7 +145,6 @@
     ![](https://storage.googleapis.com/hsc-cweb/cw/knowledge-of-cw-vn.jpg)
 
   - Trường hợp 2: Nhà đầu tư bán Chứng quyền trước khi đáo hạn:
-
     - Sau 2 tháng, vào 01/6/2019, nhà đầu tư bán lại Chứng quyền trên thị trường.
 
     | Giá VNM tại ngày đáo hạn | Trạng thái chứng quyền | Giá chứng quyền | khoản lời/lỗ                  | Hệ số đòn bẩy khi mua CQ so với mua CKCS |
@@ -162,5 +157,5 @@
 
 - Tập hợp một rổ chứng khoán được niêm yết trên sàn, thông thường là sẽ tham chiếu theo chỉ số cơ sở là các chỉ số chung, chỉ số nhóm ngành hay đơn giản là một rổ chỉ số được tạo ra dựa trên chiến lược của nhà tạo lập.
 - Ở Việt Nam, ETFs được chia làm 2 loại:
-  – ETFs ngoại là những ETFs có công ty quản lý quỹ, nhà tạo lập là các tổ chức nước ngoài: Vaneck, FTSE…
-  – ETFs nội là những ETFs có công ty quản lý quỹ, nhà tạo lập là các tổ chức trong nước: VFM, SSIAM…
+    – ETFs ngoại là những ETFs có công ty quản lý quỹ, nhà tạo lập là các tổ chức nước ngoài: Vaneck, FTSE…
+    – ETFs nội là những ETFs có công ty quản lý quỹ, nhà tạo lập là các tổ chức trong nước: VFM, SSIAM…
