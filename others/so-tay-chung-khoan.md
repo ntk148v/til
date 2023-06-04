@@ -66,11 +66,44 @@
 
 ### 1.3. Một số khái niệm khác
 
+- Nguồn:
+  - <https://stockinsight.hsc.com.vn/khop-lenh-duoc-thuc-hien-nhu-the-nao/>
 - Ở trên, chúng ta đã nói đến _khớp lệnh_, vậy khớp lệnh là gì?
   - Khớp lệnh trong thị trường chứng khoán là việc thực hiện xong thoả thuận giữa bên mua và bên bán trên bảng giao dịch điện tử trực tuyến. Lệnh của các nhà đầu tư được ghép với nhau để giao dịch theo mức giá phù hợp với nguyên tắc ưu tiên khớp lệnh của thị trường.
   - Có 2 loại khớp lệnh:
-    - Khớp lệnh định kỳ.
-    - Khớp lệnh liên tục.
+    - Khớp lệnh định kỳ:
+      - Phương thức giao dịch được thực hiện trên cơ sở so khớp các lệnh mua và lệnh bán chứng khoán tại một thời điểm xác định, để tìm ra mức giá mà tại đó khối lượng giao dịch là lớn nhất.
+      - Thường được các sở giao dịch chứng khoán sử dụng để xác định giá mở cửa và đóng cửa.
+      - Ví dụ:
+        - Giả sử tại phiên khớp lệnh định kỳ xác định giá mở cửa của một mã chứng khoán có các lệnh mua và bán ở các mức giá như sau:
+
+        ![](./images/khop-lenh-dinh-ky-1.png)
+
+        - Theo nguyên tắc người đi mua muốn mua ở giá thấp, còn người bán muốn bán được giá cao, ta có bảng lũy kế mua và lũy kế bán ở các mức giá như sau:
+          - Tại mức giá 220.000đ, tổng lũy kế mua là 15.000 + 10.000 (khối lượng đặt mua ATO) = 25.000
+          - Tại mức giá 219.900đ, tổng lũy kế mua là 17.000 + 15.000 + 10.000 = 42.000
+          - Tại mức giá 219.8000đ, tổng lũy kế mua là 20.000 + 17.000 + 15.000 + 10.000 = 62.000
+          - Tại mức giá 219.500đ, tổng lũy kế bán là 10.000 + 20.000 (khối lượng đặt bán ATO) = 30.000
+          - Tại mức giá 219.600đ, tổng lũy kế bán là 13.000 + 10.000 + 20.000 = 43.000
+          - Tại mức giá 219.700đ, tổng lũy kế bán là 10.000 + 13.000 + 10.000 + 20.000 = 53.000
+        - Như vậy, tại mức giá 219.800đ cho khối lượng cổ phiếu được giao dịch là nhiều nhất (62.000 cổ phiếu). Các lệnh mua M1, M2, M3, M4 được thực hiện trọn ven. Các lệnh bán B1, B7, B6, B5 được thực hiện trọn vẹn, và lệnh B4 còn lại 14.000 chưa được thực hiện (đã thực hiện 9.000).
+
+        ![](./images/khop-lenh-dinh-ky-2.png)
+
+    - Khớp lệnh liên tụcA:
+      - Phương thức giao dịch được thực hiện trên cơ sở so khớp các lệnh mua và lệnh bán chứng khoán ngay khi lệnh được nhập vào hệ thống giao dịch.
+      - Ví dụ:
+        - Giả sử tại phiên khớp lệnh liên tục của một mã chứng khoán, hiện có các lệnh mua và bán ở các mức giá như sau:
+
+      ![](./images/khop-lenh-lien-tuc-1.png)
+
+      - Xuất hiện 1 lệnh mua 15.000 cổ phiếu với giá 219.900đ, lệnh đó sẽ lập tức được khớp 10.000 cổ phiếu với lệnh bán D, còn dư mua 5.000 ở giá 219.900đ. Khi đó các lệnh còn lại trên thị trường như sau:
+
+      ![](./images/khop-lenh-lien-tuc-2.png)
+
+      - Xuất hiện 1 lệnh bán MP (lệnh thị trường) 10.000 cổ phiếu. Lệnh sẽ được khớp 5.000 giá 219.900đ với lệnh mua E; 5.000 còn lại của lệnh thị trường chưa được khớp sẽ được chuyển thành lệnh giới hạn bán tại mức giá thấp hơn một đơn vị yết giá so với giá giao dịch cuối cùng trước đó. Khi đó các lệnh còn lại trên thị trường như sau:
+
+      ![](./images/khop-lenh-lien-tuc-3.png)
 
 ## 2. Các loại/sản phẩm chứng khoán
 
