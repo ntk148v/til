@@ -69,12 +69,16 @@
 - Nguồn:
   - <https://stockinsight.hsc.com.vn/khop-lenh-duoc-thuc-hien-nhu-the-nao/>
 - Ở trên, chúng ta đã nói đến _khớp lệnh_, vậy khớp lệnh là gì?
+
   - Khớp lệnh trong thị trường chứng khoán là việc thực hiện xong thoả thuận giữa bên mua và bên bán trên bảng giao dịch điện tử trực tuyến. Lệnh của các nhà đầu tư được ghép với nhau để giao dịch theo mức giá phù hợp với nguyên tắc ưu tiên khớp lệnh của thị trường.
   - Có 2 loại khớp lệnh:
+
     - Khớp lệnh định kỳ:
+
       - Phương thức giao dịch được thực hiện trên cơ sở so khớp các lệnh mua và lệnh bán chứng khoán tại một thời điểm xác định, để tìm ra mức giá mà tại đó khối lượng giao dịch là lớn nhất.
       - Thường được các sở giao dịch chứng khoán sử dụng để xác định giá mở cửa và đóng cửa.
       - Ví dụ:
+
         - Giả sử tại phiên khớp lệnh định kỳ xác định giá mở cửa của một mã chứng khoán có các lệnh mua và bán ở các mức giá như sau:
 
         ![](./images/khop-lenh-dinh-ky-1.png)
@@ -91,6 +95,7 @@
         ![](./images/khop-lenh-dinh-ky-2.png)
 
     - Khớp lệnh liên tụcA:
+
       - Phương thức giao dịch được thực hiện trên cơ sở so khớp các lệnh mua và lệnh bán chứng khoán ngay khi lệnh được nhập vào hệ thống giao dịch.
       - Ví dụ:
         - Giả sử tại phiên khớp lệnh liên tục của một mã chứng khoán, hiện có các lệnh mua và bán ở các mức giá như sau:
