@@ -4,7 +4,8 @@
   - [1. Thị trường chứng khoán](#1-thị-trường-chứng-khoán)
     - [1.1. Tổng quan](#11-tổng-quan)
     - [1.2. Giờ giao dịch chứng khoán](#12-giờ-giao-dịch-chứng-khoán)
-    - [1.3. Một số khái niệm khác](#13-một-số-khái-niệm-khác)
+    - [1.3. Khớp lệnh](#13-khớp-lệnh)
+    - [1.3. Các loại lệnh đặt trong thị trường chứng khoán](#13-các-loại-lệnh-đặt-trong-thị-trường-chứng-khoán)
   - [2. Các loại/sản phẩm chứng khoán](#2-các-loạisản-phẩm-chứng-khoán)
     - [2.1. Chứng khoán cơ sở](#21-chứng-khoán-cơ-sở)
       - [2.1.1. Cổ phiếu](#211-cổ-phiếu)
@@ -52,19 +53,13 @@
 
 - Khung giờ giao dịch chứng khoán là giờ hành chính theo lịch nhà nước quy định. Thời gian giao dịch chứng khoán Việt Nam là từ thứ 2 đến thứ 6 hàng tuần, nghỉ vào các ngày cuối tuần, và nghỉ vào các ngày lễ như Tết dương lịch hay Tết âm lịch.
 
-  - Khung giờ giao dịch sàn HOSE:
-
-  ![](https://api.vcsc.com.vn/www/cms/uploads/froala/images/khung-gio-giao-dich-hose.JPG)
-
-  - Khung giờ giao dịch sàn HNX:
-
-  ![](https://api.vcsc.com.vn/www/cms/uploads/froala/images/khung-gio-giao-dich-hnx.JPG)
+![](https://i0.wp.com/online.hsc.com.vn/upload/thoi-gian-giao%20dich-chung-khoan.png?w=1200&ssl=1)
 
 - Nguyên tăc khớp lệnh theo giờ giao dịch: Lệnh mua và bán sẽ được khớp theo nguyên tắc ưu tiên về giá và thời gian, cụ thể:
 
 ![](https://i0.wp.com/online.hsc.com.vn/upload/nguyen-tac-khop-lenh-hnx.png?w=1200&ssl=1)
 
-### 1.3. Một số khái niệm khác
+### 1.3. Khớp lệnh
 
 - Nguồn:
   - <https://stockinsight.hsc.com.vn/khop-lenh-duoc-thuc-hien-nhu-the-nao/>
@@ -109,6 +104,18 @@
       - Xuất hiện 1 lệnh bán MP (lệnh thị trường) 10.000 cổ phiếu. Lệnh sẽ được khớp 5.000 giá 219.900đ với lệnh mua E; 5.000 còn lại của lệnh thị trường chưa được khớp sẽ được chuyển thành lệnh giới hạn bán tại mức giá thấp hơn một đơn vị yết giá so với giá giao dịch cuối cùng trước đó. Khi đó các lệnh còn lại trên thị trường như sau:
 
       ![](./images/khop-lenh-lien-tuc-3.png)
+
+### 1.3. Các loại lệnh đặt trong thị trường chứng khoán
+
+- Nguồn: <https://stockinsight.hsc.com.vn/gio-giao-dich-va-cac-lenh-dat-trong-chung-khoan-co-so/>
+
+- Lệnh giới hạn (LO): lệnh mua hoặc lệnh bán chứng khoán tại một mức giá xác định hoặc tốt hơn. Lệnh có hiệu lực kể từ khi được nhập vào hệ thống giao dịch cho đến hết ngày giao dịch hoặc cho đến khi lệnh bị hủy bỏ.
+- Lệnh ATO:
+  - Lệnh giao dịch tại mức giá khớp lệnh xác định giá mở cửa
+  - Lệnh ATO được ưu tiên trước lệnh giới hạn trong khi so khớp lệnh.
+  - Được nhập vào hệ thống giao dịch trong thời gian khớp lệnh định kỳ để xác định giá mở cửa và sẽ tự động tự hủy bỏ sau thời điểm xác định giá mở cửa nếu lệnh không được thực hiện hoặc không được thực hiện hết.
+- Lệnh ATC:
+  - Lệnh giao dịch tại mức giá khớp lệnh xác định giá đóng cửa
 
 ## 2. Các loại/sản phẩm chứng khoán
 
