@@ -107,15 +107,49 @@
 
 ### 1.3. Các loại lệnh đặt trong thị trường chứng khoán
 
-- Nguồn: <https://stockinsight.hsc.com.vn/gio-giao-dich-va-cac-lenh-dat-trong-chung-khoan-co-so/>
+- Nguồn:
+  - <https://stockinsight.hsc.com.vn/gio-giao-dich-va-cac-lenh-dat-trong-chung-khoan-co-so/>
+  - <https://zalopay.vn/cac-loai-lenh-trong-chung-khoan-2526>
+  - <https://www.dnse.com.vn/hoc/cach-dat-lenh-mua-ban-chung-khoan>
 
-- Lệnh giới hạn (LO): lệnh mua hoặc lệnh bán chứng khoán tại một mức giá xác định hoặc tốt hơn. Lệnh có hiệu lực kể từ khi được nhập vào hệ thống giao dịch cho đến hết ngày giao dịch hoặc cho đến khi lệnh bị hủy bỏ.
-- Lệnh ATO:
+- Lệnh giới hạn (LO - Limit Order):
+  - Lệnh mua hoặc lệnh bán chứng khoán tại một mức giá xác định hoặc tốt hơn.
+  - Nếu đặt lệnh LO trước phiên giao dịch hoặc trong giờ nghỉ trưa, lệnh sẽ ở trạng thái chờ. Khi phiên giao dịch bắt đầu, hệ thống sẽ thông báo lệnh có hiệu lực.
+  - Lệnh có hiệu lực kể từ khi được nhập vào hệ thống giao dịch cho đến hết ngày giao dịch hoặc cho đến khi lệnh bị hủy bỏ.
+  - Sàn giao dịch: HOSE, HNX
+- Lệnh ATO (At The Open):
   - Lệnh giao dịch tại mức giá khớp lệnh xác định giá mở cửa
   - Lệnh ATO được ưu tiên trước lệnh giới hạn trong khi so khớp lệnh.
-  - Được nhập vào hệ thống giao dịch trong thời gian khớp lệnh định kỳ để xác định giá mở cửa và sẽ tự động tự hủy bỏ sau thời điểm xác định giá mở cửa nếu lệnh không được thực hiện hoặc không được thực hiện hết.
-- Lệnh ATC:
-  - Lệnh giao dịch tại mức giá khớp lệnh xác định giá đóng cửa
+  - Thời gian nhập lệnh lên hệ thống là trước hoặc trong  phiên khớp lệnh định kỳ xác định giá mở cửa.
+  - Chỉ được thực hiện trong khoảng thời gian từ 9h đến 9h15. Sau thời gian này, nếu lệnh giao dịch ATO không được thực hiện hoặc lệnh chưa khớp hết sẽ bị hệ thống hủy.
+  - Sàn giao dịch: HOSE
+- Lệnh ATC (At The Close):
+  - Lệnh giao dịch tại mức giá khớp lệnh xác định giá đóng cửa.
+  - Lệnh có hiệu lực trong khoảng thời gian từ 14h30 - 14h45. Sau đó, nếu lệnh không khớp hoặc không được thực hiệ thì sẽ bị hệ thống hủy bỏ.
+  - Sàn giao dịch: HOSE, HNX
+- Lệnh MP (Market Price):
+  - Lệnh mua chứng khoán tại mức giá bán thấp nhất hoặc bán chứng khoán tại mức giá cao nhất đang có trên thị trường.
+  - Lệnh mà bên mua hoặc bán chậm nhất giao dịch với bất cứ giá nào.
+  - Trong trường hợp lệnh MP chưa khớp hết khối lượng, nó được xem là lệnh dùng để mua ở mức giá cao hơn và bán ở mức giá thấp hơn tiếp theo đang có trên thị trường. Nếu theo nguyên tắc này mà lệnh MP vẫn không khớp hết khối lượng, thì lệnh MP sẽ chuyển thành lệnh LO.
+  - Lệnh MP chỉ được nhập vào hệ thống trong phiên khớp lệnh liên tục.
+  - Lệnh giao dịch MP sẽ bị hủy nếu trong thời gian nhập lệnh không có lệnh LO đối xứng.
+  - Sàn giao dịch: HOSE
+- Lệnh thị trường sàn HNX:
+  - Lệnh thị trường giới hạn (MTL - Market To Limit): Lệnh nếu chưa được thực hiện toàn bộ thì phần còn lại sẽ chuyển thành lệnh LO.
+  - Lệnh thị trường khớp toàn bộ hoặc hủy (MOK - Fill or Kill order): nếu không thực hiện được toàn bộ thì bị huỷ ngay sau khi nhập.
+  - Lệnh thị trường khớp và hủy (MAK - Fill and Kill order):  tức có thể thực hiện toàn bộ hoặc một phần, phần còn lại sẽ bị huỷ ngay sau khi khớp lệnh.
+- Lệnh khớp lệnh sau giờ PLO (Post Limit Order):
+  - Lệnh PLO dùng để giao dịch chứng khoán sau khi phiên ATC kết thúc tại mức giá đóng cửa của phiên
+  - Chỉ được nhập vào hệ thống trong khoảng thời gian từ 14h45 đến 15h.
+  - Lệnh PLO sẽ được khớp ngay nếu có sẵn lệnh đối ứng.
+  - Lệnh giao dịch PLO không được thực hiện hoặc chưa khớp hết khối lượng sẽ bị hủy.
+  - Sàn giao dịch: HNX
+- Lệnh điều kiện (lệnh chờ):
+  - Loại lệnh kèm theo điều kiện, vì vậy khi nhà đầu tư đặt lệnh nó sẽ ở trạng thái chờ và chỉ được đẩy vào sàn khi đã đáp ứng được các điều kiện đã đặt.
+  - Lệnh điều kiện với thời gian (TCO): nhà đầu tư có thể đặt lệnh trước phiên giao dịch từ một đến nhiều ngày với số lượng và mức giá xác định. Lệnh này có hiệu lực tối đa trong 30 ngày.
+  - Lệnh tranh mua hoặc tranh bán ()PRO_: lệnh nhà đầu tư sẵn sàng mua ở các giá ATO/trần/ATC và sẵn sàng bán ở các giá ATO/sàn/ATC.
+  - Lệnh dừng (ST): lệnh để nhà đầu tư xác định trước giá cắt lỗ hoặc chốt lãi trong tương lai.
+  - Lệnh xu hướng (TS): nhà đầu tư sẽ chọn mã chứng khoán và khối lượng muốn giao dịch, cộng thêm khoảng dừng theo giá trị tuyệt đối (nghìn đồng) hoặc giá trị tương đối (%).
 
 ## 2. Các loại/sản phẩm chứng khoán
 
