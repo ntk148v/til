@@ -49,6 +49,7 @@
   - Các công ty chứng khoán: các tổ chức tham gia kinh doanh trên thị trường chứng khoán ví dụ như SSI, VNDirect, VPS... Công việc chủ yếu của họ là tư vấn phát hành chứng khoán, môi giới chứng khoán, kết nối đến các nhà đầu tư, cung cấp các công cụ cho nhà đầu tư, trực tiếp tham gia đầu tư chứng khoán,...
   - Tổ chức phát hành: Các công ty, tập đoàn muốn huy động vốn thông qua thị trường chứng khoán bằng cách phát hành cổ phiếu, trái phiếu,...
   - Nhà đầu tư: Những người trực tiếp mua và bán chứng khoán trên thị trường chứng khoán bao gồm các nhà đầu tư cá nhân, nhà đầu tư nước ngoài, nhà đầu tư có tổ chức và các quỹ đầu tư
+
 - Mã chứng khoán trên TTCK Việt Nam đang được quy chuẩn gồm 3 ký tự bao gồm chữ cái và/hoặc số và được cấp bởi Trung tâm lưu ký VSD. Mã chứng khoán của mỗi công ty niêm yết là duy nhất và không trùng lặp với những mã chứng khoán được niêm yết trước đó (trừ trường hợp mã chứng khoán đó đã được hủy trên 10 năm).
   - VIC = Vingroup
   - HPG: Công ty cổ phần Tập đoàn Hòa Phát.
