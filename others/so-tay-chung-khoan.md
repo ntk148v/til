@@ -14,6 +14,7 @@
       - [2.2.1. Hợp đồng tương lai chỉ số VN30](#221-hợp-đồng-tương-lai-chỉ-số-vn30)
       - [2.2.2. Chứng quyền có bảo đảm](#222-chứng-quyền-có-bảo-đảm)
     - [2.3. Chứng chỉ quỹ ETFs](#23-chứng-chỉ-quỹ-etfs)
+  - [3. Cách độc bảng giá chứng khoán](#3-cách-độc-bảng-giá-chứng-khoán)
 
 ## 1. Thị trường chứng khoán
 
@@ -48,6 +49,14 @@
   - Các công ty chứng khoán: các tổ chức tham gia kinh doanh trên thị trường chứng khoán ví dụ như SSI, VNDirect, VPS... Công việc chủ yếu của họ là tư vấn phát hành chứng khoán, môi giới chứng khoán, kết nối đến các nhà đầu tư, cung cấp các công cụ cho nhà đầu tư, trực tiếp tham gia đầu tư chứng khoán,...
   - Tổ chức phát hành: Các công ty, tập đoàn muốn huy động vốn thông qua thị trường chứng khoán bằng cách phát hành cổ phiếu, trái phiếu,...
   - Nhà đầu tư: Những người trực tiếp mua và bán chứng khoán trên thị trường chứng khoán bao gồm các nhà đầu tư cá nhân, nhà đầu tư nước ngoài, nhà đầu tư có tổ chức và các quỹ đầu tư
+- Mã chứng khoán trên TTCK Việt Nam đang được quy chuẩn gồm 3 ký tự bao gồm chữ cái và/hoặc số và được cấp bởi Trung tâm lưu ký VSD. Mã chứng khoán của mỗi công ty niêm yết là duy nhất và không trùng lặp với những mã chứng khoán được niêm yết trước đó (trừ trường hợp mã chứng khoán đó đã được hủy trên 10 năm).
+  - VIC = Vingroup
+  - HPG: Công ty cổ phần Tập đoàn Hòa Phát.
+- Chỉ số VNINDEX đại diện cho biến động của thị trường chứng khoán Việt Nam.
+  - Chỉ số được tổng hợp và tính toán dựa trên sự biến động giá trị vốn hóa hàng ngày của tất cả các công ty đang niêm yết trên sàn chứng khoán HOSE.
+  - Ví dụ: Chỉ số VNINDEX ngày 1/9/2021 đang là 1,334,65 điểm. So với mức giá trị gốc 100 điểm ngày 28/07/2000, chỉ số đã tăng 13.35 lần trong 21 năm hoạt động.
+  - Quan sát biến động chỉ số VNINDEX giúp nhà đầu tư nắm bắt xu hướng của thị trường chung, cung cầu hay diễn biến tâm lý chung của các nhà đầu tư trên thị trường.
+  - VNINDEX giúp nhà đầu tư thấy được giai đoạn phát triển hay suy giảm của nền kinh tế thể hiện qua xu hướng trưởng/suy giảm của chỉ số này.
 
 ### 1.2. Giờ giao dịch chứng khoán
 
@@ -113,44 +122,54 @@
   - <https://zalopay.vn/cac-loai-lenh-trong-chung-khoan-2526>
   - <https://www.dnse.com.vn/hoc/cach-dat-lenh-mua-ban-chung-khoan>
 
-- Lệnh giới hạn (LO - Limit Order):
+- _Lệnh giới hạn (LO - Limit Order)_:
   - Lệnh mua hoặc lệnh bán chứng khoán tại một mức giá xác định hoặc tốt hơn.
   - Nếu đặt lệnh LO trước phiên giao dịch hoặc trong giờ nghỉ trưa, lệnh sẽ ở trạng thái chờ. Khi phiên giao dịch bắt đầu, hệ thống sẽ thông báo lệnh có hiệu lực.
   - Lệnh có hiệu lực kể từ khi được nhập vào hệ thống giao dịch cho đến hết ngày giao dịch hoặc cho đến khi lệnh bị hủy bỏ.
   - Sàn giao dịch: HOSE, HNX
-- Lệnh ATO (At The Open):
+  - Ví dụ: cổ phiếu A đang ở mức 20,000đ, bạn đặt lệnh mua với giá 19,000đ. Nếu có người bán cổ phiếu này với giá nhỏ hơn hoặc bằng 19,000đ, lệnh của bạn sẽ được khớp. Ngược lại, nếu giá vẫn ở mức 20,000dd hoặc cao hơn thì sẽ không có giao dịch nào cả.
+- _Lệnh ATO (At The Open)_:
   - Lệnh giao dịch tại mức giá khớp lệnh xác định giá mở cửa
   - Lệnh ATO được ưu tiên trước lệnh giới hạn trong khi so khớp lệnh.
   - Thời gian nhập lệnh lên hệ thống là trước hoặc trong phiên khớp lệnh định kỳ xác định giá mở cửa.
   - Chỉ được thực hiện trong khoảng thời gian từ 9h đến 9h15. Sau thời gian này, nếu lệnh giao dịch ATO không được thực hiện hoặc lệnh chưa khớp hết sẽ bị hệ thống hủy.
   - Sàn giao dịch: HOSE
-- Lệnh ATC (At The Close):
+- _Lệnh ATC (At The Close)_:
   - Lệnh giao dịch tại mức giá khớp lệnh xác định giá đóng cửa.
   - Lệnh có hiệu lực trong khoảng thời gian từ 14h30 - 14h45. Sau đó, nếu lệnh không khớp hoặc không được thực hiệ thì sẽ bị hệ thống hủy bỏ.
   - Sàn giao dịch: HOSE, HNX
-- Lệnh MP (Market Price):
+- _Lệnh MP (Market Price)_:
   - Lệnh mua chứng khoán tại mức giá bán thấp nhất hoặc bán chứng khoán tại mức giá cao nhất đang có trên thị trường.
   - Lệnh mà bên mua hoặc bán chậm nhất giao dịch với bất cứ giá nào.
   - Trong trường hợp lệnh MP chưa khớp hết khối lượng, nó được xem là lệnh dùng để mua ở mức giá cao hơn và bán ở mức giá thấp hơn tiếp theo đang có trên thị trường. Nếu theo nguyên tắc này mà lệnh MP vẫn không khớp hết khối lượng, thì lệnh MP sẽ chuyển thành lệnh LO.
   - Lệnh MP chỉ được nhập vào hệ thống trong phiên khớp lệnh liên tục.
   - Lệnh giao dịch MP sẽ bị hủy nếu trong thời gian nhập lệnh không có lệnh LO đối xứng.
   - Sàn giao dịch: HOSE
-- Lệnh thị trường sàn HNX:
-  - Lệnh thị trường giới hạn (MTL - Market To Limit): Lệnh nếu chưa được thực hiện toàn bộ thì phần còn lại sẽ chuyển thành lệnh LO.
-  - Lệnh thị trường khớp toàn bộ hoặc hủy (MOK - Fill or Kill order): nếu không thực hiện được toàn bộ thì bị huỷ ngay sau khi nhập.
-  - Lệnh thị trường khớp và hủy (MAK - Fill and Kill order): tức có thể thực hiện toàn bộ hoặc một phần, phần còn lại sẽ bị huỷ ngay sau khi khớp lệnh.
-- Lệnh khớp lệnh sau giờ PLO (Post Limit Order):
+  - Ví dụ: bạn đặt lệnh MP để mua 3000 cổ phiếu A. Tại thời điểm đặt lệnh sẽ có những mức giá tương ứng với khối lượng được các bên rao bán như sau:
+    - 80,000 - khối lượng 500 cp
+    - 80,100 - khổi lượng 2000 cp
+    - 80,200 - khối lượng 3000 cp
+  - Nếu bạn đặt mua 3000 cổ phiếu A, thì 500 cp đầu tiên sẽ khớp lệnh với giá 80,000/1cp, 2000cp tiếp theo sẽ khớp lệnh với giá 80,100/1cp; 500cp còn lại sẽ khớp lệnh với giá 80,200d/1cp.
+- _Lệnh thị trường sàn HNX_:
+  - _Lệnh thị trường giới hạn (MTL - Market To Limit)_: Lệnh nếu chưa được thực hiện toàn bộ thì phần còn lại sẽ chuyển thành lệnh LO.
+    - Ví dụ: bạn đặt mua 500 cổ phiếu nhưng chỉ mua được 300 cổ, với lệnh MTL, 200 cổ còn lại sẽ được chuyển sang lệnh LO.
+  - _Lệnh thị trường khớp toàn bộ hoặc hủy (MOK - Fill or Kill order)_: nếu không thực hiện được toàn bộ thì bị huỷ ngay sau khi nhập.
+    - Ví dụ: bạn đặt mua 500 cổ phiếu nhưng chỉ có 300 cổ thoả mãn giao dịch, 200 cổ phiếu không thể khớp lệnh. Nếu với lệnh MAK, bạn vẫn mua được 300 cổ phiếu thì với MOK, lệnh mua 500 cổ phiếu này sẽ bị huỷ bỏ do không thể khớp lệnh toàn bộ.
+  - _Lệnh thị trường khớp và hủy (MAK - Fill and Kill order)_: tức có thể thực hiện toàn bộ hoặc một phần, phần còn lại sẽ bị huỷ ngay sau khi khớp lệnh.
+    - Ví dụ: bạn đặt mua 500 cổ phiếu XYZ giá 20 000đ nhưng chỉ khớp được 300 cổ. 200 cổ phiếu còn lại không thể mua được do không có người bán với giá tương ứng. Vậy lệnh mua 200 cổ phiếu này lại sẽ bị huỷ, cổ phiếu được trả về tài khoản.
+- _Lệnh khớp lệnh sau giờ PLO (Post Limit Order)_:
   - Lệnh PLO dùng để giao dịch chứng khoán sau khi phiên ATC kết thúc tại mức giá đóng cửa của phiên
   - Chỉ được nhập vào hệ thống trong khoảng thời gian từ 14h45 đến 15h.
   - Lệnh PLO sẽ được khớp ngay nếu có sẵn lệnh đối ứng.
   - Lệnh giao dịch PLO không được thực hiện hoặc chưa khớp hết khối lượng sẽ bị hủy.
   - Sàn giao dịch: HNX
-- Lệnh điều kiện (lệnh chờ):
+- _Lệnh điều kiện (lệnh chờ)_:
   - Loại lệnh kèm theo điều kiện, vì vậy khi nhà đầu tư đặt lệnh nó sẽ ở trạng thái chờ và chỉ được đẩy vào sàn khi đã đáp ứng được các điều kiện đã đặt.
-  - Lệnh điều kiện với thời gian (TCO): nhà đầu tư có thể đặt lệnh trước phiên giao dịch từ một đến nhiều ngày với số lượng và mức giá xác định. Lệnh này có hiệu lực tối đa trong 30 ngày.
-  - Lệnh tranh mua hoặc tranh bán ()PRO\_: lệnh nhà đầu tư sẵn sàng mua ở các giá ATO/trần/ATC và sẵn sàng bán ở các giá ATO/sàn/ATC.
-  - Lệnh dừng (ST): lệnh để nhà đầu tư xác định trước giá cắt lỗ hoặc chốt lãi trong tương lai.
-  - Lệnh xu hướng (TS): nhà đầu tư sẽ chọn mã chứng khoán và khối lượng muốn giao dịch, cộng thêm khoảng dừng theo giá trị tuyệt đối (nghìn đồng) hoặc giá trị tương đối (%).
+  - _Lệnh điều kiện với thời gian (TCO)_: nhà đầu tư có thể đặt lệnh trước phiên giao dịch từ một đến nhiều ngày với số lượng và mức giá xác định. Lệnh này có hiệu lực tối đa trong 30 ngày.
+  - _Lệnh tranh mua hoặc tranh bán (PRO)_: lệnh nhà đầu tư sẵn sàng mua ở các giá ATO/trần/ATC và sẵn sàng bán ở các giá ATO/sàn/ATC.
+  - _Lệnh dừng (ST)_: lệnh để nhà đầu tư xác định trước giá cắt lỗ hoặc chốt lãi trong tương lai.
+  - _Lệnh xu hướng (TS)_: nhà đầu tư sẽ chọn mã chứng khoán và khối lượng muốn giao dịch, cộng thêm khoảng dừng theo giá trị tuyệt đối (nghìn đồng) hoặc giá trị tương đối (%).
+  - Ví dụ: bạn đang sở hữu mã cổ phiếu XYZ với giá 20.000đ. Bạn muốn giảm thiểu rủi ro nên đặt lệnh điều kiện bán cổ khi giá thị trường xuống chỉ còn 17.000đ. Hệ thống sẽ tự áp dụng lệnh điều kiện bạn đã đặt và thực hiện bán cổ phiếu XYZ khi giá cổ phiếu giảm còn 17.000đ.
 
 ## 2. Các loại/sản phẩm chứng khoán
 
@@ -304,3 +323,5 @@ Lợi tức của trái phiếu = Số giá trị thanh toán thưởng hàng n�
 - Ở Việt Nam, ETFs được chia làm 2 loại:
   – ETFs ngoại là những ETFs có công ty quản lý quỹ, nhà tạo lập là các tổ chức nước ngoài: Vaneck, FTSE…
   – ETFs nội là những ETFs có công ty quản lý quỹ, nhà tạo lập là các tổ chức trong nước: VFM, SSIAM…
+
+## 3. Cách độc bảng giá chứng khoán
