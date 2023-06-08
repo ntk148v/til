@@ -6,6 +6,18 @@ Source:
 - <https://redis.io/topics/cluster-spec>
 - <http://intro2libsys.info/introduction-to-redis/clustering-and-ha>
 - <https://aws.amazon.com/blogs/database/work-with-cluster-mode-on-amazon-elasticache-for-redis/>
+- <https://developer.redis.com/operate/redis-at-scale/scalability/redis-cluster-and-client-libraries/>
+
+Table of content:
+
+- [Redis cluster](#redis-cluster)
+  - [1. Overview](#1-overview)
+  - [2. Communication](#2-communication)
+  - [3. Docker](#3-docker)
+  - [4. Data sharding](#4-data-sharding)
+  - [5. Master-slave model](#5-master-slave-model)
+  - [6. Consistency guarantees](#6-consistency-guarantees)
+  - [7. Client](#7-client)
 
 ## 1. Overview
 
@@ -58,3 +70,17 @@ HASH_SLOT = CRC16(key) mod 16384
   - The master A replies OK to client.
   - The master A propagates the write to its slave A1, A2, A3. A doesn't wait for an ACK from A1, A2, A3 before replying to the client.
 - There is a trade-off to be made between performance and consistency.
+
+## 7. Client
+
+- To use a client library with Redis Cluster, the client libraries need to be cluster-aware. Clients that support Redis Cluster typically feature a special connection module for managing connections to the cluster. The process that some of the better client libraries follow usually goes like this:
+
+  - The client connects to any shard in the cluster and gets the addresses of the rest of the shards. The client also fetches a mapping of hash slots to shards so it can know where to look for a key in a specific hash slot.
+
+  ![](https://s3.us-east-2.amazonaws.com/assets-university.redislabs.com/ru301/4.4/image1.png)
+
+  - When the client needs to read/write a key, it first runs the hashing function (crc16) on the key name and then modulo divides by 16384, which results in the key’s hash slot number.
+  - In the example below the hash slot number for the key “foo” is 12182. Then the client checks the hash slot number against the hash slot map to determine which shard it should connect to. In our example, the hash slot number 12182 lives on shard 127.0.0.1:7002.
+  - Finally, the client connects to the shard and finds the key it needs to work with.
+
+  ![](https://s3.us-east-2.amazonaws.com/assets-university.redislabs.com/ru301/4.4/image2.png)
