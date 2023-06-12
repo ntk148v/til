@@ -10,8 +10,8 @@ Source:
 Table of content:
 
 - [Disaster Recovery and High Availability 101](#disaster-recovery-and-high-availability-101)
-  - [1. What is the difference between High Availability and Disaster Recovery?](#1-what-is-the-difference-between-high-availability-and-disaster-recovery)
-  - [2. Business Continuity Planning 101](#2-business-continuity-planning-101)
+  - [1. Business Continuity, High Availability, and Disaster Recovery](#1-business-continuity-high-availability-and-disaster-recovery)
+  - [2. Keywords](#2-keywords)
     - [2.1. Loss of Data and Availability Objectives](#21-loss-of-data-and-availability-objectives)
     - [2.2. Types of Data and Business Impact](#22-types-of-data-and-business-impact)
     - [2.3. Data Redundancy Tools - Backups and Replication](#23-data-redundancy-tools---backups-and-replication)
@@ -20,42 +20,34 @@ Table of content:
   - [3. Top elements of an effective Disaster Recovery Plan](#3-top-elements-of-an-effective-disaster-recovery-plan)
   - [4. Types of Disaster Recovery](#4-types-of-disaster-recovery)
 
-## 1. What is the difference between High Availability and Disaster Recovery?
+## 1. Business Continuity, High Availability, and Disaster Recovery
 
-- _High Availability_ typically refers to some kind of automated fail-over from one instance of deployed software to another in the event of a localised failure, such as a server or disk failing, or a limited network outage. The impact of failure on availability should either not be seen or be extremely low.
-- _Disaster Recovery_ typically refers to a response to a more major incident (a disaster) such as the loss of an entire data center, massive data corruption or any other kind of failure that could cause a total loss of service and/or data. Disaster Recovery attempts to avoid permanent partial or total failure or loss of a system and usually involves building a redundant system that is geographically separated from the main site.
-- Compare to availability:
-
-  - Disaster recovery measures objectives for one-time event.
-  - Availability objectives measure mean values over a period of time.
-
-    ![](https://docs.aws.amazon.com/images/whitepapers/latest/disaster-recovery-workloads-on-aws/images/resiliency-objectives.png)
-
-  - DR focuses on disaster events, whereas availability focuses on more common disruptions of smaller scale such as component failures, network issues, software bugs, and load spikes.
-
-![](https://blog.invgate.com/hs-fs/hubfs/06%20-%20High%20Availability%20vs.%20Disaster%20Recovery%20-%20What%E2%80%99s%20the%20Difference_.jpg)
-
+- High availability is not disaster recovery:
+  - _High Availability_ typically refers to some kind of automated fail-over from one instance of deployed software to another in the event of a localised failure, such as a server or disk failing, or a limited network outage. The impact of failure on availability should either not be seen or be extremely low.
+  - _Disaster Recovery_ typically refers to a response to a more major incident (a disaster) such as the loss of an entire data center, massive data corruption or any other kind of failure that could cause a total loss of service and/or data. Disaster Recovery attempts to avoid permanent partial or total failure or loss of a system and usually involves building a redundant system that is geographically separated from the main site.
+  - Disaster Recovery compare to High Availability:
+    - Disaster recovery measures objectives for one-time event.
+    - Availability objectives measure mean values over a period of time.
+    - DR focuses on disaster events, whereas availability focuses on more common disruptions of smaller scale such as component failures, network issues, software bugs, and load spikes.
 - Both fall within the realm of _Business Continuity_.
   - Business Continuity (BC) is defined by ISO, the International Organization for Standardization, as “the capability of the organization to continue delivery of products or services at acceptable predefined levels following a disruptive incident”.
+- Business Continuity Plan and Disaster Recovery Plan:
+  - Business Continuity Plan focuses on keeping business operational during a disaster, while Disaster Recovery Plannin focuses on restoring data access and IT infrastructure after a disaster.
+  - Disaster Recovery Plan is a subset of Business Continuity Plan, it should not be a standalone document.
 
-## 2. Business Continuity Planning 101
+![](https://www.boxuk.com/wp-content/uploads/2016/05/DR-BC-body-1.png)
 
-- Before we start, let's discuss about Business Continuity Plan and Disaster Recovery Plan (You will see these terms a lot):
+## 2. Keywords
 
-  - Business Continuity focuses on keeping business operational during a disaster, while disaster recovery focuses on restoring data access and IT infrastructure after a disaster.
-  - Disaster Recovery is a part of business continuity.
-
-  ![](https://www.boxuk.com/wp-content/uploads/2016/05/DR-BC-body-1.png)
-
-- Goal: able to recover fast from major incidents (disaster recovery) and deliver continued availability during more minor incidents (high availability).
-- The implementation? -> A balance of cost of implementation vs the cost of data loss and service interruption.
+- Ultimately, we want to be able to recover fast from major incidents (disaster recovery) and deliver continued availability during more minor incidents (high availability). A major incident may involve losing a whole data center, due to fire, a power outage or extreme weather. A more minor incident might involve the partial loss of a data center, or simply the loss of a disk drive or server.
+- Implementing a system that can recover from failure and disaster can be expensive both monetarily and also with regard to performance. Ultimately the implementation will be a balance of cost of implementation vs the cost of data loss and service interruption.
 - In order to make that balance, we need to take into consideration:
   - The available tools for redundancy/availability and their limitations
   - The types of data and the associated costs to th business if lost
 
 ### 2.1. Loss of Data and Availability Objectives
 
-- As part of a Business Continuity Plan, an enterprise must decide on two key objectives with regard to disaster recovery.
+- As part of Disaster Recovery Plan, an enterprise must decide on two key objectives with regard to disaster recovery.
 - The _Recovery Point Objective (RPO)_ determines the maximum time period of data loss a business can accept as the result of a major incident.
   - Of course, the best is 0 seconds, meaning no data loss -> hard to achieve/serious downsides (cost, performance).
   - The higher values typically being easier to achieve a lower implementation cost.
