@@ -337,6 +337,7 @@ Lợi tức của trái phiếu = Số giá trị thanh toán thưởng hàng n�
   - VNX-AllShare: chỉ số chung thể hiện sự biến động của tất cả giá cổ phiếu đang niêm yết trên HOSE và HNX.
   - HNX-Index: chỉ số được tính toán dựa trên biến động giá cả tất cả cổ phiếu niêm yết và giao dịch tại HNX.
   - UPCOM-Index: chỉ số được tính toán dựa trên biến động giá cả tất cả các cổ phiếu giao dịch trên thị trường UPCoM, thuộc HNX.
+
 - Danh sách các cột trên bảng giá:
   - Mã chứng khoán (Mã CK): danh sách các mã chứng khoán giao dịch (được sắp xếp theo thứ tự từ A – Z).
   - Giá tham chiếu (TC) hay Giá đóng cửa gần nhất – Giá vàng: mức giá đóng cửa tại phiên giao dịch gần nhất trước đó (trừ các trường hợp đặc biệt). Giá tham chiếu được lấy làm cơ sở để tính toán Giá trần và Giá sàn.
