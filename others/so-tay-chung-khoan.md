@@ -14,7 +14,7 @@
       - [2.2.1. Hợp đồng tương lai chỉ số VN30](#221-hợp-đồng-tương-lai-chỉ-số-vn30)
       - [2.2.2. Chứng quyền có bảo đảm](#222-chứng-quyền-có-bảo-đảm)
     - [2.3. Chứng chỉ quỹ ETFs](#23-chứng-chỉ-quỹ-etfs)
-  - [3. Cách độc bảng giá chứng khoán](#3-cách-độc-bảng-giá-chứng-khoán)
+  - [3. Cách đọc bảng giá chứng khoán](#3-cách-đọc-bảng-giá-chứng-khoán)
 
 ## 1. Thị trường chứng khoán
 
@@ -325,4 +325,49 @@ Lợi tức của trái phiếu = Số giá trị thanh toán thưởng hàng n�
   – ETFs ngoại là những ETFs có công ty quản lý quỹ, nhà tạo lập là các tổ chức nước ngoài: Vaneck, FTSE…
   – ETFs nội là những ETFs có công ty quản lý quỹ, nhà tạo lập là các tổ chức trong nước: VFM, SSIAM…
 
-## 3. Cách độc bảng giá chứng khoán
+## 3. Cách đọc bảng giá chứng khoán
+
+- Bảng giá chứng khoán là nơi thể hiện tất cả thông tin liên quan đến giá và các giao dịch cổ phiếu của thị trường chứng khoán.
+- Hệ thống đồ thị chỉ số:
+
+  ![](https://www.vndirect.com.vn/cmsupload/beta/chi-so-ck.png)
+
+  - VN-Index: chỉ số thể hiện xu hướng biến động giá của tất cả các cổ phiếu niêm yết và giao dịch tại HOSE.
+  - VN30-Index: chỉ số giá của 30 cổ phiếu bluechip của thị trường.
+  - VNX-AllShare: chỉ số chung thể hiện sự biến động của tất cả giá cổ phiếu đang niêm yết trên HOSE và HNX.
+  - HNX-Index: chỉ số được tính toán dựa trên biến động giá cả tất cả cổ phiếu niêm yết và giao dịch tại HNX.
+  - UPCOM-Index: chỉ số được tính toán dựa trên biến động giá cả tất cả các cổ phiếu giao dịch trên thị trường UPCoM, thuộc HNX.
+- Danh sách các cột trên bảng giá:
+  - Mã chứng khoán (Mã CK): danh sách các mã chứng khoán giao dịch (được sắp xếp theo thứ tự từ A – Z).
+  - Giá tham chiếu (TC) hay Giá đóng cửa gần nhất – Giá vàng: mức giá đóng cửa tại phiên giao dịch gần nhất trước đó (trừ các trường hợp đặc biệt). Giá tham chiếu được lấy làm cơ sở để tính toán Giá trần và Giá sàn.
+  - Giá trần (Trần) hay Giá tím: Mức giá cao nhất hay mức giá kịch trần mà bạn có thể đặt lệnh mua hoặc bán chứng khoán trong ngày giao dịch. Mức giá này được thể hiện bằng màu tím.
+    - Sàn HOSE, Giá trần là mức giá tăng +7% so với Giá tham chiếu;
+    - Sàn HNX, Giá trần là mức giá tăng +10% so với Giá tham chiếu;
+    - Sàn UPCOM sẽ là mức tăng +15% so với Giá bình quân phiên giao dịch liền trước.
+  - Giá sàn (Sàn) hay Giá xanh lam: Mức giá thấp nhất hay mức giá kịch sàn mà bạn có thể đặt lệnh mua hoặc bán chứng khoán trong ngày giao dịch. Mức giá này được thể hiện bằng màu xanh lam.
+    - Sàn HOSE, Giá sàn là mức giá giảm -7% so với Giá tham chiếu;
+    - Sàn HNX, Giá sàn là mức giá giảm -10% so với Giá tham chiếu;
+    - Sàn UPCOM sẽ là mức giảm -15% so với Giá bình quân phiên giao dịch liền trước.
+  - Giá xanh: giá cao hơn giá tham chiếu nhưng không phải giá trần
+  - Giá đỏ: giá thấp hơn giá tham chiếu nhưng không phải giá sàn
+  - Tổng khổi lượng khớp (Tổng KL): tổng khối lượng cổ phiếu được giao dịch trong một ngày giao dịch -> tính thanh khoản của thị trường.
+  - Bên mua: Mỗi bảng giá đều có 3 cột chờ mua. Mỗi cột bao gồm Giá mua và Khối lượng (KL) mua được sắp xếp theo thứ tự ưu tiên. Hệ thống hiển thị 03 mức giá đặt mua tốt nhất (giá đặt mua cao nhất so với các lệnh đặt khác) và khối lượng đặt mua tương ứng.
+    - Cột “Giá 1” và “KL 1”: Biểu thị mức giá đặt mua cao nhất hiện tại và khối lượng đặt mua tương ứng.
+    - Cột “Giá 2” và “KL 2”: Biểu thị mức giá đặt mua cao thứ hai hiện tại và khối lượng đặt mua tương ứng. Lệnh đặt mua ở Giá 2 có độ ưu tiên chỉ sau lệnh đặt mua ở mức Giá 1.
+    - Tương tự, cột “Giá 3” và “ KL 3” là lệnh đặt mua có mức độ ưu tiên sau lệnh đặt mua ở mức Giá 2.
+  - Bên bán: Mỗi bảng giá đều có 3 cột chờ bán. Mỗi cột bao gồm Giá bán và Khối lượng (KL) bán được sắp xếp theo thứ tự ưu tiên. Hệ thống hiển thị 03 mức giá đặt bán tốt nhất (giá đặt bán thấp nhất so với các lệnh đặt khác) và khối lượng đặt bán tương ứng.
+    - Cột “Giá 1” và “KL 1”: Biểu thị mức giá chào bán thấp nhất hiện tại và khối lượng chào bán tương ứng.
+    - Cột “Giá 2” và “KL 2”: Biểu thị mức giá chào bán cao thứ hai hiện tại và khối lượng chào bán tương ứng. Lệnh chào bán ở Giá 2 có độ ưu tiên chỉ sau lệnh chào bán ở mức Giá 1.
+    - Tương tự, cột “Giá 3” và “ KL 3” là lệnh chào bán có mức độ ưu tiên sau lệnh chào bán ở mức Giá 2.
+  - Khớp lệnh:
+    - Bên mua chấp nhận mua mức giá bên bán đang treo bán (Không cần xếp lệnh lệnh chờ mua mà mua trực tiếp vào lệnh đang treo bán) hoặc bên bán chấp nhận bán thẳng vào mức giá mà người bên mua đang chờ mua (không cần treo bán mà để lệnh được khớp luôn).
+    - Ở cột này gồm 3 yếu tố:
+      - Cột “Giá”: Mức giá khớp trong phiên hoặc cuối ngày.
+      - Cột “KL” (Khối lượng thực hiện hay Khối lượng khớp): Khối lượng cổ phiếu khớp tương ứng với mức giá khớp.
+      - Cột “+/-“ (Tăng/Giảm giá): là mức thay đổi giá sao với Giá tham chiếu.
+  - Giá cao nhất (Cao): giá khớp ở mốc cao nhất trong phiên (chưa chắc đã phải là giá trần)
+  - Giá thấp nhất (Thấp): giá khớp ở mốc thấp nhất trong phiên (chưa chắc đã phải là sàn)
+  - Giá trung bình (Trung bình): được tính bằng trung bình cộng của Giá cao nhất và Giá thấp nhất
+  - Khối lượng Nhà đầu tư nước ngoài (ĐTNN Mua/Bán): khối lượng cổ phiếu được giao dịch của Nhà đầu tư nước ngoài trong ngày giao dịch (gồm 2 cột Mua và Bán)
+    - Cột “Mua”: Số lượng cổ phiếu Nhà đầu tư nước ngoài đặt mua.
+    - Cột “Bán”: Số lượng cổ phiếu Nhà đầu tư nước ngoài đặt bán.
