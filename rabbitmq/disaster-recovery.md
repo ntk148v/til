@@ -19,7 +19,7 @@ TL;DR: RabbitMQ supports:
 - [Clustering](https://www.rabbitmq.com/clustering.html) multiple RabbitMQ brokers within a single data center or cloud region.
   - Clustering requires highly reliable, low latency links between brokers.
   - Clusterring across a WAN is not recommended due to the effect of network partitions.
-  - If an enterprise has its own fibre linking its data centers which is highly reliable and consistently low latency (like on-prem availability zones), then it might be an option.
+  - If an enterprise has its own fiber linking its data centers which is highly reliable and consistently low latency (like on-prem availability zones), then it might be an option.
 - RabbitMQ offers two types of **replicated queue**:
 
   - Classic Mirrored Queue:
@@ -33,12 +33,12 @@ TL;DR: RabbitMQ supports:
 
     ![](https://blog.rabbitmq.com/assets/images/2020/04/ChainReplication3NodesDoubleSend.png)
 
-    - When a mirror has been out of communication with its peers beyond a certain time limit, it is removed from the ring and the queue continues to be available. The problem occur upon the mirror rejoining the ring again. First the mirror discards all its data and then, optionally, a process called synchronisation begins. Synchronisation is where the master replicates its current messages to a mirror. This is a _stop the world_ process where the queue becomes frozen until synchronisation is complete. This becomes a problem if the queue is very big as the period of unavailability can be long.
+    - When a mirror has been out of communication with its peers beyond a certain time limit, it is removed from the ring and the queue continues to be available. The problem occur upon the mirror rejoining the ring again. First the mirror discards all its data and then, optionally, a process called synchronization begins. synchronization is where the master replicates its current messages to a mirror. This is a _stop the world_ process where the queue becomes frozen until synchronization is complete. This becomes a problem if the queue is very big as the period of unavailability can be long.
 
     ![](https://blog.rabbitmq.com/assets/images/2020/04/ChainReplication5NodesRejoin.png)
 
-    - Another option is to not synchronise a rejoining mirror with the master. In this case we end up with lower redundancy but avoid potentially painful synchronisation. Of course, if the queue is empty or has few messages then synchronisation doesn’t pose a big problem.
-    - Another imporatant topic is how it handles network partitions. When a partition occurs that splits a cluster into two halves, we’ll end up with one or more mirrors that lose communications with the master. As an administrator we can choose availability or consistency at this point.
+    - Another option is to not synchronize a rejoining mirror with the master. In this case we end up with lower redundancy but avoid potentially painful synchronization. Of course, if the queue is empty or has few messages then synchronization doesn’t pose a big problem.
+    - Another important topic is how it handles network partitions. When a partition occurs that splits a cluster into two halves, we’ll end up with one or more mirrors that lose communications with the master. As an administrator we can choose availability or consistency at this point.
 
       - If we don't want to lose messages, then we’ll configure the cluster to use `pause-minority` mode. This basically stops all brokers on the minority side of a partition. On the majority side (if there is one) the queue continues to operate, just with reduced redundancy. Once the partition is resolved, the cluster returns to normality.
 
@@ -48,24 +48,24 @@ TL;DR: RabbitMQ supports:
 
       ![](https://blog.rabbitmq.com/assets/images/2020/04/NonPauseMinority.png)
 
-    - Due to these issues, Mirror Queue is deprecated and scheduled for removal **feature** -> Use Quorum Queue.
+    - Due to these issues, Mirror Queue is deprecated and scheduled for removal feature -> **Use Quorum Queue**.
 
   - Quorum Queue:
 
-    - Quorum queues do not use chained replication but are based on the well established and mathematically proven Raft protocol.
+    - Quorum queues do not use chained replication but are based on the-well established and mathematically proven Raft protocol.
     - Just like with mirrored queues, all clients interact with a leader, whose job it is to then replicate the enqueues and acks to its followers.
 
     ![](https://blog.rabbitmq.com/assets/images/2020/04/QQ.png)
 
     - It does have higher end-to-end latencies and those latencies closely correspond to the throughput/latency of your disks. Quorum queues only confirm messages once written to disk on a majority and so disk performance plays a large role in quorum queue performance.
-    - There is no _stop the world_ synchronisation, no throwing away data on rejoining, no difficult decisions to make about automatic vs manual synchronisation at all. There is no availability vs consistency choice to make; a quorum queue will only confirm a message once it has been replicated to a majority of nodes. If a majority is down then you lose availability.
+    - There is no _stop the world_ synchronization, no throwing away data on rejoining, no difficult decisions to make about automatic vs manual synchronization at all. There is no availability vs consistency choice to make; a quorum queue will only confirm a message once it has been replicated to a majority of nodes. If a majority is down then you lose availability.
     - Network partitions: Firstly they use a separate and much faster failure detector that can detect partitions rapidly and trigger fast leader elections meaning that availability is either not impacted or is quickly restored.
 
 - Client Reconnection:
   - Clients also need to be able to reconnect automatically in the event of a connection failure or a broker going offline. Most RabbitMQ clients offer automatic reconnection features.
 - Rack Awareness: RabbitMQ does not currently have rack awareness, you can achieve the same results via manually specifying the nodes that a replicated queue should be spread across.
-- With mirrored queues you can specify the [list of nodes](https://www.rabbitmq.com/ha.html#mirroring-arguments) it should be spread across
-- With quorum queues you must currently create the queue with an initial group size of 1 and then [add members](https://www.rabbitmq.com/rabbitmq-queues.8.html#Replication) on the nodes to achieve the desired spread.
+  - With mirrored queues you can specify the [list of nodes](https://www.rabbitmq.com/ha.html#mirroring-arguments) it should be spread across
+  - With quorum queues you must currently create the queue with an initial group size of 1 and then [add members](https://www.rabbitmq.com/rabbitmq-queues.8.html#Replication) on the nodes to achieve the desired spread.
 
 ## 2. Disaster Recovery
 
