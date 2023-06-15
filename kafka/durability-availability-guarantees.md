@@ -1,6 +1,6 @@
 # Data Durability and Availability Guarantees
 
-Source: <https://developer.confluent.io/learn-kafka/architecture/guarantees/#:~:text=Kafka%20also%20has%20ordering%20guarantees,events%20in%20the%20same%20order.>
+Source: <https://developer.confluent.io/learn-kafka/architecture/guarantees/>
 
 - Consumers only see committed records. Producers on the other hand have some choices as to when receive acknowledment for the success or failure of a produce request from the broker.
 - Producer acks = 0.
@@ -20,7 +20,7 @@ Source: <https://developer.confluent.io/learn-kafka/architecture/guarantees/#:~:
 
 ![](https://images.ctfassets.net/gt6dp23g0g38/2PE3eY4NoxDiz5zBCrideK/3989ab3a9dcf9a517fb4ffc42842845e/producer-acks-all.png)
 
-- Topic min.insync.replicas.
+- Topic `min.insync.replicas`.
   - The broker doesn't allow an event to be written to a topic unless there are N replicas in the ISR.
   - `min.insync.replicas = 2` and replication factor is 3 -> 2 nodes down, an exception!
 
