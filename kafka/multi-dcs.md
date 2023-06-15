@@ -8,7 +8,7 @@ Source:
 - <https://www.confluent.io/blog/multi-geo-replication-in-apache-kafka/>
 - <https://www.confluent.io/kafka-summit-sf17/scaling-apache-kafka-across-multiple-data-centers/>
 
-Table of content:
+Table of contents:
 
 - [Kafka Multi-Data Center - One Data Center is not enough](#kafka-multi-data-center---one-data-center-is-not-enough)
   - [0. Intro](#0-intro)

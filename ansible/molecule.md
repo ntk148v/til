@@ -5,7 +5,7 @@ Source:
 - <https://molecule.readthedocs.io/en/latest/getting-started/>
 - <https://www.jeffgeerling.com/blog/2018/testing-your-ansible-roles-molecule>
 
-Table of content:
+Table of contents:
 
 - [Testing Ansible with Molecule](#testing-ansible-with-molecule)
   - [0. Problem](#0-problem)

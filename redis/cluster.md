@@ -8,7 +8,7 @@ Source:
 - <https://aws.amazon.com/blogs/database/work-with-cluster-mode-on-amazon-elasticache-for-redis/>
 - <https://developer.redis.com/operate/redis-at-scale/scalability/redis-cluster-and-client-libraries/>
 
-Table of content:
+Table of contents:
 
 - [Redis cluster](#redis-cluster)
   - [1. Overview](#1-overview)

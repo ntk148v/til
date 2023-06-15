@@ -9,7 +9,7 @@ Source:
 - <https://redis.com/redis-enterprise/technology/active-active-geo-distribution/>
 - <https://www.slideshare.net/cihangirb/cross-data-center-replication-with-redis-using-redis-enterprise>
 
-Table of content:
+Table of contents:
 
 - [Redis Clustering options](#redis-clustering-options)
   - [0. Scenario \& Requirement](#0-scenario--requirement)

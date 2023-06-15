@@ -4,7 +4,7 @@ Source:
 
 - <https://github.com/containerd/containerd>
 
-Table of content:
+Table of contents:
 
 - [Containerd](#containerd)
   - [1. Introduction](#1-introduction)

@@ -5,7 +5,7 @@ Source:
 - <https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/business-continuity-plan-bcp.html>
 - <https://en.wikipedia.org/wiki/Disaster_recovery>
 
-Table of content:
+Table of contents:
 
 - [RTO and RPO](#rto-and-rpo)
   - [O. Overview](#o-overview)

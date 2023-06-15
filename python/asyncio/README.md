@@ -7,7 +7,7 @@ Source:
 - <https://cheat.readthedocs.io/en/latest/python/asyncio.html>
 - <https://bbc.github.io/cloudfit-public-docs/asyncio/asyncio-part-2.html>
 
-Table of content:
+Table of contents:
 
 - [Asyncio](#asyncio)
   - [1. Asynchronous Programming](#1-asynchronous-programming)

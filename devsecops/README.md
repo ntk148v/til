@@ -4,7 +4,7 @@ Source:
 
 - <https://github.com/OWASP/DevSecOpsGuideline>
 
-Table of content:
+Table of contents:
 
 - [DevSecOps](#devsecops)
   - [0. Threat modeling (Design)](#0-threat-modeling-design)

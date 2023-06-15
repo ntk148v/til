@@ -6,7 +6,7 @@ Source:
 - <https://learn.microsoft.com/en-us/dotnet/standard/io/memory-mapped-files>
 - <https://stackoverflow.com/questions/35891525/mmap-for-writing-sequential-log-file-for-speed>
 
-Table of content:
+Table of contents:
 
 - [mmap](#mmap)
   - [1. Memory-mapped file - mmap](#1-memory-mapped-file---mmap)

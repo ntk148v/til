@@ -2,7 +2,7 @@
 
 Source: <https://dzone.com/articles/integration-patterns-in-microservices-world>
 
-Table of content:
+Table of contents:
 
 - [Integration patterns in Microservice world](#integration-patterns-in-microservice-world)
   - [1. Overview](#1-overview)

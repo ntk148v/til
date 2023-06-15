@@ -8,7 +8,7 @@ Source:
 - <https://www.infracloud.io/blogs/implement-devsecops-secure-ci-cd-pipeline/>
 - <https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/secure/devsecops-controls>
 
-Table of content:
+Table of contents:
 
 - [DevSecOps](#devsecops)
   - [1. Overview](#1-overview)

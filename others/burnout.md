@@ -5,7 +5,7 @@ Source:
 - <https://commoncog.com/g/burnout/>
 - <https://news.ycombinator.com/item?id=32160212>
 
-Table of content:
+Table of contents:
 
 - [Burnout](#burnout)
   - [0. Lời dẫn](#0-lời-dẫn)

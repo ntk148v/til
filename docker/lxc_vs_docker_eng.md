@@ -1,6 +1,6 @@
 # LXC, LXD vs Docker
 
-Table of content:
+Table of contents:
 
 - [LXC, LXD vs Docker](#lxc-lxd-vs-docker)
   - [Intro about both of them](#intro-about-both-of-them)

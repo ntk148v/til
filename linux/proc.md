@@ -7,7 +7,7 @@ Source:
 - <https://tldp.org/LDP/Linux-Filesystem-Hierarchy/html/proc.html>
 - ,https://www.ibm.com/docs/en/ztpf/1.1.0.15?topic=reference-procfs-sysfs-targets>
 
-Table of content:
+Table of contents:
 
 - [/proc](#proc)
   - [1. What is `/proc`?](#1-what-is-proc)

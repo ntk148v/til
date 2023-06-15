@@ -5,7 +5,7 @@ Source:
 - <https://ably.com/topic/websockets>
 - <https://ably.com/topic/the-challenge-of-scaling-websockets>
 
-Table of content:
+Table of contents:
 
 - [WebSocket](#websocket)
   - [1. What is WebSocket?](#1-what-is-websocket)

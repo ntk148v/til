@@ -2,7 +2,7 @@
 
 Source: <https://99designs.com/blog/engineering/schema-driven-development/>
 
-Table of content:
+Table of contents:
 
 - [Schema-driven development](#schema-driven-development)
   - [1. Introduction](#1-introduction)

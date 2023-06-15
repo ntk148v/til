@@ -7,7 +7,7 @@ Source:
 - <https://www.vmware.com/topics/glossary/content/disaster-recovery.html>
 - <https://blog.invgate.com/high-availability-vs-disaster-recovery>
 
-Table of content:
+Table of contents:
 
 - [Disaster Recovery and High Availability 101](#disaster-recovery-and-high-availability-101)
   - [1. Business Continuity, High Availability, and Disaster Recovery](#1-business-continuity-high-availability-and-disaster-recovery)
