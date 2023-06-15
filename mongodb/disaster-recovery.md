@@ -102,7 +102,7 @@ MongoDB provides several options for Disaster Recovery.
 
     - Ranged sharding involves dividing data into ranges based on the shard key values. Each chunk is then assigned a range based on the shard key values.
 
-    ![https://www.mongodb.com/docs/manual/images/sharding-range-based.bakedsvg.svg]
+    ![](https://www.mongodb.com/docs/manual/images/sharding-range-based.bakedsvg.svg)
 
   - Hash-based sharding:
 
