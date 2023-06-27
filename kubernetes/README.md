@@ -11,8 +11,9 @@ Table of Contents:
     - [2.4. Communications](#24-communications)
     - [2.5. How controllers cooperate](#25-how-controllers-cooperate)
     - [2.6. Kubernetes API](#26-kubernetes-api)
-    - [2.7. How Kubernetes runs an application](#27-how-kubernetes-runs-an-application)
-    - [2.8. Networking](#28-networking)
+    - [2.7. Kubernetes Object](#27-kubernetes-object)
+    - [2.8. How Kubernetes runs an application](#28-how-kubernetes-runs-an-application)
+    - [2.9. Networking](#29-networking)
   - [3. Concepts](#3-concepts)
     - [3.1. Pods](#31-pods)
     - [3.2. Replication controller](#32-replication-controller)
@@ -165,8 +166,12 @@ kubectl get componentstatuses
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/4.2.png)
 
-- An **object** can therefore be exposed through more than one resources.
-- Objects are represented in structured text form (JSON/YAML).
+- Kubernetes **objects** are persistent entities in the Kubernetes system.
+  - Objects are used to represent the state of your cluster
+  - Object is a "record of intent" - once you create the object, the Kubernetes system will constantly work to ensure that object exists.
+  - An object can therefore be exposed through more than one resources.
+  - Objects are represented in structured text form (JSON/YAML).
+  - Almost every Kubernetes object includes two nested object fields that govern the object's configuration: the object `spec` and the object `status`.
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/4.3.png)
 
@@ -192,7 +197,82 @@ kubectl get ev --field-selector type=Warning
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/4.7.png)
 
-### 2.7. How Kubernetes runs an application
+### 2.7. Kubernetes Object
+
+- Like mentioned before, Objects are persistent entities in the Kubernetes system. But how to manage objects?
+- The `kubectl` command-line tool supports several different ways to create and manage Kubernetes objects.
+
+| Management technique             | Operates on          | Recommended environment | Supported writers | Learning curve |
+| -------------------------------- | -------------------- | ----------------------- | ----------------- | -------------- |
+| Imperative commands              | Live objects         | Development projects    | 1+                | Lowest         |
+| Imperative object configuration  | Individual files     | Production projects     | 1                 | Moderate       |
+| Declarative object configuration | Directories of files | Production projects     | 1+                | Highest        |
+
+- **Imperative commands**:
+
+  - User operates directly on live objects in a cluster.
+  - The recommended way to get started or to run a one-off task in a cluster.
+  - Example:
+
+  ```shell
+  kubectl create deployment nginx --image nginx
+  ```
+
+  - Advantages compared to object configuration:
+    - Commands are expressed as a single action word.
+    - Commands require only a single step to make changes to the cluster.
+  - Disadvantages compared to object configuration:
+    - Commands do not integrate with change review processes.
+    - Commands do not provide an audit trail associated with changes.
+    - Commands do not provide a source of records except for what is live.
+    - Commands do not provide a template for creating new objects.
+
+- **Imperative object configuration**:
+
+  - `kubectl` command specifies the operation (create, replace, etc.), optional flags and at least one file name.
+  - Example:
+
+  ```shell
+  kubectl create -f nginx.yaml
+  kubectl delete -f nginx.yaml -f redis.yaml
+  ```
+
+  - Advantages compared to imperative commands:
+    - Object configuration can be stored in a source control system such as Git.
+    - Object configuration can integrate with processes such as reviewing changes before push and audit trails.
+    - Object configuration provides a template for creating new objects.
+  - Disadvantages compared to imperative commands:
+    - Object configuration requires basic understanding of the object schema.
+    - Object configuration requires the additional step of writing a YAML file.
+  - Advantages compared to declarative object configuration:
+    - Imperative object configuration behavior is simpler and easier to understand.
+    - As of Kubernetes version 1.5, imperative object configuration is more mature.
+  - Disadvantages compared to declarative object configuration:
+    - Imperative object configuration works best on files, not directories.
+    - Updates to live objects must be reflected in configuration files, or they will be lost during the next replacement.
+
+- **Declarative object configuration**:
+
+  - User operates on object configuration files stored locally, however the user doesn't define the operations to be taken on the files. Create, update, and delete operations are automatically detected per-object by `kubectl`. This enables working on directories, where different operations might be needed for different objects.
+  - Example:
+
+  ```shell
+  kubectl diff -R -f configs/
+  kubectl apply -R -f configs/
+  ```
+
+  - Advantages compared to imperative object configuration:
+    - Changes made directly to live objects are retained, even if they are not merged back into the configuration files.
+    - Declarative object configuration has better support for operating on directories and automatically detecting operation types (create, patch, delete) per-object.
+  - Disadvantages compared to imperative object configuration:
+    - Declarative object configuration is harder to debug and understand results when they are unexpected.
+    - Partial updates using diffs create complex merge and patch operations.
+  - There are two types:
+
+    - [Declarative Management of Kubernetes Objects using configuration files](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/).
+    - [Declarative Management of Kubernetes Objects Using Kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/).
+
+### 2.8. How Kubernetes runs an application
 
 - Define application: Everything in Kubernetes is represented by an object. These objects are usually defined in one or more manifest files in either YAML or JSON format.
 - Actions:
@@ -205,7 +285,7 @@ kubectl get ev --field-selector type=Warning
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.14.png)
 
-### 2.8. Networking
+### 2.9. Networking
 
 ![](https://chunqi.li/images/flannel-01.png)
 
