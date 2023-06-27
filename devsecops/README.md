@@ -3,6 +3,7 @@
 Source:
 
 - <https://github.com/OWASP/DevSecOpsGuideline>
+- <https://www.linkedin.com/posts/practical-devsecops_which-security-testing-methodology-is-right-ugcPost-7068533553487052800-4ZTq>
 
 Table of contents:
 
@@ -168,6 +169,16 @@ The purpose and intent of DevSecOps is to build on the mindset that “everyone 
   - IaC Security scanning:
     - [Checkov](https://github.com/bridgecrewio/checkov): Prevent cloud misconfigurations during build-time for Terraform, Cloudformation, Kubernetes, Serverless framework and other infrastructure-as-code-languages.
     - [ansible-lint](https://github.com/ansible-community/ansible-lint): Best practices checker for Ansible.
+- When to use: During development
+- Advantages: able to find security issues before application deployment. Easy integration with development toolchain.
+- Disadvantages:
+  - Generate a high number of false positives
+  - Not suitable for identifying runtime issues or vulnerabilities that arise during the execution
+- Cost: Moderate to high
+- Use case scenario:
+  - Detecting common coding errors
+  - Finding vulnerabilities within your codebase
+  - Ensuring code adherence to security standards
 
 ### 2.2. Dynamic Application Security Testing (DAST)
 
@@ -181,7 +192,17 @@ The purpose and intent of DevSecOps is to build on the mindset that “everyone 
   - [Acunetix](https://www.acunetix.com/): An automatic web security testing scanner that accurately scans and audits all web applications, including HTML5, JavaScript and Single Page applications (SPAs)
   - [Netsparker](https://www.netsparker.com/): It can identify vulnerabilities in all types of modern web applications, regardless of the underlying architecture or platform
   - [Veracode Dynamic Analysis](https://www.veracode.com/products/dynamic-analysis-dast): Veracode Dynamic Analysis helps companies scan their web applications for exploitable vulnerabilities at scale
-  - [Checkmarx DAST](https://checkmarx.com/checkmarx-dast/):
+  - [Checkmarx DAST](https://checkmarx.com/checkmarx-dast/)
+- When to use: Post-development, during testing or production
+- Advantages: Identifies vulnerabilities in the running applications
+- Disadvantages:
+  - May miss some vulnerables
+  - Can generate false positives
+  - Slows down the application during testing
+- Cost: Moderate to high
+- Use case scenario:
+  - Identifying vulnerabilities in web applications, web services, and APIs.
+  - Simulating real-world attacks
 
 ### 2.3. Interactive Application Security Testing (IAST)
 
@@ -200,6 +221,17 @@ The purpose and intent of DevSecOps is to build on the mindset that “everyone 
   - [Safety](https://github.com/pyupio/safety)
   - [Synopsys BlackDuck](https://www.blackducksoftware.com/)
   - [Snyk](https://snyk.io/)
+- When to use: During development and throughout the software development life cycle.
+- Advantages: Identifies vulnerable third-party software.
+- Disadvantages:
+  - Doesn't identify issues inside the code
+  - Limited scope around third-party software
+- Cost: Low to moderate
+- Use case scenario:
+  - Promoting license and policy compliance
+  - Identifying open-source component risks
+  - Protecting against supply chain attacks
+  - Checking dependencies for vulnerabilities
 
 ### 2.5. Infrastructure Vulnerability Scanning
 
