@@ -1,5 +1,7 @@
 # Kubernetes
 
+Table of Contents:
+
 - [Kubernetes](#kubernetes)
   - [1. Introduction](#1-introduction)
   - [2. Architecture \& internals](#2-architecture--internals)
