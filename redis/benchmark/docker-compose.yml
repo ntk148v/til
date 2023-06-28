@@ -1,0 +1,100 @@
+version: "3"
+
+services:
+  redis-node-0:
+    image: docker.io/bitnami/redis-cluster:7.0
+    container_name: redis-node-0
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6 redis-node-7 redis-node-8"
+      - "REDIS_AOF_ENABLED=no"
+
+  redis-node-1:
+    image: docker.io/bitnami/redis-cluster:7.0
+    container_name: redis-node-1
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6 redis-node-7 redis-node-8"
+      - "REDIS_AOF_ENABLED=no"
+
+  redis-node-2:
+    image: docker.io/bitnami/redis-cluster:7.0
+    container_name: redis-node-2
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6 redis-node-7 redis-node-8"
+      - "REDIS_AOF_ENABLED=no"
+
+  redis-node-3:
+    image: docker.io/bitnami/redis-cluster:7.0
+    container_name: redis-node-3
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6 redis-node-7 redis-node-8"
+      - "REDIS_AOF_ENABLED=no"
+
+  redis-node-4:
+    image: docker.io/bitnami/redis-cluster:7.0
+    container_name: redis-node-4
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6 redis-node-7 redis-node-8"
+      - "REDIS_AOF_ENABLED=no"
+
+  redis-node-5:
+    image: docker.io/bitnami/redis-cluster:7.0
+    container_name: redis-node-5
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6 redis-node-7 redis-node-8"
+      - "REDIS_AOF_ENABLED=no"
+
+  redis-node-6:
+    image: docker.io/bitnami/redis-cluster:7.0
+    container_name: redis-node-6
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6 redis-node-7 redis-node-8"
+      - "REDIS_AOF_ENABLED=no"
+
+  redis-node-7:
+    image: docker.io/bitnami/redis-cluster:7.0
+    container_name: redis-node-7
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5 redis-node-6 redis-node-7 redis-node-8"
+      - "REDIS_AOF_ENABLED=no"
+
+  redis-node-8:
+    image: docker.io/bitnami/redis-cluster:7.0
+    container_name: redis-node-8
+    depends_on:
+      - redis-node-0
+      - redis-node-1
+      - redis-node-2
+      - redis-node-3
+      - redis-node-4
+      - redis-node-5
+      - redis-node-6
+      - redis-node-7
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDISCLI_AUTH=bitnami"
+      - "REDIS_CLUSTER_REPLICAS=1"
+      - "REDIS_NODES=redis-node-0:6379,redis-node-1:6379,redis-node-2:6379,redis-node-3:6379,redis-node-4:6379,redis-node-5:6379,redis-node-6:6379,redis-node-7:6379,redis-node-8:6379"
+      - "REDIS_CLUSTER_CREATOR=yes"
+      - "REDIS_AOF_ENABLED=no"
+
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    container_name: redis-insight
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis-node-8
+    volumes:
+      - redis-insight-data:/db
+
+volumes:
+  redis-insight-data:
+    driver: local
