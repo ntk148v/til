@@ -1,3 +1,6 @@
 [submodule "golang"]
 	path = golang
 	url = https://github.com/ntk148v/lets-go
+[submodule "dotnet"]
+	path = dotnet
+	url = https://github.com/ntk148v/.net
