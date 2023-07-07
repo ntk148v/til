@@ -30,6 +30,9 @@ Table of Contents:
   - [4. Security](#4-security)
     - [4.1. Kubernetes API Server Control access](#41-kubernetes-api-server-control-access)
     - [4.2. Secure Pod and Container](#42-secure-pod-and-container)
+  - [5. Troubleshooting Deployments](#5-troubleshooting-deployments)
+    - [5.1. Recap](#51-recap)
+    - [5.2. Troubleshooting](#52-troubleshooting)
 
 ## 1. Introduction
 
@@ -44,6 +47,7 @@ Table of Contents:
 - Refs:
   - [100DaysOfKubernetes](https://devops.anaisurl.com/kubernetes)
   - [Kubernetes In Action 2nd Edition](https://www.manning.com/books/kubernetes-in-action-second-edition): This is a really good book for beginner. Access the MEAP [here](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition), I take a lot of pictures from this site.
+  - [LearnK8S](https://learnk8s.io)
 
 ## 2. Architecture & internals
 
@@ -981,3 +985,286 @@ spec:
 
   - Isolate the network between Kubernetes namespace.
   - Isolate using CIDR notation.
+
+## 5. Troubleshooting Deployments
+
+Source: <https://learnk8s.io/troubleshooting-deployments>
+
+**TL;DR**:
+
+![](./images/../imgs/troubleshooting-kubernetes.en_en.v3.png)
+
+### 5.1. Recap
+
+- For who run directly to this section. If you already knew those fundamentals, skip to 5.2.
+- Components:
+  - A **Deployment** — which is a recipe for creating copies of your application.
+  - A **Service** — an internal load balancer that routes the traffic to Pods.
+  - An **Ingress** — a description of how the traffic should flow from outside the cluster to your Service.
+
+![](https://learnk8s.io/a/92543837cbecdd1189ee0a6d68fa9434.svg)
+
+- Connecting Deployment and Service:
+
+  - The Service selector should match at least one Pod's label
+  - The Service's `targetPort` should match the `containerPort` of the Pod
+  - The Service `port` can by any number. Multiple Services can use the same port because they have different IP addresses assigned.
+
+  ![](https://learnk8s.io/a/2adc624ed44f39ac5577c42ed9c621bc.svg)
+
+  ```yaml
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: my-deployment
+    labels:
+      track: canary <--
+  spec:
+    selector:
+      matchLabels:
+        any-name: my-app
+    template:
+      metadata:
+        labels:
+          any-name: my-app # <---- match Pod's label, used by the Deployment to track the Pods
+      spec:
+        containers:
+          - name: cont1
+            image: ghcr.io/learnk8s/app:1.0.0
+            ports:
+              - containerPort: 8080 # <---- match target port
+  ---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: my-service
+  spec:
+    ports:
+      - port: 80
+        targetPort: 8080 # <---- match container port
+    selector:
+      any-name: my-app # <---- match label
+  ```
+
+  - `matchLabels` selector always has to match the Pod's labels and it's used by the Deployment to track the Pods.
+  - You can use the `port-forward` command in kubectl to connect to the Service and test the connection.
+    - If you can connect -> OK
+    - If you can't, you most likely misplaced a label or the port doesn't match.
+
+  ```shell
+  $ kubectl port-forward service/<service name> 3000:80
+  Forwarding from 127.0.0.1:3000 -> 8080
+  Forwarding from [::1]:3000 -> 8080
+  ```
+
+- Connecting Service and Ingress:
+
+  - The Ingress has to know how to retrieve the Service to then connect the Pods and route traffic.
+  - The Ingress retrieves the right Service by name and port exposed.
+  - The `service.port` of the Ingress should match the `port` of the Service
+  - The `service.name` of the Ingress should match the `name` of the Service
+
+  ![](https://learnk8s.io/a/f44dd6eea6391537dd84dee5344b7b83.svg)
+
+  ```yaml
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: my-service # match name of the Service
+  spec:
+    ports:
+      - port: 80 # match port of the Service
+        targetPort: 8080
+    selector:
+      any-name: my-app
+  ---
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: my-ingress
+  spec:
+    rules:
+      - http:
+          paths:
+            - backend:
+                service:
+                  name: my-service # match name of the Service
+                  port:
+                    number: 80 # match port of the Service
+              path: /
+              pathType: Prefix
+  ```
+
+  - To test that the Ingress works, you can use the same strategy as before with `kubectl port-forward`, but instead of connecting to a Service, you should connect to the Ingress controller.
+
+  ```shell
+  # Get Pod name
+  $ kubectl get pods --all-namespaces
+  NAMESPACE   NAME                              READY STATUS
+  kube-system coredns-5644d7b6d9-jn7cq          1/1   Running
+  kube-system etcd-minikube                     1/1   Running
+  kube-system kube-apiserver-minikube           1/1   Running
+  kube-system kube-controller-manager-minikube  1/1   Running
+  kube-system kube-proxy-zvf2h                  1/1   Running
+  kube-system kube-scheduler-minikube           1/1   Running
+  kube-system nginx-ingress-controller-6fc5bcc  1/1   Running
+
+  #  Identify and describe the Ingress pod
+  $ kubectl describe pod nginx-ingress-controller-6fc5bcc --namespac kube-system | grep Ports
+  Ports:         80/TCP, 443/TCP, 18080/TCP
+  #  Connect to the Pod
+  $ kubectl port-forward nginx-ingress-controller-6fc5bcc 3000:80 --namespace kube-system
+  Forwarding from 127.0.0.1:3000 -> 80
+  Forwarding from [::1]:3000 -> 80
+  ```
+
+### 5.2. Troubleshooting
+
+- Troubleshoot Pods
+
+  ```shell
+  $  kubectl get pods
+  NAME                    READY STATUS            RESTARTS  AGE
+  app1                    0/1   ImagePullBackOff  0         47h
+  app2                    0/1   Error             0         47h
+  app3-76f9fcd46b-xbv4k   1/1   Running           1         47h
+  ```
+
+  - Useful commands:
+    - `kubectl logs <pod name>` is helpful to retrieve the logs of the containers of the Pod.
+    - `kubectl describe pod <pod name>` is useful to retrieve a list of events associated with the Pod.
+    - `kubectl get pod <pod name>` is useful to extract the YAML definition of the Pod as stored in Kubernetes.
+    - `kubectl exec -ti <pod name>` -- bash is useful to run an interactive command within one of the containers of the Pod.
+  - Common errors:
+
+    - Startup errors include:
+      - _ImagePullBackoff_:
+        - The image name is invalid.
+        - You specified a non-existing tag for the image
+        - The image that you're trying to retrieve belongs to a private registry, and Kubernetes doesn't have credentials to access it.
+      - _ImageInspectError_:
+      - _ErrImagePull_:
+      - _ErrImageNeverPull_:
+      - _RegistryUnavailable_:
+      - _InvalidImageName_:
+    - Runtime errors include:
+
+      - _CrashLoopBackOff_:
+
+        - There's an error in the application that prevents from starting.
+        - You misconfigured the container.
+        - The Liveness probe failed too many times.
+
+        ```shell
+        $ kubectl logs <pod-name> --previous
+        ```
+
+      - _RunContainerError_:
+
+        - Mount a not-existent volume such as ConfigMap or Secrets
+        - Mount a read-only volume as read-write
+
+        ```shell
+        $ kubectl describe pod <pod-name>
+        ```
+
+      - _KillContainerError_
+      - _VerifyNonRootError_
+      - _RunInitContainerError_
+      - _CreatePodSandboxError_
+      - _ConfigPodSandboxError_
+      - _KillPodSandboxError_
+      - _SetupNetworkError_
+      - _TeardownNetworkError_
+      - _Pods in a Pending state_:
+
+        - The cluster doesn't have enough resources such as CPU and memory to run the Pod.
+        - The current Namespace has a ResourceQuota object and creating the Pod will make the Namespace go over the quota.
+        - The Pod is bound to a Pending PersistentVolumeClaim.
+
+        ```shell
+        $ kubectl describe pod <pod name>
+        $ kubectl get events --sort-by=.metadata.creationTimestamp
+        ```
+
+      - _Pods in a not Ready state_:
+
+        - The Readiness probe is failing -> the Pod isn't attached to the Service, and no traffic is forwarded to that instance.
+
+        ```shell
+        $ kubectl describe pod <pod-name>
+        ```
+
+- Troubleshooting Services:
+
+  - If Pods are Running and Ready, but you're still unable to receive a response from your app, you should check if the Service is configured correctly.
+  - Services are designed to route the traffic to Pods based on their labels.
+
+  ```shell
+  # Check how many Pods are targeted by the Service
+  # Check Endpoint
+  $ kubectl describe service my-service
+  Name:                     my-service
+  Namespace:                default
+  Selector:                 app=my-app
+  IP:                       10.100.194.137
+  Port:                     <unset>  80/TCP
+  TargetPort:               8080/TCP
+  Endpoints:                172.17.0.5:8080
+  ```
+
+  - If Endpoints is empty, there are 2 explanations:
+    - You don't have any Pod running with the correct label (hint: you should check if you are in the right namespace).
+    - You have a typo in the `selector` labels of the Service.
+  - Test:
+
+  ````shell
+  $ kubectl port-forward service/<service-name> 3000:80
+  ```
+
+  ````
+
+- Troubleshooting Ingress:
+
+  - Pods - OK, Service - OK -> Check Ingress.
+
+  ```shell
+  $ kubectl describe ingress my-ingress
+  Name:             my-ingress
+  Namespace:        default
+  Rules:
+    Host        Path  Backends
+    ----        ----  --------
+    *
+                /   my-service:80 (<error: endpoints "my-service" not found>)
+
+  ```
+
+  - If the Backend column is empty, there must be an error in the configuration. If not, but still can't access the application, the issue is likely to be:
+    - How you exposed your Ingress to the public internet.
+    - How you exposed your cluster to the public internet.
+  - Isolate infrastructure issues from Ingress by connecting to the Ingress Pod directly.
+
+  ```shell
+  $ kubectl get pods --all-namespaces
+  NAMESPACE   NAME                              READY STATUS
+  kube-system coredns-5644d7b6d9-jn7cq          1/1   Running
+  kube-system etcd-minikube                     1/1   Running
+  kube-system kube-apiserver-minikube           1/1   Running
+  kube-system kube-controller-manager-minikube  1/1   Running
+  kube-system kube-proxy-zvf2h                  1/1   Running
+  kube-system kube-scheduler-minikube           1/1   Running
+  kube-system nginx-ingress-controller-6fc5bcc  1/1   Running
+
+  $ kubectl describe pod nginx-ingress-controller-6fc5bcc --namespace kube-system | grep Ports
+      Ports:         80/TCP, 443/TCP, 8443/TCP
+      Host Ports:    80/TCP, 443/TCP, 0/TCP
+
+  $ kubectl port-forward nginx-ingress-controller-6fc5bcc 3000:80 --namespace kube-system
+  Forwarding from 127.0.0.1:3000 -> 80
+  Forwarding from [::1]:3000 -> 80
+  ```
+
+  - Does it work now?
+    - If it does -> the issue is in the infrastructure.
+    - It it doesn't -> the problem is in the Ingress controller.
