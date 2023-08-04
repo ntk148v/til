@@ -151,3 +151,7 @@
 27. EFS
 
 - Can connect to EFS file systems from EC2 instances in the other AWS regions using an inter-region VPC peering connection, and from on-premises servers using an AWS VPN connection.
+
+28. Direct Connect
+
+- AWS Direct Connect lets you establish a dedicated network connection between your network and one of the AWS Direct Connect locations.
