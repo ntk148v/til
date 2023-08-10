@@ -32,7 +32,7 @@ As an example, take a look at the contents of this JSON file.
 
 ```json
 // names.json
-{"names": ["James", "Claire", "Peter", "Lily"]}
+{ "names": ["James", "Claire", "Peter", "Lily"] }
 ```
 
 By right-clicking on a JSON file with these contents on Visual Studio Code, you can select Format Document or press ⌥ + ⇧ + F (on macOS) to obtain the following results.
@@ -40,12 +40,7 @@ By right-clicking on a JSON file with these contents on Visual Studio Code, you 
 ```json
 // names.json
 {
-    "names": [
-        "James",
-        "Claire",
-        "Peter",
-        "Lily"
-    ]
+  "names": ["James", "Claire", "Peter", "Lily"]
 }
 ```
 
