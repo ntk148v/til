@@ -41,19 +41,23 @@ Source: <https://engineering.grab.com/how-built-logging-stack>
 ### 3.2. Grab's problem
 
 - Field data cache:
+
   - Field data cache went from virtually zero memory used in the heap to 20GB -> this breaks down to allowing 70% of your total heap being allocated to a single search in the form of field data.
   - It's very helpful to keep the field names and values in memory for quick lookup. But, if you have several trillion documents, you might want to watch out.
   - Can't disable indexing that field.
 
 - Translog compression:
+
   - Compression seems an obvious choice for shipping shards between nodes.
   - Lucense segments are already compressed -> disable compression, shipping time for a 50GB shard went from 1h to 20m.
 
 - Segment memory:
+
   - Heap memory is exhausted.
   - Allocated too many shards to nodes: looking up the total segment memory used per index should give a good idea of how many shards you can put on a node before you start running out of heap space.
 
 - Index mapping and field types:
+
   - Indexed fields in completely unnecessary ways: fields no one would ever search against and which could be dropped from index memory.
 
 - Picking the wrong analyzer:
