@@ -48,6 +48,7 @@ Table of Contents:
   - [100DaysOfKubernetes](https://devops.anaisurl.com/kubernetes)
   - [Kubernetes In Action 2nd Edition](https://www.manning.com/books/kubernetes-in-action-second-edition): This is a really good book for beginner. Access the MEAP [here](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition), I take a lot of pictures from this site.
   - [LearnK8S](https://learnk8s.io)
+  - [Kubernetes internal](https://github.com/shubheksha/kubernetes-internals)
 
 ## 2. Architecture & internals
 
