@@ -35,3 +35,14 @@ Source:
   - Digital signatures make it possible to identify specific documents
   - eSignatures demonstrate the intent of a signatory to be legally bound by the terms within a specific document.
 - Although they are not the same, **digital signature technology can be used alongside electronic signatures to make them more secure**.
+
+| electronic signature                                                             | digital signature                                                                                                                                                                        |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E-signatures are digital images of handwritten signatures appended to a document | A digital signature is a type of e-signature, which also contains one or more characters in digital format, representing an individual's identity which is also attached to the document |
+| E-signatures can use any type of electronic authentication method                | Digital signatures use the public key cryptography technique                                                                                                                             |
+| Legally accepted                                                                 | Legally accepted                                                                                                                                                                         |
+| Less security when compared to digital signatures                                | Higher security—ensures authenticity and non-repudiation                                                                                                                                 |
+
+![](https://www.zohowebstatic.com/sites/zweb/images/sign/sign-digital-signatures-sender-flow.png)
+
+![](https://www.zohowebstatic.com/sites/zweb/images/sign/sign-digital-signature-srecepient-flow.png)
