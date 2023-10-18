@@ -42,6 +42,7 @@ Table of content:
 ## 2. Basic concepts
 
 - **Hashing**:
+
   - Hashing algorithm: A crytographic hash function to turn an arbitrary block of data into a fixed-size bit string.
   - Available algorithms:
     - MD5: Ron Rivest
@@ -78,7 +79,7 @@ Table of content:
 - Goal met?
   - Integrity: hashes are identical
   - Authenticity: identity found along with public key
-  - Non-repudiation: if hash can be decrypted with public key, the document was signed with the corresponding private key- 
+  - Non-repudiation: if hash can be decrypted with public key, the document was signed with the corresponding private key-
 
 ## 3. Apply Digital signature to PDF
 
@@ -91,6 +92,7 @@ In a PDF, signature information is contained in a signature dictionary. Objects 
 ![](./images/pdf-language-dictionaries.md)
 
 At a high level, the PDF language features can be grouped into these categories:
+
 - Adding a digital signature to a document.
 - Checking that signature for validity.
 - Permissions and restrictions that control the signature workflow.
@@ -111,12 +113,13 @@ At a high level, the PDF language features can be grouped into these categories:
 
 #### 3.2.1. PKI, PDF, and signing
 
-- Each digital signature in a PDF document is associated with a *signature handler*. The signature is placed in a PDF signature dictionary which contains the name of the signature handler which will be used to process that signature.
+- Each digital signature in a PDF document is associated with a _signature handler_. The signature is placed in a PDF signature dictionary which contains the name of the signature handler which will be used to process that signature.
 - When a PDF is signed, the signer's certificate is embeded in the PDF file.
 
 ![](./images/digital-idf-signed-pdf-document.png)
 
 - The high-level sigining process:
+
   - A document to be signed is turned into a stream of bytes.
   - The entire PDF files is written to disk with a suitably-sized space left for the signature value as well as with worst-case valus in the `ByteRange` array.
 
@@ -158,6 +161,7 @@ Beside mathematical signatures, they may also be a biometric frm of identificati
 #### 3.3.3. Support for two signature types
 
 PDF defins two types of signatures:
+
 - **Approval**: There can be any number of approval signatures in a document. The field may optionally be associated with FieldMDP permissions.
   - Workflow with subsequent signers.
   - New in PDF 2.0: modification detection permissions.
@@ -182,17 +186,19 @@ PDF signed with handler ABC should be able to be validated with handler XYZ from
 Some documents may require more than one signature. With PDF, any attempt to alter the document by modifying the file (such as signing it again) will invalidate the exisiting digital signature. This is so because the hash value calculated at verification time will not match the encrypted hash created at signing time.
 
 PDF solves this problem by supporting the availability to do **incremental updates**.
-  - Incremental updates are transparent to the person viewing the document, but allow the detection and audit of modifications to the file.
-  - This feature allows any PDF file to be modified by adding the modification information (additional signatures in our case) to the end of the file in an incremental update section.
-  - Each additional signature will cover the entire PDF file, from byte 0 to the last byte, excluding only the signature value for the current signature value.
 
-  ![](./images/incremental-updates.png)
+- Incremental updates are transparent to the person viewing the document, but allow the detection and audit of modifications to the file.
+- This feature allows any PDF file to be modified by adding the modification information (additional signatures in our case) to the end of the file in an incremental update section.
+- Each additional signature will cover the entire PDF file, from byte 0 to the last byte, excluding only the signature value for the current signature value.
+
+![](./images/incremental-updates.png)
 
 The Incremental updates facility of the PDF language allows PDF viewers to effectively retain all signed revisions of any PDF file. This makes it possible for users to actually see the version of the PDF file that was signed (View signed version and Compare siged version to the current version).
 
 #### 3.3.7. Locking form fields
 
 Form fields include both signature and non-signature fields, and forms often contain many form fields. When creating a document, an author can specify the following:
+
 - Whether form fields can be filled in without invalidating the approval or certification signature.
 - That after a specific recipient has signed the document, any modifications to specific form fields shall in invalidate that recipient'signature.
 
@@ -200,6 +206,7 @@ Form fields include both signature and non-signature fields, and forms often con
 
 PDF provide a mechanism for limiting post-signing. That mechanism is the DocMDP transform method. The P entry in the DocMDP transform
 parameters dictionary indicates which of the following changes to the document will invalidate the signature:
+
 - No changes
 - Form fill-in and digital signatures
 - Annotations (commenting), form fill-in, digital signatures
@@ -213,6 +220,7 @@ PDF enables a fully featured client with rich PDF interaction to grant document-
 PDF enables feature rich certificate processing and handling because it certificate data is embedded in the signature.
 
 For example, when PKCS#7 signature are used, the signature object can contain some or all of the following:
+
 - Timestamp information
 - Embedded revocation information
 - Revocation checking details for both CRLs and OCSP
@@ -258,11 +266,11 @@ PDF's support for seed values provides authors with field-level control over doc
     - Signing on a tablet/mobile:
       - App on the device has low footprint
       - Easy to link to integrate into a document management system
-      - Example: eaZySign (Zetes)  
+      - Example: eaZySign (Zetes)
     - Disadvantage:
       - At most 1 signature/second.
       - You need to trust the server that hash you receive is actually the hash of the document you want to sign.
-  
+
 ![](./images/deferred-signing.png)
 
 ### 3.6. Long-term validation (LTV)
@@ -272,7 +280,7 @@ PDF's support for seed values provides authors with field-level control over doc
 ![](./images/certificate-expire.png)
 
 - Certificaes get revoked:
-  
+
 ![](./images/certificate-revoked.png)
 
 > WIP: Timestamp, CRL, OCS, ...
