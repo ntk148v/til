@@ -1,48 +1,36 @@
-# Electronic signature vs Digital signature
+# Electronic signature
 
 Source:
 
-- <https://juro.com/learn/digital-signature-vs-electronic-signature>
-- <https://www.docusign.com/en-au/blog/news/whats-the-difference-between-electronic-signatures-and-digital-signatures>
-- <https://comodosslstore.com/blog/difference-between-electronic-signatures-and-digital-signatures.html>
-- <https://www.docusign.com/how-it-works/electronic-signature/digital-signature/digital-signature-faq>
+- <https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_chapters/eSignatures-and-dss.adoc>
 
-## 1. Electronic signature
+Table of content:
 
-- An electronic signature is a **digital markup added to a contract** to show that the parties have agreed to the contract’s terms. Electronic signatures replace wet ink signatures, which are added to physical copies of a contract.
-- Use cases:
-  - Electronic signatures are commonly added to business contracts to show that a signatory chooses to agree with the terms laid out by the other party. By creating an electronic signature, a signatory will demonstrate its intention to create a legally binding relationship and fulfill the obligations set out for both businesses.
-- Electronic signatures can be created by contract parties in Word or PDF. They are created and added to contracts by individuals and teams signing or making the document in some way.
+- [Electronic signature](#electronic-signature)
+  - [1. Electronic and digital signature](#1-electronic-and-digital-signature)
+  - [2. Digital signature concepts](#2-digital-signature-concepts)
+    - [2.1. Simplified PKI model](#21-simplified-pki-model)
 
-## 2. Digital signature
+## 1. Electronic and digital signature
 
-- A digital signature is a method used to **seal a document** and provide evidence of the document’s integrity and authenticity.
-- In other words, tt is a specific type of electronic signature that uses a specific technical implementation to meet the needs of highly regulated industries -> more **secure** and **tamper-evident**, which **encrypts** the documents and permanently embeds the information in it if a user tries to commit any changes in the document then the digital signature will be invalidated.
-- Digital signatures are often used by certification authorities or trust service providers, rather than commercial teams seeking to close a deal. These bodies will validate the digital signatures and verify the digital document.
-- Digital signatures are not created by people, they are created by software and algorithms. This relies on an advanced method called **Public Key Infrastructure (PKI)**, which is a set of processes, hardware, and software that combines to ensure data is transferred securely by generating two keys - a public and private one.
+The terms “Electronic Signature” and “Digital Signature” are often used interchangeably however they are very distinct concepts as "electronic signature" is a legal concept, whereas "digital signature" is a technical concept that is used to provide a concrete instance of electronic signatures.
 
-  - When a signer electronic signs a document, the signature is created using the signer's private key, which is always securely kept by the signer.
-  - The mathematical algorithm acts like a cipher, creating data matching the signed document, called a hash, and encrypting the data. The resulting encrypted data is the digital signature.
-  - The signature is also marked with the time that the document was signed. If the document changes after signing, the digital signature is invalidated.
-  - To protect the integrity of the signature, PKI requires that the keys be creted, conducted, and saved in a secure manner, and often requires the services of a reliable **Certificate Authority (CA)**.
+Electronic signature is a defined (legally) as "data in electronic form which is attached to or logically associated with other data in electronic form and which is used by the signatory to sign".
 
-  ![](https://www.docusign.com/static-c-assets/ds_subpage_diagram2.svg)
+An electronic signature does not necessarily guarantee that the signature process is secure nor that it is possible to track the changes that have been brought to the content of a document after it was signed. This depends on the category of the electronic signature.
 
-## 3. Is a digital signature the same thing as an electronic signature?
+A **Simple Electronic Signature (SES)** can cover a very broad range of data, such as a name written at the end of an email or an image added to a document.
 
-- Although some people use the terms digital signature and electronic signature interchangeably, they are **different features and they perform different functions**.
-- Both digital signatures and electronic signatures add authenticity and integrity to documents. However, they do this in different ways.
-  - Digital signatures make it possible to identify specific documents
-  - eSignatures demonstrate the intent of a signatory to be legally bound by the terms within a specific document.
-- Although they are not the same, **digital signature technology can be used alongside electronic signatures to make them more secure**.
+An **Advanced Electronic Signature (AdES)** is an electronic signature that has the following properties: - It is uniquely linked to the signatory. - It is capable of identifying the signatory. - The signatory has the sole control over the data used for the creating signatures. - It can detect whether the signed data has been modified since the signature.
 
-| electronic signature                                                             | digital signature                                                                                                                                                                        |
-| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| E-signatures are digital images of handwritten signatures appended to a document | A digital signature is a type of e-signature, which also contains one or more characters in digital format, representing an individual's identity which is also attached to the document |
-| E-signatures can use any type of electronic authentication method                | Digital signatures use the public key cryptography technique                                                                                                                             |
-| Legally accepted                                                                 | Legally accepted                                                                                                                                                                         |
-| Less security when compared to digital signatures                                | Higher security—ensures authenticity and non-repudiation                                                                                                                                 |
+An **Qualified Electronic Signature (QES)** is an AdES that is based on a qualified certificate for electronic signatures and that has been generated by a qualified signature creation device (QSCD).
 
-![](https://www.zohowebstatic.com/sites/zweb/images/sign/sign-digital-signatures-sender-flow.png)
+A **digital signature** is a technical concept that is based on a **Public Key Infrastructure** (PKI) and involves, among others, public key cryptography and public key certificates. Digital signatures can be used to ensure the unique identification of the signer, the authenticity of the signature and the integrity of the data. The identification of the signer as well as the authenticity of the signature are guaranteed by decrypting the digital signature value using a public key attested by a public key certificate. The component of the digital signature that allows detecting whether signed data has been tampered with is a cryptographic function called a hash function.
 
-![](https://www.zohowebstatic.com/sites/zweb/images/sign/sign-digital-signature-srecepient-flow.png)
+"AdES digital signatures" are digital signature formats that have been developped by ETSI to support the eIDAS Regulation and provide a way to create digital signatures that can meet the legal requirements for AdES and QES.
+
+## 2. Digital signature concepts
+
+This section aims to briefly introduce PKI-based digital signature concepts, more specifically concepts related to digital signatures supported by X.509 digital certificates issued by Certification Authorities (CA), and making use of asymmetric cryptography.
+
+### 2.1. Simplified PKI model
