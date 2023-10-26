@@ -10,10 +10,23 @@ Table of content:
   - [1. Electronic and digital signature](#1-electronic-and-digital-signature)
   - [2. Digital signature concepts](#2-digital-signature-concepts)
     - [2.1. Simplified PKI model](#21-simplified-pki-model)
+    - [2.2. Digital certificate](#22-digital-certificate)
+    - [2.3. CRLs and OCSP](#23-crls-and-ocsp)
+    - [2.4. Certificate Authority](#24-certificate-authority)
+    - [2.5. Trust anchors and Trust stores](#25-trust-anchors-and-trust-stores)
+    - [2.6. Certificate chain and Certification path validation](#26-certificate-chain-and-certification-path-validation)
+    - [2.7. Signature creation](#27-signature-creation)
+    - [2.8. Signature validation](#28-signature-validation)
+    - [2.9. Timestamping](#29-timestamping)
+    - [2.10. Multiple signatures](#210-multiple-signatures)
+      - [2.10.1. Parallel signatures](#2101-parallel-signatures)
+      - [2.10.2. Sequential signatures](#2102-sequential-signatures)
+      - [2.10.3. Counter signature](#2103-counter-signature)
+    - [2.11. Signature Applicability Rules / Signature Policy](#211-signature-applicability-rules--signature-policy)
 
 ## 1. Electronic and digital signature
 
-The terms “Electronic Signature” and “Digital Signature” are often used interchangeably however they are very distinct concepts as "electronic signature" is a legal concept, whereas "digital signature" is a technical concept that is used to provide a concrete instance of electronic signatures.
+The terms "Electronic Signature” and "Digital Signature” are often used interchangeably however they are very distinct concepts as "electronic signature" is a legal concept, whereas "digital signature" is a technical concept that is used to provide a concrete instance of electronic signatures.
 
 Electronic signature is a defined (legally) as "data in electronic form which is attached to or logically associated with other data in electronic form and which is used by the signatory to sign".
 
@@ -34,3 +47,257 @@ A **digital signature** is a technical concept that is based on a **Public Key I
 This section aims to briefly introduce PKI-based digital signature concepts, more specifically concepts related to digital signatures supported by X.509 digital certificates issued by Certification Authorities (CA), and making use of asymmetric cryptography.
 
 ### 2.1. Simplified PKI model
+
+- A (simplified) description of the PKI model:
+
+![]()https://github.com/esig/dss/raw/master/dss-cookbook/src/main/asciidoc/images/PKI-and-DSS.png)
+
+- A PKI is composed of:
+  - Certificates
+  - Certification Authorities (CA)
+  - Certificate Revocation Lists (CRL)
+  - OCSP responders providing information on the status of certificates
+
+### 2.2. Digital certificate
+
+- Digital signatures are supported by **public key certificates**.
+  - Public key certificates are data structures that binds an entity to a public key and that are signed by a 3rd party, they provide a prrof of authenticity of the public key.
+  - Public key certificates structured as per the specifications provided in ITU-T X.509 standard are common referred to as "X.509 public key certificates".
+- Certificates can be end-entity certificates or CA certificates:
+  - End-entity certificates are certificates issued to entities that are not authorized to issue certificates, for instance a natural person.
+  - CA certificates are certificates issued to entities authorized to issue certificates, also known as Certification Authorities (CA).
+- Certificates have a defined validity period during which the CA having issued the certificate guarantees the correctness of its content. During that validity period, they may however be revoked or suspended, for instance when the entity to which the certificate has been issued has lost control of the corresponding private key.
+
+### 2.3. CRLs and OCSP
+
+- As previously mentioned, a certificate can be revoked or suspended. This information is usually provided in the form of a **Certification Revocation List (CRL)**, or through the **Online Certificate Status Protocol (OCSP)**.
+- A CRL is a list of revoked (and/or suspended) certificates that is digitally signed and published by a CRL issuer.
+  - The issuer can be the CA having issued the certificates listed in the CRL, or it can be another CA in which case the CRL is called an "indirect CRL".
+- The OCSP is a protocol defined in RFC 6960 that enables the determination or the (revocation) status of the certificate without the use of a CRL.
+  - An OCSP request, containing information on the certificate for which the (revocation) status is requested, is sent to a server and a response, containing information of that (revocation) status, is provided by an OCSP responder.
+  - OCSP responses are signed by the OCSP responder, and the OCSP responder can be the CA having issued the certificates or another CA in which case the OCSP responder is called a "delegated OCSP responder".
+
+![](https://www.thesslstore.com/blog/wp-content/uploads/2020/07/certificate-revocation-ocsp.png)
+
+### 2.4. Certificate Authority
+
+Certification Authorities are entities issuing certificates and guaranteeing the correctness of their content. They manage the whole lifecycle of the certificates they issue, including the revocation services. Throughout this document, they will be denominated as:
+
+- Issuing CA for the CAs that issue end-entity certificates.
+- Intermediate CA for CAs that issue certificates to other CAs and are not root CAs.
+- Root CA for the CAs that have at least one self-signed certificate.
+
+### 2.5. Trust anchors and Trust stores
+
+- When a user is looking to validate a certificate, that is the user's need to decide whether they can trust the binding between the public key and the subject of that certificate, they will make use of so called **Trust anchors**.
+  - Trust anchor is a CA that is trusted by the user in such a way that if there exists a valid chain of certificate from that CA to a certificate, the user trusts the correctness of the information contained in that certificate taking into consideration the (revocation) status of that certificate.
+- Trust anchor information can be, and is often, provided as a (potentially self-signed) public key certificate.
+- A trust store is, in turn, a list of trust anchor information that can be, and is often, a list of directly trusted public key certificates.
+
+### 2.6. Certificate chain and Certification path validation
+
+- The certificate path validation is an algorithm that seeks to verify the binding between the public key and the subject of a certificate, using trust anchor information.
+
+```text
+1. for all x in {1, …​, n-1}, the subject of certificate x is the issuer of certificate x+
+2. certificate 1 is issued by the trust anchor;
+3. certificate n is the certificate to be validated (i.e., the target certificate); and
+4. for all x in {1, …​, n}, the certificate was valid at the time in question.
+```
+
+- The wording "certificate chain" is often used interchangeably with "certification path".
+
+![](https://github.com/esig/dss/raw/master/dss-cookbook/src/main/asciidoc/images/certificate-chain-detailed.jpg)
+
+### 2.7. Signature creation
+
+> Although other schemes exist, we assume here that creating a digital signature value consists in the encryption of a hash computed on the signed data.
+
+Signature creation process:
+
+- Receiving a (set of) document(s) or a (set of) hash(es) representing those documents, together with other inputs (such as so-called _"signed attribute"_ values e.g. signer's location, and constraints driving the creation of the signature such as the cryptographic algorithms to be used for the creation of the signature value).
+- Composing the _"data to be signed” (DTBS)_ which is the data object that will be covered by the signature value (including thus the document(s) and attributes to be signed), and the associated _"data to be signed formatted” (DTBSF)_ which can be taken as the format-specific byte-stream on which the signature value will be computed.
+- Creating the _"data to be signed representation” (DTBSR)_ by applying the appropriate hash algorithm on the DTBSF obtained in the previous step;
+- Computing the signature value by encrypting the DTBSR using the appropriate algorithm (this is usually done by activating the private key within a _"Signature creation device” (SCDev)_, that will perform the operation).
+  - When the private key contained in that device is controlled by an end-entity, this device is usually called a _SCDev_. SCDev can be a local SCDev such as a smartcard, but it can also be a remote SCDev manaed by a CA or Trust Service Provider (TSP).
+  - When the private key is used by a CA for signing certificates, this device is usually called a _"hardware security module” or HSM_.
+- Formatting the result into a _"signed data object" (SDO)_ complying with the desired signature format (e.g. XAdES, PAdES, etc).
+
+### 2.8. Signature validation
+
+- Taking a very (or over) simplified model, validating a digital signature can be seen as:
+
+  - Verfiying the cryptographic validity of the digital signature value (part of it consisting in decrypting the digital signature value and comparing the decrypted value with the hash of the signed data).
+  - Verifying the validity of the signing certificate (see certification path validation).
+
+- Let's image that we want to validate the digital signature and the time when this validation occur is denoted as T<sub>val</sub>.
+
+  - The digital signature is valid at T<sub>val</sub>:
+    - The signing certificate successfully passes the certification path validation at T<sub>val</sub>
+    - The digital signature value is cryptographically valid.
+  - The digital signature is invalid:
+    - Computing the hash of the signed data does not yield the same value as the decryption of the signature value.
+
+- Beyond valid and invalid digital signature however, there are a lot of cases when one cannot determine the validity of a digital signature. Below are some examples where one cannot conclude that a digital signature is valid or invalid, in which case the validity status of the signature is indeterminate.
+
+  - Let’s imagine that at T<sub>val</sub>, when we are trying to access the certification status information, that information is unavailable (e.g. the CRL cannot be downloaded, the OCSP responder is unavailable) -> Can't determine whether the signing certificate is valid or not because at T<sub>val</sub> we are lacking information to conclude on that validity status -> The validity of the overall signature can't be determined either and the validity of the signature is indeterminate.
+  - At T<sub>val</sub>, revocation information indicates that the signing certificate is revoked since a time indicated as T<sub>rev</sub> (T<sub>rev</sub> < T<sub>val</sub>>).
+    - Then at T<sub>val</sub>, we can only conclude that the signing certificate is revoked and thus the signature cannot be determined as valid at T<sub>val</sub>. However, this does not mean necessarily that the signature was created when the signing certificate was revoked, it may very well be that the signature was created at a time prior to T<sub>rev</sub> and that, should we have validated the signature at that time, the validation would have been successful. Therefore, we cannot conclude that the signature is invalid because we do not know in a definite manner if the signature was created before the revocation of the signing certificate.
+    - When one creates a digital signature using cryptographic algorithms that are not considered secure: In such a case, it may be possible for an malicious actor to create counterfeited signed documents -> When validating a signature, it is therefore necessary to verify that the signature was created using cryptographic algorithms and parameters that are considered as secure -> compare a POE of the digital signature value with a sunset date for the cryptographic algorithms and parameters involved (_cryptographic constraint_).
+
+- The result of a validation process performed can be:
+
+  - `TOTAL-PASSED` indicating that the signature has passed verification and it complies with the signature validation policy.
+  - `INDETERMINATE` indicating that the format and digital signature verifications have not failed but there is insufficient information to determine if the electronic signature is valid.
+  - `TOTAL_FAILED` indicating that either the signature format is incorrect or that the digital signature value fails the verification.
+
+<table><thead>
+<tr>
+<th>Indication</th>
+<th>Sub-indication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p dir="auto">TOTAL-PASSED</p></td>
+<td><p dir="auto">-</p></td>
+</tr>
+<tr>
+<td rowspan="6"><p dir="auto">TOTAL-FAILED</p></td>
+<td><p dir="auto">FORMAT_FAILURE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">HASH_FAILURE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">SIG_CRYPTO_FAILURE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">REVOKED</p></td>
+</tr>
+<tr>
+<td><p dir="auto">EXPIRED</p></td>
+</tr>
+<tr>
+<td><p dir="auto">NOT_YET_VALID</p></td>
+</tr>
+<tr>
+<td rowspan="19"><p dir="auto">INDETERMINATE</p></td>
+<td><p dir="auto">SIG_CONSTRAINTS_FAILURE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">CHAIN_CONSTRAINTS_FAILURE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">CERTIFICATE_CHAIN_GENERAL_FAILURE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">CRYPTO_CONSTRAINTS_FAILURE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">POLICY_PROCESSING_ERROR</p></td>
+</tr>
+<tr>
+<td><p dir="auto">SIGNATURE_POLICY_NOT_AVAILABLE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">TIMESTAMP_ORDER_FAILURE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">NO_SIGNING_CERTIFICATE_FOUND</p></td>
+</tr>
+<tr>
+<td><p dir="auto">NO_CERTIFICATE_CHAIN_FOUND</p></td>
+</tr>
+<tr>
+<td><p dir="auto">REVOKED_NO_POE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">REVOKED_CA_NO_POE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">OUT_OF_BOUNDS_NOT_REVOKED</p></td>
+</tr>
+<tr>
+<td><p dir="auto">OUT_OF_BOUNDS_NO_POE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">REVOCATION_OUT_OF_BOUNDS_NO_POE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">CRYPTO_CONSTRAINTS_FAILURE_NO_POE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">NO_POE</p></td>
+</tr>
+<tr>
+<td><p dir="auto">TRY_LATER</p></td>
+</tr>
+<tr>
+<td><p dir="auto">SIGNED_DATA_NOT_FOUND</p></td>
+</tr>
+<tr>
+<td><p dir="auto">CUSTOM</p></td>
+</tr>
+</tbody>
+</table>
+
+### 2.9. Timestamping
+
+- As illustrated in the above section, validating a signature sometimes require a proof of existence of that signature at a given time - **timestamp**.
+- When signing digitally, a date and time can be already included into the signature, but it corresponds to the signer computer’s local time. The latter can easily be modified prior to signing so that the time of signing is not the actual one. Thus, this signing time cannot be trusted. A trustworthy digital timestamp shall be used to prove existence of the signature (and its associated data) at a certain point in time.
+- Before explaining the timestamping process, let us define some concepts that are involved in this process:
+  - A Timestamp Authority (TSA) is a Trust Service Provider that creates timestamp tokens using one or more Timestamping Units.
+  - A Timestamping Unit (TU) is a set of hardware and software that contains a single signing key used by a TSA.
+- Furthermore, in the context of digital signature, we usually distinguish timestamp depending on the data for which they provide a proof of existence:
+  - A content timestamp is a timestamp that is computed on the original data that is signed by a signature. It provides a proof of existence of the original data but not of the signature.
+  - A signature timestamp is a timestamp that is computed on the digital signature value (in some case on the whole signed data object). It provides a proof of existence of the signature value.
+  - An archive timestamp is a timestamp that is computed on the validation material of a signature (that is, the data necessary to validate a signature such as CRLs, OCSP responses, certificate chain, etc). They at least provide a proof of existence of that validation material, but as they are frequently in fact computed on the whole signed data object in which that validation material has been added, they often provide a proof of existence of the original data, signature value, signature timestamp, validation material, and possible other archive timestamps that are covered by them.
+- The creation process of a signature timestamp:
+  - The user creates a hash of the data for which a timestamp assertion is required (e.g. signature value for a signature timestamp).
+  - The user sends the hash and the digest algorithm to a TSA.
+  - The TSA groups the hash, the time of stamping (current date and time) and the identity of the TSA and signs it with a private key contained in a TU.
+  - The timestamp token resulting from the previous step is returned to the client.
+  - The timestamp token is added to the signature of the data that was sent as a hash in the first step.
+
+![](https://github.com/esig/dss/raw/master/dss-cookbook/src/main/asciidoc/images/Timestamp.jpg)
+
+### 2.10. Multiple signatures
+
+> It is useful to note that multiple signatures can be created in parallel or in a sequential order.
+
+#### 2.10.1. Parallel signatures
+
+Parallel signatures are stand-alone, mutually independent signatures where the ordering of the signatures is not important. All the involved parties can receive the data at the same time and sign in any order. The computation of these signatures is performed on exactly the same hash data but using different private keys associated to the different signers. Parallel signatures can be validated independently to verify whether the associated data is validly signed.
+
+![](https://github.com/esig/dss/raw/master/dss-cookbook/src/main/asciidoc/images/parallel-signatures.jpg)
+
+#### 2.10.2. Sequential signatures
+
+Sequential signatures are mutually dependent signatures where the ordering of the signatures is important. A fixed signing order is defined and the next signer in the chain shall not sign before the preceding signers have signed the data. The computation of these signatures is not performed on the same data. A signer that is further in the signing chain will sign the initial data previously signed by the signers preceding him in the chain. Each signer uses his own private key to sign.
+
+![](https://github.com/esig/dss/raw/master/dss-cookbook/src/main/asciidoc/images/sequential-signatures.jpg)
+
+#### 2.10.3. Counter signature
+
+A counter signature is an additional signature applied on data that has already been signed previously. This type of signature is used to show approval of the data and signature, to confirm the authenticity of the data. The computation of a counter signature is performed on the signed data, and it is added to the signature as an unsigned attribute, i.e. after initial signature creation.
+
+Counter signatures are often created by trustworthy entities such as notaries, doctors or attorneys. Possible use cases are rental and mortgage applications, health documents, passports and visas.
+
+![](https://github.com/esig/dss/raw/master/dss-cookbook/src/main/asciidoc/images/counter-signatures.jpg)
+
+### 2.11. Signature Applicability Rules / Signature Policy
+
+- A Signature Policy, in that meaning, contains general information such as:
+  - the identifier of the signature policy
+  - the name of the signature policy issuer
+  - the date of issuance of the signature policy
+  - the signing period
+  - the field of application
+  - ...
+- A Signature Policy is composed of **three main parts** that define technical and procedural requirements:
+  - Signature Creation Policy: requirements for the signer in creating a signature;
+  - Signature Validation Policy: requirements for the verifier when validating a signature;
+  - Signature (LTV) Management Policy: requirements for the long term management and preservation of a signature.
+- During signature **creation**, a signature creation policy can be added to the signature as a signed attributes of the signature.
+- During signature validation, a mapping between acceptable signature creation policies and their corresponding signature validation policies can be provided to the signature validation application (SVA)
