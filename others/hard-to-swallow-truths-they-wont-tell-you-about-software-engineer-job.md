@@ -8,7 +8,9 @@ Source: <https://www.mensurdurakovic.com/hard-to-swallow-truths-they-wont-tell-y
 4. You will sometimes work with incompetent people.
 5. Get used to being in meetings for hours.
 6. They will ask you for estimate a lot of times.
-  - It's always good to underpromise but overdeliver.
+
+- It's always good to underpromise but overdeliver.
+
 7. Bugs will be your arch-enemy for life.
 8. Uncertainty will be your toxic friend. The good thing about uncertainty is that drives you to be a better software engineer. It demands improvements and learning if you want to stay in the game.
 9. It will be almost impossible to disconnect from your job.
