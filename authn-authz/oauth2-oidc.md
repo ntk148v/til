@@ -18,7 +18,7 @@ OpenID Connect is an extension of OAuth2 that adds an identity layer to the auth
 
 ## 3. The differences between OAuth2 and OpenID Connect
 
-The main difference between OAuth2 and OpenID Connect is that OAuth2 is only concerned with authorization while OpenID Connect is also concerned with authentication. Authorization means granting access to resources, while authentication means  verifying the identity of a user. OAuth2 does not provide a standard way to obtain user information, while OpenID Connect does. OAuth2 relies on access token, which are opaque strings that can only be validated by the resource server, while OpenID Connect relies on ID tokens, which are self-contained and can be validated by the client. OAuth2 is more flexible and can be used for various types of applications, while OpenID Connect is more specific and can be used for single sign-on and social login.
+The main difference between OAuth2 and OpenID Connect is that OAuth2 is only concerned with authorization while OpenID Connect is also concerned with authentication. Authorization means granting access to resources, while authentication means verifying the identity of a user. OAuth2 does not provide a standard way to obtain user information, while OpenID Connect does. OAuth2 relies on access token, which are opaque strings that can only be validated by the resource server, while OpenID Connect relies on ID tokens, which are self-contained and can be validated by the client. OAuth2 is more flexible and can be used for various types of applications, while OpenID Connect is more specific and can be used for single sign-on and social login.
 
 ## 4. How to choose between OAuth2 and OpenID Connect
 
