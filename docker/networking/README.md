@@ -10,6 +10,8 @@ Source:
 - <https://docs.docker.com/engine/tutorials/networkingcontainers/>
 - <https://docs.docker.com/network/iptables/>
 
+Table of Contents:
+
 - [Docker networking](#docker-networking)
   - [1. Concepts](#1-concepts)
   - [2. Deep dive - network namespace](#2-deep-dive---network-namespace)
@@ -34,7 +36,7 @@ Source:
 
 ## 2. Deep dive - network namespace
 
-![](https://res.cloudinary.com/practicaldev/image/fetch/s--tGvJLH6y--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s4.amazonaws.com/i/pszchqfvcjpl13dextrc.png)
+![](https://res.cloudinary.com/practicaldev/image/fetch/s--tGvJLH6y--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/pszchqfvcjpl13dextrc.png)
 
 - When Docker creates and runs a container, it creates a separate network namespace and puts the container into it. Then, Docker connects the new container network to linux bridge **docker0** using a veth pair. This also enables container be conneted to the host network and other container networks in the same bridge.
 - By default Docker does not add container network namespaces to the linux runtime data which is what you see when you run the `ip netns` command.
@@ -118,20 +120,46 @@ $ ip addr show
 - DNS-based service discovery:
 
 ```shell
-$ docker run --name=web --network=mynet -d praqma/network-multitool
+$ docker run --name=web --network=mynet -d wbitt/network-multitool
+e2d841b7a02916aa25a2fa5ceace0427ad7c0ccc967ad01fb5cc423460f0e990
+
 $ docker run --name=db --network=mynet -e MYSQL_ROOT_PASSWORD=secret -d mysql
+492ba8a9277d96876f0a605d9434723aed774978a40023e778a97815216754f0
+
 $ docker ps
-CONTAINER ID   IMAGE                      COMMAND                  CREATED              STATUS              PORTS                                  NAMES
-3c71f8fb83e3   praqma/network-multitool   "/bin/sh /docker/ent…"   9 seconds ago        Up 7 seconds        80/tcp, 443/tcp, 1180/tcp, 11443/tcp   web
-5659a70ca7c0   mysql                      "docker-entrypoint.s…"   About a minute ago   Up About a minute   3306/tcp, 33060/tcp                    db
+CONTAINER ID   IMAGE                     COMMAND                  CREATED              STATUS              PORTS                                  NAMES
+e2d841b7a029   wbitt/network-multitool   "/bin/sh /docker/ent…"   15 seconds ago       Up 14 seconds       80/tcp, 443/tcp, 1180/tcp, 11443/tcp   web
+492ba8a9277d   mysql                     "docker-entrypoint.s…"   About a minute ago   Up About a minute   3306/tcp, 33060/tcp                    db
+
+# Ping each other
 $ docker exec -it web bash
-bash-5.1# ping -c 1 db
-PING db (172.18.0.3) 56(84) bytes of data.
-64 bytes from db.mynet (172.18.0.3): icmp_seq=1 ttl=64 time=0.084 ms
+e2d841b7a029:/# ping -c 1 db
+PING db (172.18.0.2) 56(84) bytes of data.
+64 bytes from db.mynet (172.18.0.2): icmp_seq=1 ttl=64 time=0.096 ms
 
 --- db ping statistics ---
 1 packets transmitted, 1 received, 0% packet loss, time 0ms
-rtt min/avg/max/mdev = 0.084/0.084/0.084/0.000 ms
+rtt min/avg/max/mdev = 0.096/0.096/0.096/0.000 ms
+e2d841b7a029:/# dig db
+
+; <<>> DiG 9.18.16 <<>> db
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 57615
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;db.                            IN      A
+
+;; ANSWER SECTION:
+db.                     600     IN      A       172.18.0.2
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.11#53(127.0.0.11) (UDP)
+;; WHEN: Tue Dec 12 03:18:39 UTC 2023
+;; MSG SIZE  rcvd: 38
+
+e2d841b7a029:/#
 ```
 
 - There is an **embedded DNS** in the Docker service.
@@ -140,15 +168,16 @@ rtt min/avg/max/mdev = 0.084/0.084/0.084/0.000 ms
 
 ```shell
 $ docker exec -it web bash
-bash-5.1# cat /etc/resolv.conf
+e2d841b7a029:/# cat /etc/resolv.conf
 nameserver 127.0.0.11
 options edns0 trust-ad ndots:0
-bash-5.1# netstat -ntpla
-Active Internet connections (servers and established)
+e2d841b7a029:/# netstat -ntlup
+Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
-tcp        0      0 127.0.0.11:40061        0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.11:45541        0.0.0.0:*               LISTEN      -
 tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      1/nginx: master pro
 tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      1/nginx: master pro
+udp        0      0 127.0.0.11:42758        0.0.0.0:*   
 ```
 
 - The `/etc/resolv.conf` says that the DNS is available at `127.0.0.1:53` but the netstat output doesn't show any process listening on port 53.
@@ -159,22 +188,54 @@ tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      
 
 ```shell
 $ docker run \
-    --name multitool \
+    --name tool \
     --network mynet \
     --cap-add=NET_ADMIN \
     --cap-add=NET_RAW \
-    -it praqma/network-multitool /bin/bash
-bash-5.1# iptables-save
-# Generated by iptables-save v1.8.6 on Mon Sep 19 07:32:09 2022
-*filter
-:INPUT ACCEPT [0:0]
-:FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
-COMMIT
-# Completed on Mon Sep 19 07:32:09 2022
-# Generated by iptables-save v1.8.6 on Mon Sep 19 07:32:09 2022
+    -it wbitt/network-multitool /bin/bash
+ccd72fe225c8:/# dig -c db
+;; Warning, ignoring invalid class db
+
+; <<>> DiG 9.18.16 <<>> -c db
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 17778
+;; flags: qr rd ra; QUERY: 1, ANSWER: 13, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;.                              IN      NS
+
+;; ANSWER SECTION:
+.                       31133   IN      NS      d.root-servers.net.
+.                       31133   IN      NS      l.root-servers.net.
+.                       31133   IN      NS      k.root-servers.net.
+.                       31133   IN      NS      i.root-servers.net.
+.                       31133   IN      NS      j.root-servers.net.
+.                       31133   IN      NS      e.root-servers.net.
+.                       31133   IN      NS      h.root-servers.net.
+.                       31133   IN      NS      g.root-servers.net.
+.                       31133   IN      NS      a.root-servers.net.
+.                       31133   IN      NS      f.root-servers.net.
+.                       31133   IN      NS      c.root-servers.net.
+.                       31133   IN      NS      b.root-servers.net.
+.                       31133   IN      NS      m.root-servers.net.
+
+;; Query time: 8 msec
+;; SERVER: 127.0.0.11#53(127.0.0.11) (UDP)
+;; WHEN: Tue Dec 12 03:20:07 UTC 2023
+;; MSG SIZE  rcvd: 239
+
+ccd72fe225c8:/# netstat -ntlup
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 127.0.0.11:39527        0.0.0.0:*               LISTEN      -
+udp        0      0 127.0.0.11:35031        0.0.0.0:*                           -
+ccd72fe225c8:/# iptables-nft-save
+# Generated by iptables-nft-save v1.8.9 (nf_tables) on Tue Dec 12 03:20:27 2023
 *nat
-:PREROUTING ACCEPT [10:1212]
+:PREROUTING ACCEPT [0:0]
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
@@ -182,12 +243,12 @@ COMMIT
 :DOCKER_POSTROUTING - [0:0]
 -A OUTPUT -d 127.0.0.11/32 -j DOCKER_OUTPUT
 -A POSTROUTING -d 127.0.0.11/32 -j DOCKER_POSTROUTING
--A DOCKER_OUTPUT -d 127.0.0.11/32 -p tcp -m tcp --dport 53 -j DNAT --to-destination 127.0.0.11:33715
--A DOCKER_OUTPUT -d 127.0.0.11/32 -p udp -m udp --dport 53 -j DNAT --to-destination 127.0.0.11:41120
--A DOCKER_POSTROUTING -s 127.0.0.11/32 -p tcp -m tcp --sport 33715 -j SNAT --to-source :53
--A DOCKER_POSTROUTING -s 127.0.0.11/32 -p udp -m udp --sport 41120 -j SNAT --to-source :53
+-A DOCKER_OUTPUT -d 127.0.0.11/32 -p tcp -m tcp --dport 53 -j DNAT --to-destination 127.0.0.11:39527
+-A DOCKER_OUTPUT -d 127.0.0.11/32 -p udp -m udp --dport 53 -j DNAT --to-destination 127.0.0.11:35031
+-A DOCKER_POSTROUTING -s 127.0.0.11/32 -p tcp -m tcp --sport 39527 -j SNAT --to-source :53
+-A DOCKER_POSTROUTING -s 127.0.0.11/32 -p udp -m udp --sport 35031 -j SNAT --to-source :53
 COMMIT
-# Completed on Mon Sep 19 07:32:09 2022
+# Completed on Tue Dec 12 03:20:27 2023
 ```
 
 ![](https://github.com/KamranAzeem/learn-docker/raw/master/docs/images/docker-service-discovery-1.png)
