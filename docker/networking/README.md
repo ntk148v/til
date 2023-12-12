@@ -177,7 +177,7 @@ Proto Recv-Q Send-Q Local Address           Foreign Address         State       
 tcp        0      0 127.0.0.11:45541        0.0.0.0:*               LISTEN      -
 tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      1/nginx: master pro
 tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      1/nginx: master pro
-udp        0      0 127.0.0.11:42758        0.0.0.0:*   
+udp        0      0 127.0.0.11:42758        0.0.0.0:*
 ```
 
 - The `/etc/resolv.conf` says that the DNS is available at `127.0.0.1:53` but the netstat output doesn't show any process listening on port 53.
