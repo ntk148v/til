@@ -5,7 +5,6 @@ Source:
 - <https://newsletter.grokking.org/p/178-do-l-ng-site-reliability-v-i-sli-slo-va-sla-672711>
 - <https://www.pagerduty.com/resources/learn/what-is-slo-sla-sli/>
 
-
 Trọng tâm chính của Site reliability engineering (SRE) là xây dựng và chạy một ứng dụng đáng tin cậy mà không ảnh hưởng đến tốc độ delivery sản phẩm - hai điều hoàn toàn trái ngược nhau (tức là “Tạo ra phần mềm tốt hơn, nhanh hơn”).
 
 Các kỹ sư SRE đo lường mọi thứ, đồng thời xác định và đồng thuận dựa trên các chỉ số có thể đo lường, để đảm bảo công việc hướng tới một mục tiêu có thể đo lường được. Ví dụ, nói rằng trang web đang chạy chậm là một tuyên bố mơ hồ vì nó không có ý nghĩa gì về mặt kỹ thuật. Nhưng nói rằng 95% lượng phản hồi có thời gian vượt quá SLO 10%, thì sẽ mang lại nhiều giá trị hơn. SRE cũng đo lường các công việc lặp đi lặp lại theo thời gian và tìm cách tự động hóa chúng.
