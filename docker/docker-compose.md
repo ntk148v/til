@@ -67,3 +67,16 @@ services:
       depends_on:
         - database
   ```
+
+## 2. Use Compose watch
+
+> Compose >= 2.22
+
+- Use `watch` to automatically update and preview your running Compose services as you edit and save your code.
+- Use case: automatic updates.
+- The `watch` attribute defines a list of rules that control automatic service updates based on local file changes.
+  - `path` pattern.
+  - `action` to take when a modification is detected.
+    - `sync`: compose makes sure any changes made to files on your host automatically match with the corresponding files within the service container -> **hot reload**.
+    - `rebuild`: compose automatically builds a new image with BuildKit and replaces the running service container -> compiled languages or as fallbacks for modifications to particular files that require a full image rebuild (e.g. `package.json`).
+    - `sync+restart`: composes synchronizes your changes with the services containers and restarts it.
