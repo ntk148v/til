@@ -37,7 +37,7 @@ Source: <https://sre.google/workbook>
 
 The proportion of records written that can be successfully read. Take particular care with durability SLIs: the data that the user wants may be only a small portion of the data that is stored. For example, if you have 1 billion records for the previous 10 years, but the user wants only the records from today (which are unavailable), then they will be unhappy even though almost all of their data is readable.|
 
-- SLOs can be defined over various time intervals, and can use either a rolling window or a calendar-aligned window (e.g., a month). 
+- SLOs can be defined over various time intervals, and can use either a rolling window or a calendar-aligned window (e.g., a month).
   - Rolling windows are more closely aligned with user experience.
   - Calendar windows are more closely aligned with business planning and project work. For example, you might evaluate your SLOs every quarter to determine where to focus the next quarter's project headcount.
   - Shorter time windows allow you to make decisions more quickly.
