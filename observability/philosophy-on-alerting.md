@@ -14,8 +14,8 @@ Source:
   - Completeness/freshness/durability
   - Features
 - Cause-based alerts are bad, but sometimes necessary. ere's (often) no symptoms to "almost" running out of quota
-or memory or disk I/O, etc., so you want rules to know you're walking towards a cliff. Use these
-sparingly; don't write cause-based paging rules for symptoms you can catch otherwise.
+  or memory or disk I/O, etc., so you want rules to know you're walking towards a cliff. Use these
+  sparingly; don't write cause-based paging rules for symptoms you can catch otherwise.
 
 ## Tickets, Reports and Email
 
