@@ -141,7 +141,7 @@ Source:
 
   </details>
 
-![](https://github.com/ntk148v/til/blob/master/linux/images/linux-networking-recv.png)
+![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-networking-recv.png)
 
 ![](https://img-blog.csdnimg.cn/20201025161643899.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1JvbmdfVG9h,size_16,color_FFFFFF,t_70)
 
@@ -285,7 +285,7 @@ Source:
 
 ### 1.2. Linux kernel network transmission
 
-![](https://github.com/ntk148v/til/blob/master/linux/images/linux-networking-send.png)
+![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-networking-send.png)
 
 ![](https://s2.51cto.com/images/blog/202104/15/25012de83ba2d80fcd790b49ff346b62.png?x-oss-process=image/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_30,g_se,x_10,y_10,shadow_20,type_ZmFuZ3poZW5naGVpdGk=/format,webp/resize,m_fixed,w_1184)
 
@@ -997,21 +997,21 @@ Source:
 
     - Context switch between kernel and userspace
 
-    ![](https://github.com/ntk148v/til/blob/master/linux/images/linux-network-1.png)
+    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-network-1.png)
 
     - Packet copy between kernel and userspace
 
-    ![](https://github.com/ntk148v/til/blob/master/linux/images/linux-network-2.png)
+    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-network-2.png)
 
     - Dynamic allocation of `sk_buff`
     - Per packet interrupt
     - Shared data structures
 
-    ![](https://github.com/ntk148v/til/blob/master/linux/images/linux-network-3.png)
+    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-network-3.png)
 
   - Solution: Why just bypass the kernel?
 
-  ![](https://github.com/ntk148v/til/blob/master/linux/images/linux-network-4.png)
+  ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-network-4.png)
 
   - There are many kernel bypass techniques:
     - User-space packet processing:
@@ -1138,7 +1138,7 @@ Source:
     - In-kernel verifier to ensure safety, security
     - JIT (Just-in-time) compiler available for main architecture
 
-    ![](https://github.com/ntk148v/til/blob/master/linux/images/ebpf-1.png)
+    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imagesebpf-1.png)
 
     - Features:
       - Maps: key-value entries (hash, array,...) shared between eBPF programs or with user user-space
@@ -1217,7 +1217,7 @@ Source:
 
 - `AF_XDP`:
 
-  ![](https://github.com/ntk148v/til/blob/master/linux/images/xdp-flow.png)
+  ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imagesxdp-flow.png)
 
   - A new type of socket, presented into the [Linux 4.18](https://www.kernel.org/doc/html/v4.18/networking/af_xdp.html) which does not completely bypass the kernel, but utilizes its functionality and enables to create something alike DPDK or the `AF_PACKET`.
 
@@ -1225,7 +1225,7 @@ Source:
     - XDP programs can redirect frames to a memory buffer in user-space by eBPF -> not bypass the kernel but creates in-kernel fast path.
     - DMA transfers use user space memory (zero copy)
 
-    ![](https://github.com/ntk148v/til/blob/master/linux/images/xdp.png)
+    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imagesxdp.png)
 
     - Benefits:
       - Performance improvement:
@@ -1237,7 +1237,7 @@ Source:
         - No change to DPDK apps, kernel driver handles hardware
         - Provide a new option for users
 
-    ![](https://github.com/ntk148v/til/blob/master/linux/images/xdp-dpdk.png)
+    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imagesxdp-dpdk.png)
 
 - Limitations:
   - Quite young project
