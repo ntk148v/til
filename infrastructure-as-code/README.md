@@ -56,6 +56,8 @@ Source: <https://www.ibm.com/cloud/learn/infrastructure-as-code>
 - [Chef](https://www.chef.io/).
 - [Puppet](https://puppet.com/).
 - [SaltStack](https://www.saltstack.com/).
+- [Pyinfra](https://pyinfra.com/) -> [Hackernews thread](https://news.ycombinator.com/item?id=40211655).
+- [Fabric](https://www.fabfile.org/).
 
 ### 5.2. Choose the right one
 
