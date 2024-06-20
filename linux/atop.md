@@ -8,6 +8,7 @@ Source:
 - <https://www.atoptool.nl/index.php>
 
 Table of content:
+
 - [Atop](#atop)
   - [1. Installation](#1-installation)
   - [2. First look](#2-first-look)
@@ -20,8 +21,7 @@ Table of content:
     - [5.2. Disk activity information](#52-disk-activity-information)
     - [5.3. Memory leaks](#53-memory-leaks)
 
-
-`top` is great, we're all familiar with it. `htop` is even better, (and with eye-catching look). But sometimes these tools aren't enough, they only give the 10,000 foot overview of resource. They don't allow you to see what part of which program or process is eating up too much RAM or which part is creating race conditions on lock files. And the most important drawback is the lack of historical data. But [`atop`](https://www.atoptool.nl/index.php) can. A powerful monitor program that allows you to see system-level counters concerning utilization of CPU and memory/swap, as well as see disk I/O and network utilization counters at the system level -- in real time or *historically*. It also allows you to store raw counters in a file for long-term analysis on system levels and process levels, as well as seeing resource consumption for each thread within a process of a multi-processor program.
+`top` is great, we're all familiar with it. `htop` is even better, (and with eye-catching look). But sometimes these tools aren't enough, they only give the 10,000 foot overview of resource. They don't allow you to see what part of which program or process is eating up too much RAM or which part is creating race conditions on lock files. And the most important drawback is the lack of historical data. But [`atop`](https://www.atoptool.nl/index.php) can. A powerful monitor program that allows you to see system-level counters concerning utilization of CPU and memory/swap, as well as see disk I/O and network utilization counters at the system level -- in real time or _historically_. It also allows you to store raw counters in a file for long-term analysis on system levels and process levels, as well as seeing resource consumption for each thread within a process of a multi-processor program.
 
 ## 1. Installation
 
@@ -51,6 +51,7 @@ The screen is divided into two broad sections:
 ### 2.1. System level (top section)
 
 In the top section, each line is a resource type (first column):
+
 - PRC (process level totals)
 - CPU, CPL (CPU load information)
 - MEM, SWP (swap occupation and overcommit info)
@@ -140,7 +141,6 @@ Useful `atop` launch commands include:
 
 Once `atop` is running, press the following shortcut keys to sort processes:
 
-
 | Shortcut key | Description                                     |
 | ------------ | ----------------------------------------------- |
 | a            | Sort in order of most active resources.         |
@@ -167,6 +167,7 @@ Make the window larger and columns are added for the system level statistics, li
 
 Now you can easily see exactly what is happening (if anything) at the system-level disk resource. You can see that something cancelled your write request before it got written to disk. Unfortunately, It won't tell you which line in your program is causing this.
 ​​​​
+
 ### 5.3. Memory leaks
 
 When developing a program, memory leaks are extremely hard to find. Many programs have had memory leaks through many versions, with developers scratching their heads looking for them. Atop lets you watch memory dynamically, logging all data by time and threads, allowing you to easily spot memory leaks.
