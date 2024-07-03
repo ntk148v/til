@@ -1,10 +1,12 @@
 # Diagnose RemoteFX graphics performance issues
 
 Source:
+
 - <https://learn.microsoft.com/en-us/azure/virtual-desktop/remotefx-graphics-performance-counters>
 - <https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/rds-rdsh-performance-counters>
 
 Graphics-related performance issues generally into four categories:
+
 - Low frame rate
 - Random stalls
 - High input latency
@@ -41,15 +43,18 @@ flowchard TD
 ## Mitigation
 
 If server resources are causing the bottleneck, try one of the following approaches to improve performance:
+
 - Reduce the number of sessions per host.
 - Increase the memory and compute resources on the server.
 - Drop the resolution of the connection.
 
 If network resources are causing the bottleneck, try one of the following approaches to improve network availability per session:
+
 - Reduce the number of sessions per host.
 - Use a higher-bandwidth network.
 - Drop the resolution of the connection.
 
 If client resources are causing the bottleneck, try one of the following approaches to improve performance:
+
 - Install the most recent Remote Desktop client.
 - Increase memory and compute resources on the client machine.
