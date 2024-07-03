@@ -27,7 +27,7 @@ flowchard TD
     H --> Yes --> I[May be an issue with the app or OS you are using]
     H --> No --> J[Here we go! This is the root cause]
     D --> K[Check Frame Quality counter]
-    K --> J
+    K --> J[Here we go! This is the root cause]
 ```
 
 - First check Output Frames/Second counter. It measures the number of frames made available to the client.
