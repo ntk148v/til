@@ -55,21 +55,39 @@ go_memstats_gc_cpu_fraction > 1.5 * (go_memstats_gc_cpu_fraction offset 1h)
 
 ## Rate vs irate vs increase vs idelta
 
-- Rate
+Source: <https://blog.devops.dev/prometheus-theory-rate-vs-irate-20e6243a3ab8#:~:text=The%20rate()%20function%20would,points%20given%20a%20time%20range.>
+
+- **rate()**:
+  - Use [first and last data points in the group, divide by query interval](https://github.com/prometheus/prometheus/blob/8849b7dcadc2960c70467734efce35d737be25f5/promql/functions.go#L71).
+  - Best used for **slow moving counters and alerting rules**.
+
+![](./imgs/rate.png)
 
 ```
-(Vcurr - Vprev)/(Tcurr - Tprev)
-Increase/(Tcurr - Tprev)
+(Vlast - Vfirst)/(Tlast - Tfirst)
 ```
 
-- Irate
+- **irate()**:
+  - Use [last 2 data points in the range, divide by scrape interval](https://github.com/prometheus/prometheus/blob/8849b7dcadc2960c70467734efce35d737be25f5/promql/functions.go#L272).
+  - Give better representation of instant rate.
+  - Used for graphing **volatile, fast-moving counters**.
+
+![](./imgs/irate.png)
 
 ```
-(Vcurr-1 - Vcurr-2)/(Tcurr-1 - Tcurr-2)
-Idelta / (Tcurr-1 - Tcurr-2)
+(Vlast - Vlast-1)/(Tlast - Tlast-1)
 ```
 
-- Increase
+- For instance, if you have a _scrape interval = 15s_, a data point is pulled every 15 seconds. You're querying with a _1m_ interval (the '[1m]' suffix on your query), you will have 4 data points per interval. The `rate()` function would average using the **first and last** data points, averaged over the query interval (**1m**); whereas the `irate()` function would average using the `last two` data points, averaged over the scrape interval (**15s**).
+- Notes:
+  - Make sure there's at least 4 data points given a time range.
+  - When combining rate with an aggregation operator, always take `rate()` first so `rate()` function can detect counter resets:
+
+   ```promql
+   sum without(code_handler) (rate(http_requests_total[5m]))
+   ```
+
+- Increase.
 
 ```
 (Vcurr - Vprev)
