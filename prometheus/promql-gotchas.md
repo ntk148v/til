@@ -80,12 +80,13 @@ Source: <https://blog.devops.dev/prometheus-theory-rate-vs-irate-20e6243a3ab8#:~
 
 - For instance, if you have a _scrape interval = 15s_, a data point is pulled every 15 seconds. You're querying with a _1m_ interval (the '[1m]' suffix on your query), you will have 4 data points per interval. The `rate()` function would average using the **first and last** data points, averaged over the query interval (**1m**); whereas the `irate()` function would average using the `last two` data points, averaged over the scrape interval (**15s**).
 - Notes:
+
   - Make sure there's at least 4 data points given a time range.
   - When combining rate with an aggregation operator, always take `rate()` first so `rate()` function can detect counter resets:
 
-   ```promql
-   sum without(code_handler) (rate(http_requests_total[5m]))
-   ```
+  ```promql
+  sum without(code_handler) (rate(http_requests_total[5m]))
+  ```
 
 - Increase.
 
