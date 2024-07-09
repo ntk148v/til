@@ -13,6 +13,7 @@ You see, a lot of other programming languages developed standardized ways to set
 ## 1. The sane way to do things
 
 Package management would work like it does with Cargo - the rust package manager.
+
 - A single master configuration TOML file where you simply list your dependencies and config settings.
 - For extra reproducibility, whenever you build your environment and resolve all your package dependencies, a `\*.lock` file records all the packages you used along with their versions and hashes.
 - Because dependency resolution is a directed acylic graph (DAG) resolution problem, the dependency retrieval and resolution should both be engineered to be relatively fast.
