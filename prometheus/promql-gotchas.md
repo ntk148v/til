@@ -55,7 +55,10 @@ go_memstats_gc_cpu_fraction > 1.5 * (go_memstats_gc_cpu_fraction offset 1h)
 
 ## Rate vs irate vs increase vs idelta
 
-Source: <https://blog.devops.dev/prometheus-theory-rate-vs-irate-20e6243a3ab8#:~:text=The%20rate()%20function%20would,points%20given%20a%20time%20range.>
+Source:
+
+- <https://blog.devops.dev/prometheus-theory-rate-vs-irate-20e6243a3ab8#:~:text=The%20rate()%20function%20would,points%20given%20a%20time%20range.>
+- <https://www.metricfire.com/blog/understanding-the-prometheus-rate-function/>
 
 - **rate()**:
   - Use [first and last data points in the group, divide by query interval](https://github.com/prometheus/prometheus/blob/8849b7dcadc2960c70467734efce35d737be25f5/promql/functions.go#L71).
