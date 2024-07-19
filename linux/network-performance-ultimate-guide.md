@@ -552,7 +552,7 @@ sysctl -p or sysctl -p /etc/sysctl.conf
 
 ### 2.3. IRQ Affinity
 
-- IRQs have an associated "affinity property", `snmp_affinity`, which defines the CPU cores that are allowed to execute the Interrupt Service Routines (ISRs) for that IRQ. This property can be used to improve application performance by assigning both interrupt affinity and the application's thread affinity to one or more specific CPU cores. This allows cache line sharing between the specified interrupt and application threads.
+- IRQs have an associated "affinity property", `smp_affinity`, which defines the CPU cores that are allowed to execute the Interrupt Service Routines (ISRs) for that IRQ. This property can be used to improve application performance by assigning both interrupt affinity and the application's thread affinity to one or more specific CPU cores. This allows cache line sharing between the specified interrupt and application threads.
 - By default, it is controlled by [`irqbalancer`](https://github.com/Irqbalance/irqbalance) daemon.
 
 ```shell
@@ -565,7 +565,7 @@ systemctl status irqbalance.service
 systemctl stop irqbalance.service
 ```
 
-- The interrupt affinity value a particular IRQ number is stored in the associated `/proc/irq/<IRQ_NUMBER>/snmp_affinity` file, which can be viewed and modified by the root user. The value stored in this file is a hexadecimal bit-mask representing all CPU cores in the system.
+- The interrupt affinity value a particular IRQ number is stored in the associated `/proc/irq/<IRQ_NUMBER>/smp_affinity` file, which can be viewed and modified by the root user. The value stored in this file is a hexadecimal bit-mask representing all CPU cores in the system.
 - To set the interrupt affinity for the Ethernet driver on a server with 4 cores (for example):
 
 ```shell
@@ -583,12 +583,12 @@ cat /proc/irq/32/smp_affinity
 f
 
 # CPU0 is the only CPU used
-echo 1 > /proc/irq/32/snmp_affinity
-cat /proc/irq/32/snmp_affinity
+echo 1 > /proc/irq/32/smp_affinity
+cat /proc/irq/32/smp_affinity
 
 1
 
-# Commas can be used to delimit snmp_affinity values for discrete 32-bit groups
+# Commas can be used to delimit smp_affinity values for discrete 32-bit groups
 # This is required on systems with more than 32 cores
 # For example, IRQ  40 is serviced on all cores of a 64-core system
 cat /proc/irq/40/smp_affinity
