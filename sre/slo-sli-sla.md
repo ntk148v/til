@@ -17,16 +17,22 @@ Có ba tham số độ tin cậy chính mà SRE xử lý: Definition of availabi
 
 **Service Level Agreements (SLAs)** là một hợp đồng rõ ràng hoặc được ngầm hiểu đối với người dùng dịch vụ bao gồm các hậu quả của việc đáp ứng (hoặc thiếu) SLO được nêu ra. SLA là một thỏa thuận mang tính chính thức với khách hàng nêu rõ điều gì sẽ xảy ra nếu tổ chức không đáp ứng SLA. Chúng có thể vừa rõ ràng (explicit), vừa ẩn ý (implicit). Explicit SLA là một SLA có hậu quả xác định (chủ yếu là về tín dụng dịch vụ) do không đáp ứng độ tin cậy đã đặt. Implicit SLA ngầm được đo lường về mức độ mất uy tín đối với doanh nghiệp và khách hàng.
 
-$$ Error\ rate = {(1 - {Good\ events \over Total\ events})} \* 100\% $$
+$$ Error\ rate = {(1 - {Good\ events \over Total\ events})} * 100\% $$
 
-$$ SLI = {Good\ events \over Total\ events} \* 100\% $$
 
-$$ SLI = {100\% - Error\ rate} $$
+$$ SLI = {Good\ events \over Total\ events} * 100\% $$
+
+
+$$ SLI = 100\% - Error\ rate $$
+
 
 $$ SLO = {(SLI <= Target)}\ or\ {(Lower\ bound <= SLI <= Upper\ bound)}$$
 
-$$ Error\ budget = {100\% - SLO} $$
 
-$$
-Burn\ rate = {Error\ rate \over Error\ budget}
-$$
+$$ Error\ budget = 100\% - SLO $$
+
+
+$$ Burn\ rate = {Error\ rate \over Error\ budget} $$
+
+
+$$ 0 < Burn\ rate < {100\% \over Error\ budget} $$
