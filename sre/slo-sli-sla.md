@@ -21,7 +21,7 @@ $$ \Large Error\ rate = {(1 - {Good\ events \over Total\ events})} \* 100\% $$
 
 $$ \Large SLI = {Good\ events \over Total\ events} \* 100\% $$
 
-$$ \Large SLI = 100\% - Error\ rate $$
+$$ \Large SLI = 100\% \- Error\ rate $$
 
 $$ \Large SLO = {(SLI <= Target)}\ or\ {(Lower\ bound <= SLI <= Upper\ bound)}$$
 
