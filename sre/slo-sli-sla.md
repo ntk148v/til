@@ -16,3 +16,20 @@ Có ba tham số độ tin cậy chính mà SRE xử lý: Definition of availabi
 **Service Level Objectives (SLO)** chỉ định mức mục tiêu cho độ tin cậy của dịch vụ của bạn. SRE team sẽ xác định phần trăm SLI bạn nên đáp ứng để coi trang web của bạn là đáng tin cậy. SLO được tạo bằng cách kết hợp một hoặc nhiều SLI. Ví dụ: nếu bạn có SLI yêu cầu độ trễ dưới 500 ms trong 15 phút qua với phân vị 95%, SLO sẽ cần SLI được đáp ứng 99% thời gian đối với SLO 99%.
 
 **Service Level Agreements (SLAs)** là một hợp đồng rõ ràng hoặc được ngầm hiểu đối với người dùng dịch vụ bao gồm các hậu quả của việc đáp ứng (hoặc thiếu) SLO được nêu ra. SLA là một thỏa thuận mang tính chính thức với khách hàng nêu rõ điều gì sẽ xảy ra nếu tổ chức không đáp ứng SLA. Chúng có thể vừa rõ ràng (explicit), vừa ẩn ý (implicit). Explicit SLA là một SLA có hậu quả xác định (chủ yếu là về tín dụng dịch vụ) do không đáp ứng độ tin cậy đã đặt. Implicit SLA ngầm được đo lường về mức độ mất uy tín đối với doanh nghiệp và khách hàng.
+
+$$ Error\ rate = {(1 - {Good\ events \over Total\ events})} * 100\% $$
+
+
+$$ SLI = {Good\ events \over Total\ events} * 100\% $$
+
+
+$$ SLI = {100\% - Error\ rate} $$
+
+
+$$ SLO = {(SLI <= Target)}\ or\ {(Lower\ bound <= SLI <= Upper\ bound)}$$
+
+
+$$ Error\ budget = {100\% - SLO} $$
+
+
+$$ Burn\ rate = {Error\ rate \over Error\ budget}
