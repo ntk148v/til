@@ -4,6 +4,7 @@ Source:
 
 - <https://newsletter.grokking.org/p/178-do-l-ng-site-reliability-v-i-sli-slo-va-sla-672711>
 - <https://www.pagerduty.com/resources/learn/what-is-slo-sla-sli/>
+- <https://sre.google/resources/practices-and-processes/art-of-slos/>
 
 Trọng tâm chính của Site reliability engineering (SRE) là xây dựng và chạy một ứng dụng đáng tin cậy mà không ảnh hưởng đến tốc độ delivery sản phẩm - hai điều hoàn toàn trái ngược nhau (tức là “Tạo ra phần mềm tốt hơn, nhanh hơn”).
 
