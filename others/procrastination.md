@@ -55,9 +55,9 @@ The Instant Gratification Monkey, normally unshakable, is terrified of the Panic
 
 Even for the procrastinator who does manage to eventually get things done and remain a competent member of society, something has to change. Here are the main reasons why:
 
-1) It’s unpleasant.
-2) The procrastinator ultimately sells himself short.
-3) The Have-To-Dos may happen, but not the Want-To-Dos.
+1. It’s unpleasant.
+2. The procrastinator ultimately sells himself short.
+3. The Have-To-Dos may happen, but not the Want-To-Dos.
 
 # How to Beat Procrastination
 
@@ -72,6 +72,7 @@ Procrastinators love planning, quite simply because planning does not involve do
 ![](https://2.bp.blogspot.com/-nrHAY4PEcNM/UnnTw27987I/AAAAAAAAGIU/rbOc2s7zwgM/s640/icky+list.png)
 
 Effective planning sets you up for success. Its purpose is to do the exact opposite of everything in that sentence:
+
 - Effective planning takes a big list and selects a winner: planning must end with rigorous prioritizing and one item that emerges as the winner—the item you’re going to make your first priority.
 - Effective planning makes an icky item un-icky: An icky item is vague and murky, and you're not really sure where you'd start, how you'd go about doing it, or where you'd get answers to your questions about it. For example, you have an item "Learn how to code", to un-icky the item, you need to read, research, and ask questions to find out exactly how one learns how to code, the specific means necessary for each step along the way, and how long each one should take. Un-ickying a list item turns it from this:
 
