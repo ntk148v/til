@@ -422,6 +422,36 @@ spec:
   type: NodePort
 ```
 
+- Headless Service:
+  - Sometimes you don't need load-balancing and a single Service IP. In this case, you can create what are termed _headless service_, by explicitly specifying `"None"` for the cluster IP address (`.spec.clusterIP`).
+  - For headless Services, a cluster IP is not allocated. kube-proxy does not handle these Services, and there is no load balancing or proxying done by the platform for them. The cluster DNS returns not just a single `A` record pointing to the service's cluster IP, but multiple `A` records, one for each pod that's part of the service. Clients can there fore query the DNS to get the IPs of all the pods in the service.
+  - A headless Service allows a client to connect to whichever Pod it prefers, directly.
+
+  ![](./imgs/headless_service.png)
+
+- Expose services externally:
+  - ClusterIP services are only accessible within the cluster.
+  - If you need to make a service available to the outside world, you can do one of the following:
+    - ~Assign an additional IP to a node and set it as one of the service's `externalIP`~.
+    - Set the service's type to `NodePort` and access the service through the node's port(s).
+      - Kubernetes makes the service avaiable on a network port on all cluster nodes. Because the port is open on the nodes, it's called a node port.
+      - Expose pods through a NodePort service:
+
+      ![](./imgs/nodeport1.png)
+
+      - Expose multiple ports through with a NodePort service:
+
+      ![](./imgs/nodeport2.png)
+
+    - Ask Kubernetes to provision a LoadBalancer by setting the type to `LoadBalancer`.
+      - The LoadBalancer stands in front of the nodes and handles the connections coming from the clients. It routes each connection to the service by forwarding it to the node port on one of the nodes.
+      - The `LoadBalancer` service type is an extenstion of the `NodePort` type, which makes the service accessible through these node ports.
+      - Expose a LoadBalancer service.
+
+      ![](./imgs/loadbalancer1.png)
+
+    - Expose the service through an Ingress object.
+
 ### 3.6. Label & Selector
 
 - Labels are a set of key/value pairs, which are attached to object metadata.
