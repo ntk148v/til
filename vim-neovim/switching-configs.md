@@ -9,6 +9,7 @@ But the problem is most installation instructions will tell you to install new c
 ## 2. Solution
 
 To be able to use more than one config:
+
 - Install the pre-built configurations to custom `~/.config` subdirectory.
 
 ```shell
