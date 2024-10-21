@@ -1,6 +1,7 @@
 # Taskflow
 
 Source:
+
 - <https://wiki.openstack.org/wiki/TaskFlow>
 - <https://docs.openstack.org/taskflow/latest>
 
@@ -24,11 +25,11 @@ TaskFlow is a Python library that helps to make task execution easy, consistent 
 ### 1.1. Atoms, tasks, retries and flows
 
 - An **atom** is the smallest unit in TaskFlow which acts as the base for other classes (its naming was inspired from the similarities between this type and atoms in physical world). Atoms have a name and may have a version. An atom is expected to name desired input values (requirements) and name outputs (provided values).
-- A **task** (derived from an atom) is a unit of work that can have an execute & rollback sequence associated with it (they are *nearly* analogous to functions). Your task objects should all derive from Task which defines what a task must provide in terms of properties and methods.
+- A **task** (derived from an atom) is a unit of work that can have an execute & rollback sequence associated with it (they are _nearly_ analogous to functions). Your task objects should all derive from Task which defines what a task must provide in terms of properties and methods.
 
 ![](https://docs.openstack.org/taskflow/latest/_images/tasks.png)
 
-- A **retry** (derived from an atom) is a special unit of work that handles errors, controls flow execution and can (for example) retry other atoms with other parameters if needed. When an associated atom fails, these retry units are *consulted* to determine what the resolution *strategy* should be. The goal is that with this consultation the retry atom will suggest a *strategy* for getting around the failure.
+- A **retry** (derived from an atom) is a special unit of work that handles errors, controls flow execution and can (for example) retry other atoms with other parameters if needed. When an associated atom fails, these retry units are _consulted_ to determine what the resolution _strategy_ should be. The goal is that with this consultation the retry atom will suggest a _strategy_ for getting around the failure.
 - A **flow** is a structure that defines relationships between tasks. You can add tasks and other flows (as subflows) to the flow, and the flow provides a way to implicitly or explicitly define how they are interdependent. Exact structure of the relationships is defined by concrete implementation, while this class defines common interface and adds human-readable (not necessary unique) name.
 - Patterns: how you structure your work to be done (via tasks and flows) in a programmatic manner.
 
