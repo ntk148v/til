@@ -18,6 +18,7 @@ Before |BufEnter|.
 NOTE: Current buffer "%" may be different from
 the buffer being created "<afile>".
 ```
+
 </details>
 
 <details>
@@ -33,6 +34,7 @@ NOTE: Current buffer "%" may be different from
 the buffer being deleted "<afile>" and "<abuf>".
 Do not change to another buffer.
 ```
+
 </details>
 
 <details>
@@ -45,6 +47,7 @@ starting to edit a buffer.
 After |BufAdd|.
 After |BufReadPost|.
 ```
+
 </details>
 
 <details>
@@ -54,6 +57,7 @@ After |BufReadPost|.
 After changing the name of the current buffer
 with the ":file" or ":saveas" command.
 ```
+
 </details>
 
 <details>
@@ -63,6 +67,7 @@ with the ":file" or ":saveas" command.
 Before changing the name of the current buffer
 with the ":file" or ":saveas" command.
 ```
+
 </details>
 
 <details>
@@ -77,6 +82,7 @@ Not used for ":qa" or ":q" when exiting Vim.
 NOTE: current buffer "%" may be different from
 the buffer being unloaded "<afile>".
 ```
+
 </details>
 
 <details>
@@ -89,6 +95,7 @@ new current window is not for the same buffer.
 
 Not used for ":qa" or ":q" when exiting Vim.
 ```
+
 </details>
 
 <details>
@@ -98,6 +105,7 @@ Not used for ":qa" or ":q" when exiting Vim.
 After the `'modified'` value of a buffer has
 been changed.
 ```
+
 </details>
 
 <details>
@@ -111,6 +119,7 @@ will be triggered too.
 NOTE: Current buffer "%" may be different from
 the buffer being created "<afile>".
 ```
+
 </details>
 
 <details>
@@ -121,6 +130,7 @@ When starting to edit a file that doesn't
 exist.  Can be used to read in a skeleton
 file.
 ```
+
 </details>
 
 <details>
@@ -141,6 +151,7 @@ Not triggered:
 - for the `:read file` command
 - when the file doesn't exist
 ```
+
 </details>
 
 <details>
@@ -150,6 +161,7 @@ Not triggered:
 Before starting to edit a new buffer.  Should
 read the file into the buffer. |Cmd-event|
 ```
+
 </details>
 
 <details>
@@ -160,6 +172,7 @@ When starting to edit a new buffer, before
 reading the file into the buffer.  Not used
 if the file doesn't exist.
 ```
+
 </details>
 
 <details>
@@ -178,6 +191,7 @@ Do not switch buffers or windows!
 Not triggered when exiting and v:dying is 2 or
 more.
 ```
+
 </details>
 
 <details>
@@ -195,6 +209,7 @@ with a file already open in a window.
 Triggered for ":split" with the name of the
 current buffer, since it reloads that buffer.
 ```
+
 </details>
 
 <details>
@@ -210,6 +225,7 @@ the buffer being unloaded "<afile>".
 Not triggered when exiting and v:dying is 2 or
 more.
 ```
+
 </details>
 
 <details>
@@ -226,6 +242,7 @@ NOTE: Current buffer "%" may be different from
 the buffer being deleted "<afile>".
 Do not change to another buffer.
 ```
+
 </details>
 
 <details>
@@ -234,6 +251,7 @@ Do not change to another buffer.
 ```
 Before writing the whole buffer to a file.
 ```
+
 </details>
 
 <details>
@@ -250,6 +268,7 @@ information is adjusted to mark older undo
 states as 'modified', like |:write| does.
 |Cmd-event|
 ```
+
 </details>
 
 <details>
@@ -259,6 +278,7 @@ states as 'modified', like |:write| does.
 After writing the whole buffer to a file
 (should undo the commands for BufWritePre).
 ```
+
 </details>
 
 <details>
@@ -272,6 +292,7 @@ Sets these |v:event| keys:
 See |nvim_get_chan_info()| for the format of
 the info Dictionary.
 ```
+
 </details>
 
 <details>
@@ -284,6 +305,7 @@ Sets these |v:event| keys:
 See |nvim_get_chan_info()| for the format of
 the info Dictionary.
 ```
+
 </details>
 
 <details>
@@ -300,6 +322,7 @@ command is defined.  An alternative is to
 always define the user command and have it
 invoke an autoloaded function.  See |autoload|.
 ```
+
 </details>
 
 <details>
@@ -311,6 +334,7 @@ command line.  Be careful not to mess up the
 command line, it may cause Vim to lock up.
 <afile> expands to the |cmdline-char|.
 ```
+
 </details>
 
 <details>
@@ -325,6 +349,7 @@ Sets these |v:event| keys:
     cmdlevel
     cmdtype
 ```
+
 </details>
 
 <details>
@@ -343,6 +368,7 @@ Note: `abort` can only be changed from false
 to true: cannot execute an already aborted
 cmdline by changing it to false.
 ```
+
 </details>
 
 <details>
@@ -356,6 +382,7 @@ this special type of window.
 indicating the type of command-line.
 |cmdwin-char|
 ```
+
 </details>
 
 <details>
@@ -369,6 +396,7 @@ with CmdwinEnter.
 indicating the type of command-line.
 |cmdwin-char|
 ```
+
 </details>
 
 <details>
@@ -384,6 +412,7 @@ name of the actual file where this option was
 set, and <amatch> for the new colorscheme
 name.
 ```
+
 </details>
 
 <details>
@@ -394,6 +423,7 @@ Before loading a color scheme. |:colorscheme|
 Useful to setup removing things added by a
 color scheme, before another one is loaded.
 ```
+
 </details>
 
 <details>
@@ -421,6 +451,7 @@ Cannot change the text. |textlock|
 The size and position of the popup are also
 available by calling |pum_getpos()|.
 ```
+
 </details>
 
 <details>
@@ -435,6 +466,7 @@ cleared after triggering CompleteDonePre.
 The |v:completed_item| variable contains
 information about the completed item.
 ```
+
 </details>
 
 <details>
@@ -449,6 +481,7 @@ cleared before triggering CompleteDone.  Use
 CompleteDonePre if you need it.
 |v:completed_item| gives the completed item.
 ```
+
 </details>
 
 <details>
@@ -481,6 +514,7 @@ Hint: to force an update of the status lines
 use: >
 :let &ro = &ro
 ```
+
 </details>
 
 <details>
@@ -492,6 +526,7 @@ triggered when waiting for another key, e.g.
 after CTRL-V, and not in CTRL-X mode
 |insert_expand|.
 ```
+
 </details>
 
 <details>
@@ -512,6 +547,7 @@ Careful: This is triggered very often, don't
 do anything that the user does not expect or
 that is slow.
 ```
+
 </details>
 
 <details>
@@ -522,6 +558,7 @@ After the cursor was moved in Insert mode.
 Not triggered when the popup menu is visible.
 Otherwise the same as CursorMoved.
 ```
+
 </details>
 
 <details>
@@ -533,6 +570,7 @@ what kind of diff is being used (internal or
 external) this can be triggered on every
 change or when doing |:diffupdate|.
 ```
+
 </details>
 
 <details>
@@ -553,6 +591,7 @@ Sets these |v:event| keys:
 <afile> is set to the new directory name.
 Non-recursive (event cannot trigger itself).
 ```
+
 </details>
 
 <details>
@@ -570,6 +609,7 @@ Sets these |v:event| keys:
 <afile> is set to the new directory name.
 Non-recursive (event cannot trigger itself).
 ```
+
 </details>
 
 <details>
@@ -585,6 +625,7 @@ isn't automatically saved, use |VimLeavePre|
 for really exiting.
 See also |QuitPre|, |WinClosed|.
 ```
+
 </details>
 
 <details>
@@ -595,6 +636,7 @@ Before appending to a file.  Should do the
 appending to the file.  Use the '[ and ']
 marks for the range of lines. |Cmd-event|
 ```
+
 </details>
 
 <details>
@@ -603,6 +645,7 @@ marks for the range of lines. |Cmd-event|
 ```
 After appending to a file.
 ```
+
 </details>
 
 <details>
@@ -612,6 +655,7 @@ After appending to a file.
 Before appending to a file.  Use the '[ and ']
 marks for the range of lines.
 ```
+
 </details>
 
 <details>
@@ -635,6 +679,7 @@ buffer but not edit another one.
 If the number of lines changes saving for undo
 may fail and the change will be aborted.
 ```
+
 </details>
 
 <details>
@@ -663,6 +708,7 @@ the buffer that was changed "<afile>".
 Cannot switch, jump to or delete buffers.
 Non-recursive (event cannot trigger itself).
 ```
+
 </details>
 
 <details>
@@ -672,6 +718,7 @@ Non-recursive (event cannot trigger itself).
 After handling a file that was changed outside
 of Vim.  Can be used to update the statusline.
 ```
+
 </details>
 
 <details>
@@ -681,6 +728,7 @@ of Vim.  Can be used to update the statusline.
 Before reading a file with a ":read" command.
 Should do the reading of the file. |Cmd-event|
 ```
+
 </details>
 
 <details>
@@ -692,6 +740,7 @@ Note that Vim sets the '[ and '] marks to the
 first and last line of the read.  This can be
 used to operate on the lines just read.
 ```
+
 </details>
 
 <details>
@@ -700,6 +749,7 @@ used to operate on the lines just read.
 ```
 Before reading a file with a ":read" command.
 ```
+
 </details>
 
 <details>
@@ -714,6 +764,7 @@ option was set.  <amatch> is the new value of
 Cannot switch windows or buffers.
 See |filetypes|.
 ```
+
 </details>
 
 <details>
@@ -726,6 +777,7 @@ file.  Should not change the buffer.  Use the
 '[ and '] marks for the range of lines.
 |Cmd-event|
 ```
+
 </details>
 
 <details>
@@ -735,6 +787,7 @@ file.  Should not change the buffer.  Use the
 After writing to a file, when not writing the
 whole buffer.
 ```
+
 </details>
 
 <details>
@@ -745,6 +798,7 @@ Before writing to a file, when not writing the
 whole buffer.  Use the '[ and '] marks for the
 range of lines.
 ```
+
 </details>
 
 <details>
@@ -756,6 +810,7 @@ Vim checks the pattern against the name of
 the current buffer as with FilterReadPre.
 Not triggered when 'shelltemp' is off.
 ```
+
 </details>
 
 <details>
@@ -769,6 +824,7 @@ temporary file that is the output of the
 filter command.
 Not triggered when 'shelltemp' is off.
 ```
+
 </details>
 
 <details>
@@ -782,6 +838,7 @@ Vim checks the pattern against the name of
 the current buffer as with FilterWritePre.
 Not triggered when 'shelltemp' is off.
 ```
+
 </details>
 
 <details>
@@ -796,6 +853,7 @@ temporary file that is the output of the
 filter command.
 Not triggered when 'shelltemp' is off.
 ```
+
 </details>
 
 <details>
@@ -804,6 +862,7 @@ Not triggered when 'shelltemp' is off.
 ```
 Nvim got focus.
 ```
+
 </details>
 
 <details>
@@ -813,6 +872,7 @@ Nvim got focus.
 Nvim lost focus.  Also (potentially) when
 a GUI dialog pops up.
 ```
+
 </details>
 
 <details>
@@ -828,6 +888,7 @@ NOTE: When writing Vim scripts a better
 alternative is to use an autoloaded function.
 See |autoload-functions|.
 ```
+
 </details>
 
 <details>
@@ -841,6 +902,7 @@ Sets these |v:event| keys:
           1 for |--embed|
           |channel-id| of the UI otherwise
 ```
+
 </details>
 
 <details>
@@ -854,6 +916,7 @@ Sets these |v:event| keys:
           1 for |--embed|
           |channel-id| of the UI otherwise
 ```
+
 </details>
 
 <details>
@@ -866,6 +929,7 @@ indicates the new mode.
 Be careful not to move the cursor or do
 anything else that the user does not expect.
 ```
+
 </details>
 
 <details>
@@ -883,6 +947,7 @@ inserted literally.
 Cannot change the text. |textlock|
 Not triggered when 'paste' is set.
 ```
+
 </details>
 
 <details>
@@ -898,6 +963,7 @@ The cursor is restored afterwards.  If you do
 not want that set |v:char| to a non-empty
 string.
 ```
+
 </details>
 
 <details>
@@ -909,6 +975,7 @@ using CTRL-O |i_CTRL-O|.  Be careful not to
 change mode or use `:normal`, it will likely
 cause trouble.
 ```
+
 </details>
 
 <details>
@@ -918,6 +985,7 @@ cause trouble.
 Just after leaving Insert mode.  Also when
 using CTRL-O |i_CTRL-O|.  But not for |i_CTRL-C|.
 ```
+
 </details>
 
 <details>
@@ -937,6 +1005,7 @@ i    Insert
 c    Command line
 tl   Terminal
 ```
+
 </details>
 
 <details>
@@ -963,6 +1032,7 @@ when entering visual mode: >
 :au ModeChanged *:[vV\x16]* let &l:rnu = mode() =~# '^[vV\x16]'
 :au WinEnter,WinLeave * let &l:rnu = mode() =~# '^[vV\x16]'
 ```
+
 </details>
 
 <details>
@@ -1012,6 +1082,7 @@ OptionSet.
 Non-recursive: |:set| in the autocommand does
 not trigger OptionSet again.
 ```
+
 </details>
 
 <details>
@@ -1035,6 +1106,7 @@ This command cannot be used to set the
 If this command causes an error, the quickfix
 command is not executed.
 ```
+
 </details>
 
 <details>
@@ -1048,6 +1120,7 @@ it is run after the error file is read and
 before moving to the first error.
 See |QuickFixCmdPost-example|.
 ```
+
 </details>
 
 <details>
@@ -1062,6 +1135,7 @@ close any non-essential window if the current
 window is the last ordinary window.
 See also |ExitPre|, |WinClosed|.
 ```
+
 </details>
 
 <details>
@@ -1078,6 +1152,7 @@ Note that even if an autocommand is defined,
 the reply should be read with remote_read()
 to consume it.
 ```
+
 </details>
 
 <details>
@@ -1088,6 +1163,7 @@ After making a search with |n| or |N| if the
 search wraps around the document back to
 the start/finish respectively.
 ```
+
 </details>
 
 <details>
@@ -1099,6 +1175,7 @@ The pattern is the current file name, and
 |reg_recording()| is the current register that
 is used.
 ```
+
 </details>
 
 <details>
@@ -1115,6 +1192,7 @@ Sets these |v:event| keys:
     regcontents
     regname
 ```
+
 </details>
 
 <details>
@@ -1124,6 +1202,7 @@ Sets these |v:event| keys:
 After loading the session file created using
 the |:mksession| command.
 ```
+
 </details>
 
 <details>
@@ -1136,6 +1215,7 @@ any changed files.
 For non-blocking shell commands, see
 |job-control|.
 ```
+
 </details>
 
 <details>
@@ -1147,6 +1227,7 @@ matched against the signal name. Only
 "SIGUSR1" and "SIGWINCH" are supported.  Example: >
     autocmd Signal SIGUSR1 call some#func()
 ```
+
 </details>
 
 <details>
@@ -1157,6 +1238,7 @@ After executing a shell command with
 ":{range}!cmd", ":w !cmd" or ":r !cmd".
 Can be used to check for any changed files.
 ```
+
 </details>
 
 <details>
@@ -1166,6 +1248,7 @@ Can be used to check for any changed files.
 Before sourcing a vim/lua file. |:source|
 <afile> is the name of the file being sourced.
 ```
+
 </details>
 
 <details>
@@ -1178,6 +1261,7 @@ Not triggered when sourcing was interrupted.
 Also triggered after a SourceCmd autocommand
 was triggered.
 ```
+
 </details>
 
 <details>
@@ -1189,6 +1273,7 @@ When sourcing a vim/lua file. |:source|
 The autocommand must source this file.
 |Cmd-event|
 ```
+
 </details>
 
 <details>
@@ -1201,6 +1286,7 @@ against the language.  <amatch> is the
 language, 'encoding' also matters.  See
 |spell-SpellFileMissing|.
 ```
+
 </details>
 
 <details>
@@ -1210,6 +1296,7 @@ language, 'encoding' also matters.  See
 During startup, after reading from stdin into
 the buffer, before executing modelines. |--|
 ```
+
 </details>
 
 <details>
@@ -1219,6 +1306,7 @@ the buffer, before executing modelines. |--|
 During startup, before reading from stdin into
 the buffer. |--|
 ```
+
 </details>
 
 <details>
@@ -1248,6 +1336,7 @@ asked, as if there was no SwapExists autocmd.
 Cannot change to another buffer, change
 the buffer name or change directory.
 ```
+
 </details>
 
 <details>
@@ -1261,6 +1350,7 @@ this option was set. <amatch> expands to the
 new value of 'syntax'.
 See |:syn-on|.
 ```
+
 </details>
 
 <details>
@@ -1271,6 +1361,7 @@ Just after entering a tab page. |tab-page|
 After WinEnter.
 Before BufEnter.
 ```
+
 </details>
 
 <details>
@@ -1280,6 +1371,7 @@ Before BufEnter.
 Just before leaving a tab page. |tab-page|
 After WinLeave.
 ```
+
 </details>
 
 <details>
@@ -1290,6 +1382,7 @@ When creating a new tab page. |tab-page|
 After WinEnter.
 Before TabEnter.
 ```
+
 </details>
 
 <details>
@@ -1299,6 +1392,7 @@ Before TabEnter.
 After entering a new tab page. |tab-page|
 After BufEnter.
 ```
+
 </details>
 
 <details>
@@ -1308,6 +1402,7 @@ After BufEnter.
 After closing a tab page. <afile> expands to
 the tab page number.
 ```
+
 </details>
 
 <details>
@@ -1317,6 +1412,7 @@ the tab page number.
 When a |terminal| job is starting.  Can be
 used to configure the terminal buffer.
 ```
+
 </details>
 
 <details>
@@ -1326,6 +1422,7 @@ used to configure the terminal buffer.
 After entering |Terminal-mode|.
 After TermOpen.
 ```
+
 </details>
 
 <details>
@@ -1335,6 +1432,7 @@ After TermOpen.
 After leaving |Terminal-mode|.
 After TermClose.
 ```
+
 </details>
 
 <details>
@@ -1345,6 +1443,7 @@ When a |terminal| job ends.
 Sets these |v:event| keys:
     status
 ```
+
 </details>
 
 <details>
@@ -1358,6 +1457,7 @@ terminal version.  May be triggered halfway
 through another event (file I/O, a shell
 command, or anything else that takes time).
 ```
+
 </details>
 
 <details>
@@ -1376,6 +1476,7 @@ Careful: This is triggered very often, don't
 do anything that the user does not expect or
 that is slow.
 ```
+
 </details>
 
 <details>
@@ -1387,6 +1488,7 @@ current buffer in Insert mode.
 Not triggered when the popup menu is visible.
 Otherwise the same as TextChanged.
 ```
+
 </details>
 
 <details>
@@ -1398,6 +1500,7 @@ current buffer in Insert mode, only when the
 popup menu is visible.  Otherwise the same as
 TextChanged.
 ```
+
 </details>
 
 <details>
@@ -1408,6 +1511,7 @@ After a change was made to the text in the
 current buffer in |Terminal-mode|.  Otherwise
 the same as TextChanged.
 ```
+
 </details>
 
 <details>
@@ -1431,6 +1535,7 @@ precise region of the operation.
 Non-recursive (event cannot trigger itself).
 Cannot change the text. |textlock|
 ```
+
 </details>
 
 <details>
@@ -1443,6 +1548,7 @@ in a plugin.  Example: >
     :autocmd User MyPlugin echom 'got MyPlugin event'
     :doautocmd User MyPlugin
 ```
+
 </details>
 
 <details>
@@ -1452,6 +1558,7 @@ in a plugin.  Example: >
 When the user presses the same key 42 times.
 Just kidding! :-)
 ```
+
 </details>
 
 <details>
@@ -1471,6 +1578,7 @@ can do: >
      au VimEnter * call s:init()
    endif
 ```
+
 </details>
 
 <details>
@@ -1484,6 +1592,7 @@ Use |v:dying| to detect an abnormal exit.
 Use |v:exiting| to get the exit code.
 Not triggered if |v:dying| is 2 or more.
 ```
+
 </details>
 
 <details>
@@ -1500,6 +1609,7 @@ Use |v:dying| to detect an abnormal exit.
 Use |v:exiting| to get the exit code.
 Not triggered if |v:dying| is 2 or more.
 ```
+
 </details>
 
 <details>
@@ -1510,6 +1620,7 @@ After the Vim window was resized, thus 'lines'
 and/or 'columns' changed.  Not when starting
 up though.
 ```
+
 </details>
 
 <details>
@@ -1518,6 +1629,7 @@ up though.
 ```
 After Nvim resumes from |suspend| state.
 ```
+
 </details>
 
 <details>
@@ -1526,6 +1638,7 @@ After Nvim resumes from |suspend| state.
 ```
 Before Nvim enters |suspend| state.
 ```
+
 </details>
 
 <details>
@@ -1540,6 +1653,7 @@ After WinLeave.
 Non-recursive (event cannot trigger itself).
 See also |ExitPre|, |QuitPre|.
 ```
+
 </details>
 
 <details>
@@ -1556,6 +1670,7 @@ Note: For split and tabpage commands the
 WinEnter event is triggered after the split
 or tab command but before the file is loaded.
 ```
+
 </details>
 
 <details>
@@ -1569,6 +1684,7 @@ WinLeave autocommands (but not for ":new").
 Not used for ":qa" or ":q" when exiting Vim.
 Before WinClosed.
 ```
+
 </details>
 
 <details>
@@ -1579,6 +1695,7 @@ When a new window was created.  Not done for
 the first window, when Vim has just started.
 Before WinEnter.
 ```
+
 </details>
 
 <details>
@@ -1610,6 +1727,7 @@ event.  However, if the command causes a
 window to scroll or change size, then another
 WinScrolled event will be triggered later.
 ```
+
 </details>
 
 <details>
@@ -1626,4 +1744,5 @@ changes. |WinResized-event|
 Same behavior as |WinScrolled| for the
 pattern, triggering and recursiveness.
 ```
+
 </details>
