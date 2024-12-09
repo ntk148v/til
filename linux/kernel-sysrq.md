@@ -65,6 +65,7 @@ echo <command key> > /proc/sysrq-trigger
 ```
 
 {{< details title="Danh sách command key (ấn để show all)" open=false >}}
+
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Command</p></th>
