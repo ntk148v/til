@@ -64,6 +64,7 @@ Tệp tin `in_both.txt` có mặt trong cả `lower` và `upper`, vậy theo lý
 $ cat merged/in_both.txt
 upper file
 ```
+
 Tạo một tệp tin mới trong `merged`, tệp tin đồng thời cũng được khởi tạo trong `upper`.
 
 ```shell
@@ -84,4 +85,3 @@ c--------- 2 root   root   0, 0 Thg 12  3 13:09 upper/in_both.txt
 - `in_both.txt` vẫn còn ở thư mục `lower`, tệp tin không hề bị thay đổi.
 - Tệp tin đã bị xóa ở merged.
 - Ở `upper`, vẫn còn tồn tại tệp tin `in_both.txt`? Thực ra, tệp tin này là một character device với device number 0/0. Kỹ thuật này được gọi là **whiteout**, đây là cách OverlayFS đánh dấu một tệp tin đã bị xóa tại `upper`.
-
