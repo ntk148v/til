@@ -1,0 +1,3 @@
+FROM busybox
+COPY .secrets /
+RUN rm .secrets
