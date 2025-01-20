@@ -107,3 +107,14 @@ git checkout [saved hash] -- path/to/file
 # the old version of the file will be in your index
 git commit -m "Wow, you don't have to copy-paste to undo"
 ```
+
+## 5. help.autoCorrect
+
+If git detects typos and can identify exactly one valid command similar to the error, git will try to suggest the correct command or even run the suggestion automatically. Possible config values are:
+
+0 (default): show the suggested command.
+
+- positive number: run the suggested command after specified deciseconds (0.1 sec).
+- "immediate": run the suggested command immediately.
+- "prompt": show the suggestion and prompt for confirmation to run the command.
+- "never": don’t run or show any suggested command.
