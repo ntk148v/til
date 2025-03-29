@@ -65,6 +65,7 @@ func payloadHandler(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
 }
 ```
+
 - There is no way to control how many go routines we are spawning.
 - The iteration variables (`payload`) will be reused across each iteration. Depending on the method receiver type you might upload the same payload multiple times (which will happen if the UploadToS3() method has a pointer receiver). Checkout 50 shades of Golang - Iteration variables and Closures in "for" statements --> actually it was fixed (tested on Go 1.24).
 
