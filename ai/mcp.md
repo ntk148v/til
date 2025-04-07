@@ -12,12 +12,12 @@ MCP is an open protocol that standardizes how applications provide context to LL
 ![](https://www.philschmid.de/static/blog/mcp-introduction/api.png)
 
 MCP helps you build agents and complex workflows on top of LLMs. LLMs frequently need to integrate with data and tools, and MCP provides:
+
 - A growing list of pre-built integrations that your LLM can directly plug into.
 - The flexibility to switch between LLM providers and vendors.
 - Best practices for securing your data within your infrastructure.
 
 ## 2. General architecture
-
 
 ```mermaid
 flowchart LR
