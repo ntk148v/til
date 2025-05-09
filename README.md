@@ -22,4 +22,5 @@ Here is til's guideline: Assume that you want to find about `<keyword>` (replace
 - Come to this page.
 - Hit <kbd>S</kbd> to search over this repository, enter your `<keyword>`.
 - If the above steps return nothing useful, hit <kbd>T</kbd> to perform a fuzzy search files through repository. Continue type `<keyword>`.
-- Maybe I don't write (and know) about `<keyword>`, continue your search somewherelse. Good luck :bow:
+- Maybe I don't write (and know) about `<keyword>`, continue your search somewhere else. Good luck :bow:
+- **AI is amazing, you can find [even better TIL with Deepwiki](https://deepwiki.com/ntk148v/til/)**.
