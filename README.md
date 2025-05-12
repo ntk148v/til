@@ -14,8 +14,7 @@
     <a href="https://github.com/ntk148v/til/contributors"><img src="https://img.shields.io/github/contributors/ntk148v/til?colorA=192330&colorB=81b29a&style=for-the-badge"></a>
 </p>
 
-> [!IMPORTANT]
-> **AI is amazing, you can find [even better TIL with Deepwiki](https://deepwiki.com/ntk148v/til/)**.
+> [!IMPORTANT] > **AI is amazing, you can find [even better TIL with Deepwiki](https://deepwiki.com/ntk148v/til/)**.
 
 A collection of concise write-ups on small things I learn day to day across a variety of things: technologies (mostly), my hobbies, tips... There are things that don't really warrant a full article. TILs are short Markdown notes, and they might be incomplete (mostly) :bow: :bow:
 
