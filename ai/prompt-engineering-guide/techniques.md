@@ -243,9 +243,9 @@ flowchart TD
     G --> B
 ```
 
->[!Important]
+> [!Important]
 > Oh, you can achieve ToT using code (<https://github.com/princeton-nlp/tree-of-thought-llm> or <https://github.com/jieyilong/tree-of-thought-puzzle-solver>).
->  You can apply the Tree of Thought (ToT) methodology on ChatGPT web, but it requires structured interaction and active guidance from you to simulate the branching, pruning, and aggregation process.
+> You can apply the Tree of Thought (ToT) methodology on ChatGPT web, but it requires structured interaction and active guidance from you to simulate the branching, pruning, and aggregation process.
 
 Below is a step-by-step guide to implement ToT effectively on ChatGPT:
 
@@ -254,6 +254,7 @@ Below is a step-by-step guide to implement ToT effectively on ChatGPT:
 ```text
 "I need a 7-day Southeast Asia trip plan with a $1,500 budget, visiting at least two countries and ensuring good weather. Use the Tree of Thought method to solve this."
 ```
+
 2. **Branching (Generate Ideas)**
 
 Ask ChatGPT to **generate multiple branches** (ideas/solutions) for each key aspect of the problem.
@@ -299,8 +300,8 @@ Pruned Results:
 ```
 
 4. **Evaluation & Aggregation (Synthesize Solutions)**
-Ask ChatGPT to combine the best branches into a final plan.
-Example Prompt:
+   Ask ChatGPT to combine the best branches into a final plan.
+   Example Prompt:
 
 - "Using the accepted branches (Thailand+Vietnam, February, Strategy 1), create a detailed itinerary and cost breakdown."
 
