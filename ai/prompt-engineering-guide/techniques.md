@@ -11,9 +11,12 @@ Table of contents:
     - [2.2.2. Zero-shot CoT](#222-zero-shot-cot)
     - [2.2.3. Automatic CoT (Auto-CoT)](#223-automatic-cot-auto-cot)
     - [2.2.4. Self-Consistency](#224-self-consistency)
-  - [2.3. Knowledge-enhanced techniques](#23-knowledge-enhanced-techniques)
-    - [2.3.1. Generated knowledge prompting](#231-generated-knowledge-prompting)
-    - [2.3.2. Retrieval augmented generation (RAG)](#232-retrieval-augmented-generation-rag)
+  - [2.3. Tree of thoughts (ToT)](#23-tree-of-thoughts-tot)
+  - [2.4. Knowledge-enhanced techniques](#24-knowledge-enhanced-techniques)
+    - [2.4.1. Generated knowledge prompting](#241-generated-knowledge-prompting)
+    - [2.4.2. Retrieval augmented generation (RAG)](#242-retrieval-augmented-generation-rag)
+  - [2.4. Action-oriented techniques](#24-action-oriented-techniques)
+    - [2.4.1. ReAct Prompting](#241-react-prompting)
 
 ```mermaid
 graph TD
@@ -214,11 +217,111 @@ Donny
 Classify the above email as IMPORTANT or NOT IMPORTANT as it relates to a software company. Let's think step by step.
 ```
 
-## 2.3. Knowledge-enhanced techniques
+## 2.3. Tree of thoughts (ToT)
+
+The Tree of Thoughts (ToT) is an advanced prompting framework that extends beyond the Chain-of-Thought (CoT) prompting technique. ToT enables language models to perform complex tasks that require exploration or strategic lookahead by leveraging a tree-based approach to generate and evaluate multiple reasoning paths.
+
+![](https://www.promptingguide.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FTOT.3b13bc5e.png&w=1200&q=75)
+
+**Framework overview**
+
+ToT maintains a tree of thoughts, where each thought is represented by a coherent language sequence serving as an intermediate step toward problem-solving. This framework allows language models to:
+
+- Generate multiple possible thoughts at each step
+- Evaluate the potential of each thought
+- Explore the thought space using search algorithms
+- Perform lookahead verification and backtracking
+
+```mermaid
+flowchart TD
+    A[Input Problem] --> B[Generate k Thoughts]
+    B --> C[Evaluate Thoughts]
+    C --> D[Search Strategy<br/>(BFS/DFS/Beam)]
+    D --> E[Continue Promising Paths]
+    E -->|Success| F[Solution Found]
+    E -->|Failure| G[Backtrack if Necessary]
+    G --> B
+```
+
+>[!Important]
+> Oh, you can achieve ToT using code (<https://github.com/princeton-nlp/tree-of-thought-llm> or <https://github.com/jieyilong/tree-of-thought-puzzle-solver>).
+>  You can apply the Tree of Thought (ToT) methodology on ChatGPT web, but it requires structured interaction and active guidance from you to simulate the branching, pruning, and aggregation process.
+
+Below is a step-by-step guide to implement ToT effectively on ChatGPT:
+
+1. **Define the problem clearly**
+
+```text
+"I need a 7-day Southeast Asia trip plan with a $1,500 budget, visiting at least two countries and ensuring good weather. Use the Tree of Thought method to solve this."
+```
+2. **Branching (Generate Ideas)**
+
+Ask ChatGPT to **generate multiple branches** (ideas/solutions) for each key aspect of the problem.
+Example Prompts:
+
+- "List 3 possible country combinations in Southeast Asia for a 7-day trip."
+- "Suggest 2 optimal months for travel based on weather."
+- "Propose budget allocation strategies (flights, accommodation, etc.)."
+
+Response:
+
+```text
+Branch 1: Countries
+- Option A: Thailand + Vietnam
+- Option B: Malaysia + Cambodia
+- Option C: Indonesia + Laos
+
+Branch 2: Timing
+- Option 1: February (dry season)
+- Option 2: November (risk of rain)
+
+Branch 3: Budget
+- Strategy 1: Flights 40%, Accommodation 30%, Rest 30%
+- Strategy 2: Flights 50%, Accommodation 25%, Rest 25%
+```
+
+3. **Pruning (Eliminate Unfeasible Options)**
+
+Ask ChatGPT to **evaluate and filter branches** based on your criteria (e.g., budget, weather, visa policies).
+Example Prompts:
+
+- "Which country combination is cheaper between Thailand+Vietnam and Malaysia+Cambodia?"
+- "Why should we exclude November as a travel month?"
+- "Which budget strategy keeps costs under $1,500?"
+
+Response:
+
+```text
+Pruned Results:
+- **Rejected:** Option B (Malaysia+Cambodia) due to higher visa costs.
+- **Rejected:** Option 2 (November) due to rainy season risks.
+- **Accepted:** Strategy 1 (40%/30%/30%) leaves enough for meals/transport.
+```
+
+4. **Evaluation & Aggregation (Synthesize Solutions)**
+Ask ChatGPT to combine the best branches into a final plan.
+Example Prompt:
+
+- "Using the accepted branches (Thailand+Vietnam, February, Strategy 1), create a detailed itinerary and cost breakdown."
+
+Response:
+
+```text
+Final Plan:
+- **Countries:** Bangkok (Thailand) → Hanoi (Vietnam).
+- **Timing:** February 1–7.
+- **Budget Breakdown:**
+  - Flights: $600 (40% of $1,500)
+  - Accommodation: $455 (30%)
+  - Food/Transport: $445 (30%)
+- **Total:** $1,500 ✔️
+```
+
+## 2.4. Knowledge-enhanced techniques
 
 Knowledge-enhanced techniques augment the model's reasoning with additional information, either generated by the model itself or retrieved from external sources.
 
-### 2.3.1. Generated knowledge prompting
+### 2.4.1. Generated knowledge prompting
 
 Generated knowledge prompting involves having the model generate relevant knowledge or information before answering a question. This technique helps the model access its own knowledge in a structured way before attempting to solve a problem.
 
@@ -253,9 +356,14 @@ Generate 4 facts about the Kermode bear:
 Then, we feed that information into another prompt to write the blog post:
 ```
 
-### 2.3.2. Retrieval augmented generation (RAG)
+### 2.4.2. Retrieval augmented generation (RAG)
 
 Retrieval Augmented Generation enhances language models by incorporating information from external knowledge sources. This technique retrieves relevant documents or data from a knowledge base and provides them as context for the model to generate a response.
+
+It is a hybrid approach that enhances large pre-trained language models by combining:
+
+- Parametric memory: A pre-trained sequence-to-sequence (seq2seq) transformer (e.g., BART or T5) that generates responses.
+- Non-parametric memory: A retriever that fetches relevant documents from an external knowledge base (e.g., Wikipedia).
 
 ```mermaid
 graph LR
@@ -275,6 +383,10 @@ graph LR
 - Improves factual accuracy and reduces hallucination
 - Allows access to more up-to-date information
 - Especially useful for knowledge-intensive tasks
+
+## 2.4. Action-oriented techniques
+
+### 2.4.1. ReAct Prompting
 
 > [!WARNING]
 > WIP
