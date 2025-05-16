@@ -12,6 +12,7 @@ Source:
 - Prompt engineering is a discipline focused on developing and optimizing prompts to efficiently use language models (LMs) for a wide variety of applications and research topics.
 - A prompt is the input provided to a language model to elicit a desired response. It can be as simple as a question or as complex as a set of instructions with examples and context. The quality of your prompt significantly influences the quality of the model's output.
 - **Basic prompting**:
+
   - At its simplest, a prompt can be a partial sentence that the model completes:
 
   ```text
