@@ -1,6 +1,7 @@
 # 2. Prompting techniques
 
 Table of contents:
+
 - [2. Prompting techniques](#2-prompting-techniques)
   - [2.1. Basic techniques](#21-basic-techniques)
     - [2.1.1. Zero-shot prompting](#211-zero-shot-prompting)
@@ -13,7 +14,6 @@ Table of contents:
   - [2.3. Knowledge-enhanced techniques](#23-knowledge-enhanced-techniques)
     - [2.3.1. Generated knowledge prompting](#231-generated-knowledge-prompting)
     - [2.3.2. Retrieval augmented generation (RAG)](#232-retrieval-augmented-generation-rag)
-
 
 ```mermaid
 graph TD
@@ -60,6 +60,7 @@ graph TD
 ```
 
 **Key characteristics:**
+
 - No examples or demonstrations provided
 - Simple, direct instructions
 - Relies on model's inherent capabilities
@@ -237,6 +238,7 @@ Generate 4 facts about the Kermode bear, then use these facts to write a short b
 ```
 
 We try different approach - dual prompt:
+
 - First prompt the LLM to generate facts about the bear:
 
 ```text

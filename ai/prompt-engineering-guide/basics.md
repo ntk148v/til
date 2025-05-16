@@ -1,6 +1,7 @@
 # 1. Prompt engineering basics
 
 Table of contents:
+
 - [1. Prompt engineering basics](#1-prompt-engineering-basics)
   - [1.1. What is a prompt?](#11-what-is-a-prompt)
   - [1.2. Basic prompting](#12-basic-prompting)
@@ -12,7 +13,6 @@ Table of contents:
     - [1.8.1. Settings impact on response types](#181-settings-impact-on-response-types)
     - [1.8.2. Best practices](#182-best-practices)
     - [1.8.3. Settings and prompt engineering techniques](#183-settings-and-prompt-engineering-techniques)
-
 
 ## 1.1. What is a prompt?
 
@@ -240,4 +240,3 @@ Different tasks benefit from different settings configurations:
 | Chain-of-Thought    | Low temperature (0.0–0.3) for logical consistency         |
 | ReAct Prompting     | Low temperature for reasoning, higher for exploration     |
 | Prompt Chaining     | Vary by chain step requirements                           |
-
