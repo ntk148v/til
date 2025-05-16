@@ -41,7 +41,7 @@ graph TD
     A[Prompt Structure] --> B[Q&A Format<br>'Q: What is prompt engineering?<br>A: ']
     A --> C[Advanced Formats]
 
-    B --> D[Few-shot Format<br>Multiple Q&A pairs + new question]
+    C --> D[Few-shot Format<br>Multiple Q&A pairs + new question]
 
     C --> E[Question Format<br>'What is prompt engineering?']
     C --> F[Instruction Format<br>'Explain prompt engineering']
