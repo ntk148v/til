@@ -11,7 +11,7 @@ Source: <https://docs.citusdata.com/en/v12.1/portals/getting_started.html>
   - **Columnar storage** compresses data, speeds up scans, and supports fast projections, both on regular and distributed tables.
   - **Query from any node** enables you to utilize the full capacity of your cluster for distributed queries.
 - You use Citus, you are also using Postgres. You can leverage the latest Pos
-tgres features, tooling, and ecosystem.
+  tgres features, tooling, and ecosystem.
 
 ## 2. Architecture
 
@@ -25,11 +25,13 @@ tgres features, tooling, and ecosystem.
 ### 3.1. Table types
 
 - **Type 1: Distributed tables**:
+
   - Normal tables to SQL statements, but are horizontally partitions across worker nodes.
 
   ![](https://docs.citusdata.com/en/v12.1/_images/diagram-parallel-select.png)
 
   - Here the rows of `table` are stored in tables `table_1001`, `table_1002` etc on the workers. The component worker tables are called _shards_.
+
 - **Type 2: Reference tables**:
   - A type of distributed table whose entire contents are concentrated into a single shard which is replicated on every worker. Thus queries on any worker can access the reference information locally, without the network overhead of requesting rows from another node. Reference tables have no distribution column because there is no need to distinguish separate shards per row.
   - Reference tables are typically small, and are used to store data that is relevant to queries running on any worker node. For example, enumerated values like order statuses, or product categories.
