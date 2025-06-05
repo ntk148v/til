@@ -5,7 +5,7 @@ Source:
 - <https://tldp.org/HOWTO/TCP-Keepalive-HOWTO/>
 - <https://codearcana.com/posts/2015/08/28/tcp-keepalive-is-a-lie.html>
 
-Table of content:
+Table of contents:
 
 - [TCP keepalive](#tcp-keepalive)
   - [1. Overview](#1-overview)

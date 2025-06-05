@@ -4,7 +4,7 @@ Source:
 
 - <https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_chapters/eSignatures-and-dss.adoc>
 
-Table of content:
+Table of contents:
 
 - [Electronic signature](#electronic-signature)
   - [1. Electronic and digital signature](#1-electronic-and-digital-signature)

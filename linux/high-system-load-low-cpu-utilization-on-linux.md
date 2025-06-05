@@ -5,7 +5,7 @@ Source:
 - <https://tanelpoder.com/posts/high-system-load-low-cpu-utilization-on-linux/>
 - <https://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html>
 
-Table of content:
+Table of contents:
 
 - [High System Load with Low CPU Utilization on Linux?](#high-system-load-with-low-cpu-utilization-on-linux)
   - [1. Introduction - Terminology](#1-introduction---terminology)

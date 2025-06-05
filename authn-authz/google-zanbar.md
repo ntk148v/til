@@ -2,7 +2,7 @@
 
 Source: <https://www.permify.co/post/google-zanzibar-in-a-nutshell/>
 
-Table of content:
+Table of contents:
 
 - [Google Zanzibar in a Nutshell](#google-zanzibar-in-a-nutshell)
   - [1. Why is Zanzibar needed?](#1-why-is-zanzibar-needed)

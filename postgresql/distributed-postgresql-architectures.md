@@ -5,7 +5,7 @@ Source:
 - <https://www.crunchydata.com/blog/an-overview-of-distributed-postgresql-architectures>
 - <https://www.postgresql.eu/events/pgconfeu2023/sessions/session/4826-postgresql-distributed-architectures-best-practices/>
 
-Table of content:
+Table of contents:
 
 - [An Overview of Distributed PostgreSQL Architectures](#an-overview-of-distributed-postgresql-architectures)
   - [1. Single machine PostgreSQL](#1-single-machine-postgresql)

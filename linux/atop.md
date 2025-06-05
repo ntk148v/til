@@ -7,7 +7,7 @@ Source:
 - <https://www.digitalocean.com/community/tutorials/atop-command-in-linux>
 - <https://www.atoptool.nl/index.php>
 
-Table of content:
+Table of contents:
 
 - [Atop](#atop)
   - [1. Installation](#1-installation)

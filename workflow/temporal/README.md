@@ -8,7 +8,7 @@ Source:
 - <https://thinhdanggroup.github.io/temporal-real-life/>
 - <https://techdozo.dev/workflow-orchestration-with-temporal-and-spring-boot/>
 
-Table of content:
+Table of contents:
 
 - [Temporal](#temporal)
   - [1. The problem](#1-the-problem)

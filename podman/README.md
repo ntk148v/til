@@ -7,7 +7,7 @@ Source:
 - <https://www.redhat.com/en/topics/containers/what-is-podman>
 - <https://linuxhandbook.com/docker-vs-podman/>
 
-Table of content:
+Table of contents:
 
 - [Podman](#podman)
   - [1. Overview](#1-overview)

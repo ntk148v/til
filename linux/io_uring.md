@@ -9,7 +9,7 @@ Source:
 - <https://kernel-recipes.org/en/2019/talks/faster-io-through-io_uring/>
 - <https://unixism.net/loti/>
 
-Table of content:
+Table of contents:
 
 ## 1. Linux asynchronous APIs before `io_uring`
 

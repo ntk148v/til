@@ -5,7 +5,7 @@ Source:
 - <https://hpcclab.org/paperPdf/icpp20/icpp20.pdf>
 - <https://mhsamsal.wordpress.com/2020/05/12/how-to-perform-cpu-pinning-for-kvm-virtual-machines-and-docker-containers/>
 
-Table of content:
+Table of contents:
 
 - [CPU Pinning (in OpenStack)](#cpu-pinning-in-openstack)
   - [1. What is CPU Pinning?](#1-what-is-cpu-pinning)

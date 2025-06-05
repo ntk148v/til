@@ -7,7 +7,7 @@ Source:
 - <https://itextpdf.com/sites/default/files/2018-12/digitalsignatures20130304.pdf>
 - <https://docbox.etsi.org/workshop/2012/201211_TSP/5_pdf_signatures.pdf>
 
-Table of content:
+Table of contents:
 
 - [PDF Standard and Digital Signature](#pdf-standard-and-digital-signature)
   - [1. Why do we need digital signatures?](#1-why-do-we-need-digital-signatures)
