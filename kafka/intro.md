@@ -18,21 +18,22 @@ Table of contents:
   - [7. Tiered storage](#7-tiered-storage)
 
 Source:
+
 - <https://highscalability.com/untitled-2/>
 
 ## 1. What is Kafka?
 
 ![](https://www.cloudkarafka.com/img/blog/durable-message-system.png)
 
--  A distributed streaming platform serving as the internet’s de-facto standard for real-time data streaming.
--  Originally developed in LinkedIn during 2011, Apache Kafka is one of the most popular open-source Apache projects out there.
-   - Its development is path-dependent on the problems LinkedIn hit at the time. As they were one of the first companies to hit large scale distributed systems problems, they noticed the common problem of uncontrolled microservice proliferation:
+- A distributed streaming platform serving as the internet’s de-facto standard for real-time data streaming.
+- Originally developed in LinkedIn during 2011, Apache Kafka is one of the most popular open-source Apache projects out there.
+  - Its development is path-dependent on the problems LinkedIn hit at the time. As they were one of the first companies to hit large scale distributed systems problems, they noticed the common problem of uncontrolled microservice proliferation:
 
-  ![](https://lh7-us.googleusercontent.com/Zfsoz8lj4ftWa8N7t_0Zntof1skFW7l2jE2fejY3PixDz905PVwJvAmQ98mYvdA1xiWfm9XY5Yc5B0Gh0y-d8xiDCV4mEegvyrDXVKsxfJvrkbjM4u1nqlFTfT4xRLxLW9apTsbwWdTbUOFl9OicTRI)
+![](https://lh7-us.googleusercontent.com/Zfsoz8lj4ftWa8N7t_0Zntof1skFW7l2jE2fejY3PixDz905PVwJvAmQ98mYvdA1xiWfm9XY5Yc5B0Gh0y-d8xiDCV4mEegvyrDXVKsxfJvrkbjM4u1nqlFTfT4xRLxLW9apTsbwWdTbUOFl9OicTRI)
 
-   - To fix the growing complexity of service-to-service and persistence store permutations, they opted to develop a single platform which can serve as the source of truth.
+- To fix the growing complexity of service-to-service and persistence store permutations, they opted to develop a single platform which can serve as the source of truth.
 
-  ![](https://lh7-us.googleusercontent.com/rmJNLP33hKiT7VX_J66qxdDJxFkjF9lmRT19t1calefx1c5yr2LX9YHCEYQe4b-HSvOL2GbRDRwrjhENC5AhppIex_ADIgWVBmY5123OUeZadE4DLcxPNZr5wgSXhmEdNuwXB4UA5TwEJ8EWXKTqrgo)
+![](https://lh7-us.googleusercontent.com/rmJNLP33hKiT7VX_J66qxdDJxFkjF9lmRT19t1calefx1c5yr2LX9YHCEYQe4b-HSvOL2GbRDRwrjhENC5AhppIex_ADIgWVBmY5123OUeZadE4DLcxPNZr5wgSXhmEdNuwXB4UA5TwEJ8EWXKTqrgo)
 
 - There are four main parts in a Kafka system:
   - Broker: Handles all requests from clients (produce, consume, and metadata) and keeps data replicated within cluster. There can be one or more brokers in cluster.
@@ -75,9 +76,9 @@ Source:
 
 - Writes can only go to that leader, which then asynchronously replicates the data to the N-1 followers.
 - Clients that write data are called **producers**. Producers can configure the durability guarantees they want to have during writes via the “acks” property which denotes how many brokers have to acknowledge a write before the response is returned to the client.
-  -  `acks=0` - the producer won’t even wait for a response from the broker, it immediately considers the write successful
-  -  `acks=1` - a response is sent to the producer when the leader acknowledges the record (persists it to disk).
-  -  `acks=all` (the default) - a response is sent to the producer only when all of the in-sync replicas persist the record. To further control the acks=all property and ensure it doesn’t regress to an acks=1 property when there is only one in-sync replica, the `min.insync.replicas` setting exists to denote the minimum number of in-sync replicas required to acknowledge a write that’s configured with `acks=all`.
+  - `acks=0` - the producer won’t even wait for a response from the broker, it immediately considers the write successful
+  - `acks=1` - a response is sent to the producer when the leader acknowledges the record (persists it to disk).
+  - `acks=all` (the default) - a response is sent to the producer only when all of the in-sync replicas persist the record. To further control the acks=all property and ensure it doesn’t regress to an acks=1 property when there is only one in-sync replica, the `min.insync.replicas` setting exists to denote the minimum number of in-sync replicas required to acknowledge a write that’s configured with `acks=all`.
 - Producer will decide target partition to place any message, depending on:
   - Partition id, if it's specified within the message
   - key % num partitions, if no partition id is mentioned
@@ -95,6 +96,7 @@ Source:
 
 - There can be many different consumer groups reading from the same topic.
 - When multiple consumers are subscribed to a topic and belong to the same consumer group, each consumer in the group will receive messages from a different subset of the partitions in the topic.
+
   - 1 consumer group with 4 partitions.
 
   ![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in01.png)
@@ -135,7 +137,8 @@ Source:
 
 ### 4.1. Persistence to Disk
 
-_ Kafka actually stores all of its records to disk and doesn’t keep anything explicitly in memory.
+\_ Kafka actually stores all of its records to disk and doesn’t keep anything explicitly in memory.
+
 - Kafka’s protocol groups messages together. This allows network requests to group messages together and reduce network overhead.
 - The server, in turn, persists chunk of messages in one go - a linear HDD write. Consumers then fetch large linear chunks at once.
   - Linear reads/writes on a disk can be fast. HDDs are commonly discussed as slow because they are when you do numerous disk seeks, since you’re bottlenecked on the physical movement of the drive’s head as it moves to the new location. With a linear read/write, this isn’t a problem as you continuously read/write data with the head’s movement.
@@ -166,9 +169,10 @@ _ Kafka actually stores all of its records to disk and doesn’t keep anything e
   - Kafka used to persist all sorts of metadata in ZooKeeper, including the alive set of brokers, the topic names and their partition count, as well as the partition assignments.
   - Kafka also used to heavily leverage ZooKeeper’s watch mechanism, which would notify a subscriber whenever a certain zNode changed.
 - For the last few years, Kafka has actively been moving away from ZooKeeper towards its own consensus mechanism called KRaft (“Kafka Raft”).
+
   - It is a dialect of Raft with a few differences, heavily influenced by Kafka’s existing replication protocol. Most basically said, it extends the Kafka replication protocol with a few Raft-related features.
   - A key realization is that the cluster's metadata can be easily expressed in a regular log through the ordered record of events that happened in the cluster. Brokers could then replay the event to build the latest state of the system.
-  - In this new model, Kafka has a quorum of N controllers (usually 3). These brokers host a special topic called the metadata topic (“__cluster_metadata”). This topic has a single partition whose leader election is managed Raft. The leader of the partition becomes the currently active Controller. The other controllers act as hot standbys, storing the latest metadata in memory.
+  - In this new model, Kafka has a quorum of N controllers (usually 3). These brokers host a special topic called the metadata topic (“\_\_cluster_metadata”). This topic has a single partition whose leader election is managed Raft. The leader of the partition becomes the currently active Controller. The other controllers act as hot standbys, storing the latest metadata in memory.
 
   ![](https://lh7-us.googleusercontent.com/rCWoO0Ha2O0SrdNx9oncgasZx3j3ZbvQ5dLdkFU6RPGR7Ef1EShjCDz_WcBzLccqhyWps7NMTzhcbIu4PehnzXkWbRrP1WnMU7SjQvrRE-d4a6AS3k0oTRuHCmT26YsmjacwcJeq4gPnCQ-9c8Yz6fA)
 
