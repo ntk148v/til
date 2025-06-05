@@ -1,6 +1,7 @@
 # Kafka introduction
 
 Table of contents:
+
 - [Kafka introduction](#kafka-introduction)
   - [1. What is Kafka?](#1-what-is-kafka)
   - [2. Basic concepts](#2-basic-concepts)
