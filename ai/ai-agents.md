@@ -13,6 +13,18 @@ Source:
 - An AI agent refers to a system or program that is capable of autonomously performing tasks on behalf of a user or another system by designing its workflow and utilizing available tools.
 - It can interact with its environment, gather data, and use that data to achieve predefined goals.
 
+```python
+def loop(llm):
+    msg = user_input()
+    while True:
+        output, tool_calls = llm(msg)
+        print("Agent: ", output)
+        if tool_calls:
+            msg = [ handle_tool_call(tc) for tc in tool_calls ]
+        else:
+            msg = user_input()
+```
+
 ## 2. How do AI agents work?
 
 - LLMs (of course) -> this enables the AI agent to receive instructions from non-technical teams, interpret its environment, and generate meaningful responses to users.
