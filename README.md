@@ -22,10 +22,11 @@ Forget browsing, embrace the hunt! This repo is built for searching, not scrolli
 
 ```mermaid
 flowchart TD
-    A[You've arrived! Welcome, seeker of knowledge \(or just a lost soul\)] --> B[Press 'S' to summon the search spirits] --> C{Did the spirits reveal what you sought?}
-    C -- Heck yeah! --> E[Huzzah! Knowledge gained!]
-    C -- Nah, try again --> D[Press 'T' for a fuzzy file quest, type thy <keyword>]
-    D --> F{Still wandering in the wilderness?}
-    F -- Alas, 'tis empty --> G[Perhaps the knowledge is in another castle... or repo. Good luck, brave adventurer 🙇]
-    F -- Eureka! --> E
+    A["You've arrived! Welcome, seeker of knowledge (or just a lost soul)"] --> B["Press 'S' to summon the search spirits"]
+    B --> C{"Did the spirits reveal what you sought?"}
+    C -- "Heck yeah!" --> E["Huzzah! Knowledge gained!"]
+    C -- "Nah, try again" --> D["Press 'T' for a fuzzy file quest, type thy keyword"]
+    D --> F{"Still wandering in the wilderness?"}
+    F -- "Alas, 'tis empty" --> G["Perhaps the knowledge is in another castle... or repo. Good luck, brave adventurer"]
+    F -- "Eureka!" --> E
 ```
