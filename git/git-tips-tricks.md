@@ -118,3 +118,43 @@ If git detects typos and can identify exactly one valid command similar to the e
 - "immediate": run the suggested command immediately.
 - "prompt": show the suggestion and prompt for confirmation to run the command.
 - "never": don’t run or show any suggested command.
+
+## 6. git-notes
+
+Adds, removes, or reads notes attached to objects, without touching the objects themselves.
+
+```shell
+git notes add
+git notes add -m "my note"
+# namespacing
+# default namespace: "commits"
+git notes --ref jenkins add "build pass"
+git notes --ref jenkins show HEAD
+git log --show-notes=jenkins
+git log --show-notes="*"
+
+# push
+# Like tags, notes aren't pushed by default
+git push origin refs/notes/commits
+git push origin "refs/notes/*"
+
+# fetch
+# Notes aren't fetched by default.
+git fetch origin refs/notes/commits:refs/notes/commits
+git fetch origin "refs/notes/*:refs/notes/*"
+
+# to fetch notes by default
+vim .git/config
+
+
+#edit this part
+
+[remote "origin"]
+  fetch = +refs/heads/*:refs/remotes/origin/*
+
+#to become
+
+[remote "origin"]
+  fetch = +refs/heads/*:refs/remotes/origin/*
+  fetch = +refs/notes/*:refs/notes/*
+```
