@@ -3,6 +3,7 @@
 Source: <https://argo-cd.readthedocs.io/en/stable/>
 
 Table of contents:
+
 - [ArgoCD](#argocd)
   - [1. Overview](#1-overview)
   - [2. Architecture:](#2-architecture)
