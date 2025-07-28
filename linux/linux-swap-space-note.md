@@ -3,6 +3,7 @@
 <https://ntk148v.github.io/blog/posts/linux-swap-space-note/>
 
 Source:
+
 - [RedHad guideline](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/sect-disk-partitioning-setup-x86#sect-recommended-partitioning-scheme-x86)
 - [Chris Down's post](https://chrisdown.name/2018/01/02/in-defence-of-swap.html)
 - [Linux Hint - Understanding vm.swappiness](https://linuxhint.com/understanding_vm_swappiness/)
