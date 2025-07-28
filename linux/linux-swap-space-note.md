@@ -2,6 +2,11 @@
 
 <https://ntk148v.github.io/blog/posts/linux-swap-space-note/>
 
+Source:
+- [RedHad guideline](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/sect-disk-partitioning-setup-x86#sect-recommended-partitioning-scheme-x86)
+- [Chris Down's post](https://chrisdown.name/2018/01/02/in-defence-of-swap.html)
+- [Linux Hint - Understanding vm.swappiness](https://linuxhint.com/understanding_vm_swappiness/)
+
 ## 1. What is Swap?
 
 Swap file systems support virtual memory, data is written to a swap file system when there is not enough RAM to store the data your system is processing.
@@ -68,10 +73,10 @@ swap <= 10% * total-size-hard-drives && swap <= 128GB (if hibernation is allowed
 
 - Swap is not generally about getting emergency memory, it's about making memory reclamation egalitarian and efficient. In fact, using it as "emergency memory" is generally actively harmful.
 
-## 4. References
+## 4. Check which processes are eating swap on linux
 
-1. [RedHad guideline](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/sect-disk-partitioning-setup-x86#sect-recommended-partitioning-scheme-x86)
+Source: <https://superuser.com/questions/1677225/check-which-processes-are-eating-swap-on-linux>
 
-2. [Chris Down's post](https://chrisdown.name/2018/01/02/in-defence-of-swap.html)
-
-3. [Linux Hint - Understanding vm.swappiness](https://linuxhint.com/understanding_vm_swappiness/)
+- Use [smem](https://manpages.debian.org/bullseye/smem/smem.8.en.html):
+- Use [smemstat](http://manpages.org/smemstat/8): `smemstat -mT`
+- Use `top` and `htop` by adding SWAP column.
