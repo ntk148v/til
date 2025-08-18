@@ -3,6 +3,7 @@
 Source: <https://www.elastic.co/blog/benchmarking-and-sizing-your-elasticsearch-cluster-for-logs-and-metrics>
 
 Table of contents:
+
 - [Benchmarking and sizing your Elasticsearch cluster for logs and metrics](#benchmarking-and-sizing-your-elasticsearch-cluster-for-logs-and-metrics)
   - [1. Computing resource basics](#1-computing-resource-basics)
   - [2. Sizing by data volume](#2-sizing-by-data-volume)
@@ -46,7 +47,6 @@ For metrics and logging use cases, we typically manage a huge amount of data, so
 
 ## 3. Benchmarking
 
-
 Now that we have our cluster(s) sized appropriately, we need to confirm that our math holds up in real world conditions. To be more confident before moving to production, we will want to do benchmark testing to confirm the expected performance, and the targeted SLA.
 
 For this benchmark, we will use the same tool our Elasticsearch engineers use Rally. This tool is simple to deploy and execute, and completely configurable so you can test multiple scenarios.
@@ -54,6 +54,7 @@ For this benchmark, we will use the same tool our Elasticsearch engineers use Ra
 ### 3.1. Index benchmark
 
 For the indexing benchmarks we are trying to answers the following questions:
+
 - What is the maximum indexing throughput for my clusters?
 - What is the data volume that I can index per day?
 - Is my cluster oversized or undersized ?
@@ -61,6 +62,7 @@ For the indexing benchmarks we are trying to answers the following questions:
 ### 3.2. Search benchmark
 
 For the search, we will execute three benchmarks:
+
 - Service time for queries.
 - Service time for parallel queries.
 - Index rate and service time with parallel indexing.
