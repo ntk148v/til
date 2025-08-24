@@ -13,16 +13,16 @@ Source: <https://www.geeksforgeeks.org/reactjs/react/>
   - Component-based architecture: break UI into reusable pieces, improving the code reusability and scalability.
 
 ```js
-import React from 'react';
+import React from "react";
 
 // Define a React functional component
 function App() {
-    // render HTML-like code JSX inside the component
-    return (
-        <div>
-            <h1>Hello World</h1>
-        </div>
-    );
+  // render HTML-like code JSX inside the component
+  return (
+    <div>
+      <h1>Hello World</h1>
+    </div>
+  );
 }
 
 // export so it can be used in other files
@@ -48,36 +48,37 @@ React operates by creating an in-memory _virtual DOM_ rather than directly manip
 ### 2.1. Components
 
 React follows a **component-based approach**, where the UI is broken down into reusable components. These components:
+
 - Can be functional or class-based.
 - It allows code reusability, maintainability, and scalability.
 
 Functional component:
+
 - Stateful or Stateless (manage using React Hooks)
 - Simpler sytntax (small and reusable)
 - Performance (faster since they don't require a 'this' keyword)
 
 ```js
-import React from 'react';
+import React from "react";
 
 // Creating a simple functional component
 function Greeting() {
-  return (
-    <h1>Hello, welcome to React!</h1>
-  );
+  return <h1>Hello, welcome to React!</h1>;
 }
 
 export default Greeting;
 ```
 
 Class component:
+
 - ES class that extends React.Component.
 - State management: State is managed using the this.state property.
 - Lifecycle methods.
 
 ```js
 class Greet extends React.Component {
-    render() {
-        return <h1>Hello, {this.props.name}!</h1>;
+  render() {
+    return <h1>Hello, {this.props.name}!</h1>;
   }
 }
 ```
@@ -86,7 +87,7 @@ Props are read-only inputs passed from a parent component to a child component (
 
 ```js
 function Greet(props) {
-    return <h2>Welcome, {props.username}!</h2>;
+  return <h2>Welcome, {props.username}!</h2>;
 }
 
 // Usage
@@ -94,20 +95,20 @@ function Greet(props) {
 ```
 
 State is a Javascript object managed within a component, allowing it to maintain and update its own data overtime (mutable and controlled entirely by the component).
+
 - State updates trigger re-renders.
 - Functional components use the useState hook to manage state.
 
 ```js
 function Counter() {
-    const [count, setCount] = React.useState(0);
+  const [count, setCount] = React.useState(0);
 
-    return (
-        <div>
-            <p>Count: {count}</p>
-            <button onClick={() =>
-                setCount(count + 1)}>Increment</button>
-        </div>
-    );
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
 }
 ```
 
@@ -143,36 +144,36 @@ import React from "react";
 
 // Parent component that holds the message and passes it down
 function Parent() {
-    const message = "Hello from Parent";
-    return (
-        <div>
-            <Child message={message} />
-        </div>
-    );
+  const message = "Hello from Parent";
+  return (
+    <div>
+      <Child message={message} />
+    </div>
+  );
 }
 
 function Child({ message }) {
-    return (
-        <div>
-            <Grandchild message={message} />
-        </div>
-    );
+  return (
+    <div>
+      <Grandchild message={message} />
+    </div>
+  );
 }
 
 function Grandchild({ message }) {
-    return (
-        <div>
-            <p>Message: {message}</p>
-        </div>
-    );
+  return (
+    <div>
+      <p>Message: {message}</p>
+    </div>
+  );
 }
 
 export default function App() {
-    return (
-        <div>
-            <Parent />
-        </div>
-    );
+  return (
+    <div>
+      <Parent />
+    </div>
+  );
 }
 
 // the message is passed from Parent to Grandchild through the Child, even though the Child does not use it. This can become unmanageable as the app scales.
@@ -183,6 +184,7 @@ export default function App() {
 1. Using Context API
 
 The React Context API provides a way to share values (like state, functions, or constants) between components without explicitly passing props.
+
 - createContext() creates a context (UserContext) to share data across components.
 - The App component uses UserContext.Provider to pass userName ('geeksforgeeks') as the context value.
 - ParentComponent and its children (ChildComponent, GrandChildComponent) are wrapped by the provider.
@@ -190,25 +192,25 @@ The React Context API provides a way to share values (like state, functions, or 
 - The value ('geeksforgeeks') is displayed in a <p> tag as “Hello, geeksforgeeks!”.
 
 ```js
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext } from "react";
 const UserContext = createContext();
 const App = () => {
-    const userName = 'geeksforgeeks';
-    return (
-        <UserContext.Provider value={userName}>
-            <Parent />
-        </UserContext.Provider>
-    );
+  const userName = "geeksforgeeks";
+  return (
+    <UserContext.Provider value={userName}>
+      <Parent />
+    </UserContext.Provider>
+  );
 };
 const Parent = () => {
-    return <Child />;
+  return <Child />;
 };
 const Child = () => {
-    return <GrandChild />;
+  return <GrandChild />;
 };
 const GrandChild = () => {
-    const userName = useContext(UserContext); // Access context value
-    return <p>Hello, {userName}!</p>;
+  const userName = useContext(UserContext); // Access context value
+  return <p>Hello, {userName}!</p>;
 };
 export default App;
 ```
@@ -220,23 +222,27 @@ Custom hooks are reusable functions in React that encapsulate stateful logic, st
 ```js
 import React, { createContext, useContext } from "react";
 const UserContext = createContext();
-const useUser = () => { return useContext(UserContext); };
+const useUser = () => {
+  return useContext(UserContext);
+};
 const App = () => {
-    const userName = "GeeksforGeeks";
+  const userName = "GeeksforGeeks";
 
-    return (
-        <UserContext.Provider value={userName}>
-            <Component />
-        </UserContext.Provider>
-    );
+  return (
+    <UserContext.Provider value={userName}>
+      <Component />
+    </UserContext.Provider>
+  );
 };
 const Component = () => {
-    return <Child />;
+  return <Child />;
 };
-const Child = () => { return <Grand />; };
+const Child = () => {
+  return <Grand />;
+};
 const Grand = () => {
-    const userName = useUser();
-    return <p>Hello, {userName}!</p>;
+  const userName = useUser();
+  return <p>Hello, {userName}!</p>;
 };
 export default App;
 ```
@@ -254,6 +260,7 @@ React offers various hooks to handle state, side effects, and other functionalit
 **1. State hooks**
 
 State hooks allow functional components to manage state in a more efficient and modular way. They provide an easier and cleaner approach to managing component-level states in comparison to class components.
+
 - useState: The useState hook is used to declare state variables in functional components. It allows us to read and update the state within the component.
 
 ```js
@@ -283,29 +290,29 @@ import React, { createContext, useContext, useState } from "react";
 const ThemeContext = createContext();
 
 function App() {
-    const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("light");
 
-    const toggleTheme = () => {
-        setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
-    };
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
 
-    return (
-        <ThemeContext.Provider value={theme}>
-            <div>
-                <h1>Current Theme: {theme}</h1>
-                <button onClick={toggleTheme}>Toggle Theme</button>
-                <ThemeDisplay />
-            </div>
-        </ThemeContext.Provider>
-        // The provider makes the context value accessible to all components below it in the component tree
-    );
+  return (
+    <ThemeContext.Provider value={theme}>
+      <div>
+        <h1>Current Theme: {theme}</h1>
+        <button onClick={toggleTheme}>Toggle Theme</button>
+        <ThemeDisplay />
+      </div>
+    </ThemeContext.Provider>
+    // The provider makes the context value accessible to all components below it in the component tree
+  );
 }
 
 function ThemeDisplay() {
-    const theme = useContext(ThemeContext);
-    // useContext allows you to consume context values, making it easier to share data across components without prop drilling.
+  const theme = useContext(ThemeContext);
+  // useContext allows you to consume context values, making it easier to share data across components without prop drilling.
 
-    return <h2>Theme from Context: {theme}</h2>;
+  return <h2>Theme from Context: {theme}</h2>;
 }
 
 export default App;
@@ -319,7 +326,7 @@ Effect hooks, specifically useEffect,useLayoutEffect, and useInsertionEffect, en
 
 ```js
 useEffect(() => {
-    // Side effect logic here
+  // Side effect logic here
 }, [dependencies]);
 // useEffect(() => { ... }, [dependencies]); runs side effects after rendering.
 // The effect runs based on changes in the specified dependencies.
@@ -337,7 +344,7 @@ useLayoutEffect(() => {
 
 ```js
 useInsertionEffect(() => {
-    // Logic to inject styles or manipulate stylesheets
+  // Logic to inject styles or manipulate stylesheets
 }, [dependencies]);
 ```
 
@@ -351,29 +358,29 @@ Performance Hooks in React, like useMemo and useCallback, are used to optimize p
 import React, { useState, useMemo } from "react";
 
 function App() {
-    const [count, setCount] = useState(0);
-    const [text, setText] = useState("");
+  const [count, setCount] = useState(0);
+  const [text, setText] = useState("");
 
-    // use memoizes the result of expensiveCalculation, and only recomputes when count changes.
-    const expensiveCalculation = useMemo(() => {
-        console.log("Expensive calculation...");
-        return count * 2;
-    }, [count]);
+  // use memoizes the result of expensiveCalculation, and only recomputes when count changes.
+  const expensiveCalculation = useMemo(() => {
+    console.log("Expensive calculation...");
+    return count * 2;
+  }, [count]);
 
-    return (
-        <div>
-            <h1>Count: {count}</h1>
-            <h2>Expensive Calculation: {expensiveCalculation}</h2>
-            <button onClick={() => setCount(count + 1)}>Increment Count</button>
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <h2>Expensive Calculation: {expensiveCalculation}</h2>
+      <button onClick={() => setCount(count + 1)}>Increment Count</button>
 
-            <input
-                type="text"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Type something"
-            />
-        </div>
-    );
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Type something"
+      />
+    </div>
+  );
 }
 
 export default App;
@@ -382,7 +389,9 @@ export default App;
 - useCallback: React hook that helps to memoize functions, ensuring that a function is not redefined on every render unless its dependencies change. This is particularly useful when passing functions as props to child components, as it prevents unnecessary re-renders of those child components.
 
 ```js
-const memoizedCallback = useCallback(() => { doSomething(a, b); }, [a, b]);
+const memoizedCallback = useCallback(() => {
+  doSomething(a, b);
+}, [a, b]);
 ```
 
 ## 2.6. React Router
@@ -390,6 +399,7 @@ const memoizedCallback = useCallback(() => { doSomething(a, b); }, [a, b]);
 React Router is a JavaScript library designed specifically for React to handle client-side routing. It maps specific URL paths to React components, allowing users to navigate between different pages or sections without refreshing the entire page.
 
 There are three types of routers:
+
 - BrowserRouter: The BrowserRouter is the most commonly used router for modern React applications. It uses the HTML5 History API to manage routing, which allows the URL to be dynamically updated while ensuring the browser's address bar and history are in sync.
 - HashRouter: The HashRouter is useful when you want to use a URL hash (#) for routing, rather than the HTML5 history API. It doesn't require server configuration and works even if the server doesn't support URL rewriting.
 - MemoryRouter: The MemoryRouter is used in non-browser environments, such as in React Native or when running tests.
