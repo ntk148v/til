@@ -49,9 +49,9 @@ commonLabels:
   app: demo
 
 resources:
-- deployment.yaml
-- service.yaml
-- configMap.yaml
+  - deployment.yaml
+  - service.yaml
+  - configMap.yaml
 ```
 
 ./demo/overlays/staging/kustomization.yaml
@@ -59,13 +59,13 @@ resources:
 ```yaml
 namePrefix: staging-
 commonLabels:
- variant: staging
+  variant: staging
 commonAnnotations:
   note: “Welcome to staging!”
 bases:
-- ../../base
+  - ../../base
 patchesStrategicMerge:
-- config-map.yaml
+  - config-map.yaml
 ```
 
 staging patch: add a configMap kustomization to change the server greeting from "Hello!" to "Kustomize rules!" (./demo/overlays/staging/config-map.yaml)
@@ -74,10 +74,10 @@ staging patch: add a configMap kustomization to change the server greeting from 
 apiVersion: v1
 kind: ConfigMap
 metadata:
- name: the-map
+  name: the-map
 data:
- altGreeting: “Kustomize rules!”
- enableRisky: “true”
+  altGreeting: “Kustomize rules!”
+  enableRisky: “true”
 ```
 
 Overlays contain a kustomization.yaml, and can also include manifests as new or additional resources, or to patch resources. The kustomization file is what defines how the overlays should be applied to the base and this is what we refer to as a variant.
