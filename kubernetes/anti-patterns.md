@@ -1,6 +1,7 @@
 # Kubernetes anti-patterns
 
 Source:
+
 - <https://codefresh.io/blog/kubernetes-antipatterns-1/>
 
 Table of contents:
@@ -20,11 +21,11 @@ Table of contents:
   - [12. Anti-pattern 12 – Not having deployment metrics](#12-anti-pattern-12--not-having-deployment-metrics)
   - [13. Anti-pattern 13 - Not having a strategy for secrets](#13-anti-pattern-13---not-having-a-strategy-for-secrets)
   - [14. Anti-pattern 14 – Attempting to solve all problems with Kubernetes](#14-anti-pattern-14--attempting-to-solve-all-problems-with-kubernetes)
- 
 
 ## 1. Anti-pattern 1 – Using containers with the latest tag in Kubernetes deployments
 
 No surprise, instead of 'latest' use:
+
 - Tags with Git hashes.
 - Tags with application version.
 - Tags that signify a consecutive number such as a build nimber of build date/time.
@@ -36,6 +37,7 @@ Create “generic” container images that know nothing about the environment th
 ## 3. Anti-pattern 3 – Coupling applications with Kubernetes features/services for no reason
 
 Some classic examples are application that:
+
 - expect a certain volume configuration for data sharing with other pods
 - expect a certain naming of services/DNS that is set up by Kubernetes networking or assume the presence of specific open ports
 - get information from Kubernetes labels and annotations
@@ -58,6 +60,7 @@ The correct solution is of course to split deployment or infrastructure on their
 Kubectl should never be used for deployments by hand. All deployments should be taken care of by the deployment platform and ideally should also be recorded in Git following the GitOps paradigm.
 
 If all your deployments happen via a Git commit:
+
 - You have a complete history of what happened in your cluster in the form of Git commit history
 - You know exactly what is contained on each cluster at any point in time and how environments differ among themselves
 - You can easily recreate or clone an environment from scratch by reading the Git configuration.
@@ -112,16 +115,17 @@ In summary:
 ## 12. Anti-pattern 12 – Not having deployment metrics
 
 By "metrics" we actually mean the whole trilogy of:
+
 - logging – to examine the events and details of requests (usually post-incident)
 - tracing – to dive deep in the journey of a single request (usually post-incident)
 - metrics – to detect an incident (or even better to predict it)
-
 
 ## 13. Anti-pattern 13 - Not having a strategy for secrets
 
 Secrets should be passed during runtime to containers. There are many approaches to secret handling from simple storage to git (in an encrypted form) to a full secret solution like Hashicorp vault.
 
 Some common pitfalls here are:
+
 - Using multiple ways for secret handling
 - Confusing runtime secrets with build secrets
 - Using complex secret injection mechanisms that make local development and testing difficult or impossible.
