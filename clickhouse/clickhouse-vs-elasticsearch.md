@@ -3,6 +3,7 @@
 Source: <https://clickhouse.com/docs/use-cases/observability/clickstack/migration/elastic/concepts#elasticsearch-vs-clickhouse>
 
 Table of contents:
+
 - [Elasticsearch vs. ClickHouse](#elasticsearch-vs-clickhouse)
   - [1. Core structural concepts](#1-core-structural-concepts)
   - [2. Data modeling and flexibility](#2-data-modeling-and-flexibility)
@@ -70,13 +71,11 @@ ClickHouse and Elasticsearch organize and query data using different underlying 
 ## 7. Distribution and replication
 
 - Elasticsearch uses a **primary-secondary model** for replication.
-
   - When data is written to a primary shard, it is synchronously copied to one or more replicas. These replicas are themselves full shards distributed across nodes to ensure redundancy.
   - Elasticsearch acknowledges writes only after all required replicas confirm the operation — a model that provides near **sequential consistency**, although dirty reads from replicas are possible before full sync.
   - A master node coordinates the cluster, managing shard allocation, health, and leader election.
 
 - ClickHouse employs **eventual consistency** by default, coordinated by Keeper - a lightweight alternative to ZooKeeper.
-
   - Writes can be sent to any replica directly or via a [distributed table](https://clickhouse.com/docs/engines/table-engines/special/distributed), which automatically selects a replica.
   - Replication is asynchronous - changes are propagated to other replicas after the write is acknowledged. For stricter guarantees, ClickHouse supports [sequential consistency](https://clickhouse.com/docs/migrations/postgresql/appendix#sequential-consistency), where writes are acknowledged only after being committed across replicas, though this mode is rarely used due to its performance impact.
 
