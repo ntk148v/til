@@ -655,6 +655,44 @@ volumeBindingMode: WaitForFirstConsumer # How volumes of this class are provisio
   kubectl create -f secrets-db-secret.yml
   ```
 
+- Kubernetes Secrets are, by default, stored unencrypted in the API server's underlying data store (etcd). Anyone with API access can retrieve or modify a Secret, and so can anyone with access to etcd. Additionally, anyone who is authorized to create a Pod in a namespace can use that access to read any Secret in that namespace; this includes indirect access such as the ability to create a Deployment.
+  - [Enable Encryption at Rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/) for Secrest.
+    - Generate encryption keys: Create strong encryption keys using a secure method. Algorithms like AES-GCM are recommended for both confidentiality and integrity.
+
+    ```shell
+    # Linux
+    # Generate a 32-byte random key and base64 encode it.
+    # Keep the encryption key confidential, including while you generate it and ideally even after you are no longer actively using it.
+    head -c 32 /dev/urandom | base64
+    ```
+
+    - Create encryption configuration file: Configure the Kubernetes API server by creating encryption configuration file. This file specifies the resources to encrypt (like `secrets`), the encryption providres (e.g., `aescbc`), and they keys used for encryption.
+
+    ```yaml
+    ---
+    apiVersion: apiserver.config.k8s.io/v1
+    kind: EncryptionConfiguration
+    resources:
+    - resources:
+        - secrets
+        - configmaps
+        - pandas.awesome.bears.example
+        providers:
+        - aescbc:
+            keys:
+                - name: key1
+                # See the following text for more details about the secret value
+                secret: <BASE 64 ENCODED SECRET>
+        - identity: {} # this fallback allows reading unencrypted secrets;
+                        # for example, during initial migration
+    ```
+
+    - Use the new encryption configuration file: You will need to mount the new encryption config file to the kube-apiserver static pod.
+
+  - [Enable or configure RBAC rules](https://kubernetes.io/docs/reference/access-authn-authz/authorization/) with least-privilege access to Secrets.
+  - Restrict Secret access to specific containers.
+  - [Consider using external Secret store providers](https://secrets-store-csi-driver.sigs.k8s.io/concepts.html#provider-for-the-secrets-store-csi-driver).
+
 ### 3.9. Namespaces
 
 - The name of a resource is a unique identifier with a namespace in the Kubernetes cluster. Using a Kubernetes namepsace could isolate namespaces for different environments in the same cluster.
