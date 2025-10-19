@@ -1,10 +1,12 @@
 # The basics of GitOps secrets management (Kubernetes)
 
 Source:
+
 - <https://www.redhat.com/en/blog/a-guide-to-secrets-management-with-gitops-and-kubernetes>
 - <https://www.harness.io/blog/gitops-secrets>
 
 Kubernetes provides Secrets as objects to store confidential information without being visible in the application code. This mechanism makes it possible to use sensitive data with less risk of accidental exposure when managing the operations of Kubernetes itself. From a basic level, the process to create Kubernetes secrets is fairly straightforward:
+
 - A trusted individual or source defines a Secret by creating a specific name for it and entering the confidential data. Kubernetes operators never see the actual data itself, only the name.
 - Once a workload needs to access and use the confidential data, it will refer to that previously created specific name to retrieve it
 
@@ -30,12 +32,14 @@ Keeping sensitive data in Git in any capacity introduces a security risk, even i
 - The solution exclusively works with Kubernetes.
 
 [Mozilla SOPs](https://github.com/mozilla/sops):
+
 - A flexible CLI tool for encryption and decryption not limited to use cases with Kubernetes.
 - Supports multiple input format.
 - Supports integrations with Key Management Systems (KMS) like Hashicorp Vault, AWS KMS to provide encryption keys for securing secrets rather than storing secrets directly within with the KMS.
 - Similar to how SealedSecrets work, secrets are manually encrypted by developers. It uses the SealedSecrets workflow but uses SOPS for encryption. It reads decryption keys from a key store and then decrypts secrets using a SOPS binary that a tool, such as Argo CD, can run with the SOPS plugin.
 
 Disadvantages:
+
 - Manually take secrets in plain text form, encrypt them, and store them in Git.
 - The other downfall is that if any encrypted keys are compromised, it's difficult to retroactively find and revoke all of them.
 - Scaling problem.
@@ -51,6 +55,7 @@ To retrieve the secrets from the manager and get them into your cluster, you'll 
 ![](https://www.redhat.com/rhdc/managed-files/ohc/Copy%20of%20Secrets%20Management%20with%20GitOps-4.png)
 
 Kubernetes Secrets Store CSI Driver is a solution to take secrets from an external secrets management tool and bring them into a Kubernetes cluster.
+
 - More complex than External Secrets. Instead of retrieving external secrets and creating secret resources, this solution uses a separate volume attached to a pod to store secrets. A developer commits a SecretProviderClass with a reference to a secret. The GitOps operator deploys the change and the CSI Secret Store Operator Plugin then retrieves the secret from the secret management system. The operator plugin then creates a volume with the secret that is attached to a specified pod.
 
 ![](https://www.redhat.com/rhdc/managed-files/ohc/Copy%20of%20Secrets%20Management%20with%20GitOps.png)
