@@ -8,7 +8,6 @@ The injector is a [Kubernetes Mutation Webhook Controller](https://kubernetes.io
 - The controller parses the event and looks for the metadata annotation `vault.hashicorp.com/agent-inject: true`. If found, the controller will alter the pod specification based on other annotations present.
 - The primary method of authentication with Vault when using the Vault Agent Injector is the service account attached to the pod. For Kubernetes authentication, the service account must be bound to a Vault role and a policy granting access to the secrets desired.
 - There are two methods of configuring the Vault Agent containers to render secrets:
-
   - the `vault.hashicorp.com/agent-inject-secret` annotation, or
 
   ```yaml
@@ -37,7 +36,6 @@ The injector is a [Kubernetes Mutation Webhook Controller](https://kubernetes.io
   ```
 
   - a configuration map containing Vault Agent configuration files:
-
     - The Vault Agent Injector supports mounting ConfigMaps by specifying the name using the vault.hashicorp.com/agent-configmap annotation. The configuration files will be mounted to /vault/configs.
     - The configuration map must contain either one or both of the following files: `config.hcl` or `config-init.hcl`.
 
