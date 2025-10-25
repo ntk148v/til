@@ -35,10 +35,11 @@ The benefit should be clear: consumers of secrets need to check in with Vault ro
 Tokens are the core method for authentication within Vault.
 Token map to information:
 
-- A set of one or more  attached policies. These policies control what the token holder is allowed to do within Vault.
+- A set of one or more attached policies. These policies control what the token holder is allowed to do within Vault.
 - Metadata that can be viewed and is added to the audit log, such as creation time, last renewal time, and more.
 
 There are three types of token:
+
 - `service`: what users will generally think of as "normal" Vault tokens. Full features, but heavyweight to create and track.
 - `batch` tokens are encrypted blobs that carry enough information for them to be used for Vault actions, but they require no storage on disk to track them. Extremely lightweight and scalable, but lack of features.
 - `recovery`.
@@ -54,9 +55,10 @@ Root tokens are tokens that have the `root` policy attached to them. Root tokens
 Normally, when a token holder creates new tokens, these tokens will be created as children of the original token; tokens they created will be children of them; and so on.
 
 When tokens are created, a token accessor is also created and returned. This accessor is a value that acts as a reference to a token and can only be used to perform limited actions:
+
 - Look up a token's properties.
 - Look up a token's capabilities on a path.
 - Renew the token.
 - Revoke the token.
 
-The token _making the call, not the token associated with the accessor, must have appropriate permissions for these functions.
+The token \_making the call, not the token associated with the accessor, must have appropriate permissions for these functions.
