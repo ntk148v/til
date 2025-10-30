@@ -25,7 +25,6 @@
 - **Điểm yếu:** Nóng vội, đôi khi thiếu lắng nghe
 - **Cách lãnh đạo:** Tự tin, định hướng mục tiêu, thích quyền tự chủ
 - **Khi làm việc cùng D:**
-
   - Trình bày ngắn gọn, đi thẳng vào trọng tâm
   - Tập trung vào kết quả, không vòng vo
 
@@ -38,7 +37,6 @@
 - **Điểm yếu:** Thiếu tổ chức, dễ phân tâm
 - **Cách lãnh đạo:** Truyền cảm hứng, khích lệ tinh thần
 - **Khi làm việc cùng I:**
-
   - Thể hiện năng lượng tích cực
   - Ghi nhận đóng góp và ý tưởng của họ
 
@@ -51,7 +49,6 @@
 - **Điểm yếu:** Ngại thay đổi, thiếu quyết đoán
 - **Cách lãnh đạo:** Tạo môi trường an toàn, hỗ trợ và bền vững
 - **Khi làm việc cùng S:**
-
   - Đưa thông tin rõ ràng, không gây áp lực
   - Tạo thời gian để họ thích nghi với thay đổi
 
@@ -64,7 +61,6 @@
 - **Điểm yếu:** Cầu toàn, chậm ra quyết định
 - **Cách lãnh đạo:** Lý trí, dựa trên dữ liệu, tuân thủ quy tắc
 - **Khi làm việc cùng C:**
-
   - Chuẩn bị thông tin kỹ lưỡng, có căn cứ logic
   - Tôn trọng quy trình và tiêu chuẩn
 
