@@ -147,7 +147,6 @@ Biểu đồ sau thể hiện **2 trục hành vi chính khi gặp xung đột:*
 - **Cảm xúc ẩn:** Sợ mất quyền kiểm soát hoặc bị xem là yếu.
 - **Cách phản ứng:** Đối đầu trực tiếp, đẩy nhanh tiến trình.
 - **Cách giải quyết hiệu quả:**
-
   - Đưa thông tin ngắn gọn, tập trung vào **kết quả**.
   - Đặt câu hỏi thay vì phản công (“Bạn muốn đạt điều gì từ việc này?”).
   - Duy trì **sự bình tĩnh và tôn trọng** – điều mà D sẽ phản hồi tích cực.
@@ -160,7 +159,6 @@ Biểu đồ sau thể hiện **2 trục hành vi chính khi gặp xung đột:*
 - **Cảm xúc ẩn:** Sợ bị ghét, sợ bị từ chối.
 - **Cách phản ứng:** Xoa dịu, dùng cảm xúc và lời nói tích cực.
 - **Cách giải quyết hiệu quả:**
-
   - Giữ **giọng điệu thân thiện**, tránh chỉ trích trước đám đông.
   - Nhấn mạnh vào **mối quan hệ và hợp tác**.
   - Hướng họ quay lại **mục tiêu cụ thể** khi cảm xúc quá mạnh.
@@ -173,7 +171,6 @@ Biểu đồ sau thể hiện **2 trục hành vi chính khi gặp xung đột:*
 - **Cảm xúc ẩn:** Sợ mất mối quan hệ, sợ thay đổi.
 - **Cách phản ứng:** Né tránh, im lặng, chịu đựng.
 - **Cách giải quyết hiệu quả:**
-
   - Tạo **không gian an toàn** để họ chia sẻ cảm xúc.
   - Khuyến khích nói lên quan điểm, nhưng **đừng ép**.
   - Dùng từ ngữ nhẹ nhàng, tập trung vào **sự hợp tác và hỗ trợ**.
@@ -186,7 +183,6 @@ Biểu đồ sau thể hiện **2 trục hành vi chính khi gặp xung đột:*
 - **Cảm xúc ẩn:** Sợ sai, sợ bị đánh giá là không đủ năng lực.
 - **Cách phản ứng:** Rút lui, phân tích lý do, giữ khoảng cách.
 - **Cách giải quyết hiệu quả:**
-
   - Đưa **dữ liệu, logic, bằng chứng cụ thể**.
   - Tránh nói quá cảm tính hoặc ép buộc cảm xúc.
   - Đặt trọng tâm vào **quy trình, giải pháp hợp lý**, không vào cá nhân.
@@ -221,7 +217,6 @@ Biểu đồ sau thể hiện **2 trục hành vi chính khi gặp xung đột:*
 - **Hiểu phong cách DISC giúp bạn “đọc vị” phản ứng trong xung đột** và **chọn chiến lược phù hợp**.
 - Một **đội nhóm trưởng thành** không phải là không có mâu thuẫn — mà là **biết xử lý mâu thuẫn một cách tôn trọng, minh bạch và hiệu quả**.
 - Nhà lãnh đạo giỏi là người:
-
   - **Hiểu cảm xúc – nhưng không bị cảm xúc dẫn dắt.**
   - **Giữ trung lập – nhưng không thờ ơ.**
   - **Biết nói điều cần nói – theo cách người khác có thể nghe.**
