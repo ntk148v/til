@@ -6,6 +6,7 @@ Source: <https://clickhouse.com/docs/guides/developer/ttl>
 
 TTL refers to the capability of having rows or columns moved, deleted, or rolled up after a certain interval of time has passed.
 Use cases:
+
 - Removing old data: no surprise, you can delete rows or columns after a specified time interval.
 - Moving data between disks: after a certain amount of time, you can move data between storage volumes - useful for deploying a hot/warm/cold architecture.
 - Data rollup: rollup your older data into various useful aggregations and computations before deleting it.
