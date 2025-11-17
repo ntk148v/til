@@ -27,6 +27,7 @@ Table of Contents:
     - [3.10. Ingress](#310-ingress)
     - [3.11. ConfigMap](#311-configmap)
     - [3.12. Liveness and Readiness](#312-liveness-and-readiness)
+    - [3.13. Gateway](#313-gateway)
   - [4. Security](#4-security)
     - [4.1. Kubernetes API Server Control access](#41-kubernetes-api-server-control-access)
     - [4.2. Secure Pod and Container](#42-secure-pod-and-container)
@@ -70,6 +71,7 @@ Table of Contents:
   - Read and store the configuration
   - Command line interface
 - `kube-api-server`: exposes the Kubernetes API.
+
   - The API is the front end for the Kubernetes control plane.
   - Kubernetes system components communicate only with the API server. API server is the only component that communicates with etcd.
   - Flow:
@@ -79,6 +81,7 @@ Table of Contents:
   ```
 
 - `etcd`: Consistent and highly-available key-value store used as Kubernetes's backing store for all cluster data.
+
   - Explore the Kubernetes configuration and status in etcd:
 
   ```bash
@@ -212,6 +215,7 @@ kubectl get ev --field-selector type=Warning
 | Declarative object configuration | Directories of files | Production projects     | 1+                | Highest        |
 
 - **Imperative commands**:
+
   - User operates directly on live objects in a cluster.
   - The recommended way to get started or to run a one-off task in a cluster.
   - Example:
@@ -230,6 +234,7 @@ kubectl get ev --field-selector type=Warning
     - Commands do not provide a template for creating new objects.
 
 - **Imperative object configuration**:
+
   - `kubectl` command specifies the operation (create, replace, etc.), optional flags and at least one file name.
   - Example:
 
@@ -253,6 +258,7 @@ kubectl get ev --field-selector type=Warning
     - Updates to live objects must be reflected in configuration files, or they will be lost during the next replacement.
 
 - **Declarative object configuration**:
+
   - User operates on object configuration files stored locally, however the user doesn't define the operations to be taken on the files. Create, update, and delete operations are automatically detected per-object by `kubectl`. This enables working on directories, where different operations might be needed for different objects.
   - Example:
 
@@ -291,6 +297,7 @@ kubectl get ev --field-selector type=Warning
 - Each pods gets its own unique IP address and can communicate with all other pods through a flat, NAT-less network.
 - The network is set up by the system administrator or by a Container Network Interface (CNI) plugin, not by Kubernetes itself.
 - For example, CNI Flannel:
+
   - Read more [here](https://chunqi.li/2015/10/10/Flannel-for-Docker-Overlay-Network/)
   - Network communicate - multihost.
   - Flannel also uses etcd to configure the settings and store the status.
@@ -416,6 +423,7 @@ spec:
 ```
 
 - Headless Service:
+
   - Sometimes you don't need load-balancing and a single Service IP. In this case, you can create what are termed _headless service_, by explicitly specifying `"None"` for the cluster IP address (`.spec.clusterIP`).
   - For headless Services, a cluster IP is not allocated. kube-proxy does not handle these Services, and there is no load balancing or proxying done by the platform for them. The cluster DNS returns not just a single `A` record pointing to the service's cluster IP, but multiple `A` records, one for each pod that's part of the service. Clients can there fore query the DNS to get the IPs of all the pods in the service.
   - A headless Service allows a client to connect to whichever Pod it prefers, directly.
@@ -423,19 +431,24 @@ spec:
   ![](./imgs/headless_service.png)
 
 - Expose services externally:
+
   - ClusterIP services are only accessible within the cluster.
   - If you need to make a service available to the outside world, you can do one of the following:
+
     - ~Assign an additional IP to a node and set it as one of the service's `externalIP`~.
     - Set the service's type to `NodePort` and access the service through the node's port(s).
+
       - Kubernetes makes the service avaiable on a network port on all cluster nodes. Because the port is open on the nodes, it's called a node port.
       - Expose pods through a NodePort service:
 
       ![](./imgs/nodeport1.png)
+
       - Expose multiple ports through with a NodePort service:
 
       ![](./imgs/nodeport2.png)
 
     - Ask Kubernetes to provision a LoadBalancer by setting the type to `LoadBalancer`.
+
       - The LoadBalancer stands in front of the nodes and handles the connections coming from the clients. It routes each connection to the service by forwarding it to the node port on one of the nodes.
       - The `LoadBalancer` service type is an extenstion of the `NodePort` type, which makes the service accessible through these node ports.
       - Expose a LoadBalancer service.
@@ -504,6 +517,7 @@ spec:
   - downwardAPI
 - A **PersistentVolume** object represents a storage volume available in the clsuter that can be used to persist application data.
 - A pod transitively references a persistent volume and its underlying storage by referring to a **PersistentVolumeClaim** object that references the **PersistentVolume** object, which then references the underlying storage. This allows the ownership of the persistent volume to be decoupled from the lifecyle of the pod.
+
   - A **PersistentVolumeClaim** represents a user's claim on the persistent volume.
 
   ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/8.4.png)
@@ -511,6 +525,7 @@ spec:
 - Benefits of using persistent volumes and claims:
   - The infrastructure-specific details are now decoupled from the application represents by the pod.
 - Example:
+
   - Create PersistentVolume:
 
   ```yaml
@@ -612,6 +627,7 @@ volumeBindingMode: WaitForFirstConsumer # How volumes of this class are provisio
   - As a file in a pod (via volumes).
   - External image to pull secrets.
 - Generate secrets:
+
   - Using files.
 
   ```bash
@@ -640,7 +656,9 @@ volumeBindingMode: WaitForFirstConsumer # How volumes of this class are provisio
   ```
 
 - Kubernetes Secrets are, by default, stored unencrypted in the API server's underlying data store (etcd). Anyone with API access can retrieve or modify a Secret, and so can anyone with access to etcd. Additionally, anyone who is authorized to create a Pod in a namespace can use that access to read any Secret in that namespace; this includes indirect access such as the ability to create a Deployment.
+
   - [Enable Encryption at Rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/) for Secrest.
+
     - Generate encryption keys: Create strong encryption keys using a secure method. Algorithms like AES-GCM are recommended for both confidentiality and integrity.
 
     ```shell
@@ -709,9 +727,11 @@ kubectl apply -f ns-test2.yaml
 ```
 
 - Understanding the (lack of) isolation between namespaces:
+
   - When two pods created in different namespaces are scheduled to the same cluster node, they both run in the same OS kernel -> an application that break out of its container or consumes too much of the node's resources can ffect the operation of the other application.
 
   ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/10.3.png)
+
   - Kubernetes doesn't provide network isolation between applications running in pods in different namespaces (by default) -> Can use the NetworkPolicy object to configure which applications in which namespaces can connect to which applications in other namespaces.
   - Should not use namespaces to split a single physical cluster into production, staging, and development environments.
 
@@ -833,6 +853,19 @@ spec:
 - The kubelet uses startup probes to know when a container application has started. If such a probe is configured, it disables liveness and readiness checks until it succeeds, making sure those probes don't interfere with the application startup. This can be used to adopt liveness checks on slow stasrting containers, avoiding them getting killed by the kubelet before they are up and running.
 - Check [RedHat's blog](https://developers.redhat.com/blog/2020/11/10/you-probably-need-liveness-and-readiness-probes#example_2__a_jobs_server__no_rest_api_)
 
+### 3.13. Gateway
+
+- The [Gateway API](https://gateway-api.sigs.k8s.io/) is an official Kubernetes project, representing the next generation of APIs for ingress, load balancing and potentially even service mesh interactions. It provides a unified specification for configuring network traffic routing, aiming to be expressive, extensible and aligned with the different roles involved in managing Kubernetes infrastructure and applications.
+- The limitations of Ingress:
+  - Kubernetes Ingress defines rules for exposing HTTP and HTTPS services running within the cluster to external clients. It typically relies on an Ingress controller, a separate piece of software running in the cluster that watches Ingress resources and configures an underlying load balancer or proxy accordingly. While simple path and host-based routing work well with Ingress, its core specification is limited (header-based routing, traffic splitting for canary releases, ...).
+  - The single Ingress resource often blurs the lines of responsibility between infrastructure operators and application developers, potentially leading to configuration conflicts or overly broad permissions.
+- Resource model:
+  - The primary resources are GatewayClass (cluster-scoped), Gateway, and various Route types (HTTPRoute, TCPRoute or GRPCRoute).
+    - GatewayClass manages Gateways of this class.
+    - Gateway requests a specific traffic entrypoint, like a load balancer IP address, based on a GatewayClass.
+    - Route resources contain the specific rules for how traffic arriving at a Gateway listener should be mapped to backend Kubernetes services.
+  - This layered approach allows platform team to manage the underlying infrastructure (GatewayClass, Gateway) and set policies. In contrast, application teams can independently manage the routing logic specific to their services (Route resources) within the established boundaries.
+
 ## 4. Security
 
 ### 4.1. Kubernetes API Server Control access
@@ -851,6 +884,7 @@ spec:
   - _system:serviceaccounts_: all ServiceAccounts in the system.
   - _system:serviceaccounts:\<namespace\>_: includes all ServiceAccounts in a specific namespace.
 - ServiceAccounts:
+
   - Every Pod is associated with a ServiceAccount, which represents the identity of the app running in the pod.
   - Token file: `/var/run/secrets/kubernetes.io/serviceaccount/token`.
   - ServiceAccount's username: _system:serviceaccount:\<namespace\>:\<service account name\>_
@@ -868,6 +902,7 @@ spec:
   - Use ServiceAccount to enforce mountable Secrets or to provide image pull Secrets through the ServiceAccount.
 
 - Authorization plugin - Role-based access control:
+
   - Use user roles as the key factor in determining whether the user may perform the action or not. A subject is associated with one or more roles and each role is allowed to perform certain verbs on certain resources.
   - RBAC authorization rules are configured through 4 resources, which can be grouped into 2 groups:
     - **Role** and **ClusterRoles**, which specify which verbs can be performed on which resources.
@@ -876,6 +911,7 @@ spec:
   - RoleBindings and Roles are namespaced; ClusterRoles and ClusterRoleBindings aren't.
 
   ![](https://kublr.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-13-at-10.58.16-AM.png)
+
   - Create **Role**.
 
   ```yaml
@@ -942,11 +978,13 @@ kubectl exec pod-with-host-network ifconfig
 ```
 
 - Binding to a host port without using the host's network namespace.
+
   - **NodePort** vs **hostPort**: **hostPort** a connection to the node's port is forwarded directly to the pod running on that node, whereas with a Nodeport service, a connection to the node's port is forwarded to a randomly selected pod.
 
   ![](https://t1.daumcdn.net/cfile/tistory/99F6953F5F1FB6001A)
 
   ![](https://t1.daumcdn.net/cfile/tistory/999DA53E5F1FB61E1A)
+
   - Only one instance of the pod can be scheduled to each node.
 
 - Container's security context.
@@ -974,8 +1012,10 @@ spec:
 ```
 
 - Security-related features in pods:
+
   - **PodSecurityPolicy** is a cluster-level resource, which defines what security-related features users can or can't use in their pods.
   - **PodSecurityPolicy** resource defines things:
+
     - Whether a pod can use the host's IPC, PID, or Network namespaces.
     - Which host ports a pod can bind to.
     - What user IDs a container can run as.
@@ -998,6 +1038,7 @@ spec:
     ```
 
 - Isolate the pod network:
+
   - How the network between pods can be secured by limiting which pods can talk to which pods -> depends on which container networking plugin is used in the cluster -> If plugin supports it, configure network isolation with **NetworkPolicy** resources.
 
   - Deny all:
@@ -1056,6 +1097,7 @@ Source:
 ![](https://learnk8s.io/a/92543837cbecdd1189ee0a6d68fa9434.svg)
 
 - Connecting Deployment and Service:
+
   - The Service selector should match at least one Pod's label
   - The Service's `targetPort` should match the `containerPort` of the Pod
   - The Service `port` can by any number. Multiple Services can use the same port because they have different IP addresses assigned.
@@ -1108,6 +1150,7 @@ Source:
   ```
 
 - Connecting Service and Ingress:
+
   - The Ingress has to know how to retrieve the Service to then connect the Pods and route traffic.
   - The Ingress retrieves the right Service by name and port exposed.
   - The `service.port` of the Ingress should match the `port` of the Service
@@ -1185,6 +1228,7 @@ Source:
     - `kubectl get pod <pod name>` is useful to extract the YAML definition of the Pod as stored in Kubernetes.
     - `kubectl exec -ti <pod name>` -- bash is useful to run an interactive command within one of the containers of the Pod.
   - Common errors:
+
     - Startup errors include:
       - _ImagePullBackoff_:
         - The image name is invalid.
@@ -1196,7 +1240,9 @@ Source:
       - _RegistryUnavailable_:
       - _InvalidImageName_:
     - Runtime errors include:
+
       - _CrashLoopBackOff_:
+
         - There's an error in the application that prevents from starting.
         - You misconfigured the container.
         - The Liveness probe failed too many times.
@@ -1206,6 +1252,7 @@ Source:
         ```
 
       - _RunContainerError_:
+
         - Mount a not-existent volume such as ConfigMap or Secrets
         - Mount a read-only volume as read-write
 
@@ -1222,6 +1269,7 @@ Source:
       - _SetupNetworkError_
       - _TeardownNetworkError_
       - _Pods in a Pending state_:
+
         - The cluster doesn't have enough resources such as CPU and memory to run the Pod.
         - The current Namespace has a ResourceQuota object and creating the Pod will make the Namespace go over the quota.
         - The Pod is bound to a Pending PersistentVolumeClaim.
@@ -1232,6 +1280,7 @@ Source:
         ```
 
       - _Pods in a not Ready state_:
+
         - The Readiness probe is failing -> the Pod isn't attached to the Service, and no traffic is forwarded to that instance.
 
         ```shell
@@ -1239,6 +1288,7 @@ Source:
         ```
 
 - Troubleshooting Services:
+
   - If Pods are Running and Ready, but you're still unable to receive a response from your app, you should check if the Service is configured correctly.
   - Services are designed to route the traffic to Pods based on their labels.
 
@@ -1267,6 +1317,7 @@ Source:
   ````
 
 - Troubleshooting Ingress:
+
   - Pods - OK, Service - OK -> Check Ingress.
 
   ```shell
