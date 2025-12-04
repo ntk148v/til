@@ -23,7 +23,6 @@ Table of contents:
     - [4.2. When to choose column-oriented databases](#42-when-to-choose-column-oriented-databases)
   - [5. Hybrid and emerging options](#5-hybrid-and-emerging-options)
 
-
 Database performance relies heavily on the type of database storage you choose. Most organizations use either a row database, a column database or a combination of both.
 
 Row-oriented databases are ideal for some access patterns, specifically transactional processing, while column-oriented databases are better suited for analytical processing.
@@ -81,7 +80,7 @@ John Mary James | Male Female Male | USA Canada Australia | 63 29 48
 ### 2.2. Cons
 
 - **Slower for transactional queries**: Columnar databases are not optimized for transactional workloads that require frequent inserts, updates, or deletes of individual records. Modifying a single record may require updating multiple column files, leading to increased latency. Columnar databases prefer to process inserts, updates and deletes (or merges) as batch operations.
-    - For example, if you wanted to add a row of data, each value from the new row has to be added to the correct block of the existing database. This can become complicated when there are many column
+  - For example, if you wanted to add a row of data, each value from the new row has to be added to the correct block of the existing database. This can become complicated when there are many column
 - **Complex schema management**: Columnar databases may require more careful schema design and management, as changes to the schema can be more involved compared to row databases.
 - **Less suitable for real-time applications**: Applications that require immediate consistency and low-latency access to individual records may find columnar databases less suitable.
 
