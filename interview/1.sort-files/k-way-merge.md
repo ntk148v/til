@@ -8,10 +8,10 @@ Dưới đây là phần giải thích đầy đủ và có hệ thống:
 
 Bạn có **K danh sách đã được sắp xếp theo thứ tự tăng dần**, ví dụ:
 
-* L1: 1, 9, 17
-* L2: 2, 3, 20
-* L3: 4, 8, 15
-* … đến LK
+- L1: 1, 9, 17
+- L2: 2, 3, 20
+- L3: 4, 8, 15
+- … đến LK
 
 Yêu cầu: trộn K danh sách này thành một danh sách duy nhất vẫn theo thứ tự tăng dần.
 
@@ -23,7 +23,7 @@ Nếu trộn hai danh sách (2-way merge) thì dễ. Nhưng khi số danh sách 
 
 Để tìm phần tử tiếp theo nhỏ nhất, ta chỉ cần nhìn **phần tử đầu tiên** của mỗi danh sách (vì từng danh sách đã được sắp xếp).
 
-Tuy nhiên, nếu K lớn, mỗi lần tìm phần tử nhỏ nhất bằng cách quét tất cả K phần tử đầu là O(K), và tổng thời gian sẽ là O(N*K) — rất chậm.
+Tuy nhiên, nếu K lớn, mỗi lần tìm phần tử nhỏ nhất bằng cách quét tất cả K phần tử đầu là O(K), và tổng thời gian sẽ là O(N\*K) — rất chậm.
 
 ---
 
@@ -33,15 +33,14 @@ Giải pháp chuẩn cho K-way merge là sử dụng **min-heap** (priority queu
 
 1. Đưa phần tử đầu của mỗi danh sách vào một min-heap.
 2. Lặp lại cho đến khi heap rỗng:
-
-   * Lấy phần tử nhỏ nhất từ heap (O(log K)).
-   * Đẩy phần tử tiếp theo của danh sách mà phần tử đó thuộc về vào heap (nếu còn).
+   - Lấy phần tử nhỏ nhất từ heap (O(log K)).
+   - Đẩy phần tử tiếp theo của danh sách mà phần tử đó thuộc về vào heap (nếu còn).
 
 ### Độ phức tạp:
 
-* Có tổng cộng N phần tử.
-* Mỗi phần tử được push và pop một lần.
-* Chi phí mỗi thao tác là log K.
+- Có tổng cộng N phần tử.
+- Mỗi phần tử được push và pop một lần.
+- Chi phí mỗi thao tác là log K.
 
 => **Tổng thời gian = O(N log K)**
 => Đây là mức tối ưu trong thực tế.
@@ -50,9 +49,9 @@ Giải pháp chuẩn cho K-way merge là sử dụng **min-heap** (priority queu
 
 ## 4. Ứng dụng thực tế
 
-* **External Merge Sort** (sắp xếp dữ liệu lớn hơn bộ nhớ): chia file thành nhiều “run” đã sắp xếp rồi dùng K-way merge để hợp nhất.
-* Hệ thống log phân tán: hợp nhất log từ nhiều máy đã sắp xếp theo timestamp.
-* Các thuật toán streaming, database engines, hệ thống tìm kiếm (search engines).
+- **External Merge Sort** (sắp xếp dữ liệu lớn hơn bộ nhớ): chia file thành nhiều “run” đã sắp xếp rồi dùng K-way merge để hợp nhất.
+- Hệ thống log phân tán: hợp nhất log từ nhiều máy đã sắp xếp theo timestamp.
+- Các thuật toán streaming, database engines, hệ thống tìm kiếm (search engines).
 
 ---
 
@@ -73,7 +72,6 @@ Heap: [4, 9, 20]
 
 Nếu bạn muốn, tôi có thể cung cấp:
 
-* Mã minh họa (Python, Java, C++, v.v.)
-* So sánh với 2-way merge
-* Phân tích chi tiết hơn về hiệu suất bộ nhớ hoặc external sorting.
-
+- Mã minh họa (Python, Java, C++, v.v.)
+- So sánh với 2-way merge
+- Phân tích chi tiết hơn về hiệu suất bộ nhớ hoặc external sorting.
