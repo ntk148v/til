@@ -48,7 +48,7 @@ Source: <https://memgraph.com/docs/database-management/system-configuration#reco
 
 For optimal system performance, the vm.max_map_count value should be chosen in accordance with your system’s RAM, aiming for approximately one memory map area per 128 KB of system memory.
 
->[!warn]
+> [!warn]
 > The recommended values below are starting points and may need to be increased depending on your workload. If you encounter `munmap` errors or crashes due to `bad_alloc` errors, you should try increasing the `vm.max_map_count` value beyond the recommended amount.
 
 | Amount of RAM | vm.max_map_count value    |
