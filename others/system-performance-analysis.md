@@ -1,6 +1,7 @@
 # Briefing on Systems Performance Analysis
 
 Table of contents:
+
 - [Briefing on Systems Performance Analysis](#briefing-on-systems-performance-analysis)
   - [1. Executive Summary](#1-executive-summary)
   - [2. Core Methodologies and Concepts](#2-core-methodologies-and-concepts)
@@ -62,9 +63,9 @@ The source outlines several structured approaches to guide performance investiga
 ### 2.3. Observability vs. Experimentation
 
 - **Observability**: The practice of understanding a system's internal state through passive observation of its outputs. This is the preferred approach for production environments as it minimizes perturbation. It includes tools that use:
-    - **Counters**: Kernel-maintained statistics (e.g., from `/proc`, `sar`).
-    - **Profiling**: Sampling data to build a statistical picture of behavior (e.g., CPU sampling with `perf`).
-    - **Tracing**: Recording individual events for detailed analysis (e.g., tracing syscalls with `bpftrace`).
+  - **Counters**: Kernel-maintained statistics (e.g., from `/proc`, `sar`).
+  - **Profiling**: Sampling data to build a statistical picture of behavior (e.g., CPU sampling with `perf`).
+  - **Tracing**: Recording individual events for detailed analysis (e.g., tracing syscalls with `bpftrace`).
 - **Experimentation**: The practice of actively modifying a system's state to determine its performance characteristics. This is done using benchmark tools (`fio`, `iperf`) and is best suited for test or development environments, as it can be disruptive.
 
 ## 3. Modern Observability Landscape
