@@ -80,3 +80,25 @@ remote_read:
   - url: http://scraper3:9090/api/v1/read
     read_recent: true
 ```
+
+The disadvantages:
+
+1. Operational
+
+Hashmod sharding is static. Adding or removing Prometheus instances changes the modulus value and forces a full redistribution of scrape targets. This causes:
+
+- Large-scale target churn
+- Increased scrape failures during transitions
+- Potential dual-scraping or gaps while the fleet stabilizes
+
+2. Uneven Load Distribution With Heterogeneous Targets
+
+Hashmod sharding provides uniform distribution by count, not by cost or cardinality. If some jobs are heavier (high cardinality, expensive exporters, long scrape durations), shards become imbalanced even if target counts are equal.
+
+3. Difficulties With Global Querying and Federation
+
+Because each shard stores only a portion of the metrics:
+
+- Federation layers or external query engines must aggregate across shards.
+- Debugging becomes harder because a target’s data lives on only one shard.
+- Global alerting requires a separate aggregator or Thanos Ruler; local rules cannot be global.
