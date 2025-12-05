@@ -32,8 +32,8 @@ Because it's rarely efficient or necessary to load a program’s entire memory f
 - If physical RAM is scarce (or many processes are running), the OS may move seldom-used (inactive) pages from RAM to a special disk area (called **swap space**), freeing up RAM for active pages. Later, if those pages are needed again, they are read back into RAM.
 - This swapping (or paging) to disk allows the system to support workloads that, in total, need more memory than the physical RAM alone — at the cost of performance, since disk I/O is much slower than RAM access.
 - Swapping vs. Paging:
-    - Paging moves individual pages between RAM and disk.
-    - Swapping (much rarer today) refers to moving the entire process image out of RAM.
+  - Paging moves individual pages between RAM and disk.
+  - Swapping (much rarer today) refers to moving the entire process image out of RAM.
 
 ## 4. Benefits of virtual memory
 
@@ -44,8 +44,8 @@ Virtual memory does more than just make your computer's memory go further. The m
 - Memory Mapping: Memory mapping is used to map image and data files into a processes address space. In memory mapping, the contents of a file are linked directly into the virtual address space of a process.
 - Fair Physical Memory Allocation: The memory management subsystem allows each running process in the system a fair share of the physical memory of the system,
 - Shared Virtual Memory:
-    - Although virtual memory allows processes to have separate (virtual) address spaces, there are times when you need processes to share memory. For example there could be several processes in the system running the bash command shell. Rather than have several copies of bash, one in each processes virtual address space, it is better to have only one copy in physical memory and all of the processes running bash share it. Dynamic libraries are another common example of executing code shared between several processes.
-    - Shared memory can also be used as an Inter Process Communication (IPC) mechanism, with two or more processes exchanging information via memory common to all of them. Linux supports the Unix TM System V shared memory IPC.
+  - Although virtual memory allows processes to have separate (virtual) address spaces, there are times when you need processes to share memory. For example there could be several processes in the system running the bash command shell. Rather than have several copies of bash, one in each processes virtual address space, it is better to have only one copy in physical memory and all of the processes running bash share it. Dynamic libraries are another common example of executing code shared between several processes.
+  - Shared memory can also be used as an Inter Process Communication (IPC) mechanism, with two or more processes exchanging information via memory common to all of them. Linux supports the Unix TM System V shared memory IPC.
 
 ## 5. Costs and constraints
 
