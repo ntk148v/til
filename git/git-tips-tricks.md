@@ -158,3 +158,12 @@ vim .git/config
   fetch = +refs/heads/*:refs/remotes/origin/*
   fetch = +refs/notes/*:refs/notes/*
 ```
+
+## 6. Checkout Github pull request
+
+```shell
+git fetch origin pull/$ID/head:$BRANCHNAME
+# where $ID is the pull request id and $BRANCHNAME is the name of the new branch that you want to create.
+
+git checkout $BRANCHNAME
+```
