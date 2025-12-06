@@ -5,6 +5,7 @@
 HugePage sizes: Typically 2 MB (HugePages) or 1 GB (Gigantic Pages), depending on architecture and kernel configuration.
 
 HugePages are a Linux kernel feature that allows the OS to use memory pages significantly larger than the default 4KB page size. They are primarily used to improve performance for memory-intensive workloads.
+
 - Standard page size: 4 KB on most x86_64 systems.
 - HugePage sizes: Typically 2 MB (HugePages) or 1 GB (Gigantic Pages), depending on architecture and kernel configuration.
 
