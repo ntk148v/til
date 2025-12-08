@@ -14,7 +14,8 @@
     <a href="https://github.com/ntk148v/til/contributors"><img src="https://img.shields.io/github/contributors/ntk148v/til?colorA=192330&colorB=81b29a&style=for-the-badge"></a>
 </p>
 
-> [!IMPORTANT] > **May contain traces of actual knowledge! For even _more_ amazing (and probably less humorous) TILs, check out [Deepwiki](https://deepwiki.com/ntk148v/til/)**.
+> [!IMPORTANT]
+> **May contain traces of actual knowledge! For even _more_ amazing (and probably less humorous) TILs, check out [Deepwiki](https://deepwiki.com/ntk148v/til/)**.
 
 A wild collection of fleeting thoughts and tiny discoveries! This is where I dump all the small, shiny things I learn daily across tech, hobbies, and life. Think of these as bite-sized knowledge nuggets, not full-course meals. They're short, sweet, and often delightfully incomplete (you've been warned!) :bow: :bow:
 
