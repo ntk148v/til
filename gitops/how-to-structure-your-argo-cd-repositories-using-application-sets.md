@@ -178,19 +178,19 @@ spec:
           - clusters: {}
   template:
     metadata:
-      name: '{{path.basename}}-{{name}}'
+      name: "{{path.basename}}-{{name}}"
     spec:
       project: default
       source:
         repoURL: https://github.com/codefresh-contrib/gitops-cert-level-2-examples.git
         targetRevision: HEAD
-        path: '{{path}}'
+        path: "{{path}}"
       destination:
-        server: '{{server}}'
-        namespace: '{{path.basename}}'
+        server: "{{server}}"
+        namespace: "{{path.basename}}"
 ```
 
-This generator says “take all the apps under application-sets/example-apps and deploy them to all clusters currently defined in Argo CD”.  It doesn’t matter how many clusters are currently connected or how many applications exist in the Git repo. The Application Set generator will automatically create all the possible combinations and also continuously redeploy as you add new clusters or new applications.
+This generator says “take all the apps under application-sets/example-apps and deploy them to all clusters currently defined in Argo CD”. It doesn’t matter how many clusters are currently connected or how many applications exist in the Git repo. The Application Set generator will automatically create all the possible combinations and also continuously redeploy as you add new clusters or new applications.
 
 ## Best practice - Use three-level structure
 
@@ -225,14 +225,14 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-  - git:
-    repoURL: https://github.com/kostis-codefresh/many-appsets-demo.git
-    revision: HEAD
-    directories:
-    - path: apps/*/envs/qa
+    - git:
+      repoURL: https://github.com/kostis-codefresh/many-appsets-demo.git
+      revision: HEAD
+      directories:
+        - path: apps/*/envs/qa
   template:
   metadata:
-    name: '{{index .path.segments 1}}-{{index .path.segments 3}}'
+    name: "{{index .path.segments 1}}-{{index .path.segments 3}}"
   spec:
     # The project the application belongs to.
     project: default
@@ -241,12 +241,12 @@ spec:
     source:
       repoURL: https://github.com/kostis-codefresh/many-appsets-demo.git
       targetRevision: HEAD
-      path: '{{.path.path}}'
+      path: "{{.path.path}}"
 
     # Destination cluster and namespace to deploy the application
     destination:
       server: https://kubernetes.default.svc
-      namespace: '{{index .path.segments 1}}-{{index .path.segments 3}}'
+      namespace: "{{index .path.segments 1}}-{{index .path.segments 3}}"
 ```
 
 ## Best practice - use a Git repository per team
