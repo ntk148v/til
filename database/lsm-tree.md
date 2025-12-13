@@ -44,7 +44,43 @@ The immutable memtable is then flushed to disk as an SST (Sorted String Table) f
 - The data is organized into data blocks, which are compressed using configurable compression algorithms (for example, Snappy, Zlib).
 - Index blocks provide a mapping between key ranges and the corresponding data blocks, enabling efficient lookup of key-value pairs.
 - Filter blocks containing **bloom filters** allow for quickly determining if a key might exist in an SST file or not, skipping entire files during lookups.
-  - A bloom filter is a space-efficient data structure that helps quickly determine whether a key might exist in that file or not, avoiding unnecessary disk reads.
+  - A [bloom filter](https://systemdesign.one/bloom-filters-explained/) is a space-efficient data structure that helps quickly determine whether a key might exist in that file or not, avoiding unnecessary disk reads.
+    - The bloom filter data structure is a bit array of length n. The position of the buckets is indicated by the index (0–9) for a bit array of length ten. All the bits in the bloom filter are set to zero when the bloom filter is initialized (an empty bloom filter). The bloom filter discards the value of the items but stores only a set of bits identified by the execution of hash functions on the item.
+
+    ![empty bloom filter](https://systemdesign.one/bloom-filters-explained/empty-bloom-filter.webp)
+
+    - The following operations are executed to add an item to the bloom filter:
+      - the item is hashed through k hash functions
+      - the modulo n (length of bit array) operation is executed on the output of the hash functions to identify the k array positions (buckets)
+      - the bits at all identified buckets are set to one
+
+      ![adding an item](https://systemdesign.one/bloom-filters-explained/add-item-bloom-filter.webp)
+
+      - The items red and blue are added to the bloom filter. The buckets that should be set to one for the item red are identified by the execution of the modulo operator on the computed hash value.
+
+      ```text
+      h1(red) mod 10 = 1
+      h2(red) mod 10 = 3
+      h3(red) mod 10 = 5
+      ```
+
+    - The following operations are executed to check if an item is a member of the bloom filter:
+      - the item is hashed through the same k-hash functions
+      - the modulo n (length of bit array) operation is executed on the output of the hash functions to identify the k array positions (buckets)
+      - verify if all the bits at identified buckets are set to one
+
+    ![check membership](https://systemdesign.one/bloom-filters-explained/item-membership-bloom-filter.webp)
+
+    - If any of the identified bits are set to zero, the item is not a member of the bloom filter. If all the bits are set to one, the item **might** be a member of the bloom filter.  The uncertainty about the membership of an item is due to the possibility of some bits being set to one by different items or due to hash function collisions.
+
+    ```text
+    h1(blue) mod 10 = 4
+    h2(blue) mod 10 = 5
+    h3(blue) mod 10 = 9
+    ```
+
+    - The item blue might be a member of the bloom filter as all the bits are set to one.
+
 - The footer section of an SST file contains metadata about the file, such as the number of entries, compression algorithms used, and pointers to the index and filter blocks.
 
 ## 5. Write path
