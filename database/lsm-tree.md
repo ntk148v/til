@@ -48,14 +48,12 @@ The immutable memtable is then flushed to disk as an SST (Sorted String Table) f
     - The bloom filter data structure is a bit array of length n. The position of the buckets is indicated by the index (0–9) for a bit array of length ten. All the bits in the bloom filter are set to zero when the bloom filter is initialized (an empty bloom filter). The bloom filter discards the value of the items but stores only a set of bits identified by the execution of hash functions on the item.
 
     ![empty bloom filter](https://systemdesign.one/bloom-filters-explained/empty-bloom-filter.webp)
-
     - The following operations are executed to add an item to the bloom filter:
       - the item is hashed through k hash functions
       - the modulo n (length of bit array) operation is executed on the output of the hash functions to identify the k array positions (buckets)
       - the bits at all identified buckets are set to one
 
       ![adding an item](https://systemdesign.one/bloom-filters-explained/add-item-bloom-filter.webp)
-
       - The items red and blue are added to the bloom filter. The buckets that should be set to one for the item red are identified by the execution of the modulo operator on the computed hash value.
 
       ```text
@@ -70,8 +68,7 @@ The immutable memtable is then flushed to disk as an SST (Sorted String Table) f
       - verify if all the bits at identified buckets are set to one
 
     ![check membership](https://systemdesign.one/bloom-filters-explained/item-membership-bloom-filter.webp)
-
-    - If any of the identified bits are set to zero, the item is not a member of the bloom filter. If all the bits are set to one, the item **might** be a member of the bloom filter.  The uncertainty about the membership of an item is due to the possibility of some bits being set to one by different items or due to hash function collisions.
+    - If any of the identified bits are set to zero, the item is not a member of the bloom filter. If all the bits are set to one, the item **might** be a member of the bloom filter. The uncertainty about the membership of an item is due to the possibility of some bits being set to one by different items or due to hash function collisions.
 
     ```text
     h1(blue) mod 10 = 4
