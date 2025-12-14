@@ -11,6 +11,7 @@
   - [When does CPU matter?](#when-does-cpu-matter)
   - [By/Without and Ignoring/On](#bywithout-and-ignoringon)
   - [Authentication and encryption for Prometheus and its exporters](#authentication-and-encryption-for-prometheus-and-its-exporters)
+  - [Prometheus and fsync](#prometheus-and-fsync)
 
 ## `avg_over_time`
 
@@ -159,3 +160,15 @@ To avoid recalculating the same thing over and over, you can use `recording rule
 ## Authentication and encryption for Prometheus and its exporters
 
 Source: <https://0x63.me/tls-between-prometheus-and-its-exporters/>
+
+## Prometheus and fsync
+
+Prometheus `fsync` refers to the crucial disk synchronization operations, especially within its Time Series Database (TSDB) and its Write-Ahead Log (WAL), ensuring recently ingested metrics data is safely written to durable storage to prevent loss during crashes, often manifesting as performance metrics like `prometheus_tsdb_wal_fsync_duration_seconds` which can indicate I/O bottlenecks if too slow.
+
+What fsync means in Prometheus:
+
+- Data Durability: Prometheus uses a Write-Ahead Log (WAL) to buffer incoming metrics before committing them to the main database files.
+- fsync() System Call: To guarantee data isn't lost on power failure, Prometheus periodically calls fsync() to force this buffered data from the operating system's cache to the physical disk.
+- Performance Impact: This disk write is a critical operation, and if the underlying storage is slow, fsync calls take longer, impacting Prometheus's ingestion rate and overall performance.
+
+I found a link: <https://groups.google.com/g/prometheus-users/c/Oy1qI3Og9ww> but the logic seems to be changed in the current source code (v3.8.0).
