@@ -16,7 +16,8 @@ Below are **8 focused, high-quality references** (official docs, deep dives, and
 
 5. **VictoriaMetrics articles & performance tips (docs/blogs)** — collection of articles including string interning, performance techniques and part layout (timestamps/values per part). Supports columnar/time/value separation and memory optimizations. ([docs.victoriametrics.com][5])
    _Use for:_ concrete optimizations (string interning, selective loading).
-s
+   s
+
 # Comparative / independent analyses and case studies
 
 6. **Prometheus — Storage (official docs)** — Prometheus TSDB block model, 2-hour blocks, per-block index; supports the discussion of Prometheus’ per-block index and compaction behavior. ([prometheus.io][6])
@@ -53,8 +54,8 @@ s
 
 While both systems share the same goal (ingesting and querying metrics), their internal architectures optimize for completely different patterns.
 
-  * **Prometheus** is optimized for **fast recent reads**. It sacrifices memory and write-flexibility to keep the "Head" of data instantly accessible in RAM.
-  * **VictoriaMetrics** is optimized for **high-volume writes and storage efficiency**. It uses a Log-Structured Merge (LSM) tree approach (similar to ClickHouse or LevelDB) to decouple ingestion from storage, making it resilient to high churn and massive scale.
+- **Prometheus** is optimized for **fast recent reads**. It sacrifices memory and write-flexibility to keep the "Head" of data instantly accessible in RAM.
+- **VictoriaMetrics** is optimized for **high-volume writes and storage efficiency**. It uses a Log-Structured Merge (LSM) tree approach (similar to ClickHouse or LevelDB) to decouple ingestion from storage, making it resilient to high churn and massive scale.
 
 ## 1. The Indexing Engine: Inverted Index vs. LSM Tree
 
@@ -64,23 +65,23 @@ The most critical difference lies in how they map a Label (e.g., `pod="A"`) to t
 
 Prometheus uses a search-engine style index designed for **immutable blocks**.
 
-  * **Structure:**
-      * **Posting Lists:** A sorted list of Series IDs for every label value.
-      * **Offset Table:** A lookup table pointing to where the Posting List begins on disk.
-  * **The Workflow:**
-      * **Write:** New series live in the **Head Block** (RAM). When this block flushes (every 2h), Prometheus must "stop the world" to rewrite the entire index sequentially.
-      * **High Churn Penalty:** If you add 100k ephemeral pods, the Head Block explodes in size because it must track every mapping in memory. Flushing requires rewriting the entire Posting List structure, leading to massive I/O and CPU spikes.
+- **Structure:**
+  - **Posting Lists:** A sorted list of Series IDs for every label value.
+  - **Offset Table:** A lookup table pointing to where the Posting List begins on disk.
+- **The Workflow:**
+  - **Write:** New series live in the **Head Block** (RAM). When this block flushes (every 2h), Prometheus must "stop the world" to rewrite the entire index sequentially.
+  - **High Churn Penalty:** If you add 100k ephemeral pods, the Head Block explodes in size because it must track every mapping in memory. Flushing requires rewriting the entire Posting List structure, leading to massive I/O and CPU spikes.
 
 ### VictoriaMetrics: The Key-Value LSM Tree
 
 VictoriaMetrics does **not** use a separate index file format. It treats index entries as simple Key-Value pairs in an LSM tree (the `MergeSet`).
 
-  * **Structure:**
-      * **Keys:** `Prefix + LabelName + LabelValue + MetricID`.
-      * **Storage:** These keys are appended to a log structure and sorted in the background.
-  * **The Workflow:**
-      * **Write:** Adding a new series is just an **append-only** operation. VM writes a new key to the end of the LSM tree.
-      * **High Churn Advantage:** There is no "read-modify-write" penalty. Creating 100k new pods just means writing 100k small keys. The heavy lifting (sorting/merging) happens lazily in the background.
+- **Structure:**
+  - **Keys:** `Prefix + LabelName + LabelValue + MetricID`.
+  - **Storage:** These keys are appended to a log structure and sorted in the background.
+- **The Workflow:**
+  - **Write:** Adding a new series is just an **append-only** operation. VM writes a new key to the end of the LSM tree.
+  - **High Churn Advantage:** There is no "read-modify-write" penalty. Creating 100k new pods just means writing 100k small keys. The heavy lifting (sorting/merging) happens lazily in the background.
 
 <!-- end list -->
 
@@ -105,21 +106,21 @@ This explains why VictoriaMetrics has "smoother" disk usage despite flushing mor
 
 ### Prometheus: The WAL (Write Ahead Log)
 
-  * **Strategy:** Immediate durability via a WAL file.
-  * **Write Pattern:** Every sample is appended to the WAL file on disk.
-      * **Compression:** None/Low (for speed).
-      * **Payload:** Large (Raw bytes).
-  * **Fsync:** Infrequent (usually on segment rotation or checkpoint). Relying on OS page cache.
-  * **Consequence:** High "Write Amplification" during compaction. The disk is constantly busy writing raw data, and then gets hammered every 2 hours when the Head Block flushes.
+- **Strategy:** Immediate durability via a WAL file.
+- **Write Pattern:** Every sample is appended to the WAL file on disk.
+  - **Compression:** None/Low (for speed).
+  - **Payload:** Large (Raw bytes).
+- **Fsync:** Infrequent (usually on segment rotation or checkpoint). Relying on OS page cache.
+- **Consequence:** High "Write Amplification" during compaction. The disk is constantly busy writing raw data, and then gets hammered every 2 hours when the Head Block flushes.
 
 ### VictoriaMetrics: The Buffered Flush
 
-  * **Strategy:** Periodic durability via compressed micro-parts.
-  * **Write Pattern:** Data is buffered in RAM (`inmemoryPart`) and flushed every \~1-5 seconds.
-      * **Compression:** High (ZSTD-like + Gorilla).
-      * **Payload:** Tiny (Data is compressed *before* writing).
-  * **Fsync:** **Frequent** (Every flush).
-  * **Consequence:** Even though VM calls `fsync` every few seconds, the **payload is so small** (50KB vs 2MB) that modern SSDs handle it effortlessly. This avoids the "Stop the World" I/O spikes seen in Prometheus.
+- **Strategy:** Periodic durability via compressed micro-parts.
+- **Write Pattern:** Data is buffered in RAM (`inmemoryPart`) and flushed every \~1-5 seconds.
+  - **Compression:** High (ZSTD-like + Gorilla).
+  - **Payload:** Tiny (Data is compressed _before_ writing).
+- **Fsync:** **Frequent** (Every flush).
+- **Consequence:** Even though VM calls `fsync` every few seconds, the **payload is so small** (50KB vs 2MB) that modern SSDs handle it effortlessly. This avoids the "Stop the World" I/O spikes seen in Prometheus.
 
 **Critical Trade-off:** VictoriaMetrics sacrifices the last \~5 seconds of data (held in RAM buffer) in the event of a hard crash (`kill -9`) to achieve this massive I/O gain. Prometheus recovers everything via WAL replay.
 
@@ -134,11 +135,11 @@ This explains why VictoriaMetrics has "smoother" disk usage despite flushing mor
 
 ## Summary Recommendation
 
-  * **Stick with Prometheus if:** You have a small-to-medium static environment, you need 100% standard adherence, and you cannot tolerate even 1 second of data loss on a crash.
-  * **Switch to VictoriaMetrics if:**
-    1.  **High Churn:** You run Kubernetes with frequent deployments or auto-scaling.
-    2.  **Long Retention:** You need to store months/years of data cheaply.
-    3.  **Performance Issues:** Your Prometheus is OOMing or using too much CPU.
+- **Stick with Prometheus if:** You have a small-to-medium static environment, you need 100% standard adherence, and you cannot tolerate even 1 second of data loss on a crash.
+- **Switch to VictoriaMetrics if:**
+  1.  **High Churn:** You run Kubernetes with frequent deployments or auto-scaling.
+  2.  **Long Retention:** You need to store months/years of data cheaply.
+  3.  **Performance Issues:** Your Prometheus is OOMing or using too much CPU.
 
 ### Final "Under the Hood" Visualization
 
