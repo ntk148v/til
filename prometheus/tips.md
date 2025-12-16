@@ -172,3 +172,21 @@ What fsync means in Prometheus:
 - Performance Impact: This disk write is a critical operation, and if the underlying storage is slow, fsync calls take longer, impacting Prometheus's ingestion rate and overall performance.
 
 I found a link: <https://groups.google.com/g/prometheus-users/c/Oy1qI3Og9ww> but the logic seems to be changed in the current source code (v3.8.0).
+
+## `min-block-duration` and `max-block-duration`
+
+In Prometheus, the `--storage.tsdb.min-block-duration` and `--storage.tsdb.max-block-duration` flags control the time range of data stored in individual, on-disk data blocks
+- `--storage.tsdb.min-block-duration`: This flag sets the minimum duration for which data is held in memory (the "head" block) before being persisted to disk as an initial data block. The default value is 2 hours. Lowering this value can reduce Prometheus's memory usage because data is written to disk more frequently.
+- `--storage.tsdb.max-block-duration`: This flag sets the maximum duration a block of data may span before it is compacted with other adjacent blocks into a larger block. The default value is a dynamic calculation based on retention time, but often effectively 2 hours for initial blocks
+
+**Usage and recommendations**
+
+- Default Operation: By default, Prometheus creates 2-hour blocks which are then compacted into larger blocks in the background, spanning up to 10% of the total retention time or 31 days (whichever is smaller).
+- Memory Management: If you experience high memory usage, you might consider lowering the min-block-duration, which causes Prometheus to write data to disk more often, reducing the memory footprint of the head block.
+
+The max open files limit is a system configuration that restricts the number of file handles a single process can have open simultaneously. The block duration settings relate to this in the following ways:
+- More Blocks, More Files: Each on-disk block in the Prometheus TSDB is made up of several files (index, chunks, meta.json, etc.). More blocks mean more files overall.
+- Compaction and File Management:
+  - Compaction operations temporarily involve opening multiple source blocks and a new destination block simultaneously, requiring more file handles during that time.
+  - A setup with many small blocks (due to a low min-block-duration or an unusual max-block-duration setting) can increase the number of files the system needs to manage, potentially bumping into the max open files limit if the limit is set too low.
+- Memory Mapping (mmap): Prometheus uses memory-mapping (mmap) to access older data blocks on disk efficiently. Each memory-mapped file consumes a file handle. The sheer volume of blocks, rather than the duration setting itself, is the primary concern here, which is why Prometheus instances managing terabytes of data require a high max open files limit.
