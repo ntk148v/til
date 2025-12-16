@@ -115,6 +115,7 @@ Observability is most effective when metrics, logs, and traces are correlated an
 3. **Logs** provide the detailed context needed to diagnose root causes.
 
 Together, these data sources give engineering teams a **holistic, context-rich, and actionable view** of system behavior.
+
 ## Beyond the Three Pillars
 
 Although metrics, logs, and traces are the foundational telemetry signals for observability, some frameworks emphasize **additional supporting capabilities** such as:
