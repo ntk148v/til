@@ -1,79 +1,131 @@
 # The Three Pillars of Observability
 
-Logs, metrics, and traces are often known as the three pillars of observability.
+Observability refers to the ability to understand a system’s internal state based on the telemetry data it produces. Modern distributed and cloud-native systems are highly complex, making it difficult to diagnose issues without comprehensive visibility. To achieve such visibility, observability platforms rely primarily on three types of telemetry data—**metrics**, **logs**, and **traces**—often referred to as the _three pillars of observability_.
 
-> Distributed Systems Observability by Cindy Sridharan (Chapter 4)
+## Overview
 
-## Event logs
+In observability:
 
-- An event log is an immutable, timestamped record of discrete events that happened over time. Event logs in general come in three forms but are fundamentally the same: a timestamp and a payload of some context. The three forms are:
+- **Metrics** provide quantitative views of system performance over time.
+- **Logs** are detailed, timestamped records of discrete events.
+- **Traces** map the progression of individual requests across system components.
 
-  - Plaintext: A log record might be free-form text. This is also the most common format of logs.
-  - Structured: Much evangelized and advocated for in recent days. Typically, these logs are emitted in the JSON format.
-  - Binary: Think logs in the Protobuf format, MySQL binlogs used for replication and point-in-time recovery, systemd journal logs, the pflog format used by the BSD firewall pf that often serves as a frontend to tcpdump.
+Each pillar addresses different questions about system behavior and, when used together, they enable teams to identify, investigate, and resolve issues efficiently.
 
-- Traces and metrics are an abstraction built on top of logs that pre-process and encode information along two orthogonal axes, one being request-centric (trace), the other being system-centric (metric).
+## Definitions and Key Characteristics
 
-### The Pros and Cons of Logs
+### Event Logs
 
-> Pros
+Logs are immutable records of specific events that occur within a system. They typically include a timestamp and contextual data such as transaction IDs, IP addresses, error details, and configuration changes. Logs exist in different formats:
 
-- The easiest to generate. The fact that a log is just a string or a blob of JSON or typed key-value pairs makes it easy to represent any data in the form of a log line.
-- Logs perform really well in terms of surfacing highly granular information pregnant with rich local context.
+- **Plaintext:** simple text messages.
+- **Structured:** typically JSON with explicit fields.
+- **Binary:** such as Protobuf or system journal formats.
 
-> Cons
+**Strengths**
 
-- The performance: the default logging libraries of many languages and frameworks are not the cream of the crop, which means the application as a whole becomes susceptible to suboptimal performance due to the overhead of logging.
-- Log messages can also be lost unless one uses a protocol like [RELP](https://en.wikipedia.org/wiki/Reliable_Event_Logging_Protocol) to guarantee reliable delivery of messages.
-- Logging excessively has the capability to adversely affect application performance as a whole. This is exacerbated when the logging isn't asynchronous and request processing is blocked while writing a log line to disk or stdout.
+- Provide rich local context and detailed insight into what happened.
+- Easy to generate and capture in most systems.
 
-## Metrics
+**Limitations**
 
-- Metrics are a numeric representation of data measured over intervals of time.
-- Since numbers are optimized for storage, processing, compression and retrieval, metrics enable longer retention of data as well as easier quering.
+- Excessive logging can affect performance and create noise.
+- Log aggregation and querying at scale can be resource-intensive.
 
-### The anatomy of modern metric
+### Metrics
 
-- One of the biggest drawbacks of historical time-series databases has been the _identification_ of metrics that didn't lend itself very well to exploratory analysis or filtering.
-- A metric is identified using both the metric name and the labels (additional key-value pairs).
+Metrics are numerical representations of system performance measured over intervals of time. They enable trend analysis and performance monitoring. Common examples include CPU usage, memory utilization, latency, throughput, and error rates.
 
-### Advantages of metrics over event logs
+**Strengths**
 
-- Metric transfer and storage has a constant overhead. Unlike logs, the cost of metrics doesn't increase in lockstep with user traffic or any other system activity that could result in a sharp uptick in data.
-- Metrics, once collected, are more malleable to mathematical, probabilistic, and statistical transformations such as sampling, aggregation, summarization, and correlation.
-- Metrics are also better suited to trigger alerts, since running queries against an in-memory, time-series database is far more efficient, not to mention more reliable, than running a query against a distributed system like Elasticsearch and then aggregating the results before deciding if an alert needs to be triggered
+- Efficient to store, process, and query, especially in time-series databases.
+- Useful for alerting based on thresholds and for capacity planning.
 
-### The drawbacks of metrics
+**Limitations**
 
-- System scoped, making it hard to understand anything else other than what's happening inside a particular system.
-- With logs without fancy joins, a single line doesn’t give much information about what happened to a request across all components of a system. While it’s possible to construct a system that correlates metrics and logs across the address space or RPC boundaries, such systems require a metric to carry a UID as a label. -> overwhelm time-series databases.
+- Metrics lack detailed context about individual events or causal chains.
+- High-resolution metrics can still produce large volumes of data.
 
-## Tracing
+### Traces
 
-- A trace is representation of a series of causally related distributed events that encode the end-to-end request flow through distributed system.
-- The basic idea behind tracing is identify specific points (function calls or RPC boundatries or segments of concurrency such as threads, continuations, or queues) in an application, proxy, framework, library, runtime, middleware, and anything else in the path of a request that represents the following:
-  - Forks in execution flow (OS thread or a green thread)
-  - A hop or a fan out across network or process boundaries
-- Having an understanding of the entire request lifecycle makes it possible to debug requests spanning multiple services to pinpoint the source of increased latency or resource utilization.
-- The use cases of distributed tracing are myriad. While used primarily for inter service dependency analysis, distributed profiling, and debugging steady-state problems, tracing can also help with chargeback and capacity planning.
+Traces represent the path and lifecycle of a request as it travels across components in a distributed system. They record causally related events and capture timing, dependencies, and the order of operations. Distributed tracing is especially important in microservices environments.
 
-### The Challenges of Tracing
+**Strengths**
 
-- Tracing is, by far, the hardest to retrofit into an existing infrastructure, because for tracing to be truly effective, every component in the path of a request needs to be modified to propagate tracing information.
-- The second problem with tracing instrumentation is that it’s not sufficient for developers to instrument their code alone.
-- The cost of tracing isn’t quite as catastrophic as that of logging, mainly because traces are almost always sampled heavily to reduce runtime overhead as well as storage costs.
+- Illustrate where and how a request flows through the architecture.
+- Help pinpoint performance bottlenecks and dependencies.
 
-### Service Meshes: A new hop for the future
+**Limitations**
 
-While tracing has been difficult to implement, the rise of [service meshes](https://blog.buoyant.io/2017/04/25/whats-a-service-mesh-and-why-do-i-need-one/) make integrating tracing functionality almost effortless. [Data planes](https://blog.envoyproxy.io/service-mesh-data-plane-vs-control-plane-2774e720f7fc) of service meshes implement tracing and stats collections at the proxy level, which allows one to treat individual services as blackboxes but still get uniform and thorough observability into the mesh as a whole. Applications that are a part of the mesh will still need to forward headers to the next hop in the mesh, but no additional instrumentation is necessary.
+- Requires instrumentation across all services involved in the request path.
+- Can be complex to implement and manage at scale.
+
+## Comparative Overview
+
+| Pillar  | Primary Focus             | Typical Use Cases                           |
+| ------- | ------------------------- | ------------------------------------------- |
+| Metrics | “What” is happening       | High-level performance dashboards, alerting |
+| Logs    | “Why” it happened         | Error diagnostics, root cause analysis      |
+| Traces  | “Where/How” requests flow | Distributed request path analysis           |
+
+Each pillar provides a piece of the overall picture. Metrics quickly surface anomalies, logs reveal detailed context, and traces connect events across systems for end-to-end insight.
+
+## Advantages and Limitations (Merged Insights)
+
+### Logs
+
+**Advantages**
+
+- Highly detailed and flexible.
+- Can capture arbitrary event context.
+
+**Limitations**
+
+- Potential performance overhead during collection.
+- Noise and storage costs can be significant.
+
+### Metrics
+
+**Advantages**
+
+- Scalable for long-term trend analysis.
+- Efficient alerting and aggregation.
+
+**Limitations**
+
+- Metrics alone do not reveal causality or detailed event context.
+
+### Traces
+
+**Advantages**
+
+- Critical for understanding distributed systems.
+- Reveals dependency interactions.
+
+**Limitations**
+
+- Complexity of instrumentation and data management.
+
+## How the Three Pillars Work Together
+
+Observability is most effective when metrics, logs, and traces are correlated and analyzed in tandem:
+
+1. **Metrics** surface potential issues via trends and thresholds.
+2. **Traces** reveal where problems occur within distributed workflows.
+3. **Logs** provide the detailed context needed to diagnose root causes.
+
+Together, these data sources give engineering teams a **holistic, context-rich, and actionable view** of system behavior.
+## Beyond the Three Pillars
+
+Although metrics, logs, and traces are the foundational telemetry signals for observability, some frameworks emphasize **additional supporting capabilities** such as:
+
+- **Context:** environmental and topological metadata that enriches telemetry.
+- **Correlation:** linking disparate signals for comprehensive analysis.
+- **Alerting:** proactive notification of anomalies.
+- **Profiling:** capturing detailed execution state for deep diagnostics.
+
+These elements are often integrated with the three pillars to enhance overall observability effectiveness.
 
 ## Conclusion
 
-- Logs, metrics, and traces serve their own unique purpose and are complementary. In unison, they provide maximum visibility into the behavior of distributed systems. For example, it makes sense to have the following:
-
-  - A counter and log at every major entry and exit point of a request
-  - A log and trace at every decision point of a request
-
-- It also makes sense to have all three semantically linked such that it becomes possible at the time of debugging:
-  - To reconstruct the codepath taken by reading a trace
-  - To dervive request or error ratios from any single point in the codepath
+The three pillars—**metrics**, **logs**, and **traces**—form the core telemetry foundation of observability in modern distributed systems. Each provides distinct insights into system behavior, and when combined, they enable fast detection, analysis, and resolution of operational issues across complex architectures.
