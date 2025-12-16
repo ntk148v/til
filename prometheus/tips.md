@@ -176,6 +176,7 @@ I found a link: <https://groups.google.com/g/prometheus-users/c/Oy1qI3Og9ww> but
 ## `min-block-duration` and `max-block-duration`
 
 In Prometheus, the `--storage.tsdb.min-block-duration` and `--storage.tsdb.max-block-duration` flags control the time range of data stored in individual, on-disk data blocks
+
 - `--storage.tsdb.min-block-duration`: This flag sets the minimum duration for which data is held in memory (the "head" block) before being persisted to disk as an initial data block. The default value is 2 hours. Lowering this value can reduce Prometheus's memory usage because data is written to disk more frequently.
 - `--storage.tsdb.max-block-duration`: This flag sets the maximum duration a block of data may span before it is compacted with other adjacent blocks into a larger block. The default value is a dynamic calculation based on retention time, but often effectively 2 hours for initial blocks
 
@@ -185,6 +186,7 @@ In Prometheus, the `--storage.tsdb.min-block-duration` and `--storage.tsdb.max-b
 - Memory Management: If you experience high memory usage, you might consider lowering the min-block-duration, which causes Prometheus to write data to disk more often, reducing the memory footprint of the head block.
 
 The max open files limit is a system configuration that restricts the number of file handles a single process can have open simultaneously. The block duration settings relate to this in the following ways:
+
 - More Blocks, More Files: Each on-disk block in the Prometheus TSDB is made up of several files (index, chunks, meta.json, etc.). More blocks mean more files overall.
 - Compaction and File Management:
   - Compaction operations temporarily involve opening multiple source blocks and a new destination block simultaneously, requiring more file handles during that time.
