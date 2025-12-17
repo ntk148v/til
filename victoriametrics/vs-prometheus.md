@@ -89,9 +89,9 @@ VM stores index entries in a `MergeSet` (LSM-tree variant). This allows it to ha
 
 - TSID (Time Series ID): VM assigns a specialized internal TSID (containing MetricGroupID, JobID, etc.) to every series.
 - Rotation (The "Churn Killer"): Unlike Prometheus, which maintains one monolithic index per block, VM rotates its `IndexDB`:
-    - Daily Indexes: VM maintains prev, current, and next index structures.
-    - Per-Day Inverted Index: It stores separate mappings for Date + Label -> MetricID.
-      -Impact: If you have high churn on Tuesday, those millions of short-lived series are isolated to Tuesday's index. Queries for Wednesday do not need to scan or load the "polluted" index from Tuesday. This provides O(1) complexity for churn regarding retention time, whereas Prometheus is O(T) (churn accumulates over time).
+  - Daily Indexes: VM maintains prev, current, and next index structures.
+  - Per-Day Inverted Index: It stores separate mappings for Date + Label -> MetricID.
+    -Impact: If you have high churn on Tuesday, those millions of short-lived series are isolated to Tuesday's index. Queries for Wednesday do not need to scan or load the "polluted" index from Tuesday. This provides O(1) complexity for churn regarding retention time, whereas Prometheus is O(T) (churn accumulates over time).
 
 **Lookup optimization**
 
@@ -111,8 +111,8 @@ This explains why VictoriaMetrics has "smoother" disk usage despite flushing mor
 
 - **Strategy:** Immediate durability via a WAL file.
 - **Write Pattern:** Every sample is appended to the WAL file on disk.
-    - **Compression:** None/Low (for speed).
-    - **Payload:** Large (Raw bytes).
+  - **Compression:** None/Low (for speed).
+  - **Payload:** Large (Raw bytes).
 - **Fsync:** Infrequent (usually on segment rotation or checkpoint). Relying on OS page cache.
 - **Consequence:** High "Write Amplification" during compaction. The disk is constantly busy writing raw data, and then gets hammered every 2 hours when the Head Block flushes.
 
@@ -120,8 +120,8 @@ This explains why VictoriaMetrics has "smoother" disk usage despite flushing mor
 
 - **Strategy:** Periodic durability via compressed micro-parts.
 - **Write Pattern:** Data is buffered in RAM (`inmemoryPart`) and flushed every \~1-5 seconds.
-    - **Compression:** High (ZSTD-like + Gorilla).
-    - **Payload:** Tiny (Data is compressed _before_ writing).
+  - **Compression:** High (ZSTD-like + Gorilla).
+  - **Payload:** Tiny (Data is compressed _before_ writing).
 - **Fsync:** **Frequent** (Every flush).
 - **Consequence:** Even though VM calls `fsync` every few seconds, the **payload is so small** (50KB vs 2MB) that modern SSDs handle it effortlessly. This avoids the "Stop the World" I/O spikes seen in Prometheus.
 
