@@ -9,6 +9,7 @@ Source:
 - <https://valyala.medium.com/wal-usage-looks-broken-in-modern-time-series-databases-b62a627ab704>
 - <https://valyala.medium.com/mmap-in-go-considered-harmful-d92a25cb161d>
 - <https://faun.pub/victoriametrics-achieving-better-compression-for-time-series-data-than-gorilla-317bc1f95932>
+- <https://altinity.com/wp-content/uploads/2021/11/How-ClickHouse-Inspired-Us-to-Build-a-High-Performance-Time-Series-Database.pdf>
 
 VictoriaMetrics follows a few important principles in its design:
 
