@@ -137,14 +137,19 @@ Source:
 
 ### 4.1. Persistence to Disk
 
-\_ Kafka actually stores all of its records to disk and doesn’t keep anything explicitly in memory.
-
+- Kafka actually stores all of its records to disk and doesn’t keep anything explicitly in memory.
 - Kafka’s protocol groups messages together. This allows network requests to group messages together and reduce network overhead.
 - The server, in turn, persists chunk of messages in one go - a linear HDD write. Consumers then fetch large linear chunks at once.
+
   - Linear reads/writes on a disk can be fast. HDDs are commonly discussed as slow because they are when you do numerous disk seeks, since you’re bottlenecked on the physical movement of the drive’s head as it moves to the new location. With a linear read/write, this isn’t a problem as you continuously read/write data with the head’s movement.
   - Going a step further - said linear operations are heavily optimized by the OS.
-    - ** Read-ahead optimizations** prefetch large block multiples before they’re requested and stores them in memory, resulting in the next read not touching the disk.
-    - **Write-behind optimizations** group small logical writes into big physical writes - Kafka does not use fsync, its writes get written to disk asynchronously.
+
+    - **Read-ahead optimizations** prefetch large block multiples before they’re requested and stores them in memory, resulting in the next read not touching the disk.
+    - **Write-behind optimizations** group small logical writes into big physical writes - [Kafka does not use fsync](https://jack-vanlightly.com/blog/2023/4/24/why-apache-kafka-doesnt-need-fsync-to-be-safe), its writes get written to disk asynchronously. Kafka producer doesn't wait for the data to actually persist to disk, leaving it to the OS to take care for, and just sends out **ack** once it writes to the PageCache, thus making it more performant.
+
+    ![](https://www.sahilmalhotra.com/posts/kafka-storage/kafka-feature.png)
+
+    ![](https://developer.qcloudimg.com/http-save/yehe-1140319/2a884b6b1e436adacf7c1b81fd04b1e9.png)
 
 ### 4.2. Pagecache
 
