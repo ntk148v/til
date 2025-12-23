@@ -3,22 +3,22 @@
 Table of Contents:
 
 - [sysctl](#sysctl)
-	- [1. `vm.max_map_count`](#1-vmmax_map_count)
-		- [1.1. Overview](#11-overview)
-		- [1.2. How to check](#12-how-to-check)
-		- [1.3. Does it affect server performance?](#13-does-it-affect-server-performance)
-		- [1.4. Recommended values](#14-recommended-values)
-	- [2. `vm.drop_caches`](#2-vmdrop_caches)
-	- [4. `vm.dirty_*`](#4-vmdirty_)
+  - [1. `vm.max_map_count`](#1-vmmax_map_count)
+    - [1.1. Overview](#11-overview)
+    - [1.2. How to check](#12-how-to-check)
+    - [1.3. Does it affect server performance?](#13-does-it-affect-server-performance)
+    - [1.4. Recommended values](#14-recommended-values)
+  - [2. `vm.drop_caches`](#2-vmdrop_caches)
+  - [4. `vm.dirty_*`](#4-vmdirty_)
 
 ## 1. `vm.max_map_count`
 
 ### 1.1. Overview
 
 - According to `kernel-doc/Documentation/sysctl/vm.txt`:
-    - This file contains the maximum number of memory map areas (VMAs) a process may have. Memory map areas are used as a side-effect of calling malloc, directly by mmap and mprotect, and also when loading shared libraries.
-    - While most applications need less than a thousand maps, certain programs, particularly malloc debuggers, may consume lots of them, e.g., up to one or two maps per allocation.
-    - The default value is 65530.
+  - This file contains the maximum number of memory map areas (VMAs) a process may have. Memory map areas are used as a side-effect of calling malloc, directly by mmap and mprotect, and also when loading shared libraries.
+  - While most applications need less than a thousand maps, certain programs, particularly malloc debuggers, may consume lots of them, e.g., up to one or two maps per allocation.
+  - The default value is 65530.
 - Lowering the value can lead to problematic application behavior because the system will return out of memory errors when a process reaches the limit. The upside of lowering this limit is that it can free up lowmem for other kernel uses.
 - Raising the limit may increase the memory consumption on the server. There is no immediate consumption of the memory, as this will be used only when the software requests, but it can allow a larger application footprint on the server.
 - Applications that allocate memory in numerous small segments (e.g., Elasticsearch, OpenSearch, high-load JVM workloads, or processes using extensive memory-mapped I/O) may require higher limits.
