@@ -1,13 +1,24 @@
 # sysctl
 
+Table of Contents:
+
+- [sysctl](#sysctl)
+	- [1. `vm.max_map_count`](#1-vmmax_map_count)
+		- [1.1. Overview](#11-overview)
+		- [1.2. How to check](#12-how-to-check)
+		- [1.3. Does it affect server performance?](#13-does-it-affect-server-performance)
+		- [1.4. Recommended values](#14-recommended-values)
+	- [2. `vm.drop_caches`](#2-vmdrop_caches)
+	- [4. `vm.dirty_*`](#4-vmdirty_)
+
 ## 1. `vm.max_map_count`
 
 ### 1.1. Overview
 
 - According to `kernel-doc/Documentation/sysctl/vm.txt`:
-  - This file contains the maximum number of memory map areas (VMAs) a process may have. Memory map areas are used as a side-effect of calling malloc, directly by mmap and mprotect, and also when loading shared libraries.
-  - While most applications need less than a thousand maps, certain programs, particularly malloc debuggers, may consume lots of them, e.g., up to one or two maps per allocation.
-  - The default value is 65530.
+    - This file contains the maximum number of memory map areas (VMAs) a process may have. Memory map areas are used as a side-effect of calling malloc, directly by mmap and mprotect, and also when loading shared libraries.
+    - While most applications need less than a thousand maps, certain programs, particularly malloc debuggers, may consume lots of them, e.g., up to one or two maps per allocation.
+    - The default value is 65530.
 - Lowering the value can lead to problematic application behavior because the system will return out of memory errors when a process reaches the limit. The upside of lowering this limit is that it can free up lowmem for other kernel uses.
 - Raising the limit may increase the memory consumption on the server. There is no immediate consumption of the memory, as this will be used only when the software requests, but it can allow a larger application footprint on the server.
 - Applications that allocate memory in numerous small segments (e.g., Elasticsearch, OpenSearch, high-load JVM workloads, or processes using extensive memory-mapped I/O) may require higher limits.
@@ -125,3 +136,63 @@ used:
 These are informational only.  They do not mean that anything is wrong
 with your system.  To disable them, echo 4 (bit 2) into drop_caches.
 ```
+
+## 4. `vm.dirty_*`
+
+Source:
+
+- <https://lonesysadmin.net/2013/12/22/better-linux-disk-caching-performance-vm-dirty_ratio/>
+- <https://www.slideshare.net/slideshow/disk-and-page-cache/72722837>
+
+Check out [pagecache](./pagecache.md), now let's talk about the kernel options to control pagecache.
+
+```shell
+$ sysctl -a | grep dirty
+vm.dirty_background_ratio = 10
+vm.dirty_background_bytes = 0
+vm.dirty_ratio = 20
+vm.dirty_bytes = 0
+vm.dirty_writeback_centisecs = 500
+vm.dirty_expire_centisecs = 3000
+```
+
+- `vm.dirty_background_ratio` is the percentage of system memory that can be filled with “dirty” pages — memory pages that still need to be written to disk — before the pdflush/flush/kdmflush background processes kick in to write it to disk. My example is 10%, so if my virtual server has 32 GB of memory that’s 3.2 GB of data that can be sitting in RAM before something is done.
+- `vm.dirty_ratio` is the absolute maximum amount of system memory that can be filled with dirty pages before everything must get committed to disk. When the system gets to this point all new I/O blocks until dirty pages have been written to disk. This is often the source of long I/O pauses, but is a safeguard against too much data being cached unsafely in memory.
+
+![](https://img-blog.csdnimg.cn/20210706095814793.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzcwMDg2Ng==,size_16,color_FFFFFF,t_70)
+
+- `vm.dirty_background_bytes` and `vm.dirty_bytes` are another way to specify these parameters. If you set the \_bytes version the \_ratio version will become 0, and vice-versa.
+- `vm.dirty_expire_centisecs` is how long something can be in cache before it needs to be written. In this case it’s 30 seconds. When the pdflush/flush/kdmflush processes kick in they will check to see how old a dirty page is, and if it’s older than this value it’ll be written asynchronously to disk. Since holding a dirty page in memory is unsafe this is also a safeguard against data loss.
+- `vm.dirty_writeback_centisecs` is how often the pdflush/flush/kdmflush processes wake up and check to see if work needs to be done.
+
+You can also see statistics on the page cache in /proc/vmstat.
+
+```shell
+$ cat /proc/vmstat | egrep "dirty|writeback"
+nr_dirty 878
+nr_writeback 0
+nr_writeback_temp 0
+```
+
+In many cases we have fast disk subsystems with their own big, battery-backed NVRAM caches, so keeping things in the OS page cache is risky. In such case, it's better to decrease the cache:
+
+```shell
+vm.dirty_background_ratio = 5
+vm.dirty_ratio = 10
+```
+
+There are scenarios where raising the cache dramatically has positive effects on performance. These situations are where the data contained on a Linux guest isn’t critical and can be lost, and usually where an application is writing to the same files repeatedly or in repeatable bursts. In theory, by allowing more dirty pages to exist in memory you’ll rewrite the same blocks over and over in cache, and just need to do one write every so often to the actual disk. To do this we raise the parameters:
+
+```shell
+vm.dirty_background_ratio = 50
+vm.dirty_ratio = 80
+```
+
+There are also scenarios where a system has to deal with infrequent, bursty traffic to slow disk (batch jobs at the top of the hour, midnight, writing to an SD card on a Raspberry Pi, etc.). In that case an approach might be to allow all that write I/O to be deposited in the cache so that the background flush operations can deal with it asynchronously over time:
+
+```shell
+vm.dirty_background_ratio = 5
+vm.dirty_ratio = 80
+```
+
+Here the background processes will start writing right away when it hits that 5% ceiling but the system won’t force synchronous I/O until it gets to 80% full.
