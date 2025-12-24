@@ -141,7 +141,7 @@ Source:
 
   </details>
 
-![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-networking-recv.png)
+![](https://raw.githubusercontent.com/ntk148v/til/master/linux/images/linux-networking-recv.png)
 
 ![](https://img-blog.csdnimg.cn/20201025161643899.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1JvbmdfVG9h,size_16,color_FFFFFF,t_70)
 
@@ -285,7 +285,7 @@ Source:
 
 ### 1.2. Linux kernel network transmission
 
-![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-networking-send.png)
+![](https://raw.githubusercontent.com/ntk148v/til/master/linux/images/linux-networking-send.png)
 
 ![](https://s2.51cto.com/images/blog/202104/15/25012de83ba2d80fcd790b49ff346b62.png?x-oss-process=image/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_30,g_se,x_10,y_10,shadow_20,type_ZmFuZ3poZW5naGVpdGk=/format,webp/resize,m_fixed,w_1184)
 
@@ -997,21 +997,21 @@ Source:
 
     - Context switch between kernel and userspace
 
-    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-network-1.png)
+    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/images/linux-network-1.png)
 
     - Packet copy between kernel and userspace
 
-    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-network-2.png)
+    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/images/linux-network-2.png)
 
     - Dynamic allocation of `sk_buff`
     - Per packet interrupt
     - Shared data structures
 
-    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-network-3.png)
+    ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/images/linux-network-3.png)
 
   - Solution: Why just bypass the kernel?
 
-  ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imageslinux-network-4.png)
+  ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/images/linux-network-4.png)
 
   - There are many kernel bypass techniques:
     - User-space packet processing:
