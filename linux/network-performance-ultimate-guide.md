@@ -82,11 +82,11 @@ Source:
     - **softIRQ** system is a system that kernel uses to process work outside of the device driver IRQ context. In the case of network devices, the softIRQ system is responsible for processing incoming packets
   - Initial setup (from step 1-4):
 
-    ![](https://cdn.buttercms.com/hwT5dgTatRdfG7UshrAF)
-    - softIRQ kernel threads are created (1 per CPU).
-    - The ksoftirqd threads begin executing their processing loops.
-    - `softnet_data` structures are created (1 per CPU), hold references to important data for processing network data. `poll_list` is created (1 per CPU).
-    - `net_dev_init` then registers the `NET_RX_SOFTIRQ` softirq with the softirq system by calling `open_softirq` - this registration is called `net_rx_action`,
+  ![](https://cdn.buttercms.com/hwT5dgTatRdfG7UshrAF)
+  - softIRQ kernel threads are created (1 per CPU).
+  - The ksoftirqd threads begin executing their processing loops.
+  - `softnet_data` structures are created (1 per CPU), hold references to important data for processing network data. `poll_list` is created (1 per CPU).
+  - `net_dev_init` then registers the `NET_RX_SOFTIRQ` softirq with the softirq system by calling `open_softirq` - this registration is called `net_rx_action`,
 
   - Alright, Linux just init and setup networking stack to wait for data arrival:
 
