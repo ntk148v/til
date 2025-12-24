@@ -83,6 +83,7 @@ Source:
 - Initial setup (from step 1-4):
 
 ![](https://cdn.buttercms.com/hwT5dgTatRdfG7UshrAF)
+
 - softIRQ kernel threads are created (1 per CPU).
 - The ksoftirqd threads begin executing their processing loops.
 - `softnet_data` structures are created (1 per CPU), hold references to important data for processing network data. `poll_list` is created (1 per CPU).
