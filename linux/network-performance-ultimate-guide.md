@@ -18,11 +18,11 @@ Table of Contents:
     - [1.1. Linux network packet reception](#11-linux-network-packet-reception)
     - [1.2. Linux kernel network transmission](#12-linux-kernel-network-transmission)
   - [2. Network Performance tuning](#2-network-performance-tuning)
-    - [2.0. Quick HOWTO](#20-quick-howto)
-      - [2.0.1. `/proc/net/softnet_stat` \& `/proc/net/sockstat`](#201-procnetsoftnet_stat--procnetsockstat)
-      - [2.0.2. `ss`](#202-ss)
-      - [2.0.3. `netstat`](#203-netstat)
-      - [2.0.4. `sysctl`](#204-sysctl)
+    - [2.1. Quick HOWTO](#21-quick-howto)
+      - [2.1.1. `/proc/net/softnet_stat` \& `/proc/net/sockstat`](#211-procnetsoftnet_stat--procnetsockstat)
+      - [2.1.2. `ss`](#212-ss)
+      - [2.1.3. `netstat`](#213-netstat)
+      - [2.1.4. `sysctl`](#214-sysctl)
     - [2.1. The NIC Ring Buffer](#21-the-nic-ring-buffer)
     - [2.2. Interrupt Coalescence (IC) - rx-usecs, tx-usecs, rx-frames, tx-frames (hardware IRQ)](#22-interrupt-coalescence-ic---rx-usecs-tx-usecs-rx-frames-tx-frames-hardware-irq)
     - [2.3. IRQ Affinity](#23-irq-affinity)
@@ -33,7 +33,7 @@ Table of Contents:
       - [2.4.4. Accelerated Receive Flow Steering (aRFS)](#244-accelerated-receive-flow-steering-arfs)
     - [2.5. Interrupt Coalescing (soft IRQ)](#25-interrupt-coalescing-soft-irq)
     - [2.6. Ingress QDisc](#26-ingress-qdisc)
-    - [2.7. Egress Disc - txqueuelen and default_qdisc](#27-egress-disc---txqueuelen-and-default_qdisc)
+    - [2.7. Egress Disc - `txqueuelen` and `default_qdisc`](#27-egress-disc---txqueuelen-and-default_qdisc)
     - [2.8. TCP Read and Write Buffers/Queues](#28-tcp-read-and-write-buffersqueues)
     - [2.9. TCP FSM and congestion algorithm](#29-tcp-fsm-and-congestion-algorithm)
     - [2.10. NUMA](#210-numa)
@@ -41,7 +41,7 @@ Table of Contents:
       - [2.11.1. `AF_PACKET` v4](#2111-af_packet-v4)
       - [2.11.2. `PACKET_MMAP`](#2112-packet_mmap)
       - [2.11.3. Kernel bypass: Data Plane Development Kit (DPDK)](#2113-kernel-bypass-data-plane-development-kit-dpdk)
-      - [2.11.4. PF_RING](#2114-pf_ring)
+      - [2.11.4. `PF_RING`](#2114-pf_ring)
       - [2.11.5. Programmable packet processing: eXpress Data Path (XDP)](#2115-programmable-packet-processing-express-data-path-xdp)
 
 ## 1. Linux Networking stack
@@ -67,7 +67,7 @@ Source:
 
 ![](https://github.com/leandromoreira/linux-network-performance-parameters/raw/master/img/linux_network_flow.png)
 
-**NOTE**: The follow sections will heavily use `sysctl`. If you don't familiar with this command, take a look at [HOWTO#sysctl section](#204-sysctl).
+**NOTE**: The follow sections will heavily use `sysctl`. If you don't familiar with this command, take a look at [HOWTO#sysctl section](#214-sysctl).
 
 ### 1.1. Linux network packet reception
 
@@ -323,9 +323,9 @@ There are factors should be considered for network performance tuning. Note that
 
 Ok, let's follow through the Packet reception (and transmission) and do some tuning.
 
-### 2.0. Quick HOWTO
+### 2.1. Quick HOWTO
 
-#### 2.0.1. `/proc/net/softnet_stat` & `/proc/net/sockstat`
+#### 2.1.1. `/proc/net/softnet_stat` & `/proc/net/sockstat`
 
 Before we continue, let's discuss about `/proc/net/softnet_stat` & `/proc/net/sockstat` as these files will be used a lot then.
 
@@ -361,7 +361,7 @@ FRAG: inuse 0 memory 0
 - Check `mem` field. It is calculated simply by summing `sk_buff->truesize` for all sockets.
 - More detail [here](https://unix.stackexchange.com/questions/419518/how-to-tell-how-much-memory-tcp-buffers-are-actually-using)
 
-#### 2.0.2. `ss`
+#### 2.1.2. `ss`
 
 - `ss` is another utility to investigate sockets. It is used to dump socket statistics. It allows showing information similar to `netstat`. IT can display more TCP and state information than other tools.
 - For more you should look at man page: `man ss`.
@@ -417,7 +417,7 @@ skmem:(r0,rb369280,t0,tb87040,f0,w0,o0,bl0,d0)
 # snd_buf: 87040 bytes
 ```
 
-#### 2.0.3. `netstat`
+#### 2.1.3. `netstat`
 
 - A command-line utility which can print information about open network connections and protocol stack statistics. It retrieves information about the networking subsystem from the `/proc/net/` file system. These files include:
   - `/proc/net/dev` (device information)
@@ -425,7 +425,7 @@ skmem:(r0,rb369280,t0,tb87040,f0,w0,o0,bl0,d0)
   - `/proc/net/unix` (Unix domain socket information)
 - For more information about `netstat` and its referenced files from `/proc/net/`, refer to the `netstat` man page: `man netstat`.
 
-#### 2.0.4. `sysctl`
+#### 2.1.4. `sysctl`
 
 - Rather than modifying system variables by `echo`-ing values in the `/proc` file system directly:
 
@@ -749,7 +749,7 @@ sysctl -w net.core.rps_sock_flow_entries 32768
   cat /proc/net/softnet_stat
   ```
 
-### 2.7. Egress Disc - txqueuelen and default_qdisc
+### 2.7. Egress Disc - `txqueuelen` and `default_qdisc`
 
 - In the step (11) (transimission), there is `txqueuelen`, a queue/buffer to face conection bufrst and also to apply [traffic control (tc)](http://tldp.org/HOWTO/Traffic-Control-HOWTO/intro.html).
 - Tuning:
@@ -1030,7 +1030,7 @@ Source:
     - Heavily hardware reliant.
     - A CPU core must be dedicated and assigned to running PMD. 100% CPU.
 
-#### 2.11.4. PF_RING
+#### 2.11.4. `PF_RING`
 
 Source:
 
