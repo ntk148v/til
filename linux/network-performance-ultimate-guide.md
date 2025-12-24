@@ -33,7 +33,7 @@ Table of Contents:
       - [2.4.4. Accelerated Receive Flow Steering (aRFS)](#244-accelerated-receive-flow-steering-arfs)
     - [2.5. Interrupt Coalescing (soft IRQ)](#25-interrupt-coalescing-soft-irq)
     - [2.6. Ingress QDisc](#26-ingress-qdisc)
-    - [2.7. Egress Disc - txqueuelen and default\_qdisc](#27-egress-disc---txqueuelen-and-default_qdisc)
+    - [2.7. Egress Disc - txqueuelen and default_qdisc](#27-egress-disc---txqueuelen-and-default_qdisc)
     - [2.8. TCP Read and Write Buffers/Queues](#28-tcp-read-and-write-buffersqueues)
     - [2.9. TCP FSM and congestion algorithm](#29-tcp-fsm-and-congestion-algorithm)
     - [2.10. NUMA](#210-numa)
@@ -41,7 +41,7 @@ Table of Contents:
       - [2.11.1. `AF_PACKET` v4](#2111-af_packet-v4)
       - [2.11.2. `PACKET_MMAP`](#2112-packet_mmap)
       - [2.11.3. Kernel bypass: Data Plane Development Kit (DPDK)](#2113-kernel-bypass-data-plane-development-kit-dpdk)
-      - [2.11.4. PF\_RING](#2114-pf_ring)
+      - [2.11.4. PF_RING](#2114-pf_ring)
       - [2.11.5. Programmable packet processing: eXpress Data Path (XDP)](#2115-programmable-packet-processing-express-data-path-xdp)
 
 ## 1. Linux Networking stack
@@ -75,7 +75,6 @@ Source:
 
   <details>
   <summary>Click to expand</summary>
-
   - In network devices, it is common for the NIC to raise an **IRQ** to signal that a packet has arrived and is ready to be processed.
     - An IRQ (Interrupt Request) is a hardware signal sent to the processor instructing it to suspend its current activity and handle some external event, such as a keyboard input or a mouse movement.
     - In Linux, IRQ mappings are stored in **/proc/interrupts**.
