@@ -80,11 +80,9 @@ Source:
     - In Linux, IRQ mappings are stored in **/proc/interrupts**.
     - When an IRQ handler is executed by the Linux kernel, it runs at a very, very high priority and often blocks additional IRQs from being generated. As such, IRQ handlers in device drivers must execute as quickly as possible and defer all long running work to execute outside of this context. This is why the **softIRQ** system exists.
     - **softIRQ** system is a system that kernel uses to process work outside of the device driver IRQ context. In the case of network devices, the softIRQQ system is responsible for processing incoming packets
-
   - Initial setup (from step 1-4):
 
     ![](https://cdn.buttercms.com/hwT5dgTatRdfG7UshrAF)
-
     - softIRQ kernel threads are created (1 per CPU).
     - The ksoftirqd threads begin executing their processing loops.
     - `softnet_data` structures are created (1 per CPU), hold references to important data for processing network data. `poll_list` is created (1 per CPU).
@@ -93,7 +91,6 @@ Source:
   - Alright, Linux just init and setup networking stack to wait for data arrival:
 
     ![](https://cdn.buttercms.com/yharphBYTEm2Kt4G2fT9)
-
     - Data is received by the NIC (Network Interface Card) from the network.
     - The NIC uses DMA (Direct Memory Access) to write the network data to RAM (in ring buffer).
       - Some NICs are "multiqueue" NICs, meaning that they can DMA incoming packets to one of many ring buffers in RAM.
@@ -119,7 +116,6 @@ Source:
   - Network data processing continues from `netif_receive_skb`, but the path of the data depends on whether or not Receive Packet Steering (RPS) is enabled or not.
 
     ![](https://cdn.buttercms.com/uoaSO7cgTwKaH1esQgWX)
-
     - If RPS is disabled:
       - 1. `netif_receive_skb` passed the data onto `__netif_receive_core`.
       - 6. `__netif_receive_core` delivers the data to any taps.
@@ -151,16 +147,13 @@ Source:
 2. NIC verifies `MAC` (if not on [promiscuous mode](https://unix.stackexchange.com/questions/14056/what-is-kernel-ip-forwarding)) and `FCS` and decide to drop or to continue
 3. NIC does [DMA (Direct Memory Access)](https://en.wikipedia.org/wiki/Direct_memory_access) packets into RAM - in a kernel data structure called an `sk_buff` or `skb` (Socket Kernel Buffers - [SKBs](http://vger.kernel.org/~davem/skb.html)).
 4. NIC enqueues _references_ to the packets at receive ring buffer queue `rx` until `rx-usecs` timeout or `rx-frames`. Let's talk about the RX ring buffer:
-
    - It is a [circular buffer](https://en.wikipedia.org/wiki/Circular_buffer) where _an overflow simply overwrites existing data_.
    - It _does not contain packet data_. Instead it consists of descriptors which point to `skbs` which is DMA into RAM (step 2).
 
    ![](https://i.stack.imgur.com/HignO.png)
-
    - Fixed size, FIFO and located at RAM (of course).
 
 5. NIC raises a `HardIRQ` - Hard Interrupt.
-
    - `HardIRQ`: interrupt from the hardware, known-as "top-half" interrupts.
    - When a NIC receives incoming data, it copies the data into kernel buffers using DMA. The NIC notifies the kernel of this data by raising a HardIRQ. These interrupts are processed by interrupt handlers which do minimal work, as they have already interrupted another task and cannot be interrupted themselves.
    - HardIRQs can be expensive in terms of CPU usage, especially when holding kernel locks. If they take too long to execute, they will cause the CPU to be unable to respond to other HardIRQ, so the kernel introduces `SoftIRQs` (Soft Interrupts), so that the time-consuming part of the HardIRQ handler can be moved to the SoftIRQ handler to handle it slowly. We will talk about SoftIRQ in the next steps.
@@ -182,7 +175,6 @@ Source:
    ![](https://cdn.buttercms.com/yharphBYTEm2Kt4G2fT9)
 
 8. Driver raise a `SoftIRQ (NET_RX_SOFTIRQ)`.
-
    - Let's talk about the `SoftIRQ`, also known as "bottom-half" interrupt. It is a kernel routines which are scheduled to run at a time when other tasks will not be interrupted.
    - Purpose: drain the network adapter receive Rx ring buffer.
    - These routines run in the form of `ksoftirqd/cpu-number` processes and call driver-specific code functions.
@@ -207,17 +199,13 @@ Source:
    ```
 
 9. NAPI polls data from the rx ring buffer.
-
    - NAPI was written to make processing data packets of incoming cards more efficient. HardIRQs are expensive because they can't be interrupt, we both known that. Even with _Interrupt coalesecense_ (describe later in more detail), the interrupt handler will monopolize a CPU core completely. The design of NAPI allows the driver to go into a polling mode instead of being HardIRQ for every required packet receive.
    - Step 1->9 in brief:
 
    ![](https://i.stack.imgur.com/BKBvW.png)
-
    - The polling routine has a budget which determines the CPU time the code is allowed, by using `netdev_budget_usecs` timeout or `netdev_budget` and `dev_weight` packets. This is required to prevent SoftIRQs from monopolizing the CPU. On completion, the kernel will exit the polling routine and re-arm, then the entire procedure will repeat itself.
    - Let's talk about `netdev_budget_usecs` timeout or `netdev_budget` and `dev_weight` packets:
-
      - If the SoftIRQs do not run for long enough, the rate of incoming data could exceed the kernel's capability to drain the buffer last enough. As a result, the NIC buffers will overflow and traffic will be lost. Occasionaly, it is necessary to increase the time that SoftIRQs are allowed to run on the CPU. This is known as the `netdev_budget`.
-
        - Check command, the default value is 300, it means the SoftIRQ process to drain 300 messages from the NIC before getting off the CPU.
 
        ```shell
@@ -226,7 +214,6 @@ Source:
        ```
 
      - `netdev_budget_usecs`: The maximum number of microseconds in 1 NAPI polling cycle. Polling will exit when either `netdev_budget_usecs` have elapsed during the poll cycle or the number of packets processed reaches `netdev_budget`.
-
        - Check command:
 
        ```shell
@@ -248,7 +235,6 @@ Source:
 12. Linux passes the skb to the kernel stack (`netif_receive_skb`)
 13. It sets the network header, clone `skb` to taps (i.e. tcpdump) and pass it to tc ingress
 14. Packets are handled to a qdisc sized `netdev_max_backlog` with its algorithm defined by `default_qdisc`:
-
     - `netdev_max_backlog`: a queue whitin the Linux kernel where traffic is stored after reception from the NIC, but before processing by the protocols stacks (IP, TCP, etc). There is one backlog queue per CPU core. A given core's queue can grow automatically, containing a number of packets up to the maximum specified by the `netdev_max_backlog` settings.
     - In other words, this is the maximum number of packets, queued on the INPUT side (the ingress dsic), when the interface receives packets faster than kernel can process them.
     - Check command, the default value is 1000.
@@ -294,7 +280,6 @@ Although simpler than the ingress logic, the egress is still worth acknowledging
 1. Application sends message (`sendmsg` or other)
 2. TCP send message allocates skb_buff
 3. It enqueues skb to the socket write buffer of `tcp_wmem` size
-
    - `tcp_wmem`: Contains 3 values that represent the minimum, default and maximum size of the TCP socket send buffer.
      - min: amount of memory reserved for send buffers for TCP sockets. Each TCP socket has rights to use it due to fact of its birth. Default: 4K
      - default: initial size of send buffer used by TCP sockets. This value overrides net.core.wmem_default used by other protocols. It is usually lower than `net.core.wmem_default`. Default: 16K
@@ -472,7 +457,6 @@ sysctl -p or sysctl -p /etc/sysctl.conf
 
 - Firstly, check out step (4) - NIC Ring buffer. It's a circular buffer, fixed size, FIFO, located at RAM. Buffer to smoothly accept bursts of connections without dropping them, you might need to increase these queues when you see drops or overrun, aka there are more packets coming than the kernel is able to consume them, the side effect might be increased latency.
 - Ring buffer's size is commonly set to a smaller size then the maximum. Often, increasing the receive buffer size is alone enough to prevent packet drops, as it can allow the kernel slightly more time to drain the buffer.
-
   - Check command:
 
   ```shell
@@ -499,7 +483,6 @@ sysctl -p or sysctl -p /etc/sysctl.conf
   ```
 
   - Persist the value:
-
     - RHEL/CentOS: Use `/sbin/ifup-local`, follow [here](https://access.redhat.com/solutions/8694) for detail.
     - Ubuntu: follow [here](https://unix.stackexchange.com/questions/542546/what-is-the-systemd-native-way-to-manage-nic-ring-buffer-sizes-before-bonded-int)
 
@@ -512,14 +495,12 @@ sysctl -p or sysctl -p /etc/sysctl.conf
 ### 2.2. Interrupt Coalescence (IC) - rx-usecs, tx-usecs, rx-frames, tx-frames (hardware IRQ)
 
 - Move on to step (5), hard interrupt - HardIRQ. NIC enqueue references to the packets at receive ring buffer queue rx until rx-usecs timeout or rx-frames, then raises a HardIRQ. This is called _Interrupt coalescence_:
-
   - The amount of traffic that a network will receive/transmit (number of frames) `rx/tx-frames`, or time that passes after receiving/transmitting traffic (timeout) `rx/tx-usecs`.
     - Interrupting too soon: poor system performance (the kernel stops a running task to handle the hardIRQ)
     - Interrupting too late: traffic isn't taken off the NIC soon enough -> more traffic -> overwrite -> traffic loss!
 
 - Updating _Interrupt coalescence_ can reduce CPU usage, hardIRQ, might be increase throughput at cost of latency
 - Tuning:
-
   - Check command:
     - Adaptive mode enables the card to auto-moderate the IC. The driver will inspect traffic patterns and kernel receive patterns, and estimate coalescing settings on-the-fly which aim to prevent packet loss -> useful if many small packets are received.
     - Higher interrupt coalescence favors bandwidth over latency: VOIP application (latency-sensitive) may require less coalescence than a file transfer (throughput-sensitive)
@@ -618,9 +599,7 @@ Once upon a time, everything was so simple. The network card was slow and had on
 #### 2.4.1. Receive-side scaling (RSS)
 
 - When packet arrives at NIC, they are added to receive queue. Receive queue is assigned an IRQ number during device drive initialization and one of the available CPU processor is allocated to that receive queue. This processor is responsible for servicing IRQs interrupt service routing (ISR). Generally the data processing is also done by same processor which does ISR.
-
   - If there is large amount of network traffic -> only single core is taking all responsibility of processing data. ISR routines are small so if they are being executed on single core does not make large difference in performance, but data processing and moving data up in TCP/IP stack takes time (other cores are idle).
-
     - _These pictures are from [balodeamit blog](http://balodeamit.blogspot.com/2013/10/receive-side-scaling-and-receive-packet.html)_
     - IRQ 53 is used for "eth1-TxRx-0" mono queue.
     - Check `smp_affinity` -> queue was configured to send interrupts to CPU8.
@@ -628,7 +607,6 @@ Once upon a time, everything was so simple. The network card was slow and had on
     ![](<http://1.bp.blogspot.com/-Xan_L2IHBrs/Ulxv_upXOCI/AAAAAAAABhc/Tq4vZCG5UR0/s1600/study+(4).png>)
 
   - RSS comes to rescue! RSS allow to configure network card to distributes across multiple send and receive queues (ring buffers). These queues are individually mapped to each CPU processor. When interrupts are generated for each queue, they are sent to mapped processor -> Network traffic is processed by multiple processors.
-
     - 4 receive queues and 4 send queues for eth1 interface, 56-59 IRQ are assigned to those queues. Now packet processing load is being distributed among 4 CPUs achieving higher throughput and low latency.
 
     ![](<http://2.bp.blogspot.com/-AnaAh45OOcI/Ulx3IWrgsNI/AAAAAAAABiQ/iq_zZUH5rOM/s1600/study+(5).png>)
@@ -681,7 +659,6 @@ sysctl -w net.core.rps_sock_flow_entries 32768
 ```
 
 - Although the socket flow table improves the application locality, it also raise a problem. When the scheduler migrates the application to a new CPU, the remaining packets in the old CPU queue become outstanding, and the application may get the out of order packets. To solve the problem, RFS uses the per-queue `rps_dev_flow_table` to track outstanding packets.
-
   - The size of the per-queue flow table `rps_dev_flow_table` can configured through sysfs interface: `/sys/class/net/<dev>/queues/rx-<n>/rps_flow_cnt.`
 
 - The next steps is way too complicated, if you want to know it, check [this](https://garycplin.blogspot.com/2017/06/linux-network-scaling-receives-packets.html) out.
@@ -711,9 +688,7 @@ sysctl -w net.core.rps_sock_flow_entries 32768
 ### 2.5. Interrupt Coalescing (soft IRQ)
 
 - `net.core.netdev_budget_usecs`:
-
   - Tuning:
-
     - Change command:
 
     ```shell
@@ -723,9 +698,7 @@ sysctl -w net.core.rps_sock_flow_entries 32768
     - Persist the value, check [this](https://access.redhat.com/discussions/2944681)
 
 - `net.core.netdev_budget`:
-
   - Tuning:
-
     - Change command:
 
     ```shell
@@ -741,9 +714,7 @@ sysctl -w net.core.rps_sock_flow_entries 32768
     ```
 
 - `net.core.dev_weight`:
-
   - Tuning:
-
     - Change command:
 
     ```shell
@@ -761,9 +732,7 @@ sysctl -w net.core.rps_sock_flow_entries 32768
 
 - In step (14), I has mentioned `netdev_max_backlog`, it's about Per-CPU backlog queue. The `netif_receive_skb()` kernel function (step (12)) will find the corresponding CPU for a packet, and enqueue packets in that CPU's queue. If the queue for that processor is full and already at maximum size, packets will be dropped. The default size of queue - `netdev_max_backlog` value is 1000, this may not be enough for multiple interfaces operating at 1Gbps, or even a single interface at 10Gbps.
 - Tuning:
-
   - Change command:
-
     - Double the value -> check `/proc/net/softnet_stat`
     - If the rate is reduced -> Double the value
     - Repeat until the optimum size is established and drops do not increment
@@ -784,7 +753,6 @@ sysctl -w net.core.rps_sock_flow_entries 32768
 
 - In the step (11) (transimission), there is `txqueuelen`, a queue/buffer to face conection bufrst and also to apply [traffic control (tc)](http://tldp.org/HOWTO/Traffic-Control-HOWTO/intro.html).
 - Tuning:
-
   - Change command:
 
   ```shell
@@ -800,7 +768,6 @@ sysctl -w net.core.rps_sock_flow_entries 32768
 
 - You can change `default_qdisc` as well, cause each application has diffrent load and need to traffic control and it is used also to fight against [bufferfloat](https://www.bufferbloat.net/projects/codel/wiki/).The can check [this article - Queue Disciplines section](https://www.coverfire.com/articles/queueing-in-the-linux-network-stack/).
 - Tuning:
-
   - Change command:
 
   ```shell
@@ -824,7 +791,6 @@ sysctl -w net.core.rps_sock_flow_entries 32768
 
 - Define what is [memory pressure](https://wwwx.cs.unc.edu/~sparkst/howto/network_tuning.php) is specified at `tcp_mem` and `tcp_moderate_rcvbuf`.
 - We can adjust the mix-max size of buffer to improve performance:
-
   - Change command:
 
   ```shell
@@ -887,7 +853,6 @@ systemctl stop irqbalance
 ```
 
 - Determine device locality:
-
   - Check the whether a PCIe network interface belongs to a specific NUMA node. The command will display the NUMA node number, interrupts for the device should be directed to the NUMA node that the PCIe device belongs to
 
   ```shell
@@ -901,7 +866,6 @@ systemctl stop irqbalance
   ```
 
 - The Linux kernel has supported NUMA since version 2.5 - RedHat, Debian-based offer NUMA support for process optimization with the two software packages `numactl` and `numad`.
-
   - `numad` is a daemon which can assist with process and memory management on system with NUMA architecture. Numad achieves this by monitoring system topology and resource usage, then attempting to locate processes for efficent NUMA locality and efficiency, where a process hash a sufficiently large memory size and CPU load.
 
   ```shell
@@ -923,12 +887,10 @@ Source:
 - <https://lwn.net/Articles/737947/d>
 
 - New fast packet interfaces in Linux:
-
   - `AF_PACKET v4`
   - No system calls in data path
   - Copy-mode by default
   - True [zero-copy](https://en.wikipedia.org/wiki/Zero-copy) mode with `PACKET_ZEROCOPY`, DMA packet buffers mapped to user space.
-
     - To better understand the solution to a problem, we first need to understand the problem itself.
     - This sample is taken from [IBM article](https://developer.ibm.com/articles/j-zerocopy/).
     - Scenario: Read from a file and transfer the data to another program over the network.
@@ -943,7 +905,6 @@ Source:
     ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure1.gif)
 
     ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure2.gif)
-
     - Zero copy improves performance by elimninating these redundant data copies.
     - You'll notice that the 2nd and 3rd copies are not actually required (The application does nothing other than cache the data and transfer it back to the socket buffer) -> The data could be transfered directly from the read buffer to the socket buffer -> Use method `transferTo()`, assume that this method transfers data from the file channel to the given writable byte channel. Internally, it depends on the OS's support for zero copy (in Linux, UNIX, this sis `sendfile()` system call).
 
@@ -962,7 +923,6 @@ Source:
     ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure3.gif)
 
     ![](https://s3.us.cloud-object-storage.appdomain.cloud/developer/default/articles/j-zerocopy/images/figure4.gif)
-
     - Gather operations: In Linux kernels 2.4 and later, the socket buffer descriptor was modified to acommondata this requirement. This approach not only reduces multiple context switches but also eliminates the duplicated data copies that require CPU involvement.
       - No data is copied into the socket buffer. Instead, only descriptors with information about the location and length of the data are appended to the socket buffer. The DMA engine passes data directly from the kernel buffer to the protocol engine, thus elimianting the remaining final CPU copy.
 
@@ -991,18 +951,14 @@ Source:
 - <https://www.slideshare.net/garyachy/dpdk-44585840>
 
 - The kernel is insufficient:
-
   - To understand the issue, check this [slide](https://www.cse.iitb.ac.in/~mythili/os/anno_slides/network_stack_kernel_bypass_slides.pdf).
   - Performance overheads in kernel stack:
-
     - Context switch between kernel and userspace
 
     ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/images/linux-network-1.png)
-
     - Packet copy between kernel and userspace
 
     ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/images/linux-network-2.png)
-
     - Dynamic allocation of `sk_buff`
     - Per packet interrupt
     - Shared data structures
@@ -1012,7 +968,6 @@ Source:
   - Solution: Why just bypass the kernel?
 
   ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/images/linux-network-4.png)
-
   - There are many kernel bypass techniques:
     - User-space packet processing:
       - Data Plane Development Kit (DPDK)
@@ -1024,7 +979,6 @@ Source:
   - But I only talk about the DPDK, as it's the most popular.
 
 - DPDK (Data Plane Development Kit):
-
   - A framework comprised of various userspace libraries and drivers fast packet processing.
   - Goal: forward network packet to/from Network Interface Card (NIC) from/to user application at native speed (fast packet processing).
     - 10 or 40Gb NICs
@@ -1036,7 +990,6 @@ Source:
   - How it works:
 
     ![](https://selectel.ru/blog/en/wp-content/uploads/sites/2/2016/11/PR-3303.png)
-
     - The kernel doesn't step in at all: interactions with the network card are performed via special drivers and libraries
     - The ports receiving incoming traffic on network cards need to be unbound from Linux (the kernel driver). This is done using the `dpdk_nic_bind` (or `dpkg-devbind`) command, or `./dpdk_nic_bind.py` in earlier versions.
     - How are ports then managed by DPDK? Every driver in Linux has bind and unbind files:
@@ -1059,7 +1012,6 @@ Source:
   - Components:
 
     ![](https://doc.dpdk.org/guides/_images/architecture-overview.svg)
-
     - Core components:
       - Environment Abstraction Layer (EAL): provides a generic interface that hides the environment specifics from the applications and libraries.
       - Ring Manager (`librte_ring`): the ring structure provides a lockless multi-producer, multi-consumer FIFO API in a finite size table.
@@ -1127,9 +1079,7 @@ Source:
 - <https://legacy.netdevconf.info/2.1/session.html?gospodarek>
 
 - XDP (eXpress Data Path):
-
   - An eBPF implementation for early packet interception. It's programmable, high performance, specialized application, packet processor in Linux networking data path.
-
     - eBPF is the user-defined, sandboxed bytecode executed by the kernel. For more check [out](./ebpf/README.md).
     - Evolution from former BPF version (cBPF, used by tcpdump)
     - 11 registers (64-bit), 512 bytes stack
@@ -1139,7 +1089,6 @@ Source:
     - JIT (Just-in-time) compiler available for main architecture
 
     ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imagesebpf-1.png)
-
     - Features:
       - Maps: key-value entries (hash, array,...) shared between eBPF programs or with user user-space
       - Tail calls: "long jump" from one program into an other, context is preserved
@@ -1151,7 +1100,6 @@ Source:
     - Operate directly on RX packet-pages
 
   ![](https://blogs.igalia.com/dpino/files/2019/01/linux-network-stack-with-xdp.png)
-
   - Use cases:
     - Pre-stack processing like filtering to do DOS mitigation
     - Forwarding and load balancing
@@ -1186,7 +1134,6 @@ Source:
 - XDP packet processor:
 
   ![](https://www.iovisor.org/wp-content/uploads/sites/8/2016/09/xdp-packet-processing-768x420.png)
-
   - In kernel
   - Component that processes RX packets
   - Process RX "packet pages" directly out of driver
@@ -1218,15 +1165,12 @@ Source:
 - `AF_XDP`:
 
   ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imagesxdp-flow.png)
-
   - A new type of socket, presented into the [Linux 4.18](https://www.kernel.org/doc/html/v4.18/networking/af_xdp.html) which does not completely bypass the kernel, but utilizes its functionality and enables to create something alike DPDK or the `AF_PACKET`.
-
     - An upgraded version of `AF_PACKET`: Use XDP program to trigger Rx path for selected queue
     - XDP programs can redirect frames to a memory buffer in user-space by eBPF -> not bypass the kernel but creates in-kernel fast path.
     - DMA transfers use user space memory (zero copy)
 
     ![](https://raw.githubusercontent.com/ntk148v/til/master/linux/imagesxdp.png)
-
     - Benefits:
       - Performance improvement:
         - Zero copy between user space and kernel space
