@@ -175,6 +175,7 @@ What fsync means in Prometheus:
 I found a link: <https://groups.google.com/g/prometheus-users/c/Oy1qI3Og9ww> but the logic seems to be changed in the current source code (v3.8.0).
 
 I use [deepwiki](https://deepwiki.com/search/when-fsync-is-performed_cbf97034-616c-403a-8ff3-de92da849479) to check how fsync is performed in Prometheus.
+
 - The WAL implementation performs fsync in several scenarios:
   - During segment rotation: When creating a new segment, the previous segment is fsynced asynchronously via `w.fsync(prev)`.
   - During close operation: The active segment is fsynced before closing.
