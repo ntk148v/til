@@ -12,6 +12,7 @@
   - [By/Without and Ignoring/On](#bywithout-and-ignoringon)
   - [Authentication and encryption for Prometheus and its exporters](#authentication-and-encryption-for-prometheus-and-its-exporters)
   - [Prometheus and fsync](#prometheus-and-fsync)
+  - [`min-block-duration` and `max-block-duration`](#min-block-duration-and-max-block-duration)
 
 ## `avg_over_time`
 
@@ -172,6 +173,21 @@ What fsync means in Prometheus:
 - Performance Impact: This disk write is a critical operation, and if the underlying storage is slow, fsync calls take longer, impacting Prometheus's ingestion rate and overall performance.
 
 I found a link: <https://groups.google.com/g/prometheus-users/c/Oy1qI3Og9ww> but the logic seems to be changed in the current source code (v3.8.0).
+
+I use [deepwiki](https://deepwiki.com/search/when-fsync-is-performed_cbf97034-616c-403a-8ff3-de92da849479) to check how fsync is performed in Prometheus.
+- The WAL implementation performs fsync in several scenarios:
+  - During segment rotation: When creating a new segment, the previous segment is fsynced asynchronously via `w.fsync(prev)`.
+  - During close operation: The active segment is fsynced before closing.
+  - Manual sync: Available via `Sync()` method for testing.
+- During compaction, temporary block directories are fsynced before being made visible.
+- Both the chunk writer and head chunk disk mapper perform fsync when finalizing files:
+  - Chunk writer calls `tf.Sync()` during `finalizeTail()`.
+  - Head chunk mapper calls `cdm.curFile.Sync()` during `finalizeCurFile()`.
+
+According to the documentation, WAL syncs typically happen every two hours during normal operation, though the actual fsync frequency is higher during active writes due to the WAL's design.
+
+> [!note]
+> The WAL implementation uses asynchronous fsync for segment rotation to avoid blocking writes, while compaction and chunk operations use synchronous fsync to ensure data integrity before making files visible. The WAL also tracks fsync duration as a metric for monitoring performance impact.
 
 ## `min-block-duration` and `max-block-duration`
 
