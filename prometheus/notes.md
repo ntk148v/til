@@ -1,6 +1,6 @@
-# Prometheus tips
+# Prometheus notes
 
-- [Prometheus tips](#prometheus-tips)
+- [Prometheus notes](#prometheus-notes)
   - [`avg_over_time`](#avg_over_time)
   - [Alerting on approach open file limits](#alerting-on-approach-open-file-limits)
   - [Absent alerting for Jobs](#absent-alerting-for-jobs)
