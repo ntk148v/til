@@ -294,3 +294,116 @@ $ vmtouch /var/tmp/file1.db
 ```
 
 ## 4. Page cache eviction and page reclaim
+
+### 4.1. Theory
+
+Like any other cache, Linux Page cache continuously monitors the last used pages and makes decisions about which pages should be deleted and which should be kept in the cache.
+
+The primary approach to control and tune Page cache is the cgroup subsystem. You can divide the server’s memory into several smaller caches (cgroups) and thus control and protect applications and services. In addition, the cgroup memory and IO controllers provide a lot of statistics that are useful for tuning your software and understanding the internals of the cache.
+
+Linux Page Cache is closely tightened with Linux Memory Management, cgroup and virtual file system (VFS). Core building block is a per cgroup pair of active and inactive lists:
+
+- The first pair for anonymous memory (for instance, allocated with `malloc()` or not file backended `mmap()`).
+- The second pair for Page cache file memory (all file operations including `read()`, `write()`, `mmap()` accesses, etc.)
+
+The least recently used algorithm LRU:
+
+- These 2 lists from a double clock data structure.
+- Linux should choose pages that have not been used recently (inactive) based on the fact that the pages that have not seen used recently will not be used frequently in a short period of time.
+- Both the active and inactive lists adopt the form of FIFO for their entries.
+
+![](https://biriukov.dev/docs/page-cache/images/lru.png)
+
+For example, a user process has just read some data from disks. This action triggered the kernel to load data to the cache. It was the first time when the kernel had to access the file. Hence it added a page `h` to the head of the inactive list:
+
+![](https://biriukov.dev/docs/page-cache/images/eviction-1.png)
+
+Some time has passed, the system loads 2 more pages: `i` and `j`.
+
+![](https://biriukov.dev/docs/page-cache/images/eviction-2.png)
+
+Now, a new file operation to the page `h` promotes the page to the active LRU list by putting it at the head. This action also ousts the page `1` to the head of the inactive LRU list and shifts all other members:
+
+![](https://biriukov.dev/docs/page-cache/images/eviction-3.png)
+
+As time flies, page `h` looses its head position in the active LRU list.
+
+![](https://biriukov.dev/docs/page-cache/images/eviction-4.png)
+
+But a new file access to the `h`’s position in the file returns h back to the head of the active LRU list.
+
+![](https://biriukov.dev/docs/page-cache/images/eviction-5.png)
+
+But it’s worth mentioning that the real process of pages promotion and demotion is much more complicated and sophisticated.
+
+First of all, if a system has NUMA hardware nodes (`man 8 numastat`), it has twice more LRU lists. The reason is that the kernel tries to store memory information in the NUMA nodes in order to have fewer lock contentions.
+
+In addition, Linux Page Cache also has special shadow and referenced flag logic for promotion, demotion and re-promotion pages.
+
+Shadow entries help to mitigate the memory thrashing problem. This issue happens when the programs’ working set size is close to or greater than the real memory size (maybe cgroup limit or the system RAM limitation).
+
+### 4.2. Manual pages eviction with `POSIX_FADV_DONTNEED`
+
+```shell
+$ vmtouch /var/tmp/file1.db -e
+           Files: 1
+     Directories: 0
+   Evicted Pages: 32768 (128M)
+         Elapsed: 7.2e-05 seconds
+$ vmtouch /var/tmp/file1.db
+           Files: 1
+     Directories: 0
+  Resident Pages: 0/32768  0/128M  0%
+         Elapsed: 0.000526 seconds
+```
+
+```python
+import os
+
+with open("/var/tmp/file1.db", "br") as f:
+    fd = f.fileno()
+    os.posix_fadvise(fd, 0, os.fstat(fd).st_size, os.POSIX_FADV_DONTNEED)
+```
+
+```shell
+# Read the entire test file into Page cache
+$ dd if=/var/tmp/file1.db of=/dev/null
+262144+0 records in
+262144+0 records out
+134217728 bytes (134 MB, 128 MiB) copied, 0,186082 s, 721 MB/s
+
+$ python3 evict_full_file.py
+$ vmtouch /var/tmp/file1.db
+           Files: 1G
+     Directories: 0
+  Resident Pages: 0/32768  0/128M  0%
+         Elapsed: 0.000278 seconds
+```
+
+### 4.3. Make your memory unevictable
+
+Kernel provides a bunch of syscalls for doing that: `mlock()`, `mlock2()` (\*) and `mlockall()`. As with the `mincore()`, you must map the file first.
+
+You likely need to increase the limit:
+
+```shell
+$ ulimit -l
+
+$ grep unevic /sys/fs/cgroup/user.slice/user-1000.slice/session-c2.scope/memory.stat
+unevictable 189382656
+```
+
+### 4.4. Page cache, `vm.swappiness` and modern kernels
+
+Page Cache should be the first and the only option for the memory eviction and reclaiming. But if the system has swap, the kernel has one more option. It can swap out the anonymous (not file-backed) pages. So, in order to control which inactive LRU list to prefer for scans, the kernel has the `sysctl vm.swappiness` knob.
+
+```shell
+$ sudo sysctl -a | grep swap
+// From 0..200 Higher means more swappy
+// 100 value means that the kernel considers anonymous and Page cache pages equally in terms of reclamation.
+vm.swappiness = 60
+```
+
+### 4.4. Understanding memory reclaim process with `/proc/pid/pagemap`
+
+There is a `/proc/PID/pagemap` file that contains the page table information of the PID. The page table, basically speaking, is an internal kernel map between page frames (real physical memory pages stored in RAM) and virtual pages of the process. Each process in the linux system has its own virtual memory address space which is completely independent form other processes and physical memory addresses.
