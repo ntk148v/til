@@ -407,3 +407,96 @@ vm.swappiness = 60
 ### 4.4. Understanding memory reclaim process with `/proc/pid/pagemap`
 
 There is a `/proc/PID/pagemap` file that contains the page table information of the PID. The page table, basically speaking, is an internal kernel map between page frames (real physical memory pages stored in RAM) and virtual pages of the process. Each process in the linux system has its own virtual memory address space which is completely independent form other processes and physical memory addresses.
+
+## 5. `mmap()` file access
+
+Each process has its own region where `mmap()` maps files.
+
+![](https://biriukov.dev/docs/page-cache/images/mmap.png)
+
+```python
+import mmap
+import os
+from time import sleep
+
+print("pid:", os.getpid())
+
+with open("/var/tmp/file1.db", "rb") as f:
+    with mmap.mmap(f.fileno(), 0, prot=mmap.PROT_READ) as mm:
+        sleep(10000)
+```
+
+Run it and get the pid, then:
+
+```shell
+$ pmap -x 105768 | less
+
+105768:   python test_mmap.py
+Address           Kbytes     RSS   Dirty Mode  Mapping
+00007b26bb400000  131072       0       0 r--s- file1.db
+
+# RSS column = 0 -> how much memory in KiB our process has already referenced -> 0 means that our process hasn't accessed any pages yet.
+```
+
+### 5.1. What is page fault?
+
+- The page fault is the CPU mechanism for communicating with the Linux Kernel and its memory subsystem. The page fault is a building block of the Virtual Memory concept and demand paging. Briefly speaking, the kernel usually doesn't allocate physical memory immediately after a memory request is done by `mmap()` or `malloc()`. Instead, the kernel creates some records it the process's page table structure and uses it as a storage for its memory promises.
+- There are 2 useful types of page faults:
+  - **minor**: A minor basically means that there will be no disk access in order to fulfill a process’s memory access.
+  - **major**: A major page fault means that there will be a disk IO operation.
+- For example, if we load a half of a file with `dd` in Page cache and afterward access this first half from a program with `mmap()`, we will trigger minor page faults. But if the process tries to read within the same area the second half of the file, the kernel will have to go to the disk in order to load the pages, and the system will generate major page faults.
+
+```python
+import mmap
+import os
+from random import randint
+from time import sleep
+
+with open("/var/tmp/file1.db", "r") as f:
+    fd = f.fileno()
+    size = os.stat(fd).st_size
+    with mmap.mmap(fd, 0, prot=mmap.PROT_READ) as mm:
+        try:
+            while True:
+                pos = randint(0, size-4)
+                print(mm[pos:pos+4])
+                sleep(0.05)
+        except KeyboardInterrupt:
+            pass
+```
+
+```shell
+# Terminal 1
+# show the system memory statistics per second including page faults.
+$ sar -B 1
+
+
+05:45:55 PM  pgpgin/s pgpgout/s   fault/s  majflt/s  pgfree/s pgscank/s pgscand/s pgsteal/s    %vmeff
+05:45:56 PM   8164.00      0.00     39.00      4.00      5.00      0.00      0.00      0.00      0.00
+05:45:57 PM   2604.00      0.00     20.00      1.00      1.00      0.00      0.00      0.00      0.00
+05:45:59 PM   5600.00      0.00     22.00      3.00      2.00      0.00      0.00      0.00      0.00
+
+# Terminal 2
+# show major page faults and corresponding file paths
+$ sudo perf trace -F maj --no-syscalls
+
+5278.737 ( 0.000 ms): python3/64915 majfault [__memmove_avx_unaligned_erms+0xab] => /var/tmp/file1.db@0x2aeffb6 (d.)
+5329.946 ( 0.000 ms): python3/64915 majfault [__memmove_avx_unaligned_erms+0xab] => /var/tmp/file1.db@0x539b6d9 (d.)
+5383.701 ( 0.000 ms): python3/64915 majfault [__memmove_avx_unaligned_erms+0xab] => /var/tmp/file1.db@0xb3dbc7 (d.)
+5434.786 ( 0.000 ms): python3/64915 majfault [__memmove_avx_unaligned_erms+0xab] => /var/tmp/file1.db@0x18f7c4f (d.)
+
+# Terminal 3
+$ python ./mmap_random_read.py
+```
+
+- The cgroup also has per cgroup stats regarding page faults:
+
+```shell
+$ grep fault /sys/fs/cgroup/user.slice/user-1000.slice/session-c2.scope/memory.stat
+
+workingset_refault_anon 49248
+workingset_refault_file 479383
+pgfault 155384729
+pgmajfault 77618
+thp_fault_alloc 6
+```
