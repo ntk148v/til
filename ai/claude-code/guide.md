@@ -13,6 +13,7 @@ Skills operate like rules, constricted to certain scopes and workflows. They're 
 Run `/refactor-clean`. Need testing? `/tdd`,`/e2e`, `/test-coverage`. Skills and commands can be chained together in a single prompt.
 
 Commands are skills executed via slash commands. They overlap but are stored differently:
+
 - Skills (`~/.claude/skills`) - broader workflow definitions.
 - Commands (`~/.claude/commands`) - quick executable prompts.
 
@@ -80,6 +81,7 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 
 > [!IMPORTANT]
 > **Key Takeaways**
+>
 > - Don't overcomplicate - treat configuration like fine-tuning, not architecture
 > - Context window is precious - disable unused MCPs and plugins
 > - Parallel execution - fork conversations, use git worktrees
