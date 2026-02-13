@@ -328,3 +328,12 @@ LIMIT 20
 
 55 rows in set. Elapsed: 0.010 sec.
 ```
+
+- Leverages an internal MinMax index on `timestamp` to whittle down the number of parts to 14/101 and granules to 3594/24457.
+- It tries to filter via the partition key but this doesn't narrow things down further.
+- It loads and leverages the Primary key as before to narrow data down to 24 granules.
+
+### 3.2. Choose a good `PARTITION BY`
+
+- Use partitions wisely - each INSERT should ideally only touch 1-2 partitions and too many partitions will cause issues around replication or prove useless for filtering.
+- Loading the primary index/marks the file might not be the bottleneck you expect, so be sure to benchmark different schemas against each other.
