@@ -31,7 +31,6 @@ LIMIT 200000000;
 ![](https://clickhouse.com/docs/assets/ideal-img/_vldb2024_2_Figure_5.8af62c4.2048.png)
 
 - ClickHouse stores a sparse index for the part. A collection of rows with size equal to the `index_granularity` setting (8,192 by default) is called a **granule**. For every granule, the primary index stores a mark containing the value of the `ORDER BY` statement as well as a pointer to where that mark is located in each data file.
-
   - Check [primary indexes docs](https://clickhouse.com/docs/primary-indexes).
 
 - Look at part data.
