@@ -6,7 +6,6 @@ Source: <https://posthog.com/handbook/engineering/clickhouse/operations>
 
 - ClickHouse exposes a lot of information about its internals in system tables.
 - Some stand-out tables:
-
   - `system.query_log` and `system.processes` contain information on queries executed on the server
   - `system.tables` and `system.columns` contain metadata about tables and columns
   - `system.merges` and `system.mutations` contain information about ongoing operations
