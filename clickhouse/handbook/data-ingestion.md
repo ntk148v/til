@@ -10,7 +10,6 @@ ClickHouse allows using `INSERTs` to load data. Each INSERT creates a new part i
 
 - Use [Kafka table engine](https://clickhouse.com/docs/engines/table-engines/integrations/kafka) to handle ingestion into ClickHouse.
 - How Kafka tables work:
-
   - Kafka engine tables act as Kafka consumers in a given consumer group. Selecting from that table advances the consumer offsets.
   - A Kafka table on its own does nothing beyond allowing querying data from Kafka - it needs to be paired with other tables for ingestion to work.
 
