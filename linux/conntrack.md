@@ -29,9 +29,9 @@ udp      17 13 src=192.168.1.22 dst=1.1.1.1 sport=44159 dport=53 src=1.1.1.1 dst
 ```
 
 > [!NOTE]
-> how large this state tracking table can be? This setting is  under `/proc/sys/net/nf_conntrack_max`
+> how large this state tracking table can be? This setting is under `/proc/sys/net/nf_conntrack_max`
 
-**Why do we need conntrack?
+\*\*Why do we need conntrack?
 
 If we rely only on `iptables` rules, each packet is evaluated independently - `iptables` has no memory of past packets. This means the kernel cannot determine whether a packet is part of an existing connection or simply a new incoming request. As a result, it becomes difficult to distinguish between new packets and response packets.
 
@@ -48,25 +48,25 @@ ctstate is the packet state label exposed by the conntrack module in iptables/nf
 
 Get from [iptables man page](https://ipset.netfilter.org/iptables-extensions.man.html).
 
-| State | Description | Typical scenario | Common usage |
-| ---| ---|---|---|
-| NEW | The packet has started a new connection or otherwise associated with a connection which has not seen packets in both directions.| TCP SYN, first UDP packet | Control which ports can be initiated from outside|
-| ESTABLISHED | The packet is associated with a connection which has seen packets in both directions.| TCP handshake completed, UDP responses received | Allow response packets |
-| RELATED | The packet is starting a new connection, but is associated with an existing connection, such as an FTP data transfer or an ICMP error|FTP data channel, ICMP error|Allow FTP, ICMP, ALG, and other derived connections|
-| UNTRACKED | The packet is not tracked at all, which happens if you explicitly untrack it by using -j CT --notrack in the raw table. |Explicitly set with `-j NOTRACK`|Special case (e.g., high performance bypass)|
-|INVALID|The packet cannot be associated with any known connection and is not a new connection| Invalid TCP flags, unexpected replies|Should be dropped|
-| SNAT | A virtual state, matching if the original source address differs from the reply destination. |||
-| DNAT | A virtual state, matching if the original destination differs from the reply source. |||
+| State       | Description                                                                                                                           | Typical scenario                                | Common usage                                        |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| NEW         | The packet has started a new connection or otherwise associated with a connection which has not seen packets in both directions.      | TCP SYN, first UDP packet                       | Control which ports can be initiated from outside   |
+| ESTABLISHED | The packet is associated with a connection which has seen packets in both directions.                                                 | TCP handshake completed, UDP responses received | Allow response packets                              |
+| RELATED     | The packet is starting a new connection, but is associated with an existing connection, such as an FTP data transfer or an ICMP error | FTP data channel, ICMP error                    | Allow FTP, ICMP, ALG, and other derived connections |
+| UNTRACKED   | The packet is not tracked at all, which happens if you explicitly untrack it by using -j CT --notrack in the raw table.               | Explicitly set with `-j NOTRACK`                | Special case (e.g., high performance bypass)        |
+| INVALID     | The packet cannot be associated with any known connection and is not a new connection                                                 | Invalid TCP flags, unexpected replies           | Should be dropped                                   |
+| SNAT        | A virtual state, matching if the original source address differs from the reply destination.                                          |                                                 |                                                     |
+| DNAT        | A virtual state, matching if the original destination differs from the reply source.                                                  |                                                 |                                                     |
 
 cstatus
 
-| Status | Description|
-| ---|---|
-| NONE | None of the below|
-| EXPECTED | Expected connection (i.e. a conntrack helper set i up)|
-| SEEN_REPLY | Conntrack has seen packets in both directions |
-| ASSURED | Conntrack entry should never be early-expired |
-| CONFIRMED | Connection is confirmed: originating packet has left box|
+| Status     | Description                                              |
+| ---------- | -------------------------------------------------------- |
+| NONE       | None of the below                                        |
+| EXPECTED   | Expected connection (i.e. a conntrack helper set i up)   |
+| SEEN_REPLY | Conntrack has seen packets in both directions            |
+| ASSURED    | Conntrack entry should never be early-expired            |
+| CONFIRMED  | Connection is confirmed: originating packet has left box |
 
 ## 3. How conntrack works?
 
@@ -100,4 +100,3 @@ flowchart TD
 ## 4. Common issues
 
 ### 4.1. Conntrack table full
-
