@@ -3,6 +3,7 @@
 Source: <https://posthog.com/handbook/engineering/clickhouse/operations>
 
 Table of contents:
+
 - [Operations](#operations)
   - [1. System tables](#1-system-tables)
     - [1.1. Overview](#11-overview)
@@ -17,7 +18,6 @@ Table of contents:
       - [1.2.8. How much disk space are the tables using?](#128-how-much-disk-space-are-the-tables-using)
       - [1.2.9. What is the status of the parts that are moving?](#129-what-is-the-status-of-the-parts-that-are-moving)
       - [1.2.10. Querying system tables from all nodes in a cluster?](#1210-querying-system-tables-from-all-nodes-in-a-cluster)
-
 
 ## 1. System tables
 
@@ -207,8 +207,9 @@ ORDER BY
 #### 1.2.7. Are there long-running mutations that are stuck?
 
 `ALTER` queries that are intended to manipulate table data are implemented with a mechanism called [mutations](https://clickhouse.com/docs/sql-reference/statements/alter#mutations). They are asynchronous background processes similar to merges in MergeTree tables that to produce new "mutated" versions of parts.
-  - For `*MergeTree` tables mutations execute by **rewriting whole data parts**. There is no atomicity — parts are substituted for mutated parts as soon as they are ready and a `SELECT` query that started executing during a mutation will see data from parts that have already been mutated along with data from parts that have not been mutated yet.
-  - Mutations are totally ordered.
+
+- For `*MergeTree` tables mutations execute by **rewriting whole data parts**. There is no atomicity — parts are substituted for mutated parts as soon as they are ready and a `SELECT` query that started executing during a mutation will see data from parts that have already been mutated along with data from parts that have not been mutated yet.
+- Mutations are totally ordered.
 
 ![](https://clickhouse.com/uploads/sins_06_mutations_647f7d67d9.png)
 
