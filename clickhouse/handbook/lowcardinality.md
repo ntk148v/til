@@ -1,6 +1,7 @@
 # LowCardinality
 
 Source:
+
 - <https://altinity.com/blog/2019-3-27-low-cardinality>
 - <https://clickhouse.com/docs/sql-reference/data-types/lowcardinality>
 
