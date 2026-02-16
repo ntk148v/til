@@ -279,3 +279,54 @@ SELECT
 FROM clusterAllReplicas('default', system.processes)
 FORMAT Vertical
 ```
+
+## 2. Settings
+
+### 2.1. Query settings
+
+- Query settings allow to manipulate the behavior of queries, for example setting limits on query execution time and resource usage or toggling specific behaviors on-and-off.
+- Using query settings is done:
+  - at query-time via ClickHouse client library arguments (preferred).
+  - at query-time explicit SETTINGS clause in queries.
+  - via `users.xml` file to apply to all queries.
+
+### 2.2. Server settings
+
+Server settings allow tuning things like global thread or pool sizes, networking and other clickhouse-server-level configuration. You can change server settings via `config.xml` file. Note: some settings may require a server restart.
+
+### 2.3. MergeTree table settings
+
+- MergeTree settings allow configuring things from primary index granularity to merge behavior to limits of usage of this table.
+- MergeTree table settings are set either:
+  - at table creation time
+  - or via `ALTER TABLE ... SETTING` statement
+
+### 2.4. Profiles and users
+
+ClickHouse allows creating different profiles and users with their own set of settings. This can be useful to grant read-only access to some users or otherwise limit resource use.
+
+## 3. Mutations
+
+- `ALTER TABLE ... UPDATE` and `ALTER TABLE ... DELETE` operations which mutate data require ClickHouse to rewrite whole data via special merge operations. These are frequently expensive operations and require monitoring.
+- You can monitor progress of mutations via the following system tables:
+  - `system.mutations`
+  - `system.merges` - see `is_mutation` column
+  - `system.replication_queue`
+- `ALTER TABLE ... DELETE` command is a heavyweight process, ClickHouse provides another statement, called [lightweight DELETE](https://clickhouse.com/docs/sql-reference/statements/delete).
+  - Lightweight DELETE is implemented as a mutation that marks rows as deleted but does not immediately physically delete them.
+  - By default, DELETE statements wait until marking the rows as deleted is completed before returning -> sync. You can turn it asynchronously in the background by disable the setting `lightweight_deletes_sync`, which means DELETE is going to return immediately but the data can still be visible.
+  - The physical delete will only happen during the next merge.
+
+## 4. Merges
+
+- Merges can be monitored via the following tables:
+  - `system.merges`
+  - `system.replication_queue`
+- `OPTIMIZE TABLE` statement schedules merges for a table, optimizing the on-disk layout or speeding up queries or forcing some schema changes into effect.
+  - Note: not all parts are guaranteed to be merged if the size of parts exceeds maximum limits or if data is already in a single part. In this case adding a `FINAL` modifier forces the merge regardless.
+- `SYSTEM STOP MERGES` statement can stop background merges from occurring temporarily for a table or the whole database. Merges can be resumed via `SYSTEM START MERGES` statement.
+- Important settings:
+  - `parts_to_throw_insert` controls when ClickHouse starts when parts count gets high.
+  - `max_bytes_to_merge_at_max_space_in_pool` controls maximum part size
+  - `background_pool_size` (and related) server settings control how many merges are executed in parallel
+  - Undocumented `max_replicated_mutations_in_queue` and `max_replicated_merges_in_queue` settings control how many merges are processed at once
