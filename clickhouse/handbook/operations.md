@@ -36,7 +36,12 @@ Table of contents:
   - `system.distributed_ddl_queue` shows information to help diagnose progress of ON CLUSTER commands.
   - `system.settings`, `system.users`, and `systems.roles` provide information on the current configuration and user privileges.
   - `system.metrics`, `system.events`: show real-time information, provide a snapshot view of the current system events.
-- Most system tables store their data in memory, but system log tables such (`metric_log`, `query_log`, `part_log`) use the MergeTree table engine and store their data in the filesystem by default.
+- Most system tables store their data in memory (ClickHouse server creates such as system tables at the start), but system log tables such (`metric_log`, `query_log`, `part_log`) use the MergeTree table engine and store their data in the filesystem by default.
+  - System log tables can be customized by creating a config file with the same name as the table under `/etc/clickhouse-server/config.d`, or setting corresponding elements in `/etc/clickhouse-server/config.xml`.
+  - By default, table growth is unlimited. To control a size of a table, you can use TTL settings for removing outdated log records.
+- For collecting system metrics ClickHouse server uses:
+  - `CAP_NET_ADMIN` capability.
+  - profs.
 - Explore:
 
 ```sql
