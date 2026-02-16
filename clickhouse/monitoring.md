@@ -4,6 +4,8 @@ Source:
 
 - <https://clickhouse.com/docs/operations/monitoring>
 - <https://sematext.com/clickhouse-monitoring-key-metrics/>
+- <https://intl.cloud.tencent.com/document/product/1026/36887>
+- <https://docs.google.com/spreadsheets/d/1K92yZr5slVQEvDglfZ88k_7bfsAKqahY9RPp_2tSdVU/edit?gid=521173956#gid=521173956>
 
 ## 1. Event metrics
 
@@ -15,9 +17,9 @@ Source:
 
 ## 2. Network metrics
 
-- TCP Connections – clickhouse.connection.tcp.count. The total number of connections to TCP server. Helps measure the load of your ClickHouse installation.
-- HTTP Connections – clickhouse.connection.http.count (long gauge). Number of connections to the HTTP server. Also a reflection of load.
-- Interserver Connections – clickhouse.connection.interserver.count. This metric represents the number of connections from other replicas to fetch parts. It’s not directly tied to overall system load, but it is useful for assessing and optimizing the performance of your ClickHouse installation.
+- TCP Connections – metrics.TCPConnection. The total number of connections to TCP server. Helps measure the load of your ClickHouse installation.
+- HTTP Connections – metrics.HTTPConnection (long gauge). Number of connections to the HTTP server. Also a reflection of load.
+- Interserver Connections – metrics.InterserverConnection. This metric represents the number of connections from other replicas to fetch parts. It’s not directly tied to overall system load, but it is useful for assessing and optimizing the performance of your ClickHouse installation.
 
 ## 3. Zookeeper metrics
 
@@ -36,4 +38,4 @@ Source:
 
 ## 6. Replica status
 
-- Replica queue size – clickhouse.replica.queue.size. This metric represents the size of the queue for operations waiting to be performed. In this case, operations include inserting blocks of data, merges, and certain other actions.
+- Replica queue size – asynchronous_metrics.ReplicasSumQueueSize. This metric represents the size of the queue for operations waiting to be performed. In this case, operations include inserting blocks of data, merges, and certain other actions.
