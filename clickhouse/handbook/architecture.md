@@ -6,6 +6,24 @@ Source:
 - <https://blog.dataengineerthings.org/i-spent-8-hours-learning-the-clickhouse-mergetree-table-engine-511093777daa>
 - <https://www.alibabacloud.com/blog/clickhouse-kernel-analysis-storage-structure-and-query-acceleration-of-mergetree_597727>
 
+Table of contents:
+- [Archiecture](#archiecture)
+  - [1. Architecture](#1-architecture)
+  - [2. Storage layer](#2-storage-layer)
+    - [2.1. On-disk format](#21-on-disk-format)
+    - [2.2. Data pruning](#22-data-pruning)
+      - [2.2.1. Primary key index](#221-primary-key-index)
+      - [2.2.2. Table projections](#222-table-projections)
+      - [2.2.3. Skipping indices](#223-skipping-indices)
+    - [2.3. Merge-time data transformation](#23-merge-time-data-transformation)
+    - [2.4. Updates and deletes](#24-updates-and-deletes)
+    - [2.5. Idempotent inserts](#25-idempotent-inserts)
+    - [2.6. Data replication](#26-data-replication)
+    - [2.7. ACID compliance](#27-acid-compliance)
+  - [3. Query processing layer](#3-query-processing-layer)
+  - [4. Gotchas](#4-gotchas)
+    - [ClickHouse writes](#clickhouse-writes)
+
 ## 1. Architecture
 
 ![](https://clickhouse.com/docs/assets/ideal-img/_vldb2024_2_Figure_0.141fdff.2048.png)
@@ -149,7 +167,19 @@ ClickHouse is generally not considered a fully ACID-compliant database in the tr
 
 ![](https://clickhouse.com/docs/assets/ideal-img/_vldb2024_6_Figure_0.0d157e1.2048.png)
 
-## Gotchas
+ClickHouse parallelizes queries at the level of data elements, data chunks, and table parts.
+
+- Multiple data elements can be processed within operators at once using SIMD instructions.
+- On a single node, the query engine executes operators simultaneously in multiple threads. To utilize all cores, ClickHouse unfolds the query plan into multiple lanes, typically one per core. Each lane processes a disjoint range of the table data. That way, the performance of the database scales vertically with the number of available cores.
+
+![](https://clickhouse.com/docs/assets/ideal-img/_vldb2024_7_Figure_1.204b48a.2048.png)
+
+- If a source table is split into disjoint table shards, multiple nodes can scan the shards simultaneously.
+- As a result, all hardware resources are fully utilized, and query processing can be scaled horizontally by adding nodes and vertically by adding cores.
+
+ClickHouse offers concurrency control, memory usage limits, and I/O scheduling, enabling users to isolate queries into workload classes. By setting limits on sharded resources (CPU cores, DRAM, disk, and network I/O) for specific workload classes, it ensures these queries do not affect other critical business queries.
+
+## 4. Gotchas
 
 ### ClickHouse writes
 
@@ -158,18 +188,17 @@ In synchronous insert mode, each INSERT statement creates a new part and appends
 If you insert data into ClickHouse frequently in small chunks (e.g., 1 row at a time), performance degrades catastrophically. Here is the technical breakdown of why:
 
 1. The "Too Many Parts" problem (Read & Write Amplification)
-
-- How it works: In ClickHouse, every INSERT creates a new directory containing data files (a "Part").
-- The Problem: If you send 1,000 individual inserts per second, ClickHouse creates 1,000 folders and files on your disk every second.
-- The Impact: The background merger (compaction process) cannot keep up. It has to merge these thousands of small files into larger ones. This causes massive Write Amplification (data is rewritten to disk multiple times) and chokes the CPU and Disk I/O. Eventually, ClickHouse will throw a [Too many parts](https://www.tinybird.co/docs/sql-reference/clickhouse-errors/TOO_MANY_PARTS) error and reject writes to protect itself.
+   - How it works: In ClickHouse, every INSERT creates a new directory containing data files (a "Part").
+   - The Problem: If you send 1,000 individual inserts per second, ClickHouse creates 1,000 folders and files on your disk every second.
+   - The Impact: The background merger (compaction process) cannot keep up. It has to merge these thousands of small files into larger ones. This causes massive Write Amplification (data is rewritten to disk multiple times) and chokes the CPU and Disk I/O. Eventually, ClickHouse will throw a [Too many parts](https://www.tinybird.co/docs/sql-reference/clickhouse-errors/TOO_MANY_PARTS) error and reject writes to protect itself.
 
 2. Random I/O vs. Sequential I/1. first
 
-- Standard LSM: Writes go to a WAL (append-only file). This is a purely sequential operation, which is extremely fast on both HDDs and SSDs.
-- ClickHouse: Creating a new "Part" involves creating a directory, creating multiple files (one for each column + indexes), and writing metadata. This involves significantly more file system inode operations and random I/O overhead than simply appending to a single log file.
+   - Standard LSM: Writes go to a WAL (append-only file). This is a purely sequential operation, which is extremely fast on both HDDs and SSDs.
+   - ClickHouse: Creating a new "Part" involves creating a directory, creating multiple files (one for each column + indexes), and writing metadata. This involves significantly more file system inode operations and random I/O overhead than simply appending to a single log file.
 
 3. Read Latency Degradation
-   The Impact: Queries in LSM trees must check all "Parts" (SSTables) to find data. If you have thousands of small unmerged parts, a SELECT query has to open and read from thousands of files simultaneously. This destroys query latency.
+  The Impact: Queries in LSM trees must check all "Parts" (SSTables) to find data. If you have thousands of small unmerged parts, a SELECT query has to open and read from thousands of files simultaneously. This destroys query latency.
 
 **How ClickHouse handles this**: Basically, the client must essentially build the "MemTable" yourself on its side (or use buffering layer).
 
