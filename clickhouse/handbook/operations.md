@@ -24,7 +24,6 @@ Table of contents:
 ### 1.1. Overview
 
 - ClickHouse exposes a lot of information about its internals in [system tables](https://clickhouse.com/docs/operations/system-tables).
-  - System tables are virtual tables.
   - Read-only.
   - Cannot be dropped or altered, but their partition can be detached and old records can be removed using TTL.
 - Some stand-out tables:
