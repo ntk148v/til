@@ -7,6 +7,7 @@ Source:
 - <https://www.alibabacloud.com/blog/clickhouse-kernel-analysis-storage-structure-and-query-acceleration-of-mergetree_597727>
 
 Table of contents:
+
 - [Archiecture](#archiecture)
   - [1. Architecture](#1-architecture)
   - [2. Storage layer](#2-storage-layer)
@@ -193,12 +194,11 @@ If you insert data into ClickHouse frequently in small chunks (e.g., 1 row at a 
    - The Impact: The background merger (compaction process) cannot keep up. It has to merge these thousands of small files into larger ones. This causes massive Write Amplification (data is rewritten to disk multiple times) and chokes the CPU and Disk I/O. Eventually, ClickHouse will throw a [Too many parts](https://www.tinybird.co/docs/sql-reference/clickhouse-errors/TOO_MANY_PARTS) error and reject writes to protect itself.
 
 2. Random I/O vs. Sequential I/1. first
-
    - Standard LSM: Writes go to a WAL (append-only file). This is a purely sequential operation, which is extremely fast on both HDDs and SSDs.
    - ClickHouse: Creating a new "Part" involves creating a directory, creating multiple files (one for each column + indexes), and writing metadata. This involves significantly more file system inode operations and random I/O overhead than simply appending to a single log file.
 
 3. Read Latency Degradation
-  The Impact: Queries in LSM trees must check all "Parts" (SSTables) to find data. If you have thousands of small unmerged parts, a SELECT query has to open and read from thousands of files simultaneously. This destroys query latency.
+   The Impact: Queries in LSM trees must check all "Parts" (SSTables) to find data. If you have thousands of small unmerged parts, a SELECT query has to open and read from thousands of files simultaneously. This destroys query latency.
 
 **How ClickHouse handles this**: Basically, the client must essentially build the "MemTable" yourself on its side (or use buffering layer).
 
