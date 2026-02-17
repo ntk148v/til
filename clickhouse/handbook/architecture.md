@@ -11,14 +11,16 @@ Source:
 ![](https://clickhouse.com/docs/assets/ideal-img/_vldb2024_2_Figure_0.141fdff.2048.png)
 
 ClickHouse is split into 3 main layers:
+
 - The **query processing layer** follows the traditional paradigm of parsing incoming queries, building and optimizing logical and physical query plans, and execution.
 - The **storage layer** consists of different table engines that encapsulate the format and location of table data. Table engines fall into 3 categories:
   - The MergeTree family: based on the idea of LSM trees.
-  - Special-purpose table engines which are used to speed up or distribute query execution.  For example, in-memory key-value table engines called dictionaries; pure in-memory engine used for temporary tables and Distributed table engine for transparent data sharding.
+  - Special-purpose table engines which are used to speed up or distribute query execution. For example, in-memory key-value table engines called dictionaries; pure in-memory engine used for temporary tables and Distributed table engine for transparent data sharding.
   - Virtual table engines is used for bidirectional data exchange with external systems such as relational databases, publish/subscribe systems, or key/value stores.
 - The integration layer.
 
 ClickHouse supports sharding and replication of tables across multiple cluster nodes for scalability and availability.
+
 - Sharding partitions a table into a set of table shards according to a sharding expression.
   - The main purpose: to process data sets which exceed the capacity of individual nodes. And distribute the read-write load for a table over multiple nodes.
   - The individual shards are mutually independent tables and typically located on different nodes.
@@ -30,6 +32,7 @@ ClickHouse supports sharding and replication of tables across multiple cluster n
 ### 2.1. On-disk format
 
 Each table in the MergeTree table engine is organized as a collection of immutable table **parts**.
+
 - A part is created whenever a set of rows is inserted into the table.
 - A background merge job periodically combines multiple smaller parts into a larger part until a configurable part size is reached (150GB by default).
 - The source parts are marked as inactive and eventually deleted as soon as their reference count drops to zero, i.e. no further queries read from them.
@@ -42,6 +45,7 @@ Each table in the MergeTree table engine is organized as a collection of immutab
 Note that, ClickHouse treats all parts as equal instead of arranging them in a hierarchy. It also writes inserts directly to disk while other LSM-treebased stores typically use WAL.
 
 A part corresponds to a directory on disk, with one file per column (small parts can pack all columns into a single file for better locality).
+
 - Rows in a part are grouped into fixed-size **granules** (8192 rows by default) - that's the smallest unit the scan/index operators reason about.
 - Physical I/O happens in **blocks** which combine multiple granules within a column, not per granule: a block is ~1MB of adjacent granules from a single column, and the number of granules per block varies by data type and distribution.
 - Blocks are compressed on disk (LZ4 by default).
@@ -63,12 +67,14 @@ The primary key columns determine the sort order of the rows within each part, i
 #### 2.2.2. Table projections
 
 Projections allow to speed up queries that filter on columns different than the main table's primary key at the cost of an increased overhead for inserts, merges, an space consumption.
+
 - By default, projections are populated lazily only from parts newly inserted into the main table.
 - The query optimizer chooses between reading from the main table or a projection based on estimated I/O costs.
 
 #### 2.2.3. Skipping indices
 
 Skipping indices are lightweight metadata structures that helps ClickHouse skip whole chunks of data (multiple granules) that definitely cannot match your query.
+
 - Granularity: They work on groups of granules called an index block. For each block, the index stores a small summary of the indexed expression (e.g. min/max, a small set of values, or a Bloom filter).
 - How they speed things up:
   - When you run a query with a WHERE condition that matches the index expression, ClickHouse checks the skipping index first.
@@ -91,10 +97,12 @@ ClickHouse allows a continuous incremental transformation of existing data using
 ### 2.4. Updates and deletes
 
 **Mutations** rewrite all parts of a table in-place.
+
 - This operation is non-atomic, i.e. parallel SELECT statements may read mutated and non-mutated parts.
 - Mutations guarantee that the data is physically changed at the end of the operation. Delete mutations are still expensive as they rewrite all columns in all parts.
 
 **Lightweight delete** only update the internal bitmap column, indicating if a row is deleted or not.
+
 - ClickHouse amends SELECT queries with an additional filter on the bitmap column to exclude deleted rows from the result.
 - Deleted rows are physically removed only by regular merges at an unspecified time in future. Depending on the column count, lightweight deletes can be much faster than mutations, at the cost of slower SELECTs.
 
@@ -107,11 +115,13 @@ A problem that frequently occurs in practice is how clients should handle connec
 In ClickHouse, replication is based of the notion of table states which consist of a set of table parts and table metadata.
 
 Nodes advance the state of table using 3 operations (are performed locally on a single node and recorded as a sequence of state transition in a global replication log):
+
 - Inserts add a new part to the state.
 - Merges add a new part and delete existing parts to/from the state.
 - Mutations and DDL statements add parts, and/or delete parts, and/or change table metadata, depending on the concrete operation.
 
 Initially empty replicated table:
+
 - Node 1 first receives 2 inset statements and records them (1 2) in the replication log.
 - Node 2 replays the first log entry by fetching it (3) and download the new part from Node 1 (4), whereas Node 3 replay both logs entries (3 4 5 6).
 - Node 3 merges both parts to a new part, deletes the input parts and records a merge entry in the replication log (7).
@@ -119,6 +129,7 @@ Initially empty replicated table:
 ![](https://clickhouse.com/docs/assets/ideal-img/_vldb2024_5_Figure_8.074743d.2048.png)
 
 Three optimizations to speed up synchronization exist:
+
 - New nodes added to the cluster do replay the replication log from scratch.
 - Merges are replayed by repeating them locally or by fetching the result part from the another node.
 - Nodes replay mutually independent replication log entries in parallel.
