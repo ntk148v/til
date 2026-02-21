@@ -1,33 +1,115 @@
-# Clickhouse
+# ClickHouse Learning Notes
 
-## 1. Clickhouse's structure explained
+A comprehensive guide to learning ClickHouse, organized by topic.
 
-Source: <https://posthog.com/blog/clickhouse-vs-elasticsearch>
+## Table of Contents
 
-ClickHouse is engineered to process data in a massive, consolidated place. Unlike Elasticsearch, ClickHouse’s optimizations don’t happen through distributing data, but by efficiently pre-processing it in anticipation of queries.
+### Fundamentals
 
-There are three major components that enable ClickHouse to return aggregations, such as averages, sums, and standard deviations, in millisecond times over petabytes of data.
+Core concepts and architecture of ClickHouse.
 
-### 1.1. Component 1: Columnar layout
+| Topic | Description |
+|-------|-------------|
+| [Architecture](fundamentals/architecture.md) | System architecture, storage layer, query processing |
+| [Why ClickHouse is Fast](fundamentals/why-is-clickhouse-so-fast.md) | Performance factors: columnar storage, vectorization, merge-time computation |
+| [Storage](fundamentals/storage.md) | MergeTree storage, parts, granules, query execution |
+| [Table Engines](fundamentals/engines.md) | MergeTree family, special-purpose, integration engines |
+| [Table Parts](fundamentals/table-parts.md) | Data parts lifecycle, active/inactive parts, merges |
+| [Skipping Indices](fundamentals/skipping-indices.md) | Secondary indices for data pruning |
 
-ClickHouse’s columnar layout – which flips rows and columns in storage relative to a MySQL database – makes aggregations efficient.
+### Guides
 
-When databases physically access data, they scan data row-by-row. By extension, if an analyst is trying to calculate the average value of bank account balances in a PostgreSQL database, they would need to access every bank account row. Alone, that would probably blow out memory. But in ClickHouse, the same analyst would only need to access one (physical) row of data – the bank balance one – and collapse it into an average.
+Practical how-to guides for working with ClickHouse.
 
-Again, this is a physical row of data. As far as ClickHouse’s interface goes, data is still stored in a traditional format. ClickHouse’s syntax still treats individual entries as rows and attributes as columns. But under the hood, ClickHouse stores the data in an inverted arrangement, optimized for merging attribute data into single values.
+| Topic | Description |
+|-------|-------------|
+| [Getting Started Issues](guides/getting-started-issues.md) | 13 common pitfalls and how to avoid them |
+| [Common Issues & Monitoring](guides/common-issues-monitoring.md) | Using advanced dashboards, identifying problems |
+| [Data Ingestion](guides/data-ingestion.md) | INSERTs, Kafka tables, materialized views |
+| [Operations](guides/operations.md) | System tables, settings, mutations, merges |
+| [TTL](guides/ttl.md) | Time-to-live for data management, hot/warm/cold storage |
+| [Materialized Views](guides/materialized-views.md) | Pre-aggregation, data transformation, best practices |
+| [JSON Type](guides/json.md) | When to use JSON vs structured types |
+| [LowCardinality](guides/lowcardinality.md) | Dictionary encoding for low-cardinality columns |
 
-### 1.2. Component 2: Materialized views
+### Scaling
 
-ClickHouse’s second superpower is dynamic materialized views.
+Horizontal and vertical scaling strategies.
 
-Materialized views are not a new concept – in MySQL or PostgreSQL, a materialized view is a new table that can be queried from, rendered by a SQL query accessing other tables. However, once new data is added to the core tables, that materialized view goes out-of-date. Because creating materialized views is often expensive in traditional databases given their non-columnar layout, refreshing materialized views can only happen occasionally.
+| Topic | Description |
+|-------|-------------|
+| [Replication & Sharding](scaling/replication-and-sharding.md) | Distributed architecture, multi-master replication |
 
-But ClickHouse truly makes materialized views dynamic. ClickHouse doesn’t only accomplish this because of the columnar layout of its data. It also leverages incremental data structures that merges data strategically.
+### Comparisons
 
-### 1.3. Component 3: Specialized engines
+Comparisons with other data systems.
 
-ClickHouse has a series of specialized engines that enable developers to take advantage of multiple CPUs in parallel on the same machine. For instance, there is an engine for summing data (`SummingMergeTree`) and removing duplicates (`ReplacingMergeTree`). This technique has some resemblance to Elasticsearch’s parallelization across multiple machines to expedite search; ClickHouse does it at a more granular, per-machine level.
+| Topic | Description |
+|-------|-------------|
+| [ClickHouse vs Elasticsearch](comparisons/clickhouse-vs-elasticsearch.md) | Architecture, storage, query differences |
 
-### 1.4. Sharding
+### Use Cases
 
-ClickHouse has some overlap with Elasticsearch’s sharding features. ClickHouse extends Apache Zookeeper to manage multiple instances of ClickHouse should data need to be split across machines. However, this concept of sharding is closer to Elasticsearch’s support for multiple clusters – it is more a big data distribution problem, not a smaller optimization for speeding up queries.
+Real-world applications and patterns.
+
+| Topic | Description |
+|-------|-------------|
+| [Observability](use-cases/observability.md) | Logging, monitoring, ClickHouse Cloud architecture |
+
+### Resources
+
+External links and references.
+
+| Topic | Description |
+|-------|-------------|
+| [Links & References](resources/links.md) | Documentation, videos, blog posts, papers |
+
+## Quick Start
+
+### When to use ClickHouse
+
+- **Analytics on large datasets** - Petabyte-scale with millisecond queries
+- **Time-series data** - Logs, metrics, events
+- **Real-time analytics** - INSERTs at millions of rows/second
+- **Column-oriented workloads** - Aggregations, filtering, GROUP BY
+
+### When NOT to use ClickHouse
+
+- **OLTP workloads** - High-frequency point updates/deletes
+- **Transaction-heavy applications** - Limited ACID guarantees
+- **Complex JOINs** - Better suited for normalized OLTP databases
+
+### Key concepts at a glance
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    ClickHouse Concepts                       │
+├─────────────────────────────────────────────────────────────┤
+│  Storage          │ Parts, Granules, MergeTree              │
+│  Indexing         │ Sparse primary key, Skipping indices    │
+│  Compression      │ Per-column codecs (ZSTD, LZ4, etc.)     │
+│  Query Engine     │ Vectorized, parallel execution          │
+│  Scaling          │ Vertical-first, then horizontal         │
+│  Data Lifecycle   │ TTL, materialized views, merges         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Learning Path
+
+### Beginner
+
+1. Read [Architecture](fundamentals/architecture.md) for system overview
+2. Learn [Why ClickHouse is Fast](fundamentals/why-is-clickhouse-so-fast.md)
+3. Review [Getting Started Issues](guides/getting-started-issues.md) to avoid common mistakes
+
+### Intermediate
+
+4. Study [Storage](fundamentals/storage.md) and [Table Engines](fundamentals/engines.md)
+5. Practice [Data Ingestion](guides/data-ingestion.md) patterns
+6. Implement [Materialized Views](guides/materialized-views.md)
+
+### Advanced
+
+7. Optimize with [Skipping Indices](fundamentals/skipping-indices.md)
+8. Scale with [Replication & Sharding](scaling/replication-and-sharding.md)
+9. Monitor using [Operations](guides/operations.md) and [Common Issues](guides/common-issues-monitoring.md)
