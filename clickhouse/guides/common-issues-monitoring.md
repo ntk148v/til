@@ -46,41 +46,41 @@ GRANT SELECT ON system.dashboards to dashboard;
 
 ### ClickHouse-specific metrics
 
-| Metric | Description |
-|--------|-------------|
-| Queries Per Second | Rate of queries being processed |
-| Selected Rows/Sec | Rows being read by queries |
-| Inserted Rows/Sec | Data ingestion rate |
-| Total MergeTree Parts | Active parts in MergeTree tables |
-| Max Parts for Partition | Maximum parts in any partition |
-| Queries Running | Currently executing queries |
-| Selected Bytes Per Second | Volume of data being read |
+| Metric                    | Description                      |
+| ------------------------- | -------------------------------- |
+| Queries Per Second        | Rate of queries being processed  |
+| Selected Rows/Sec         | Rows being read by queries       |
+| Inserted Rows/Sec         | Data ingestion rate              |
+| Total MergeTree Parts     | Active parts in MergeTree tables |
+| Max Parts for Partition   | Maximum parts in any partition   |
+| Queries Running           | Currently executing queries      |
+| Selected Bytes Per Second | Volume of data being read        |
 
 ### System health metrics
 
-| Metric | Description |
-|--------|-------------|
-| IO Wait | I/O wait times |
-| CPU Wait | Delays from CPU resource contention |
-| Read From Disk | Bytes read from disks/block devices |
-| Read From Filesystem | Bytes read from filesystem including page cache |
-| Memory (tracked) | Memory usage for tracked processes |
-| Load Average (15 min) | System load average |
-| OS CPU Usage (Userspace) | CPU running userspace code |
-| OS CPU Usage (Kernel) | CPU running kernel code |
+| Metric                   | Description                                     |
+| ------------------------ | ----------------------------------------------- |
+| IO Wait                  | I/O wait times                                  |
+| CPU Wait                 | Delays from CPU resource contention             |
+| Read From Disk           | Bytes read from disks/block devices             |
+| Read From Filesystem     | Bytes read from filesystem including page cache |
+| Memory (tracked)         | Memory usage for tracked processes              |
+| Load Average (15 min)    | System load average                             |
+| OS CPU Usage (Userspace) | CPU running userspace code                      |
+| OS CPU Usage (Kernel)    | CPU running kernel code                         |
 
 ### ClickHouse Cloud-specific metrics
 
-| Metric | Description |
-|--------|-------------|
-| S3 Read wait | Latency of S3 read requests |
-| S3 read errors/sec | Read error rate |
-| Read From S3 | Rate of data read from S3 |
-| Disk S3 write req/sec | Write operation frequency to S3 |
-| Disk S3 read req/sec | Read operation frequency from S3 |
-| Page cache hit rate | Page cache effectiveness |
-| Filesystem cache hit rate | Filesystem cache effectiveness |
-| Network send/receive bytes/sec | Network throughput |
+| Metric                         | Description                      |
+| ------------------------------ | -------------------------------- |
+| S3 Read wait                   | Latency of S3 read requests      |
+| S3 read errors/sec             | Read error rate                  |
+| Read From S3                   | Rate of data read from S3        |
+| Disk S3 write req/sec          | Write operation frequency to S3  |
+| Disk S3 read req/sec           | Read operation frequency from S3 |
+| Page cache hit rate            | Page cache effectiveness         |
+| Filesystem cache hit rate      | Filesystem cache effectiveness   |
+| Network send/receive bytes/sec | Network throughput               |
 
 ## 3. Identifying common issues
 
@@ -136,15 +136,15 @@ FORMAT VERTICAL
 Click "Add chart" in the dashboard and provide a SQL query:
 
 ```sql
-SELECT 
-    toStartOfInterval(event_time, INTERVAL {rounding:UInt32} SECOND)::INT AS t, 
-    avg(value) 
-FROM merge('system', '^asynchronous_metric_log') 
-WHERE event_date >= toDate(now() - {seconds:UInt32}) 
-  AND event_time >= now() - {seconds:UInt32} 
-  AND metric = 'TotalPrimaryKeyBytesInMemory' 
-GROUP BY t 
-ORDER BY t 
+SELECT
+    toStartOfInterval(event_time, INTERVAL {rounding:UInt32} SECOND)::INT AS t,
+    avg(value)
+FROM merge('system', '^asynchronous_metric_log')
+WHERE event_date >= toDate(now() - {seconds:UInt32})
+  AND event_time >= now() - {seconds:UInt32}
+  AND metric = 'TotalPrimaryKeyBytesInMemory'
+GROUP BY t
+ORDER BY t
 WITH FILL STEP {rounding:UInt32}
 ```
 
@@ -171,8 +171,8 @@ VALUES (
 Query merged dashboards:
 
 ```sql
-SELECT title, query 
-FROM merge(REGEXP('custom|system'),'dashboards') 
+SELECT title, query
+FROM merge(REGEXP('custom|system'),'dashboards')
 WHERE dashboard = 'Overview'
 ```
 

@@ -11,7 +11,7 @@ ClickHouse indices are different from traditional relational database management
 
 - Primary keys are not unique.
 - There are no foreign keys and traditional B-tree indices.
-Instead, ClickHouse uses secondary `skipping` indices. Those are often confusing and hard to tune even for experienced ClickHouse users.
+  Instead, ClickHouse uses secondary `skipping` indices. Those are often confusing and hard to tune even for experienced ClickHouse users.
 
 The data in MergeTree is organized as parts.
 
@@ -52,12 +52,12 @@ INDEX index_name expr TYPE type(...) GRANULARITY granularity_value
 - **Minmax**: It stores minimum and maximum values of the column (or expression) for a particular granula. During query execution ClickHouse can quickly check if column values are out of range without scanning the column. It works the best when the value of a column changes slowly over the sort order.
 - **Set(N)**: It stores all distinct values of a column or an expression in a granule. When an indexed column is used in a WHERE clause, ClickHouse can read a small set instead of a full column. It works well if a column contains a small number of distinct values in a granule but values change over table order. The parameter of a Set index limits the maximum number of distinct values stored in an index. ‘0’ means unlimited. The index size needs to be significantly smaller than a column itself, otherwise it does not give any benefit.
 - **Bloom filter types**: There are three Data Skipping Index types based on Bloom filters:
-  - `bloom_filter([false_positive])`: This is the most generic case.  Input strings are stored in a bloom filter “as is”. That works for exact matches in strings and also in arrays.
+  - `bloom_filter([false_positive])`: This is the most generic case. Input strings are stored in a bloom filter “as is”. That works for exact matches in strings and also in arrays.
   - `tokenbf_v1(size_of_bloom_filter_in_bytes, number_of_hash_functions, random_seed)`: An input string is split into alphanumeric tokens, and then tokens are stored in a bloom filter (see below). It works for the cases when an exact match on a string is searched. For example, if we have a 'url' column and are looking for a specific part of the URL or a query parameter.
   - `ngrambf_v1(n, size_of_bloom_filter_in_bytes, number_of_hash_functions, random_seed)`: In this case an input string is split into n-grams (first parameter – n-gram size, usually 3 or 4), and then stored in a bloom filter. That can work for full text search.
 
 ## 4. When NOT TO use Skipping indices
 
 - Apply only if there is a benefit in a query time.
-- The index is different if it is significantly smaller than the column itself,  otherwise it may slow down the query execution.  Remember, that ClickHouse can just load the full column, apply a filter and decide what granules to read for the remaining columns. It is called the PREWHERE step in the query processing. If you want to confirm the skipping index size, check the `system.data_skipping_indices` table and compare it with an indexed column.
+- The index is different if it is significantly smaller than the column itself, otherwise it may slow down the query execution. Remember, that ClickHouse can just load the full column, apply a filter and decide what granules to read for the remaining columns. It is called the PREWHERE step in the query processing. If you want to confirm the skipping index size, check the `system.data_skipping_indices` table and compare it with an indexed column.
 - Using skipped indices for columns that are already in the PRIMARY KEY is also useless. It is always faster to use the PRIMARY KEY when it can be applied for a query.

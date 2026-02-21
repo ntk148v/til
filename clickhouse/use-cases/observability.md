@@ -48,10 +48,10 @@ Table of contents:
 
 ### Economic drivers
 
-| Solution | Cost for 10T rows/month, 30-day retention |
-|----------|-------------------------------------------|
-| Datadog | ~$26M/month |
-| ClickHouse | <1% of Datadog cost + 6 months retention |
+| Solution   | Cost for 10T rows/month, 30-day retention |
+| ---------- | ----------------------------------------- |
+| Datadog    | ~$26M/month                               |
+| ClickHouse | <1% of Datadog cost + 6 months retention  |
 
 ### Technical implementation
 
@@ -118,52 +118,52 @@ At 20 million rows/second:
 
 **Scale statistics:**
 
-| Metric | Value |
-|--------|-------|
-| Uncompressed data | 100+ Petabytes |
-| Total rows | ~500 Trillion |
+| Metric               | Value                       |
+| -------------------- | --------------------------- |
+| Uncompressed data    | 100+ Petabytes              |
+| Total rows           | ~500 Trillion               |
 | Data managed through | column-oriented compression |
 
 ## 4. Monitoring with ClickHouse
 
 ### Event metrics
 
-| Metric | Description |
-|--------|-------------|
-| `clickhouse.query.count` | Total number of queries |
-| `clickhouse.insert.rows` | Rows inserted in all tables |
-| `clickhouse.insert.bytes` | Uncompressed bytes inserted |
-| `clickhouse.merge.rows` | Rows read for background merges |
-| `clickhouse.merge.bytes.uncompressed` | Uncompressed bytes for merges |
+| Metric                                | Description                     |
+| ------------------------------------- | ------------------------------- |
+| `clickhouse.query.count`              | Total number of queries         |
+| `clickhouse.insert.rows`              | Rows inserted in all tables     |
+| `clickhouse.insert.bytes`             | Uncompressed bytes inserted     |
+| `clickhouse.merge.rows`               | Rows read for background merges |
+| `clickhouse.merge.bytes.uncompressed` | Uncompressed bytes for merges   |
 
 ### Network metrics
 
-| Metric | Description |
-|--------|-------------|
-| `metrics.TCPConnection` | Connections to TCP server |
-| `metrics.HTTPConnection` | Connections to HTTP server |
+| Metric                          | Description                              |
+| ------------------------------- | ---------------------------------------- |
+| `metrics.TCPConnection`         | Connections to TCP server                |
+| `metrics.HTTPConnection`        | Connections to HTTP server               |
 | `metrics.InterserverConnection` | Connections from replicas to fetch parts |
 
 ### ZooKeeper metrics
 
-| Metric | Description |
-|--------|-------------|
-| `clickhouse.zk.watches` | Event subscriptions in ZooKeeper |
-| `clickhouse.zk.wait.time` | Time spent waiting for ZooKeeper |
-| `clickhouse.zk.requests` | Requests to ZooKeeper in progress |
+| Metric                    | Description                       |
+| ------------------------- | --------------------------------- |
+| `clickhouse.zk.watches`   | Event subscriptions in ZooKeeper  |
+| `clickhouse.zk.wait.time` | Time spent waiting for ZooKeeper  |
+| `clickhouse.zk.requests`  | Requests to ZooKeeper in progress |
 
 ### Data part metrics
 
-| Metric | Description |
-|--------|-------------|
-| `clickhouse.part.count.max` | Maximum active parts in partitions |
-| `clickhouse.mergetree.table.parts` | Active parts in MergeTree tables |
-| `clickhouse.mergetree.table.rows` | Row count in MergeTree tables |
+| Metric                             | Description                        |
+| ---------------------------------- | ---------------------------------- |
+| `clickhouse.part.count.max`        | Maximum active parts in partitions |
+| `clickhouse.mergetree.table.parts` | Active parts in MergeTree tables   |
+| `clickhouse.mergetree.table.rows`  | Row count in MergeTree tables      |
 
 ### Replica status
 
-| Metric | Description |
-|--------|-------------|
+| Metric                                      | Description                       |
+| ------------------------------------------- | --------------------------------- |
 | `asynchronous_metrics.ReplicasSumQueueSize` | Queue size for pending operations |
 
 ### Useful monitoring queries

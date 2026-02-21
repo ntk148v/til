@@ -59,13 +59,13 @@ The distributed architecture design significantly impacts ease of use and scalab
 
 ## 3. Core structural concepts
 
-| Elasticsearch | ClickHouse       | Description                                                                                                                                                                                                                                                                                                                                                                                          |
-| ------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Field         | Column           | The basic unit of data, holding one or more values of a specific type. Elasticsearch fields can store primitives as well as arrays and objects. ClickHouse also supports arrays and objects (Tuples, Maps, Nested), as well as dynamic types like Variant and Dynamic.                                                                                                                               |
-| Document      | Row              | A collection of fields (columns). Elasticsearch documents are more flexible by default, with new fields added dynamically. ClickHouse rows are schema-bound by default. The JSON type in ClickHouse supports equivalent semi-structured dynamic column creation.                                                                                                                                     |
-| Index         | Table            | The unit of query execution and storage. In both systems, queries run against indices or tables.                                                                                                                                                                                                                                                                                                     |
-| Implicit      | Schema (SQL)     | SQL schemas group tables into namespaces, often used for access control. Both support row-and table-level security via roles and RBAC.                                                                                                                                                                                                                                                               |
-| Cluster       | Cluster/Database | Elasticsearch clusters are runtime instances managing one or more indices. In ClickHouse, databases organize tables within a logical namespace. A ClickHouse cluster is a distributed set of nodes, decoupled from the data itself.                                                                                                                                                                   |
+| Elasticsearch | ClickHouse       | Description                                                                                                                                                                                                                                                            |
+| ------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field         | Column           | The basic unit of data, holding one or more values of a specific type. Elasticsearch fields can store primitives as well as arrays and objects. ClickHouse also supports arrays and objects (Tuples, Maps, Nested), as well as dynamic types like Variant and Dynamic. |
+| Document      | Row              | A collection of fields (columns). Elasticsearch documents are more flexible by default, with new fields added dynamically. ClickHouse rows are schema-bound by default. The JSON type in ClickHouse supports equivalent semi-structured dynamic column creation.       |
+| Index         | Table            | The unit of query execution and storage. In both systems, queries run against indices or tables.                                                                                                                                                                       |
+| Implicit      | Schema (SQL)     | SQL schemas group tables into namespaces, often used for access control. Both support row-and table-level security via roles and RBAC.                                                                                                                                 |
+| Cluster       | Cluster/Database | Elasticsearch clusters are runtime instances managing one or more indices. In ClickHouse, databases organize tables within a logical namespace. A ClickHouse cluster is a distributed set of nodes, decoupled from the data itself.                                    |
 
 ## 4. Storage architecture
 
@@ -217,14 +217,14 @@ flowchart TD
 
 ## 8. Summary
 
-| Aspect | Elasticsearch | ClickHouse |
-|--------|---------------|------------|
-| Best for | Search scenarios with few filtered records | Analytics on large-scale data with many filtered records |
-| Concurrency | Based on memory cache | Based on disk throughput |
-| Cost | Higher storage costs | Lower storage costs, better compression |
-| Query types | Limited to search patterns | Full SQL, including JOINs |
-| Write model | Near-real-time with TransLog | Direct disk writes with async replication |
-| Scaling | Horizontal (sharding required) | Vertical-first, then horizontal |
+| Aspect      | Elasticsearch                              | ClickHouse                                               |
+| ----------- | ------------------------------------------ | -------------------------------------------------------- |
+| Best for    | Search scenarios with few filtered records | Analytics on large-scale data with many filtered records |
+| Concurrency | Based on memory cache                      | Based on disk throughput                                 |
+| Cost        | Higher storage costs                       | Lower storage costs, better compression                  |
+| Query types | Limited to search patterns                 | Full SQL, including JOINs                                |
+| Write model | Near-real-time with TransLog               | Direct disk writes with async replication                |
+| Scaling     | Horizontal (sharding required)             | Vertical-first, then horizontal                          |
 
 **When to choose ClickHouse:**
 

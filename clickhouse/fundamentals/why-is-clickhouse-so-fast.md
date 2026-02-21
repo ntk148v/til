@@ -112,15 +112,15 @@ Algorithms that rely on data characteristics often outperform generic counterpar
 
 ## 8. Key performance factors summary
 
-| Factor | Benefit |
-|--------|---------|
-| Columnar storage | Only read needed columns |
-| Sparse primary index | Skip irrelevant data granules |
-| Merge-time computation | Shift work from query to insert time |
-| Vectorized execution | SIMD instructions, better cache utilization |
-| Parallel processing | Utilize all CPU cores |
-| Specialized data structures | Optimal algorithms for specific cases |
-| Efficient compression | Reduced I/O, better cache efficiency |
+| Factor                      | Benefit                                     |
+| --------------------------- | ------------------------------------------- |
+| Columnar storage            | Only read needed columns                    |
+| Sparse primary index        | Skip irrelevant data granules               |
+| Merge-time computation      | Shift work from query to insert time        |
+| Vectorized execution        | SIMD instructions, better cache utilization |
+| Parallel processing         | Utilize all CPU cores                       |
+| Specialized data structures | Optimal algorithms for specific cases       |
+| Efficient compression       | Reduced I/O, better cache efficiency        |
 
 ## References
 

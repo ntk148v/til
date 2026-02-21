@@ -21,12 +21,12 @@ Sharding splits a large table horizontally (row-wise) and stores it across multi
 
 ### Pros and cons
 
-| Pros | Cons |
-|------|------|
-| High availability | Added complexity |
+| Pros                       | Cons                           |
+| -------------------------- | ------------------------------ |
+| High availability          | Added complexity               |
 | Faster query response time | Possibility of unbalanced data |
-| Increased write bandwidth | |
-| Easy to scale out | |
+| Increased write bandwidth  |                                |
+| Easy to scale out          |                                |
 
 ### How it works
 
@@ -95,7 +95,7 @@ SELECT * FROM system.replicated_fetches;
 Nodes advance table state using 3 operations:
 
 1. **Inserts**: Add new part to state
-2. **Merges**: Add new part, delete existing parts  
+2. **Merges**: Add new part, delete existing parts
 3. **Mutations/DDL**: Add/delete parts, change metadata
 
 Operations are performed locally and recorded as state transitions in global replication log.

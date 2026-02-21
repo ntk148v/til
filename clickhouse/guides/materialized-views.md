@@ -208,10 +208,10 @@ WHERE database = 'your_db';
 
 ## 6. Performance considerations
 
-| Factor | Impact | Mitigation |
-|--------|--------|------------|
-| Number of MVs | More MVs = slower inserts | Consolidate where possible |
-| Complexity of SELECT | Complex queries = more CPU | Simplify transformations |
-| State functions | Quantiles, uniq = expensive | Use approximate versions |
-| Target table parts | Each MV creates parts | Monitor part count |
-| Parallel processing | Reduces latency | Enable `parallel_view_processing` |
+| Factor               | Impact                      | Mitigation                        |
+| -------------------- | --------------------------- | --------------------------------- |
+| Number of MVs        | More MVs = slower inserts   | Consolidate where possible        |
+| Complexity of SELECT | Complex queries = more CPU  | Simplify transformations          |
+| State functions      | Quantiles, uniq = expensive | Use approximate versions          |
+| Target table parts   | Each MV creates parts       | Monitor part count                |
+| Parallel processing  | Reduces latency             | Enable `parallel_view_processing` |

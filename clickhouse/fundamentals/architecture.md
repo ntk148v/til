@@ -219,12 +219,12 @@ Nodes advance table state using 3 operations (performed locally, recorded as sta
 
 ClickHouse is generally not fully ACID-compliant (prioritizes OLAP performance over OLTP transactional guarantees).
 
-| Property | ClickHouse Support |
-|----------|-------------------|
-| **Atomicity** | Inserts into single table are atomic for single-partition/single-block |
-| **Consistency** | Eventual consistency by default; updates/deletes are asynchronous |
-| **Isolation** | Uses MVCC with snapshot isolation internally; limited for complex concurrent workloads |
-| **Durability** | Successful INSERT written to filesystem before responding; controlled by `insert_quorum` and `fsync_after_insert` |
+| Property        | ClickHouse Support                                                                                                |
+| --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Atomicity**   | Inserts into single table are atomic for single-partition/single-block                                            |
+| **Consistency** | Eventual consistency by default; updates/deletes are asynchronous                                                 |
+| **Isolation**   | Uses MVCC with snapshot isolation internally; limited for complex concurrent workloads                            |
+| **Durability**  | Successful INSERT written to filesystem before responding; controlled by `insert_quorum` and `fsync_after_insert` |
 
 ## 5. Query processing layer
 
