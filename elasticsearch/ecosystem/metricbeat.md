@@ -21,7 +21,6 @@ Important points:
 - Default metricbeat configuration file: `metricbeat.yml`.
 
 - To configure Metricbeat:
-
   - Enable the modules that you want to run (by default, Metricbeat collects system metrics only).
   - Add module configs to the `metricbeat.yml` ([Standard config options](https://www.elastic.co/guide/en/beats/metricbeat/current/configuration-metricbeat.html#module-config-options)). For example, like this.
 

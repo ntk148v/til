@@ -5,11 +5,9 @@
 - A document is stored in Elasticsearch, it is indexed and fully searchable in _near real-time_ - within 1 second.
 - Lucene introduced the concept of per-segment search. A _segment_ is similar to an inverted index. After a commit, a new segment is added to the commit point and the buffer is cleared.
 - Documents in the in-memory indexing buffer are written to new segment.
-
   - A lucene index with new documents in the in-memory buffer - filesystem cache (cheap).
 
   ![](https://www.elastic.co/guide/en/elasticsearch/reference/current/images/lucene-in-memory-buffer.png)
-
   - The buffer conents are written to a segment, which is searchable, but is not yet commited.
 
   ![](https://www.elastic.co/guide/en/elasticsearch/reference/current/images/lucene-written-not-committed.png)

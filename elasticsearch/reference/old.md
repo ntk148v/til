@@ -119,7 +119,6 @@ index  shard pri rep state   docs store ip              node
 - Query, return 100 hits, but fielddata will be loaded for **all** documents.
 - Load all fielddata structure values once, keep in memory.
 - The JVM heap - choose a Heap Size - \$ES_HEAP_SIZE
-
   - Check JVM heap:
 
   ```
@@ -132,7 +131,6 @@ index  shard pri rep state   docs store ip              node
 
 - Fielddata Size: the `indices.fielddata.cache.size` controls how much heap space is allocated to fielddata.
 - Monitoring fielddata:
-
   - per-index using the `indices-stats API`:
 
   ```

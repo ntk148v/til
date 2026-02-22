@@ -60,7 +60,6 @@ curl -X PUT "localhost:9200/_cluster/settings?pretty" -H 'Content-Type: applicat
 - The node left the cluster before the data could be replicated.
 - The node may have encountered an issue while rebooting. Nomarlly, when a node resumes its connection to the cluster, it relays inforamtion about its on-disk shards to the primary node, which then transitions those shards from "unassigned" to "assigned/started". When this process fails for some reason (node's storage has been damaged in some way), the shards may remain unassigned.
 - Solutions:
-
   - Try to recover and rejoin the cluster (and do not force allocate the primary shard)
   - Force allocate the shard using the Cluster Reroute API, and reindex the missing data using the original data source, or from a backup
 

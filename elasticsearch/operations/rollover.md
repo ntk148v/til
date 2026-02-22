@@ -17,7 +17,6 @@
 ## 2. Concepts
 
 - [Data streams](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-data-stream.html).
-
   - Data streams are designed for append-only data.
   - A data stream consists of one or more hidden, auto-generated backing indices. Each data stream tracks its generation:
 
