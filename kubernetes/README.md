@@ -1323,3 +1323,40 @@ Source:
   - Does it work now?
     - If it does -> the issue is in the infrastructure.
     - It it doesn't -> the problem is in the Ingress controller.
+
+---
+
+## Additional Resources
+
+### Best Practices
+
+- [Kubernetes Anti-patterns](./best-practices/anti-patterns.md) - Common mistakes to avoid
+
+### Security
+
+- [Everyone Run as Root](./security/everyone-run-as-root.md) - Why containers shouldn't run as root
+- [Manage Secrets](./security/manage-secrets.md) - GitOps secrets management
+
+### Troubleshooting
+
+- [Exit Codes](./troubleshooting/exit-code.md) - Container exit codes explained
+
+### Tools
+
+- [Operators](./tools/operators.md) - Operational knowledge in software
+- [Helm vs Operator](./tools/helm-vs-operator.md) - When to use which
+- [Example Commands](./tools/example-commands.sh) - Useful kubectl commands
+
+### Package Management
+
+- [Helm](./helm/) - Package manager examples
+- [Kustomize](./kustomize/) - Native configuration management
+
+### Templates
+
+- [Templates](./templates/) - YAML examples for common resources
+
+### Articles & References
+
+- [articles.md](./articles.md) - Curated external articles
+- [refs/](./refs/) - PDFs and slide decks
