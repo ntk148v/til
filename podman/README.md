@@ -31,11 +31,9 @@ Table of contents:
 ## 2. What are Pods?
 
 - Pods are groups of containers that run together and share the same resources, similar to Kubernetes pods.
-
   - Each pod is composed of 1 infra container and any number of regular containers.
 
   ![](https://phoenixnap.com/kb/wp-content/uploads/2022/03/podman-pod-visualisation.png)
-
   - The purpose of the infra container, which by default runs the `k8s.gcr.io/pause` image, is to keep the pod alive and maintain the namespaces associated with the pod.
   - Each container has a dedicated container monitor, a service that monitors container processes and logs exit codes if the containers die.
 

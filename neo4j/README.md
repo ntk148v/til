@@ -30,11 +30,9 @@ Source:
 
 - Neo4j uses Native GPE (Graph Processing Engine) to work with its Native graph storage format.
 - Concepts:
-
   - **Node**: represents entity (discrete object) of a domain. Node can have labels (Labels shape the domain by grouping (classifying) nodes into sets where all nodes with a certain label belong to the same set).
 
   ![](https://neo4j.com/docs/getting-started/current/_images/graph_single_node.svg)
-
   - **Relationship**:
     - Connects a source code and a target node.
     - Has a direction.
@@ -43,7 +41,6 @@ Source:
     - Can have properties (key-value pairs).
 
   ![](https://neo4j.com/docs/getting-started/current/_images/graph_example_relationship.svg)
-
   - **Properties**: key-value pairs that are used for storing data on nodes and relationships.
   - **Traversals and paths**: a traversal is how you query a graph in order to find answers to question.
   - **Schema**: refer to indexes and constrains (optional).

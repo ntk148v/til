@@ -26,7 +26,6 @@ Source: <https://www.confluent.io/blog/queues-on-kafka/>
 ![](https://images.ctfassets.net/8vofjvai1hpv/5TVmeTBoRyO4EzgmvWJ9wP/0a3d4ae20131231a5bed9d380595387e/queues-1.png)
 
 - **Consumer groups and share group**:
-
   - A **consumer group** is a set of consumers that cooperate to consume data from some topics. You establish the group for a consumer by setting its group.id in the properties for the consumer. The partitions of all the topics are divided among the consumers in the group.
   - This design offers both order and scalability, but it also ties the number of consumers directly to the number of partitions. To handle peak loads, many Kafka users create more partitions than they actually need, which can be inefficient and frustrating -> **share group**.
   - In some cases, consumers need to work together without being tied to specific partitions. Share groups introduce a more flexible way for consumers to cooperate, especially in use cases that feel more like a traditional queue system. Share groups act like a "durable shared subscription", allowing multiple consumers to process records from the same partitions.

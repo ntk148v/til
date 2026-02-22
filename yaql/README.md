@@ -21,13 +21,11 @@
 
 - `functionName(functionParameters)`. Brackets are necessary even if there are no parameters.
 - Parameters:
-
   - Positional parmeters: `foo(1, 2, someValue)`.
   - Named parameters: `foo(paramName1 => value1, paramName2 => 123)`.
   - Mix: `foo(1, fals, param => null)`.
 
 - Functions
-
   - Regular functions: `max(1, 2)`.
   - Method-like functions, which are called by specifying an object for which the function is called, followed by a dot and a function call: `stringValue.toUpper()`.
   - Extension methods, which can be called both ways: `len(string), string.len()`.

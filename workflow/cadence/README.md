@@ -18,7 +18,6 @@ Fault-Tolerant Stateful Code Platform
 - Deployment:
 
   ![](https://user-images.githubusercontent.com/14902200/160308507-2854a98a-0582-4748-87e4-e0695d3b6e86.jpg)
-
   - Frontend: which is a stateless service used to handle incoming requests from Workers.
   - History Service: where the core logic of orchestrating workflow steps and activities is implemented.
   - Internal Worker Service: implements Cadence workflows and activities for internal requirements such as archiving.

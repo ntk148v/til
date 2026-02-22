@@ -16,7 +16,6 @@ This blog is focusing on inter-application communication use cases alone and not
 ![](https://blog.cloudflare.com/content/images/2022/07/unnamed1-2.png)
 
 - By providing a ready-to-go Kafka client, we ensured teams got up and running quickly, but we also abstracted some core concepts of Kafka a little too much, meaning that small unassuming configuration changes could have a big impact:
-
   - Example: partition skew (a large portion of messages being directed towards a single partition, meaning we were not processing messages in real time)
   - One drawback of Kafka is you can only have one consumer per partition, so when incidents do occur, you can't trivially scale your way to faster throughput.
 

@@ -143,7 +143,6 @@ Authorization: Bearer <token>
 ![](https://hasura.io/blog/content/images/2022/01/jwt-blogpost-2-check-token-flow.png)
 
 - The token is still valid and can be used. What if I need to ensure that the token cannot be used ever again?
-
   - This is why keeping JWT expiry values to a small value is important. And this is why ensuring that your JWTs don't get stolen is even more important. The token is valid (even after you delete it on the client), but only for short period to reduce the probability of it being used maliciously.
   - In addition, you can add a deny-listing workflow to your JWTs. In this case, you can have a `/logout` API call and your auth server puts the tokens in a "invalid list". However, all the API services that consume the JWT now need to add an additional step to their JWT verification to check with the centralized "deny-list". This introduces central state again, and brings us back to what we had before using JWTs at all.
 

@@ -16,28 +16,22 @@ The producer has stronger delivery guarantees by default: idempotence is enabled
 - Check [documentation](https://kafka.apache.org/documentation/#producerconfigs_acks).
 
 - `acks=0`
-
   - Producers consider messages as "written succesfully" the moment the message was sent without waiting for the broker to accept it all.
   - If the broker goes offline, we won't know will lose data.
 
   ![](https://www.conduktor.io/kafka/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fo12xgu4mepom%2FSSa6dWceX7LtTjtVI92Bs%2Fabab84f7d8fd2429dfe9c99e4d29527f%2FAdv_Producer_Acks_DD_1.png)
 
 - `acks=1`
-
   - Producers consider messages as "written successfully" when the message was acknowledged by only the leader.
   - Leader response is requested, but replication is not a guarantee as it happens in the background. If an ack is not received, the producer may retry the request. If leader broker goes offline unexpectedly but replicas haven't replicated the data yet, we have data loss.
 
   ![](https://www.conduktor.io/kafka/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fo12xgu4mepom%2F2FXXu7gdxEpADV0SuixTCH%2F8cac72693d6cb459f45230ac59f73433%2FAdv_Producer_Acks_DD_2.png)
-
   - `acks=all`
-
     - Producers consider messages as "written successfully" when the message is accepted by all in-sync replicas (ISR).
     - The lead replica for a partition checks to see if there are enough in-sync replicas for safely writing the message (controlled by the broker settings `min.insync.replicas`). The request will be stored in a buffer until the leader observes that the follower replicas replicated the message, at which point at successful acknowledgement is sent back to the client.
 
     ![](https://www.conduktor.io/kafka/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fo12xgu4mepom%2FYeG6HfAi9e8pWslz9rmQl%2Faaa8432f79c247d9fee37b4d7da598d0%2FAdv_Producer_Acks_DD_3.png)
-
     - The `min.insync.replicas` can be configured both at the topic and the broker-level.
-
       - `min.insync.replicas=2`: at least 2 brokers that are ISR (including leader) must respond that they have the data.
       - If a topic has three replicas and `min.insync.replicas=2` -> can only write to a partition in the topic if at least 2/3 replicas are in-sync. If 2/3 replicas are not available, the brokers will no longer accept produce reequests.
 

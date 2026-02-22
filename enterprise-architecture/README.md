@@ -124,16 +124,13 @@ Sources:
 </table>
 
 - TOGAF Architecture developement model (ADM):
-
   - The framework specifies how the architecture is to be created. This specification is called the ADM.
   - An 8-phase, sequential process.
 
   ![](https://www.opengroup.org/sites/default/files/adm_tog-r2.png)
-
   - Architecture Integration.
 
   ![](https://pubs.opengroup.org/architecture/togaf9-doc/arch/Figures/05_admintro2.png)
-
   - More details [here](https://pubs.opengroup.org/architecture/togaf9-doc/arch/).
 
 - Limitations:
@@ -145,11 +142,9 @@ Sources:
 
 - Zachman Framework uses the method of taxonomy to organize a massive variety of documents and materials into categories that suit them.
 - Structure:
-
   - A two dimensional classification scheme for descriptive representations of an Enterprise that is structured as a matrix containing 36 cells, each of them focusing on one dimension or perspective of the enterprise. Rows are often presented as different viewpoints involved in the systems development process, while columns represent different perspectives of the stakeholders involved in the organization.
 
   ![](https://cdn-images.visual-paradigm.com/guide/enterprise-architecture/what-is-zachman-framework/01-zachman-framework.png)
-
   - Columns represent the interrogatives or questions that are asked of the enterprise.
     - What (data)
     - How (function)

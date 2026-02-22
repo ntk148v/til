@@ -66,6 +66,7 @@ The token \_making the call, not the token associated with the accessor, must ha
 ## 1.4. High availability mode (HA)
 
 Vault supports a multi-server mode for high availability. High availability mode is automatically enabled when using a data store that supports it.
+
 - One of the Vault server nodes grab a lock within the data store.
 - The successful server node then becomes the active node; all other nodes become standby nodes.
 - If the standby nodes receive a request, they will either forward the request or redirect the client depending on the current configuration and state of the cluster.

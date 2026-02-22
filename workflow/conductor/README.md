@@ -28,7 +28,6 @@ Definitions 1->N Excutions
 ```
 
 - Tasks: Building blocks of Workflows.
-
   - System tasks: Executed by Conductor server (within JVM).
   - Worker tasks: Executed by workers.
 

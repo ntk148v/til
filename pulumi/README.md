@@ -54,7 +54,6 @@ $ pulumi stack rm --force
 ```
 
 - Stack outputs:
-
   - A stack can export values as stack outputs. For example:
 
   ```go

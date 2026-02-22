@@ -34,14 +34,12 @@ Table of contents:
 ![](http://blogs.quovantis.com/wp-content/uploads/2015/08/Synchronous-vs.-asynchronous.jpg)
 
 - There are some terms you have to understand:
-
   - [**Asynchronous function call**](https://en.wikipedia.org/wiki/Asynchronous_procedure_call): request that a function is called at some time and in some manner, allowing the caller to resume and perform other activities.
   - **Future**: a handle on asynchronous function call allowing the status of the call to be checked and results to be retrieved.
   - **Asynchronous task**: used to refer to the aggregate of an asynchronous function call and resulting future.
   - **Non-blocking I/O**: performing I/O operations via asynchronous requests and responses, rather than waiting for operations to complete.
   - [**Asynchronous I/O**](https://en.wikipedia.org/wiki/Asynchronous_I/O): a shorthand that refers to combining asynchronous programming with non-blocking I/O.
   - [**Coroutine**](https://en.wikipedia.org/wiki/Coroutine):
-
     - Computer program component that generalizes subroutines for non-preemptive multitasking, by allowing execution to be suspended and resumed.
     - Or, this is _A function that can be suspended and resumed_.
 
@@ -142,9 +140,7 @@ asyncio.run(m)
 ```
 
 - `asyncio` module provides functions for accessing and interacting with the event loop - low level.
-
   - Create/Get a loop:
-
     - [`asyncio.new_event_loop()`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.new_event_loop): create and return a new event loop object.
 
     ```python
@@ -182,7 +178,6 @@ asyncio.run(m)
   - The _asyncio event loop_ manages _tasks_. As such, all _coroutines_ become and are managed as _tasks_ within the event loop.
   - A Future is a special
 - There are 2 main ways to create and schedule a task:
-
   - Create task with high-level API: [`asyncio.create_task`](https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task).
 
   ```python
@@ -194,7 +189,6 @@ asyncio.run(m)
   ```
 
   - Create task with low-level API:
-
     - [`asyncio.ensure_future`](https://docs.python.org/3/library/asyncio-future.html#asyncio.ensure_future)
 
     ```python
@@ -241,7 +235,6 @@ asyncio.run(main())
 ```
 
 - This is good to know task's life cycle:
-
   - You can check whether task is done or is cancelled (`done()`, `cancelled()`).
   - To get its result, use `result()`.
   - To get its exception, use `exception()`.
@@ -348,7 +341,6 @@ We will go through some common usage.
     - Mixture of tasks and coroutines
   - It returns an `asyncio.Future` object that represents the group of awaitables.
 - Run many coroutines:
-
   - Allow a program to prepare the tasks that are to be executed concurrently and then trigger their execution all at once and wait for them to complete.
 
   ```python
@@ -529,7 +521,6 @@ asyncio.run(main())
 
 - The focus of asyncio is asynchronous programming and non-blocking IO. Nevertheless, we often need to execute a blocking function call within an asyncio program -> it will cause the event loop to stop, preventing any other coroutines from progressing.
 - asyncio provides 2 ways to solve this.
-
   - [`asyncio.to_thread()`](https://docs.python.org/3/library/asyncio-task.html#asyncio.to_thread) (high level API):
     - I/O Bound Task.
 

@@ -29,7 +29,7 @@ Apps <--> GNU libc and other userspace libraries
 ### Fork & Exec
 
 - \*nixs creted new processes using:
-  - _fork()_ - Duplicate the current **process**. glibc's fork() and pthread_create() both call clone() syscall. _clone()_ create a new task struct from parent.
+  - _fork()_ - Duplicate the current **process**. glibc's fork() and pthread*create() both call clone() syscall. \_clone()* create a new task struct from parent.
   - _exec()_ - Replace text/data/bss/stack with new program
 
 ## Users

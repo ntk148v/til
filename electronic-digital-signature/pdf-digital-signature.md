@@ -42,7 +42,6 @@ Table of contents:
 ## 2. Basic concepts
 
 - **Hashing**:
-
   - Hashing algorithm: A crytographic hash function to turn an arbitrary block of data into a fixed-size bit string.
   - Available algorithms:
     - MD5: Ron Rivest
@@ -119,7 +118,6 @@ At a high level, the PDF language features can be grouped into these categories:
 ![](./images/digital-idf-signed-pdf-document.png)
 
 - The high-level sigining process:
-
   - A document to be signed is turned into a stream of bytes.
   - The entire PDF files is written to disk with a suitably-sized space left for the signature value as well as with worst-case valus in the `ByteRange` array.
 
@@ -133,7 +131,6 @@ At a high level, the PDF language features can be grouped into these categories:
   ```
 
   ![](./images/byterange.png)
-
   - Once the location of the signature value is known in terms of offsets in the file, the `ByteRange` array is overwritten using the correct value.
   - The hash of the entire file is computed, using the bytes specified by the `ByteRange` value using a hash algorithm such as SHA-256.
   - The hash value is encrypted with the signer's private key and a hex-encoded PKCS#7 object signature object is generated.

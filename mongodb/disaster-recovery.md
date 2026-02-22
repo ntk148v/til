@@ -59,7 +59,6 @@ MongoDB provides several options for Disaster Recovery.
 - [Distributing replica set members across geographically distinct data centers](https://www.mongodb.com/docs/manual/core/replica-set-architecture-geographically-distributed/) adds redundancy and provides fault tolerance if one of the data centers is unavailable.
 - Keep at least one member in an alternative data center. If possible, use an odd number of data centers, and choose a distribution of members that maximizes thelikehood that even with a loss of a data center, the remaining replica set members can form a majority or at minimum, provide a copy of your data.
 - In a two data center distribution:
-
   - If one of the data centers goes down, the data is still available for reads unlike a single data center distribution.
   - If the data center with a minority of the members goes down, the replica set can still serve write operations as well as read operations.
   - However, if the data center with the majority of the members goes down, the replica set becomes read-only.
@@ -97,21 +96,17 @@ MongoDB provides several options for Disaster Recovery.
 ![](https://www.mongodb.com/docs/manual/images/sharded-cluster-production-architecture.bakedsvg.svg)
 
 - Configure Shards across data centers:
-
   - Range-based sharding:
-
     - Ranged sharding involves dividing data into ranges based on the shard key values. Each chunk is then assigned a range based on the shard key values.
 
     ![](https://www.mongodb.com/docs/manual/images/sharding-range-based.bakedsvg.svg)
 
   - Hash-based sharding:
-
     - Hashed Sharding involves computing a hash of the shard key field's value. Each chunk is then assigned a range based on the hashed shard key values.
 
     ![](https://www.mongodb.com/docs/manual/images/sharding-hash-based.bakedsvg.svg)
 
   - Zones sharding:
-
     - Zones can help improve the locality of data for sharded clusters that span multiple data centers.
     - In sharded clusters, you can create [zones](https://www.mongodb.com/docs/manual/reference/glossary/#std-term-zone) of sharded data based on the shard key. You can associate each zone with one or more shards in the cluster.
 

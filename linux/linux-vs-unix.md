@@ -12,7 +12,6 @@ People do confuse a lot between the terms Unix and Linux. Linux and Unix are dif
 ## 1. What is UNIX?
 
 - The design of Unix systems is based on "Unix philosophy" which includes the following characteristics:
-
   - Usage of plain text for data storage.
   - Hierarchical file system.
   - Handling devices and some specific kinds of inter-process communication (IPC) as files.

@@ -5,7 +5,6 @@
 - Run background tasks at scale.
 - Instead of managing your own task queue or pub/sub system, you can use Hatchet to distribute your functions between a set of workers with minimal configuration or infrastructure.
 - Concepts:
-
   - **Background tasks**:
     - Functions which are executed outside of the main req/resp cycle..
     - Useful for offloading work from your application, and for running complex, long-running or resource-intensive tasks.

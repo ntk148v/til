@@ -152,7 +152,6 @@ CMD ["--help"]
 
 - Như đã nói ở phần 0, Docker image được cấu thành từ nhiều layers. Các layer không phải là _free_. Chúng chiếm dụng không gian và khi layer xếp chồng lên nhau ngày càng nhiều thì kích thước image cuối cùng của bạn cũng tăng lên. Nguyên nhân là do hệ thống sẽ lưu giữ tất cả các thay đổi giữa các đặc tả Dockerfile khác nhau. Do vậy. giảm số lượng layer là điều cần làm khi muốn giảm kích thước images.
 - Các đặc tả `RUN`, `COPY`, `ADD` tạo ra layer vì chúng thay đổi file system. Các đặc tả khác tạo ra các layer tạm, không làm ảnh hưởng đến kích thước của image.
-
   - Lấy ví dụ một Dockerfile đơn giản như sau:
 
   ```Dockerfile
@@ -250,7 +249,6 @@ ENV https_proxy https://proxy
 
 - Theo một [báo cáo của Sysdig](https://sysdig.com/blog/sysdig-2021-container-security-usage-report/), có đến 58% images đang dùng entrypoint chạy bằng **root** (**UID 0**).
 - Để chạy rootless container, cần lưu ý:
-
   - Đảm bảo user chỉ định tại USER tồn tại.
   - Cung cấp quyền thích hợp cho files tại nơi process thực hiện đọc/ghi. Ví dụ, process thực hiện ghi log vào file, phải có quyền đọc ghi.
 

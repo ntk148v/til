@@ -19,7 +19,6 @@
 - Những khác biệt có thể xảy ra trong việc triển khai bởi nhiều lí do ví dụ như cài đặt các package ở những thời điểm khác nhau.
 
 - Nhiều vấn đề bắt đầu nảy sinh:
-
   - Làm thế nào để tôi có thể nhiều node hoặc cả hệ thống mới vào cluster của mình.
 
   - Nếu tôi chạy `apt-get update` hoặc `yum update` tại 1 node, chuyện gì sẽ xảy ra? Trạng thái của hệ thống OpenStack.

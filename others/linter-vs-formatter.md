@@ -45,4 +45,5 @@ By right-clicking on a JSON file with these contents on Visual Studio Code, you 
 ```
 
 [^1]: [Lint](<https://en.wikipedia.org/wiki/Lint_(software)>). Wikipedia.
+
 [^2]: [Clean code linters](https://github.com/collections/clean-code-linters). GitHub.

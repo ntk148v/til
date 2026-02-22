@@ -31,14 +31,11 @@ The purpose and intent of DevSecOps is to build on the mindset that “everyone 
 ![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/DevOps%20vs%20DevSecOps.png)
 
 - DevSecOps is about injecting security in software writing and testing, so let's talk about testing.
-
   - Testing strategies:
     - Positive testing: Positive testing assumes that, under normal conditions and inputs, everything will _behave as expected_.
     - Negative testing: Negative testing checks the system behavior _under unexpected conditions_.
   - Methods of testing:
-
     - Static testing (Static application security testing - SAST):
-
       - Checks software defects without executing the application code.
       - Performed in the early stage of development to avoid errors, as it is easier to find souces of failures and it can be fixed easily.
       - Issues: hard coded credentials, deprecated encryption algorithms, 2nd order injections, weak random,...
@@ -47,7 +44,6 @@ The purpose and intent of DevSecOps is to build on the mindset that “everyone 
       ![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/sast_scanning.png)
 
     - Dynamic testing (Dynamic application security testing - DAST):
-
       - Analyzes the behavior of the application code at runtime.
       - Scanners specially crafted requests to the target application. Request parameters are constantly modified during testing to try and expose a range of vulnerabilities. Based on the response of the application the tool can then identify potential vulnerabilities and report back.
       - Issues: cliend side vulnerabilities like authentication & session issues, sensitive data sent in plain text,...
@@ -56,7 +52,6 @@ The purpose and intent of DevSecOps is to build on the mindset that “everyone 
       ![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/dast_scanning.png)
 
     - Interactive analysis (Interactive Application Security Testig (IAST) ):
-
       - Monitors the application (using sensors/agents deploy with the application) while other systems interact with it and observe vulnerabilities.
       - Scope: 1 component/multiple components (agents/sensors are deployed on all components) at once.
 
@@ -82,7 +77,6 @@ The purpose and intent of DevSecOps is to build on the mindset that “everyone 
   - Security expert
 - When: Threat Modeling should be as early as possible in the software design process.
 - How:
-
   - Approaches:
     - Attacker-centric approach: producing steps:
       - Create a list of assets
@@ -105,7 +99,6 @@ The purpose and intent of DevSecOps is to build on the mindset that “everyone 
 - Pipeline:
 
   ![](https://github.com/OWASP/DevSecOpsGuideline/raw/master/assets/images/DevSecOps-pipeline.png)
-
   - Pipeline with tools:
 
   ![](https://owasp.org/www-project-devsecops-guideline/latest/assets/images/Pipeline-view.png)

@@ -19,7 +19,6 @@
 - Possible differences in deployments due to i.e packages installation in different time.
 
 - Some questions start to arise:
-
   - How do I add more nodes/systems to my cluster.
 
   - If I `apt-get update` or `yum update` one of my nodes, what happens to state of that system?
@@ -43,9 +42,7 @@
 ## Dockerizing OpenStack
 
 1. Why Docker?
-
    - Pros:
-
      - Immutable.
 
      - Portable.
@@ -61,7 +58,6 @@
      - Growth.
 
    - Cons:
-
      - Green - Kolla is even greener.
 
      - Additional complexity.
@@ -71,7 +67,6 @@
 2. What does it mean?
 
    Create Docker images for all OpenStack components.
-
    - OpenStack has **many** services: Keystone, Nova, Swift, Cinder,...
 
    - Each service can have one or more components. For ex Nova: api, scheduler, condutor,...
@@ -81,11 +76,9 @@
    - This now presents with a new problem, managing a large amount of Docker containers over many hosts.
 
 3. What does it buy you?
-
    - Simplify deployments and ongoing operations. Breaking up the OpenStack services up into the micro services (Docker containers) each micro service becomes an atomic unit of management such as deployment, upgrading, scaling,...
 
    - Repeatable, reliale and fast. As long as the Docker container are idemponent:
-
      - Patching, upgrading the docker containers are atomic.
 
      - The patches are applied upstream to docker image. Tags are then used for rolling forward and backward.
@@ -93,7 +86,6 @@
 ## Introduction
 
 1. What exactly is it?
-
    - Openstack Kolla is a recent project to come under the Openstack Big Tent and aims to provide production-ready, ansible-based, declarative deployment of Openstack entirely in Docker containers.
 
    - OpenSource project is hosted on StackForge.
@@ -107,9 +99,7 @@
    - Docker images: View the available images on [Docker Hub](https://hub.docker.com/u/kolla/)
 
 2. What does it do?
-
    - Provide all the Dockerfiles to build the OpenStack services Docker container images.
-
      - A simple Python script to build all the images using the Dockerfiles and optionally push them to a private registry.
 
      - Can build from both source (pull from github) or binary (RPMs/Debs - for example RDO). Source builds allow the build to pick up patches/releases that have not yet made it into the distros yet.
@@ -117,7 +107,6 @@
    - Provide start/config scripts that live inside the images to start/config the specific OpenStack service.
 
 3. Current Status.
-
    - Core Services Containers completed.
 
    - Kolla is tested on CentOS, Oracle Linux, RHEL and Ubuntu as both container OS platforms and bare metal deployment targets.
@@ -129,11 +118,9 @@
    - Templating Dockerfiles is done too.
 
 4. Contribution Summary.
-
    - Contribution by companies.
 
    ![Contribution by companies](https://github.com/ntk148v/research_about_kolla/blob/master/images/contribution_by_companies.png?raw=true)
-
    - Contribution by contributors.
 
    ![Contribution by contributors](https://github.com/ntk148v/research_about_kolla/blob/master/images/contribution_by_contributors.png?raw=true)
@@ -159,7 +146,6 @@
 - During deployment of an OpenStack service, a basic set of default configuration options are merged with and overridden by custom ini configuration sections.
 
 - How to config and how it actually works? Note, see [kolla-ansible](http://github.com/openstack/kolla-ansible). In Ocata release, `ansible` dir is removed from kolla repo, and move to kolla-ansible repo. See Source Directories section.
-
   - At the beginning, you should define `node_custom_config` var in /etc/kolla/globals.yml. Default it's e/etc/kolla/config.
   - Then, Kolla will look for a file in /etc/kolla/config/<< service name >>/<< config file >>. This can be done per-project, per-service or per-service-on-specified-host. For example to override scheduler_max_attempts in nova scheduler, the operator needs to create /etc/kolla/config/nova/nova-scheduler.conf with content:
 

@@ -28,9 +28,7 @@ $ git remote add local_proj /srv/git/project.git
 ## 2. HTTP protocols
 
 - Git can communicate over HTTP using 2 different modes:
-
   - Dumb HTTP:
-
     - Dumb protocol exptects the bare Git repository to be served like normal files from the web server.
     - To allow read access to repository over HTTP:
 

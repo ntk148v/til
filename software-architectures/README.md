@@ -103,7 +103,6 @@ Source:
 ![](https://miro.medium.com/max/672/1*qAFyYAQSE3e-flZSqprHlg.jpeg)
 
 - [Microservices](#2-microservices) and SOA are similar in some ways, the key differences come in their functionality.
-
   - **Scope**: SOA has an enterprise scope, while the microservices architecture has an application scope.
 
     ![](https://1.cms.s81c.com/sites/default/files/2020-09-02/SOA_microservices%20%281%29.png)

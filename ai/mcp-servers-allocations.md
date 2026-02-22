@@ -54,6 +54,7 @@ A harness is anything that wraps the LLM to get outcomes. For software developme
 The numbers advertised by LLM vendors for the context window are not the real context window. You should consider that to be a marketing number.
 
 It's because there are two cold, hard facts:
+
 - The LLM itself needs to allocate to the context window through its system prompt to function.
 - The coding harness also needs to allocate resources in addition to those to function correctly.
 

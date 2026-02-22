@@ -38,11 +38,9 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
   - The following settings relate to connections and how they are queued.
   - If you have a high rate of incoming connections, you may get uneven levels of performance (for example, some connections appear to be staling).
 - Why: [The origin post](https://www.alibabacloud.com/blog/tcp-syn-queue-and-accept-queue-overflow-explained_599203)
-
   - SYN Queue and Accept Queue: During the TCP handshake process, the Linux kernel maintain these two queues. Both queues have length and size limits. If the limit is exceeded, the kernel discards the connection Drop or return the RST packet.
 
   ![](https://yqintl.alicdn.com/0f72fe628f4e77b59f92d149c8584476f8d6fc5d.png)
-
   - Check of relevant indicators
 
   ```shell
@@ -67,7 +65,6 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
   - Nginx blog has metioned `net.core.netdev_max_backlog`: The rate at which packets are buffered by the network card before being handed off to the CPU (per CPU core settings).
 
 - How: Increase these values to improve performance on machines with a high amount of bandwidth. The exact numbers are depend on your system.
-
   - Increase `net.core.somaxconn`.
 
   ```shell
@@ -104,7 +101,6 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
   - `sys.fs.file-max`: The system-wide limit of file descriptors.
   - `nofile`: The user file descriptor limit, set in `/etc/security/limits.conf` file.
 - How:
-
   - Increase the total file descriptors.
 
   ```shell
@@ -126,7 +122,6 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
 - Why:
   - `net.ipv4.ip_local_port_range`: the start and end of the range of port values. If you see that you are running out of ports, increase the range.
 - How:
-
   - Increase the range of ports.
 
   ```shell
@@ -142,7 +137,6 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
   - `net.ipv4.tcp_wmem`: Similar to the `net.ipv4.tcp_rmem` this parameter consists of 3 values, a minimum, default, and maximum.
   - `net.ipv4.tcp_mem`: The overall.
 - How:
-
   - Reduce these values in order to reduce memory use.
 
   ```shell
@@ -167,7 +161,6 @@ Replace Nginx/HAproxy with Envoy, this is a different story. Therefore, I decide
 - What:
   - By default, Envoy disable resuse port feature.
 - Why:
-
   - Multiple server sockets listen on the sameport. Each server socket corresponds to a listening thread. When the kernel TCP stack receives a client connection request (SYN), according to the TCP 4-tuple (srcIP, srcPort, destIP, destPort) hash algorithm, select a listening thread, and wake it up. The new connection is bound to the thread that is woken up. So connections are more evenly distributed across threads than non-`SO_REUSEPORT` (in this case, all worker threads share on socket).
 
   ![](https://www.muppetwhore.net/ljarchive/LJ/298/12538c.jpg)

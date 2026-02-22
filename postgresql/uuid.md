@@ -1,4 +1,4 @@
-# PostgreSQL and  UUID as primary key
+# PostgreSQL and UUID as primary key
 
 Source:
 

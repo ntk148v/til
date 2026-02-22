@@ -69,30 +69,25 @@ fdatasync(fd);
 ## Filesystem-Specific Behavior
 
 - **ext4**
-
   - Honors `fsync()` fully
   - Behavior affected by mount options (`data=ordered`, `data=journal`)
 
 - **XFS**
-
   - Strong `fsync()` guarantees
   - Directory `fsync()` often required for durability
 
 - **btrfs**
-
   - Copy-on-write semantics
   - `fsync()` may trigger more extensive metadata writes
 
 ## Performance Characteristics
 
 - `fsync()` is expensive:
-
   - Forces cache flushes
   - Often triggers disk barriers or cache flush commands (e.g., `FLUSH CACHE`)
 
 - High-frequency `fsync()` calls can dominate latency
 - Common optimizations:
-
   - Group commit
   - Batched writes
   - Asynchronous I/O with explicit durability boundaries

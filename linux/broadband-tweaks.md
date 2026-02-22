@@ -12,7 +12,6 @@ Source: <https://www.speedguide.net/articles/linux-tweaking-121>
 
 - TCP/IP parameters in Linux are located in /proc/sys/net/ipv4 and /proc/sys/net/core . This is part of the Virtual filesystem which resides in system memory (RAM), and any changes to it are volatile, they are reset when the machine is rebooted.
 - There are two methods to apply the settings at each reboot.
-
   - Edit `/etc/sysctl.conf`.
 
   ```

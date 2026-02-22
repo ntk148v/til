@@ -14,7 +14,6 @@ Rate limiting protectes APIs from overuse by limiting how often each user can ca
 ### 1.1. Leaky buckets
 
 - [Leaky buckets](https://en.wikipedia.org/wiki/Leaky_bucket) - a queue which you can think of as a bucket holding the requests.
-
   - A request is registered --> the end of queue.
   - At a regular interval, queue --> the 1st item (FIFO queue).
   - Queue is full, additional requests are discarded.
@@ -22,7 +21,6 @@ Rate limiting protectes APIs from overuse by limiting how often each user can ca
 ![](https://2tjosk2rxzc21medji3nfn1g-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/02-rate-limit-kong.png)
 
 - Advantages:
-
   - Easy to implement.
   - It smooths out bursts of requests and processes them at an approximately average rate.
 
@@ -33,7 +31,6 @@ Rate limiting protectes APIs from overuse by limiting how often each user can ca
 ### 1.2. Fixed window
 
 - Fixed window:
-
   - A window size of n seconds is used to track the rate.
   - Each incoming request increments the counter for the window.
   - Counter > threshold, the request is discarded.
@@ -48,7 +45,6 @@ Rate limiting protectes APIs from overuse by limiting how often each user can ca
 ### 1.3. Sliding log
 
 - Sliding log:
-
   - Involves tracking a timestamp log for each consumer's request.
   - These logs are usually stored in a hash set or table that is sorted by time.
   - Logs with timestamps beyond a threshold are discarded.
@@ -57,7 +53,6 @@ Rate limiting protectes APIs from overuse by limiting how often each user can ca
 ![](https://2tjosk2rxzc21medji3nfn1g-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/04-rate-limit-kong.png)
 
 - Advantages:
-
   - It doesn't suffer from the boundary conditions of fixed windows.
 
 - Disadvantages:

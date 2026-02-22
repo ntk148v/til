@@ -61,14 +61,12 @@ actions: # Dictionary containting ad-hoc action definitions. Optional
 - Workflow represents a process that can be described in a various number of ways and that can do some jobs. Each workflows consists of tasks (at least one) describing what exact steps should be made during workflow execution.
 
 - Common workflow attributes
-
   - **type**: Workflow type ('direct'/'reverse').
   - **description**: Arbitrary text containing workflow description.
   - **input**: List defining required input parameter names and optionally their default values.
   - **output**: Any data structure arbitrarily containing YAQL/Jinja2 expressions that defines workflow output. May be nested.
   - **output-on-error**: Similar with output that defines output of workflow to be returned if it error state.
   - **task-defaults**: Default settings for some of task attributes defined at workflow level. Corresponding attribute defined for a specific task always takes precedence.
-
     - on-error: List of tasks which will run after the task has completed with an error (_direct workflow only_).
     - on-success: List of tasks which will run after the task has completed successfully (_direct workflow only_).
     - on-complete: List of tasks which will run after the task has completed regardless of whether it is successful or not (_direct workflow only_).
@@ -157,7 +155,6 @@ create_vm_and_send_email:
 
 - Actions are a particular instruction associated with a task that will be performed when the task runs (running a shell script, making an HTTP request, or sending a signal to an external system)
 - Actions can be synchronous or asynchronous:
-
   - Synchronous action:
 
     ![sync-action](https://docs.openstack.org/mistral/latest/_images/Mistral_actions.png)
@@ -167,12 +164,10 @@ create_vm_and_send_email:
     ![async-action](https://docs.openstack.org/mistral/latest/_images/Mistral_actions.png)
 
 - Action defines what exactly needs to be done when task starts. Action is similar to a regular function in general purpose programming language like Python.
-
   - System actions: are provided by Mistral out of the box and can be used by anyone.
   - Ad-hoc actions: A special type of action that can be created by user. Ad-hoc action is always created as a wrapper around any other existing system action and its main gola to simplify using same actions many times with simialar pattern.
 
 - System actions
-
   - [std actions](https://docs.openstack.org/mistral/latest/user/wf_lang_v2.html#system-actions)
   - [openstack actions](./mapping.json)
 
@@ -210,14 +205,12 @@ std.wait_ssh:
 
 - Executions are runtime objects and they reflect the information about the progress and state of concrete execution type.
 - **Workflow execution**
-
   - A particular execution of specific workflow.
   - User submits a workflow to run -> An object is created in db for execution of this workflow.
   - It containts all information about workflow itself, about execution progress, state, input and output data.
   - `Workflow execution = (task execution)+`.
 
 - **Task execution**
-
   - Defines a workflow execution steps.
   - It has a state and result.
   - All the actual task states belonging to current execution are persisted in DB.
@@ -242,7 +235,6 @@ std.wait_ssh:
 ### Task affinity
 
 - A feature which could be useful for executing particular tasks on specific Mistral executors:
-
   - You need to execute the task on a single executor.
   - You need to execute the task on any executor within a named group.
 

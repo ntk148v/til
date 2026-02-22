@@ -26,7 +26,6 @@ Source:
 ## 1. Overview
 
 - There are 2 basic types of OKD clusters:
-
   - installer-provisioned infrastructure clusters (IPI).
   - user-provisioned infrastructure clusters (UPI).
 

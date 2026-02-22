@@ -16,9 +16,7 @@ Table of contents:
 
 - Helm is a package manager for Kubernetes applications.
 - Architecture:
-
   - Helm 2:
-
     - Primaryly on a client-server architecture that comprises of a client and an in-cluster server.
     - Tiller server: Helm manages the Kubernetes application through Tiller server installed within a Kubernetes cluster. Tiller interacts with the Kubernetes API server to install.
     - Helm client: Helm provides a command-line interface for users to work with Helm Charts.
@@ -26,7 +24,6 @@ Table of contents:
     ![](https://www.baeldung.com/wp-content/uploads/2019/03/Helm-2-Architecture.jpg)
 
   - Helm 3:
-
     - Has moved onto a completely client-only architecture, where the in-clusterserver has been removed.
     - Helm client interacts directly with the Kubernetes API server.
 

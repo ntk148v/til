@@ -21,7 +21,6 @@ Table of contents:
 ## 1. IOPS Performance Tests
 
 - Test random reads:
-
   - Shell:
 
   ```shell
@@ -52,7 +51,6 @@ Table of contents:
   ```
 
 - Test file random read/writes:
-
   - Run the following command against the mount point to test file read/writes::
 
   ```shell
@@ -60,7 +58,6 @@ Table of contents:
   ```
 
 - Test random read/writes:
-
   - Run the following command to test random read/writes::
 
   ```shell
@@ -91,7 +88,6 @@ Table of contents:
   ```
 
 - Test sequential reads: For workloads that enable you to take advantage of sequential access patterns, such as database workloads, you can confirm performance for this pattern by testing sequential reads.
-
   - Run the following command to test sequential reads:
 
   ```shell
@@ -124,7 +120,6 @@ Table of contents:
 ## 2. Throughput Performance Tests
 
 - Test random reads:
-
   - Run the following command to test random reads:
 
   ```shell
@@ -155,7 +150,6 @@ Table of contents:
   ```
 
 - Test file random read/writes:
-
   - Run the following command against the mount point to test file read/writes:
 
   ```shell
@@ -163,7 +157,6 @@ Table of contents:
   ```
 
 - Test random read/writes:
-
   - Run the following command to test random read/writes:
 
   ```shell
@@ -194,7 +187,6 @@ Table of contents:
   ```
 
 - Test sequential reads: For workloads that enable you to take advantage of sequential access patterns, such as database workloads, you can confirm performance for this pattern by testing sequential reads.
-
   - Run the following command to test sequential reads:
 
   ```shell
@@ -227,7 +219,6 @@ Table of contents:
 ## 3. Latency Performance Tests
 
 - Test random reads for latency:
-
   - Run the following command directly to test random reads for latency:
 
   ```shell
@@ -258,7 +249,6 @@ Table of contents:
   ```
 
 - Test random read/writes for latency:
-
   - Run the following command directly to test random read/writes for latency:
 
   ```shell

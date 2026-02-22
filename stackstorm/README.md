@@ -66,7 +66,6 @@ Quick views:
 - **An action runner** is the execution environment for user-implemented actions.
 
 - An action is composed of two parts:
-
   - A YAML metadata file which describes the action, and its inputs.
   - A script file which implements the action logic.
 
@@ -75,7 +74,6 @@ Quick views:
 - Parameters of runners can be overridden but not all attributes for runner parameters can be overridden.
 
 - \*\*Environment Variables Available to Actions:
-
   - ST2_ACTION_PACK_NAME: name of the pack which the currently executed action belongs to.
   - ST2_ACTION\_\_EXECUTION_ID: execution id of the action being currently executed.
   - ST2_ACTION_API_URL: full url to the public API endpoint.
@@ -160,7 +158,6 @@ class SamplePollingSensor(PollingSensor):
 - Sensor service provides different services to the sensor via public methods.
 
 - Common operations:
-
   - `dispatch(trigger, payload, trace_tag)`: Allows the sensor to inject trigger into the system.
   - `get_logger(name)`: Allows the sensor instance to retrieve the logger instance which is specific to that sensor.
 

@@ -7,7 +7,6 @@ Authored by [Tom Preston-Werner](http://tom.preston-werner.com/).
 ## Introduction
 
 - Dependency hell: the bigger your system grows and the more packages you integrate into your software, the more likely you are to find yourself, one day, in this put of despair.
-
   - Dependency specifications are too tight -> version lock (the inability to upgrade a package without having to release new versions of every dependent package).
   - Dependency specifications are too loosely -> version promiscuity (assuming compatibility with more future versions than is reasonable).
 

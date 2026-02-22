@@ -34,7 +34,6 @@ relax 2.2%
 ### 1.2. What is a large language model?
 
 - Large Language Models refer to _large_, _general-purpose_ language models that can be _pre-trained_ and then _fine-tuned_ for specific purposes.
-
   - Large: So _how large is large_? "Large" can refer either to the number of parameters in the model, or sometimes the number of words in the dataset. It has been used to describe BERT (110M parameters) as well as PaLM 2 (up to 340B parameters). **Parameters**: the weights and biases that a model learns during training.
     - Large training dataset.
     - Large number of parameters.

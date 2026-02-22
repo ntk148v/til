@@ -59,7 +59,6 @@ Source:
 ![](https://programmer.group/images/article/d861020b9a5606cf64c62e6429b6937f.jpg)
 
 - Flows:
-
   - When the user request arrives at the Director Server, the requested data message will first arrive at the preouting chain in the kernel space. At this time, the source IP of the message is CIP and the target IP is VIP
   - The preouting check finds that the destination IP of the packet is local, and sends the packet to the INPUT chain
   - IPVS compares whether the service requested by the packet is a cluster service. If so, modify the target IP address of the packet to the back-end server IP, and then send the packet to the POSTROUTING chain. At this time, the source IP of the message is CIP and the target IP is RIP

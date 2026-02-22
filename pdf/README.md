@@ -9,6 +9,7 @@ PDF files may contain a variety of content besides flat text and graphics includ
 ## Technical details
 
 A PDF file is often a combination of vector graphics, text, and bitmap graphics. The basic types of content in a PDF are:
+
 - Typeset text stored as content streams.
 - Vector graphics for illustrations and designs that consist of shapes and lines.
 - Raster graphics for photographs and other types of images.

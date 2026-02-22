@@ -12,7 +12,6 @@ Source: <https://blog.gojekengineering.com/a-diy-two-factor-authenticator-in-gol
 ## 2. How to generate an OTP (Google Authenticator)
 
 - Google Authenticator is used for two-step verification based on [Time-based One Time Password (TOTP)](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm) and [HMAC-based One Time Password (HOTP)](https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm).
-
   - TOTP is an algorithm that computes a one-time password from a shared secret key and the current time.
   - HTOP is an algorithm which uses hmac algorithm to generate a one-time password.
 

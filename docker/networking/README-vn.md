@@ -25,9 +25,7 @@ Mục lục:
 ## 1. Khái niệm
 
 - Các khái niệm:
-
   - [Network namespace](https://man7.org/linux/man-pages/man8/ip-netns.8.html):
-
     - Trước khi đi vào network namespace, cần hiểu về **Namespace**. Namespace là một tính năng của Linux kernel để phân vùng tài nguyên của kernel sao cho một tập hợp các process chỉ nhìn thấy tập hợp các tài nguyên (trong namespace đó) trong khi một tập hợp các process khác nhìn thấy tập các tài nguyên khác (trong namespace khác). Tính năng này hoạt động bằng cách đưa tập các tài nguyên và process vào cùng một namespace, các namespace khác nhau sẽ tham chiếu đến các tài nguyên riêng biệt. Tài nguyên có thể tồn tại trong nhiều không gian. Ví dụ về các tài nguyên như vậy là process ID, hostname, user ID, tên file và một số tên (name) liên quan đến quyền truy cập mạng và giao tiếp giữa các process.
     - Networking namespace là một trong các loại namespace. Mỗi network namespace có [network stack](https://en.wikipedia.org/wiki/Network_stack) riêng: địa chỉ IP, network interface, route table, ...
     - Bạn có thể xem thao tác các network namespace bằng câu lệnh sau:

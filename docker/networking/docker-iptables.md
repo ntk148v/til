@@ -105,7 +105,6 @@ systemctl disable ip6tables
   - `/etc/systemd/system/iptables.service`: định nghĩa systemd iptables.
   - `/etc/systemd/system/iptables@.service`: định nghĩa systemd iptables.
 - Copy các file sau vào đúng đường dẫn, lưu ý đối với file `/etc/iptables/base.rules` tùy thuộc vào môi trường có/không sử dụng Docker, copy file tương ứng:
-
   - `/etc/iptables/base.rules` (**trong môi trường sử dụng Docker**):
 
     ```shell
@@ -335,7 +334,6 @@ systemctl disable ip6tables
     ```
 
 - Sau khi copy nội dung các file trên, thực hiện thay đổi file rule book `/etc/iptables/base.rules`. Cấu trúc rule book chia làm các phần sau, chúng ta chỉ làm việc với 3 chains INTPUT, OUTPUT & DOCKER-USER.
-
   - Reset counters.
   - Flush các chains.
   - INPUT chain:
@@ -385,7 +383,6 @@ systemctl restart iptables@base.service
 ```
 
 - Một số lưu ý khi thực hiện siết kết nối:
-
   - Hiểu rõ về kết nối: Kết nối như nào, cần chặn vào ra những port nào, port nào cần kết nối internal,...
   - Thêm rules đúng chain và thứ tự đã chỉ định: File template đã phân chia theo block riêng biệt, chỉ định vị trí đặt rules.
   - Thêm rules đúng interface.
@@ -394,7 +391,6 @@ systemctl restart iptables@base.service
   - Không sử dụng iptables-save đi ghi đè `/etc/iptables/base.rules`: Một lỗi cơ bản thường mắc phải, người thực hiện iptables-save để lấy tất cả các rules hiện tại và ghi vào file `/etc/iptables/base.rules` (dump rules).
 
 - Ví dụ một số trường hợp thường gặp:
-
   - Cho phép kết nối từ host thuộc dải 10.0.10.0/24 đến port 80 do service nginx expose. Nginx được triển khai dạng systemd.
 
     ```shell

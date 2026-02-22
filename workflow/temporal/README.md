@@ -104,7 +104,6 @@ Check out [the official documentation](https://docs.temporal.io/concepts) for mo
     - Output is based entirely on the input.
   - Implemented in the _Worker_.
 - Workflow Type:
-
   - Identities as _Workflow Definition_ (In the scope of a Task Queue)
 
   ![](https://docs.temporal.io/diagrams/workflow-type-cardinality.svg)

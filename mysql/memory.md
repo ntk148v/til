@@ -36,7 +36,6 @@ MySQL allocates global buffers at the server startup and these are shared among 
 - For efficiency of high-volume read operations, the buffer pool is divided into pages that can potentially hold multiple rows. For efficiency of cache management, the buffer pool is implemented as a linked list of pages; data that is rarely used is aged out of the cache, using a variation of the LRU algorithm.
 - Typically the largest consumer of memory in a MySQL instance.
 - Configured using [innodb_buffer_pool_size](https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_buffer_pool_size) parameter.
-
   - Recommend value: **50-75% of system memory**.
 
 - On systems with a large amount of memory, you can improve concurrency by diving the buffer pool into [multiple buffer pool instances](https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_buffer_pool_instance), using [innodb_buffer_pool_instances](https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_buffer_pool_instances).
@@ -80,7 +79,6 @@ MySQL allocates global caches that are shared among all the connections, these a
 ### 2.3. InnoDB data dictionary cache
 
 - InnoDB has its own cache for storing table definitions, this is different from the table open cache and table definition cache.
-
   - Check:
 
     ```sql

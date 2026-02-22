@@ -26,7 +26,6 @@ Source: <https://www.ibm.com/cloud/learn/infrastructure-as-code>
 ## 3. Immutable infrastructure vs mutable infrastructure
 
 - Mutable infrastructure:
-
   - Can be modified or updated after it is originally provisioned.
   - Flexibile customization.
   - Hard to maintain consistency between deployment or within versions - and can make infrastructure version tracking much more difficult.
@@ -39,7 +38,6 @@ Source: <https://www.ibm.com/cloud/learn/infrastructure-as-code>
 ## 4. Declarative vs imperative approach
 
 - Declarative - the functional approach.
-
   - Specify the desired final state of the infrastructure you want to provision and the IaC software handles the rest.
   - Requires a skilled administrator to set up and manage, and these administrators often specialize in their prefered solution.
 

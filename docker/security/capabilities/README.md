@@ -32,7 +32,6 @@ Source:
   - `KILL` - Bypass permission checks for sending signals. This includes use of the ioctl(2) KDSIGACCEPT operation.
   - `AUDIT_WRITE` - Write records to kernel auditing log.
 - Options to work with Capabilities and Docker:
-
   - Manual mangement within the container:
 
   ```shell
@@ -93,7 +92,6 @@ Guessed mode: HYBRID (4)
 ```
 
 - Explain the `capsh` output:
-
   - **Current** is multiple sets separated by spaces.
   - Multiple capabilities within the same set are separated by commas `,`.
   - The letters following the `+` at the end of each set are as follows:

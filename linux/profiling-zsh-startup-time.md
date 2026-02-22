@@ -8,7 +8,6 @@ zsh -i -c exit  0,24s user 0,13s system 111% cpu 0,328 total
 ```
 
 - Enable profiling:
-
   - Zsh has a builtin profiler to profile startup time usage. It is called `zprof`.
   - It can be enabled by adding to your `zshrc`:
 

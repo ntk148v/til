@@ -20,7 +20,6 @@ Source:
 - In other words, tt is a specific type of electronic signature that uses a specific technical implementation to meet the needs of highly regulated industries -> more **secure** and **tamper-evident**, which **encrypts** the documents and permanently embeds the information in it if a user tries to commit any changes in the document then the digital signature will be invalidated.
 - Digital signatures are often used by certification authorities or trust service providers, rather than commercial teams seeking to close a deal. These bodies will validate the digital signatures and verify the digital document.
 - Digital signatures are not created by people, they are created by software and algorithms. This relies on an advanced method called **Public Key Infrastructure (PKI)**, which is a set of processes, hardware, and software that combines to ensure data is transferred securely by generating two keys - a public and private one.
-
   - When a signer electronic signs a document, the signature is created using the signer's private key, which is always securely kept by the signer.
   - The mathematical algorithm acts like a cipher, creating data matching the signed document, called a hash, and encrypting the data. The resulting encrypted data is the digital signature.
   - The signature is also marked with the time that the document was signed. If the document changes after signing, the digital signature is invalidated.

@@ -181,15 +181,12 @@ type Subscription {
 ## 4. Architecture
 
 - Use cases:
-
   - GraphQL server with a connected database.
 
   ![](https://imgur.com/cRE6oeb.png)
-
   - GraphQL server that is a thin layer in front of a number of third party or legacy systems and integrates them through a single GraphQL API.
 
   ![](https://imgur.com/zQggcSX.png)
-
   - A hybrid approach of a connected database and third party or legacy systems that can all be accessed through the same GraphQL API
 
   ![](https://imgur.com/73dByTz.png)

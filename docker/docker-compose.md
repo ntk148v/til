@@ -26,7 +26,6 @@ services:
 ```
 
 - Merge compose files.
-
   - Define a Compose file for database service.
 
   ```yaml
@@ -55,7 +54,6 @@ services:
   - In doing so, the relative paths set by the second Compose file won’t get resolved as designed by the authors but from the local working directory.
 
 - Using `include` to reuse content from other teams.
-
   - Get a whole Compose file included in your own application model (copy/paste).
   - It will manage relative path references so that the included Compose file will be parsed the way the author expects, running from its original location.
 

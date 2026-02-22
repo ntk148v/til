@@ -40,7 +40,6 @@ def loop(llm):
 
 - AI agents use reason to solve problems.
 - Tool calling: From monolithic to compound AI
-
   - Monolithic AI uses single models or workflows tightly coupled with their infrastructure, while compound AI leverages multiple modularized processing components.
   - Compound AI systems combine multiple interacting components to form a holistic workflow:
     - Multiple AI/ML models (e.g., speech-to-text and text-to-image)
@@ -51,7 +50,6 @@ def loop(llm):
   ![](https://sendbird.imgix.net/cms/What-is-an-AI-agent__1.png)
 
 - AI agents learn and improve continuously.
-
   - AI agents learn from each interaction, refining their reasoning to continuously improve their accuracy and performance. They do this by storing interaction data in their knowledge base (memory), as well as receiving feedback from other agents or human managers.
 
   ![](https://sendbird.imgix.net/cms/What-is-an-AI-agent__2.png)

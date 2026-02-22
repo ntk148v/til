@@ -8,7 +8,6 @@
 ## Key features
 
 - Choice between 2 communication transports. Both with Keystone support:
-
   - Firewall-friendly, **HTTP-based RESTful API**.
   - **Websocket-based API**.
 

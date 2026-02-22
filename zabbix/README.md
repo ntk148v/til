@@ -11,35 +11,29 @@ Phần mềm zabbix có thể theo dõi các thông số của mạng và tình 
 ## Khái niệm và thành phần cơ bản
 
 1. Zabbix Server.
-
    - Là thành phần trung tâm của Zabbix.
    - Kiểm tra dịch vụ, giám sát tài nguyên thông qua các báo cáo được gửi về từ Agent.
    - Lưu trữ tất cả cấu hình và số liệu thống kê trong Database.
 
 2. Zabbix Proxy.
-
    - Tùy chọn.
    - Thu thập dữ liệu, lưu trong bộ nhớ đệm và chuyển đến Zabbix Server.
    - Giám sát tập trung các địa điểm từ xa, các chi nhánh công ty.
    - Cân bằng tải cho Zabbix Server.
 
 3. Zabbix Agent.
-
    - Cài đặt trên các host được giám sát.
    - Định kỳ gửi báo cáo, thông tin tài nguyên được giám sát về Server.
 
 4. Web Interface-frontend.
-
    - Giúp việc thao tác trở nên dễ dàng hơn.
    - Có thể không chạy trên cùng 1 host chạy Server.(tuy nhiên, nếu SQLite được sử dụng, việc cài đặt trên cùng 1 host là bắt buộc).
 
 5. Zabbix Database.
-
    - Mọi thông tin cấu hình được lưu trữ database, cả Server và Web interface đều tương tác cùng. Ví dụ, khi tạo item mới sử dụng web frontend(/ API), item được thêm vào item table trong database. Sau đó, Zabbix Server sẽ query items table để lấy danh sách các item hiện active - để lưu cache tại Server. Do vậy, thường mất khoảng 2' để những thay đổi được hiện thị ở Latest data section.
    - MySql, PostGreSql, Sqlite.
 
 6. Active Check và Passive Check.
-
    - Zabbix Server thu thập thông tin từ Agent thông qua các item tương ứng.
    - Zabbix Passive Check -Pull.
      - Service checks: HTTP, SSH, IMAP, NTP, etc.
@@ -61,12 +55,10 @@ Phần mềm zabbix có thể theo dõi các thông số của mạng và tình 
 ![Active vs Passive](http://image.slidesharecdn.com/fisl2015workshoponproblemdetection-150710104738-lva1-app6892/95/zabbix-smart-problem-detection-fisl-2015-workshop-8-638.jpg?cb=1436526745)
 
 7. Item.
-
    - Thành phần thu thập dữ liệu từ 1 host dựa trên item key, ví dụ _system.cpu.load_ sẽ thu thập dữ liệu của processor load.
    - Chi tiết xem tại [đây](https://www.zabbix.com/documentation/3.2/manual/config/items)
 
 8. Trigger.
-
    - Detect problems in data flow! --> Trigger is problem definition
    - Biểu thức logic để "đánh giá" dữ liệu thu thập được bởi item, từ đó "đánh giá" trạng thái hiện tại của host.
    - Trigger Expression cho phép định nghĩa threshold - ngưỡng mà trạng thái của dữ liệu là chấp nhận được - OK. Ngược lại, là Problem.(Trigger Status)
@@ -85,7 +77,6 @@ Phần mềm zabbix có thể theo dõi các thông số của mạng và tình 
      - Khi nào và tại sao sử dụng các mode khác ngoài "value" (min(), max(), avg(), delta())
 
 9. Proxy.
-
    - Zabbix cung cấp 1 giải pháp hiệu quả để monitor hệ thống phân tán sử
      dụng Zabbix Proxy.
 
@@ -125,7 +116,6 @@ Sử dụng script install_zabbix_server.sh để cài đặt (Zabbix 3.2 - Cent
 ## Yêu cầu bài toán
 
 1. Monitoring:
-
    - Host vật lý: Disk, RAM, CPU, Network
    - VM: CPU, Disk, RAM, Network.
    - Process Openstack.

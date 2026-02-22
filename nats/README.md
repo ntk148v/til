@@ -94,7 +94,6 @@ time.us.east.atlanta
 
 - Built-in distributed system called **JetStream**.
 - Functionalities:
-
   - **Streaming**: temporal decoupling between publishers and subscribers.
     - Streams capture and store messages published on one (or more) subject and allow client applications to create 'subscribers' (JetStream consumers) at any time to 'replay' (or consume) all or some of the messages stored in the stream.
     - Replay policies: _all_ (_instant_, _original_), _last_, _sequence number_, and _start time_.
@@ -102,7 +101,6 @@ time.us.east.atlanta
     - Retention policy: _limits_, _interest_ and _work queue_.
 
   ![](https://683899388-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LqMYcZML1bsXrN3Ezg0%2Fuploads%2Fgit-blob-dedcc17f082fa1e39497c54ed8191b6424ee7792%2Fstreams-and-consumers-75p.png?alt=media)
-
   - **Persistent distributed storage**:
     - Memory storage
     - File storage

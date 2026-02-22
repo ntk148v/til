@@ -126,12 +126,10 @@ Signature creation process:
 ### 2.8. Signature validation
 
 - Taking a very (or over) simplified model, validating a digital signature can be seen as:
-
   - Verfiying the cryptographic validity of the digital signature value (part of it consisting in decrypting the digital signature value and comparing the decrypted value with the hash of the signed data).
   - Verifying the validity of the signing certificate (see certification path validation).
 
 - Let's image that we want to validate the digital signature and the time when this validation occur is denoted as T<sub>val</sub>.
-
   - The digital signature is valid at T<sub>val</sub>:
     - The signing certificate successfully passes the certification path validation at T<sub>val</sub>
     - The digital signature value is cryptographically valid.
@@ -139,14 +137,12 @@ Signature creation process:
     - Computing the hash of the signed data does not yield the same value as the decryption of the signature value.
 
 - Beyond valid and invalid digital signature however, there are a lot of cases when one cannot determine the validity of a digital signature. Below are some examples where one cannot conclude that a digital signature is valid or invalid, in which case the validity status of the signature is indeterminate.
-
   - Let’s imagine that at T<sub>val</sub>, when we are trying to access the certification status information, that information is unavailable (e.g. the CRL cannot be downloaded, the OCSP responder is unavailable) -> Can't determine whether the signing certificate is valid or not because at T<sub>val</sub> we are lacking information to conclude on that validity status -> The validity of the overall signature can't be determined either and the validity of the signature is indeterminate.
   - At T<sub>val</sub>, revocation information indicates that the signing certificate is revoked since a time indicated as T<sub>rev</sub> (T<sub>rev</sub> < T<sub>val</sub>>).
     - Then at T<sub>val</sub>, we can only conclude that the signing certificate is revoked and thus the signature cannot be determined as valid at T<sub>val</sub>. However, this does not mean necessarily that the signature was created when the signing certificate was revoked, it may very well be that the signature was created at a time prior to T<sub>rev</sub> and that, should we have validated the signature at that time, the validation would have been successful. Therefore, we cannot conclude that the signature is invalid because we do not know in a definite manner if the signature was created before the revocation of the signing certificate.
     - When one creates a digital signature using cryptographic algorithms that are not considered secure: In such a case, it may be possible for an malicious actor to create counterfeited signed documents -> When validating a signature, it is therefore necessary to verify that the signature was created using cryptographic algorithms and parameters that are considered as secure -> compare a POE of the digital signature value with a sunset date for the cryptographic algorithms and parameters involved (_cryptographic constraint_).
 
 - The result of a validation process performed can be:
-
   - `TOTAL-PASSED` indicating that the signature has passed verification and it complies with the signature validation policy.
   - `INDETERMINATE` indicating that the format and digital signature verifications have not failed but there is insufficient information to determine if the electronic signature is valid.
   - `TOTAL_FAILED` indicating that either the signature format is incorrect or that the digital signature value fails the verification.

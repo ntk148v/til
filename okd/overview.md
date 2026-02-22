@@ -21,7 +21,6 @@ OpenShift  <-----> RHOS
 
 - Hybrid cloud deployments.
 - Custom operating system - Fedora CoreOS (FCOS):
-
   - CoreOS + [Red Hat Atomic Host](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_atomic_host/7/html/installation_and_configuration_guide/introduction_to_atomic_host)
   - Includes: Ignition (firstboot system configuratin) + CRI-O (Kubernetes native container runtime) + Kubelet (Kuberenetes node agent)
 
@@ -53,10 +52,8 @@ The following figure illustrates the basic OKD lifecycle:
 
 - Kubelet & CRI-O must run directly on the host as **systemd** service because they need to be running before you can run other containers.
 - Operators are the perferred method of packaging, deploying & managing services on the control plane.
-
   - Cluster Version Operator: manage the other Operators.
   - Platform Operators: manage a particular area of cluster functionality, such as cluster wide application logging, management of the Kubernetes control plane or the machine provisioning system.
 
   ![](./imgs/machine-config-operator.png)
-
   - Operators managed by Operator Lifecycle Management: are available for use in applications.

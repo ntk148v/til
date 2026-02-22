@@ -27,7 +27,6 @@ Table of contents:
     - A programming interface for creating WebSocket connectins and managing the data exchange between client and server.
     - Provides a simple and standardized way for developers to use the WebSocket protocol in their applications.
 - [How do WebSockets work?](https://ably.com/topic/how-do-websockets-work)
-
   - Opening a WebSocket connection: opening handshake -> consists of an HTTP request/response exchange between client and server.
   - Data transmissions over WebSockets: Client and server can exchange messages (frame) over the WebSocket connection
   - Closing a WebSocket connection: closing handshake -> sending a close message.

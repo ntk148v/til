@@ -25,11 +25,9 @@ Source: <https://docs.citusdata.com/en/v12.1/portals/getting_started.html>
 ### 3.1. Table types
 
 - **Type 1: Distributed tables**:
-
   - Normal tables to SQL statements, but are horizontally partitions across worker nodes.
 
   ![](https://docs.citusdata.com/en/v12.1/_images/diagram-parallel-select.png)
-
   - Here the rows of `table` are stored in tables `table_1001`, `table_1002` etc on the workers. The component worker tables are called _shards_.
 
 - **Type 2: Reference tables**:

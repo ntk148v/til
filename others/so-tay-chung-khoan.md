@@ -40,7 +40,6 @@
 - Cơ cấu các chủ thể tham gia trên Thị trường chứng khoán Việt Nam (TTCKVN):
 
   ![](https://taichinhvadautublog.com/wp-content/uploads/2021/04/cautructhitruongchungkhoanvietnam.png)
-
   - Bộ Tài chính: Cơ quan tài chính của Chính phủ Việt Nam - có trách nhiệm quản lý, giám sát thị trường chứng khoán, ngân sách Nhà nước, quản lý thuế, giá cả,...
   - Ủy ban chứng khoán Nhà nước: Trực thuộc bộ tài chính - có trách nhiệm quản lý, giám sát thị trường chứng khoán.
   - Trung tâm lưu ký chứng khoán (Vietnam Securities Depository - VSD): có chức năng đăng ký, lưu ký, bù trừ, thanh toán chứng khoán, cung cấp mã chứng khoán, quản lý tỷ lệ sở hữu của nhà đầu tư nước ngoài...
@@ -74,20 +73,15 @@
 - Nguồn:
   - <https://stockinsight.hsc.com.vn/khop-lenh-duoc-thuc-hien-nhu-the-nao/>
 - Ở trên, chúng ta đã nói đến _khớp lệnh_, vậy khớp lệnh là gì?
-
   - Khớp lệnh trong thị trường chứng khoán là việc thực hiện xong thoả thuận giữa bên mua và bên bán trên bảng giao dịch điện tử trực tuyến. Lệnh của các nhà đầu tư được ghép với nhau để giao dịch theo mức giá phù hợp với nguyên tắc ưu tiên khớp lệnh của thị trường.
   - Có 2 loại khớp lệnh:
-
     - Khớp lệnh định kỳ:
-
       - Phương thức giao dịch được thực hiện trên cơ sở so khớp các lệnh mua và lệnh bán chứng khoán tại một thời điểm xác định, để tìm ra mức giá mà tại đó khối lượng giao dịch là lớn nhất.
       - Thường được các sở giao dịch chứng khoán sử dụng để xác định giá mở cửa và đóng cửa.
       - Ví dụ:
-
         - Giả sử tại phiên khớp lệnh định kỳ xác định giá mở cửa của một mã chứng khoán có các lệnh mua và bán ở các mức giá như sau:
 
         ![](./images/khop-lenh-dinh-ky-1.png)
-
         - Theo nguyên tắc người đi mua muốn mua ở giá thấp, còn người bán muốn bán được giá cao, ta có bảng lũy kế mua và lũy kế bán ở các mức giá như sau:
           - Tại mức giá 220.000đ, tổng lũy kế mua là 15.000 + 10.000 (khối lượng đặt mua ATO) = 25.000
           - Tại mức giá 219.900đ, tổng lũy kế mua là 17.000 + 15.000 + 10.000 = 42.000
@@ -100,17 +94,14 @@
         ![](./images/khop-lenh-dinh-ky-2.png)
 
     - Khớp lệnh liên tụcA:
-
       - Phương thức giao dịch được thực hiện trên cơ sở so khớp các lệnh mua và lệnh bán chứng khoán ngay khi lệnh được nhập vào hệ thống giao dịch.
       - Ví dụ:
         - Giả sử tại phiên khớp lệnh liên tục của một mã chứng khoán, hiện có các lệnh mua và bán ở các mức giá như sau:
 
       ![](./images/khop-lenh-lien-tuc-1.png)
-
       - Xuất hiện 1 lệnh mua 15.000 cổ phiếu với giá 219.900đ, lệnh đó sẽ lập tức được khớp 10.000 cổ phiếu với lệnh bán D, còn dư mua 5.000 ở giá 219.900đ. Khi đó các lệnh còn lại trên thị trường như sau:
 
       ![](./images/khop-lenh-lien-tuc-2.png)
-
       - Xuất hiện 1 lệnh bán MP (lệnh thị trường) 10.000 cổ phiếu. Lệnh sẽ được khớp 5.000 giá 219.900đ với lệnh mua E; 5.000 còn lại của lệnh thị trường chưa được khớp sẽ được chuyển thành lệnh giới hạn bán tại mức giá thấp hơn một đơn vị yết giá so với giá giao dịch cuối cùng trước đó. Khi đó các lệnh còn lại trên thị trường như sau:
 
       ![](./images/khop-lenh-lien-tuc-3.png)
@@ -118,7 +109,6 @@
 ### 1.3. Các loại lệnh đặt trong thị trường chứng khoán
 
 - Nguồn:
-
   - <https://stockinsight.hsc.com.vn/gio-giao-dich-va-cac-lenh-dat-trong-chung-khoan-co-so/>
   - <https://zalopay.vn/cac-loai-lenh-trong-chung-khoan-2526>
   - <https://www.dnse.com.vn/hoc/cach-dat-lenh-mua-ban-chung-khoan>
@@ -205,7 +195,6 @@
     - Chỉ số DPR – Tỷ lệ chi trả cổ tức: Thể hiện mức chi trả cổ tức cho các cổ đông so với mức mà công ty kiếm được. Số tiền không được trả cho các cổ đông được công ty giữ lại để tái đầu tư tăng trưởng, trả nợ hoặc thêm vào lợi nhuận giữ lại. Chỉ số DPR cao cho thấy công ty đang phát triển và tạo ra lợi nhuận tốt.
 - Giá cổ phiếu là mức giá của cổ phiếu tại một thời điểm nhất định, có nghĩa là số tiền mà nhà đầu tư cần bỏ ra để sở hữu cổ phiếu đang giao dịch trên thị trườnG. Chỉ số giá biến động hằng ngày và chịu ảnh hưởng của nhiều yếu tố khác nhau: Thị trường và kinh tế, quy luật cung cầu, kết quả hoạt động kinh doanh của doanh nghiệp, tâm lý nhà đầu tư.
 - Các loại giá cổ phiếu:
-
   - Giá tham chiếu là mức giá cơ sở để tính giới hạn giá cổ phiếu giao động trong phiên giao dịch, dựa vào đây để xác định giá sàn và giá dịch của ngày giao dịch hiện tại. Trong đó, giá tham chiếu ở các sàn giao dịch sẽ khác nhau:
     - Tại sàn HOSE và HNX: Giá tại thời điểm đóng cửa của ngày giao dịch liền kề trước đó.
     - Tại sàn Upcom: Mức bình quân gia quyền của giá giao dịch thực hiện theo phương pháp khớp lệnh cuối cùng của ngày giao dịch trước đó.
@@ -250,9 +239,7 @@ Lợi tức của trái phiếu = Số giá trị thanh toán thưởng hàng n�
 ![](https://i0.wp.com/online.hsc.com.vn/upload/cong-thuc-tinh-lai-trai-phieu.png?w=1200&ssl=1)
 
 - Phân loại:
-
   - Phân loại theo lợi tức trái phiếu:
-
     - Trái phiếu có lãi suất cố định: Lợi tức của trái phiếu được xác định theo một tỷ lệ phần trăm (%) cố định tính theo mệnh giá.
     - Trái phiếu có lãi suất biến đổi (lãi suất thả nổi): Lợi tức của trái phiếu được trả trong các kỳ có sự khác nhau và được điều chỉnh theo một lãi suất tham chiếu.
     - Trái phiếu có lãi suất bằng không là loại trái phiếu mà người mua không nhận được lãi, nhưng được mua với giá thấp hơn mệnh giá và được hoàn trả bằng mệnh giá khi trái phiếu đó đáo hạn.
@@ -289,7 +276,6 @@ Lợi tức của trái phiếu = Số giá trị thanh toán thưởng hàng n�
 
 - Giá trị thời gian của CW là chênh lệch giữa giá của chứng quyền trên thị trường và giá trị nội tại của chứng quyền đó. Một chứng quyền ở trạng thái lỗ (OTM) sẽ không có giá trị nội tại mà chỉ có giá trị thời gian. Giá trị thời gian của CW sẽ giảm theo thời gian và bằng 0 vào ngày đáo hạn của CW.
 - Ví dụ minh họa:
-
   - Ngày 01/04/2019, một nhà đầu tư mua chứng quyền CVNM1901 (Chứng quyền mua cổ phiếu VNM phát hành đợt 1 của năm phát hành 2019) với các tham số như sau:
     - Thời gian còn lại: 5 tháng
     - Giá VNM tại ngày 01/4/2019: S = 200,000 đ
@@ -297,7 +283,6 @@ Lợi tức của trái phiếu = Số giá trị thanh toán thưởng hàng n�
     - Giá thực hiện: 220,000 đ
     - Ngày đáo hạn: 1/11/19
   - Trường hợp 1: Nhà đầu tư giữ Chứng quyền đến đáo hạn:
-
     - Vào ngày đáo hạn (1/11/2019), khoản lãi/lỗ đối với nhà đầu tư phụ thuộc vào giá VNM. Cụ thể:
 
     | Giá VNM tại ngày đáo hạn | Trạng thái chứng quyền | Khoản tiền thanh toán cho chứng quyền | khoản lời/lỗ              | %Lợi nhuận/lỗ               |
@@ -309,7 +294,6 @@ Lợi tức của trái phiếu = Số giá trị thanh toán thưởng hàng n�
     ![](https://storage.googleapis.com/hsc-cweb/cw/knowledge-of-cw-vn.jpg)
 
   - Trường hợp 2: Nhà đầu tư bán Chứng quyền trước khi đáo hạn:
-
     - Sau 2 tháng, vào 01/6/2019, nhà đầu tư bán lại Chứng quyền trên thị trường.
 
     | Giá VNM tại ngày đáo hạn | Trạng thái chứng quyền | Giá chứng quyền | khoản lời/lỗ                  | Hệ số đòn bẩy khi mua CQ so với mua CKCS |
@@ -331,7 +315,6 @@ Lợi tức của trái phiếu = Số giá trị thanh toán thưởng hàng n�
 - Hệ thống đồ thị chỉ số:
 
   ![](https://www.vndirect.com.vn/cmsupload/beta/chi-so-ck.png)
-
   - VN-Index: chỉ số thể hiện xu hướng biến động giá của tất cả các cổ phiếu niêm yết và giao dịch tại HOSE.
   - VN30-Index: chỉ số giá của 30 cổ phiếu bluechip của thị trường.
   - VNX-AllShare: chỉ số chung thể hiện sự biến động của tất cả giá cổ phiếu đang niêm yết trên HOSE và HNX.

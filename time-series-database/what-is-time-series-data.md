@@ -47,7 +47,6 @@ Having a lot of data creates problems when both recording it and querying it in 
 ## 3. Time series data models
 
 - A data model of time series data mainly consists of the following parts:
-
   - Subject: The subject to be measured.
   - Measurements: A subject may have one or more measurements, each corresponding to a specific metric.
   - Timestamp: The measurement report is always attached with a timestamp attributeto indicate the time.

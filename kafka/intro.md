@@ -96,23 +96,18 @@ Source:
 
 - There can be many different consumer groups reading from the same topic.
 - When multiple consumers are subscribed to a topic and belong to the same consumer group, each consumer in the group will receive messages from a different subset of the partitions in the topic.
-
   - 1 consumer group with 4 partitions.
 
   ![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in01.png)
-
   - 4 partitions split to 2 consumers in a group.
 
   ![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in02.png)
-
   - 4 consumers 4 partitions.
 
   ![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in03.png)
-
   - 5 consumers 4 partitions (1 idle).
 
   ![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in04.png)
-
   - 2 consumer groups 1 topics.
 
   ![](https://www.oreilly.com/api/v2/epubs/9781491936153/files/assets/ktdg_04in05.png)
@@ -140,10 +135,8 @@ Source:
 - Kafka actually stores all of its records to disk and doesn’t keep anything explicitly in memory.
 - Kafka’s protocol groups messages together. This allows network requests to group messages together and reduce network overhead.
 - The server, in turn, persists chunk of messages in one go - a linear HDD write. Consumers then fetch large linear chunks at once.
-
   - Linear reads/writes on a disk can be fast. HDDs are commonly discussed as slow because they are when you do numerous disk seeks, since you’re bottlenecked on the physical movement of the drive’s head as it moves to the new location. With a linear read/write, this isn’t a problem as you continuously read/write data with the head’s movement.
   - Going a step further - said linear operations are heavily optimized by the OS.
-
     - **Read-ahead optimizations** prefetch large block multiples before they’re requested and stores them in memory, resulting in the next read not touching the disk.
     - **Write-behind optimizations** group small logical writes into big physical writes - [Kafka does not use fsync](https://jack-vanlightly.com/blog/2023/4/24/why-apache-kafka-doesnt-need-fsync-to-be-safe), its writes get written to disk asynchronously. Kafka producer doesn't wait for the data to actually persist to disk, leaving it to the OS to take care for, and just sends out **ack** once it writes to the PageCache, thus making it more performant.
 
@@ -174,13 +167,11 @@ Source:
   - Kafka used to persist all sorts of metadata in ZooKeeper, including the alive set of brokers, the topic names and their partition count, as well as the partition assignments.
   - Kafka also used to heavily leverage ZooKeeper’s watch mechanism, which would notify a subscriber whenever a certain zNode changed.
 - For the last few years, Kafka has actively been moving away from ZooKeeper towards its own consensus mechanism called KRaft (“Kafka Raft”).
-
   - It is a dialect of Raft with a few differences, heavily influenced by Kafka’s existing replication protocol. Most basically said, it extends the Kafka replication protocol with a few Raft-related features.
   - A key realization is that the cluster's metadata can be easily expressed in a regular log through the ordered record of events that happened in the cluster. Brokers could then replay the event to build the latest state of the system.
   - In this new model, Kafka has a quorum of N controllers (usually 3). These brokers host a special topic called the metadata topic (“\_\_cluster_metadata”). This topic has a single partition whose leader election is managed Raft. The leader of the partition becomes the currently active Controller. The other controllers act as hot standbys, storing the latest metadata in memory.
 
   ![](https://lh7-us.googleusercontent.com/rCWoO0Ha2O0SrdNx9oncgasZx3j3ZbvQ5dLdkFU6RPGR7Ef1EShjCDz_WcBzLccqhyWps7NMTzhcbIu4PehnzXkWbRrP1WnMU7SjQvrRE-d4a6AS3k0oTRuHCmT26YsmjacwcJeq4gPnCQ-9c8Yz6fA)
-
   - All regular brokers replicate this topic too. Instead of having to directly communicate to the controller, they asynchronously update their metadata simply by keeping up with the topic’s latest records.
 
 ## 7. Tiered storage

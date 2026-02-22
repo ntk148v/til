@@ -4,7 +4,6 @@ Source: <https://git-scm.com/docs/protocol-v2>
 
 - Packet-line framing.
 - Init client request
-
   - Client sends request to get the list of refs that server has for that repository.
 
   ```shell
@@ -25,7 +24,6 @@ Source: <https://git-scm.com/docs/protocol-v2>
   ```
 
 - Capability advertisement:
-
   - A server which decides to communicate (based on a request from a client) using protocol version 2, notifies the client by sending a version string followed by an advertisement of its capabilities.
   - Each capability is a key with an optional value. Some capabilities will describe commands which can be requested to be executed by the client.
 
@@ -36,7 +34,6 @@ Source: <https://git-scm.com/docs/protocol-v2>
   ```
 
 - Command request:
-
   - A client can then issue a request to select the command it wants with any particular capabilities or argument.
   - Only a single command can be request at a time.
 

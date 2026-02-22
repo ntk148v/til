@@ -27,12 +27,10 @@ Source:
 - Message Broker
 - It natively supports both messagnig patterns described above.
 - Concepts:
-
   - Queue:RabbitMQ supports classic message queuing out of the box.
   - Message Exchange: RabbitMQ implements Pub/Sub via the use of message exchanges. It can also filter messages for some subscribers based on various routing rules.
 
   ![](https://eranstiller.com/wp-content/uploads/2020/02/RabbitMQ-vs-Kafka-RabbitMQ-Message-Exchange.svg)
-
   - Consumer Group: group of consumers that work together processing messages in the form of competing consumers over a specific queue.
 
 ### 2.2. Kafka
@@ -40,14 +38,12 @@ Source:
 - Distributed streaming platform.
 - Kafka's storage layer is implemented using a partitioned transaction log.
 - Concepts:
-
   - Kafka doesn't implement the notion of a queue. Kafka stores collections of reecords in categories called **topics**.
   - For each topic, Kafka maintains a partitioned log of messages.
   - Each **partition** is an ordered, immutable sequence of records where messages are continually appended.
   - By default, Kafka uses a round-robin partitioner to spread messages uniformly across partitions. Producers can modify this behavior to create logical streams of messages.
 
   ![](https://eranstiller.com/wp-content/uploads/2020/02/RabbitMQ-vs-Kafka-Kafka-Producers.svg)
-
   - Consumers consume messages by maintaining an **offset** (or index) to these partitions and reading them sequentially.
   - A single consumer can consume multiple topics, and consumers can scale-up to the number of partitions available
   - A group of consumers working together to consume a topic is called a **consumer group**.
@@ -111,14 +107,12 @@ Messages published in one channel, passing through one exchange and one queue an
 ### 3.7. Consumer Complexity
 
 - RabbitMQ uses a smart-broker & dumb-consumer approach.
-
   - Consumers register to consume queues, and RabbitMQ pushes them with messages to process as they come in
   - RabbitMQ manages the distribution of messages to consumers and the removal of messages from queues.
 
   ![](https://eranstiller.com/wp-content/uploads/2020/02/RabbitMQ-vs-Kafka-Part-2-Scaling-RabbitMQ.svg)
 
 - Kafka, on the other hand, uses a dumb-broker & smart-consumer approach.
-
   - Consumers in a consumer group need to coordinate leases on topic parititions between them.
   - Consumers also need to manage and store their partitions’ offset index.
   - Kafka SDK takes care of these for us!

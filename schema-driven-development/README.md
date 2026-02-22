@@ -14,11 +14,9 @@ Table of contents:
 ## 1. Introduction
 
 - The _schema_ is a contract between two sides of a system.
-
   - The schema communicates the type of requests that can be made and the expected type of response.
 
   ![](https://99designs-blog.imgix.net/blog/wp-content/uploads/2021/07/013zl5qonwt38590jxr7-e1626161750821.png?auto=format&q=60&fit=max&w=930)
-
   - A schema follows a specific, unambiguous type of language defined by the technology that you use.
   - Schema language is usually programming-language agnostic that communicates common software ideas such as objects, enumeration, field types.
 

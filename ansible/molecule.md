@@ -337,7 +337,6 @@ INFO     Pruning extra files from scenario ephemeral directory
 
 - The Docker driver supports using pre-built images and `docker build`-ing local customizations for each scenario's platform.
 - The Docker image use by a scenario is governed by the following configuration items:
-
   - `platforms[*].image`: Docker image name:tag to use as base image.
   - `platforms[*].pre_build_image`: Whether to customize base image or use as-is:
     - `true`: use the specified `platforms[*].image` as-is.

@@ -25,7 +25,6 @@ Source:
   - Authorization model, together with **relationship tuples**, allow determination of whether a relationship exists between a **user** and an **object**.
 - **Store**: a OpenFGA entity used for organizing data needed to answer authorization checks. Each store contains one or more versions of an **authorization model** and may contain various **relationship tuples**.
 - **Object**: represents an entity in the system. We can define how various users have a relationship to it through relationship tuples and the authorization model.
-
   - An object is a combination of a type and an identifier.
   - For example:
 
@@ -37,7 +36,6 @@ Source:
   ```
 
 - **User**: an entity in the system that can be related to an object.
-
   - An user is a combination of a type, an identifier and an optional relation.
   - For example:
 
@@ -58,7 +56,6 @@ Source:
 - **Relation definition**: lists the conditions or requirements under which this relationship would be possible.
 - **Directly related user type**: an array specified in the type definition to indicate what types of users can be directly related to that relation.
 - **Relationship tuple**: a tuple consisting of a user, relation and object stored in OpenFGA.
-
   - For example:
 
   ```json
@@ -73,9 +70,7 @@ Source:
 
 - **Relationship**: the realization of a relation between a user and an object.
 - **Direct and Implied relationship**:
-
   - A direct relationship R between user X and object Y means the relationship tuple (user=X, relation=R, object=Y) exists.
-
     - `user:anne` has a direct relationship with `document:new-roadmap` as `viewer` if the type definition allows it (allows direct relationship type restrictions), and one of the following relationship tuples exist.
 
     ```json
@@ -90,7 +85,6 @@ Source:
     ```
 
   - An implied (or computed) relationship R exists between user X and object Y if user X is related to an object Z that is in a direct or implied relationship with object Y.
-
     - `user:anne` has an implied relationship with `document:new-roadmap` as `viewer` if the type definition allows it, and the presence of relationship tuples satisfying the relationship exist.
 
     ```dsl

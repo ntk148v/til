@@ -44,15 +44,12 @@ Table of contents:
 > **NOTE**: Yes, I know these are two DCs in picture. But I'm too lazy to draw the new one.
 
 - Rack-awareness:
-
   - Each partition in one DC has a repliac in the other DC:
 
   ![](http://mbukowicz.github.io/images/kafka-in-multiple-dcs/stretched-cluster-replica-assignment.png)
-
   - It is necessary because when disaster strikes then all partitions will need to be handled by the remaining data center:
 
   ![](http://mbukowicz.github.io/images/kafka-in-multiple-dcs/stretched-cluster-disaster.png)
-
   - By default Kafka is not aware that our brokers are running from different data centers and it could potentially put replicas of the same partition inside one DC. But if we take advantage of the [rack-awareness](https://cwiki.apache.org/confluence/display/KAFKA/KIP-36+Rack+aware+replica+assignment) feature and [assign Kafka brokers to their corresponding data centers](https://kafka.apache.org/documentation/#basic_ops_rackst) then Kafka will try to evenly distribute replicas over available DCs.
 
 - With [KIP-392, Apache Kafka supports “Fetch From Followers”](https://cwiki.apache.org/confluence/display/KAFKA/KIP-392%3A+Allow+consumers+to+fetch+from+closest+replica) which allows consumers to read from the closest replica, whether that’s the leader or follower replica.

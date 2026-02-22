@@ -27,7 +27,6 @@ $ ps axfo pid,ppid,command
 ```
 
 - The shim process that becomes a daemon - it's reparented to PID 1, and its stdio streams are closed:
-
   - The shim takes control over the container's stdio streams.
   - The daemonized shim process reads from the container's stdout and stderr and dumps the read bytes to the log driver.
   - By default, the shim closes the container's stdin stream unless `-i` was passed to the corresponding `docker run` command.

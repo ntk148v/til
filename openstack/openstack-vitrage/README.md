@@ -122,7 +122,6 @@ Here is the update & more complete version of Common parameters section in [Usag
 | action            | properties/severity | CRITICAL,SEVERE,WARNING,N/A,OK                                                                                                                                                                                        | no comment                                                                                                                                                  |
 
 - Action:
-
   - `set_state`: Set state of specified entity. This will directly affect the state as seen in Vitrage, but will not impact the state at the relevant datasource of this entity.
 
     ```yaml
@@ -181,7 +180,6 @@ Here is the update & more complete version of Common parameters section in [Usag
     ```
 
 - Relationship type:
-
   - `on`: common case - alarm _on_ resource.
 
     ```yaml

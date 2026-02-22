@@ -31,7 +31,6 @@ tcp 0 0 127.0.0.1:3306 0.0.0.0:* LISTEN -
 ```
 
 - Pipelines in Bash.
-
   - Bash has a variable called `PIPESTATUS`, which contains a list of exit staus from the processes in the most recently executed pipeline
 
     ```bash

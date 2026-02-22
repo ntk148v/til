@@ -61,7 +61,6 @@ eBPF programs follow these steps:
 - As the program is loaded into the Linux kernel, it passes through 2 steps before being attached to the requested hook:
 
   ![](https://ebpf.io/static/loader-dff8db7daed55496f43076808c62be8f.png)
-
   - Verification: validates that the program meets several conditions.
   - Just-In-Time (JIT) Compilation: translates the generic bytecode of the program into the machine specific instruction set to optimize execution speed of the program.
 

@@ -69,7 +69,6 @@ Source: <https://developers.google.com/web/fundamentals/performance/http2>
 ### 2.4. Stream prioritization
 
 - The HTTP/2 standard allows each stream to have an associated weight and dependency:
-
   - Each stream may be assigned an interger weight (>=1 and <= 256>).
   - Each stream may be given an explicit dependency on another stream.
 

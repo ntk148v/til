@@ -28,7 +28,6 @@ Source: <https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client
 ```
 
 - Other advantages:
-
   - _Tooling_: each framework's ecosystem provides tooling that improves the developer experience.
   - _Compartmentalization_: Abstract the different parts of their user interfaces into _components_ - maintainable, reusbale chunks of code that can communicate with one another.
   - _Routing_: Modern web applications typically do not fetch and render new HTML files - they load a single HTML shell, and continually update the DOM inside it (**single page apps - SPAs**). An SPA is complex -> + routing (**client-side routing**).
@@ -45,7 +44,6 @@ Source: <https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client
 ## 2. Framework main features
 
 - **Domain-specific languages (DSLs)**:
-
   - DSLs know how to read data variables, and this data can be used to streamline the process of writing your UI.
   - DSLs can't be read by the browser directly, they must be transformed into JavaScript or HTMl first. [Transformation is an extra step in the development process](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Overview#transformation), but framework tooling generarlly includes the required tools to handle this step, or can be adjusted to include this step.
   - [JSX](https://reactjs.org/docs/introducing-jsx.html), which stands for JavaScript and XML, is an extension of JavaScript that brings HTML-like syntax to a JavaScript environment.
@@ -67,7 +65,6 @@ Source: <https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client
     ```
 
 - **Writing components**: Most frameworks have some kind of component model. React components can be written with JSX, Ember components with Handlebars, and Angular and Vue components with a templating syntax that lightly extends HTML.
-
   - _Properties_ (props) is external data that a component needs in order to render.
   - _State_ - a robust state-handling mechanism is key to an effective framework, and each component may have data that needs its state controlled. This state will persist in some way as long as the component is in use. Like props, state can be used to affect how a component is rendered.
   - _Events_ - In order to be interactive, components need ways to respond to browser events, so our applications can respond to our users. Frameworks each provide their own syntax for listening to browser events, which reference the names of the equivalent native browser events.
@@ -75,13 +72,11 @@ Source: <https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client
 - **Styling components**: Each framework offers a way to define styles for your components - or for the application as a whole.
 
 - **Handling dependencies**: All major frameworks provide mechanism for handling dependencies - using components inside other components. sometimes with multiple hierachy levels.
-
   - Components in components.
   - Dependency injection.
   - Lifecyle: a collection of phases a component goes through from the time it is appended to the DOM and then rendered by the browser (often called mounting) to the time that it is removed from the DOM (often called unmounting).
 
 - **Rendering elements**:
-
   - _Virtual DOM_: an approach whereby information about your browser's DOM is stored in JavaScript memory. Your application updates this copy of the DOM, then compares it to the "real" DOM -> builds a "diff" between the updated virtual DOM and currently rendered DOM -> apply diff to the real DOM.
   - _Incremental DOM_: simliar to the virtual DOM in that it builds a DOM diff to decide what to render, but different in that it doesn't create a complete copy of the DOM in JavaScript memory. It ignores the parts of the DOM that do not need to be changed.
   - _Glimmer VM_: a separate process through which Ember's templates are transpiled into a kind of "byte code" that is easier and faster to read than JavaScript.
