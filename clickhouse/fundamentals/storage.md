@@ -25,6 +25,8 @@ LIMIT 200000000;
 - Every INSERT creates a new directory containing data files - `part`. If you send 1,000 individual inserts per second, ClickHouse creates 1,000 folders and files on your disk every second. As having a lot of small files would be disadvantageous for many reasons from query performance to storage, ClickHouse regularly **merges** small parts together until they reach a maximum size. That's what the Merge stand for.
   - Data would be stored in **parts**, each part a separate directory on disk. Data for a given part is always sorted by the order set in `ORDER BY` statement and compressed.
   - Parts can be `Wide` or `Compact` depending on its size.
+    - Wide means that each columns is stored in a separate file in filesystem.
+    - Compact means all columns are stored in one file in a filesystem.
   - Merges can be monitored using the `system.merges` table.
   - `system.parts` table contain a lot of metadata about every part.
 
@@ -337,3 +339,8 @@ LIMIT 20
 
 - Use partitions wisely - each INSERT should ideally only touch 1-2 partitions and too many partitions will cause issues around replication or prove useless for filtering.
 - Loading the primary index/marks the file might not be the bottleneck you expect, so be sure to benchmark different schemas against each other.
+
+## 4. Extra about parts and partitions
+
+- <https://chistadata.com/parts-and-partitions-in-clickhouse-part-i/>
+- <https://chistadata.com/parts-and-partitions-in-clickhouse-part-ii/>

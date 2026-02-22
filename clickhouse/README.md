@@ -15,6 +15,7 @@ Core concepts and architecture of ClickHouse.
 | [Storage](fundamentals/storage.md)                                  | MergeTree storage, parts, granules, query execution                          |
 | [Table Engines](fundamentals/engines.md)                            | MergeTree family, special-purpose, integration engines                       |
 | [Table Parts](fundamentals/table-parts.md)                          | Data parts lifecycle, active/inactive parts, merges                          |
+| [Table Partitions](fundamentals/table-partitions.md)                | Data partitions                                                              |
 | [Skipping Indices](fundamentals/skipping-indices.md)                | Secondary indices for data pruning                                           |
 
 ### Guides
