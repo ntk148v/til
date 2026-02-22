@@ -11,7 +11,6 @@ WAL files are stored in the `wal` directory in 128MB segments. These files conta
 WAL format is composed of varous types of record.
 
 - Each sample record represents one scrape or one recording rule output.
-
   - Each sample size (ignore the 23 bytes of overhead for simplicity)
 
     ```

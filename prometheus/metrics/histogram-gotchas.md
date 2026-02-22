@@ -48,7 +48,6 @@ histogram_quantile(0.9,
 ```
 
 - Why not always use histograms?
-
   - With histograms you have to pre-choose your buckets.
   - The cost moves from the client to Prometheus itself due to bucket cardinality. Cardinality is always something to consider with labels, and a histogram by default will have a cardinality of 10 for its buckets. If additional labels are added to the histogram, or more buckets are added, then histograms can get rather expensive.
 

@@ -37,7 +37,6 @@ MADV_DONTNEED -> MADV_FREE (if available)
 ```
 
 - Go deeper, Golang runtime uses [madvise](https://man7.org/linux/man-pages/man2/madvise.2.html) system call - `give advice about use of memory`. There are many advice values, but we are only care about these two:
-
   - `MADV_DONTNEED`: Do not expect access in the near future. (For the time being, the application is finished with the given range, so the kernel can free resources associated with it).
   - `MADV_FREE` (**since kernel 4.5**): The application no longer requires the pages in the range specified by addr and len. The kernel can thus free these pages, but the freeing could be delayed until memory pressure occurs.
 

@@ -1,60 +1,77 @@
 # Prometheus
 
-- [Prometheus](#prometheus)
-  - [1. Contents](#1-contents)
-  - [2. Refs](#2-refs)
+## Quick Reference
 
-## 1. Contents
+- [notes.md](./notes.md) - Practical tips, snippets, and common patterns
+- [qa.md](./qa.md) - Q&A on Prometheus internals (WAL, 2-hour blocks, etc.)
+- [articles.md](./articles.md) - Curated external articles
+- [tools.md](./tools.md) - Prometheus ecosystem tools
 
-- [Internal Architecture](./internal-architecture.md)
+## Fundamentals
 
-- [Alertmanager High Availability](./alertmanager-ha.md)
+- [Internal Architecture](./fundamentals/internal-architecture.md)
+- [TSDB](./fundamentals/tsdb.md) - Write-Ahead Log, head block, compaction
+- [Service Discovery](./fundamentals/service-discovery.md)
 
-- [Collect Docker metrics with Prometheus](./collect-docker-metrics.md)
+## PromQL
 
-- [Labels and relabel](./prometheus-labels-relabel.md)
+- [Cheatsheet](./promql/cheatsheet.md)
+- [Gotchas](./promql/gotchas.md) - Instant vs range vectors, rate vs irate
+- [Join](./promql/join.md) - Vector matching, group_left
+- [Query Steps](./promql/query-steps.md)
 
-- [Silence Alerts](./alertmanager-silence.md)
+## Metrics & Instrumentation
 
-- [Custom metrics](./prometheus-metrics.md)
+- [Metric Types](./metrics/types.md) - Counter, Gauge, Histogram, Summary
+- [Histogram Gotchas](./metrics/histogram-gotchas.md) - Buckets, quantiles, cardinality
+- [Instrumentation](./metrics/instrumentation.md)
 
-- [Service discovery](./service-discovery.md)
+## Alerting
 
-- [Alertmanager configuration options](./alertmanager-group-configuration-opts.md)
+- [Alertmanager HA](./alerting/alertmanager-ha.md)
+- [Silence Alerts](./alerting/alertmanager-silence.md)
+- [Time-based Alert](./alerting/alertmanager-time-based-alert.md)
+- [Group Configuration Options](./alerting/alertmanager-group-configuration-opts.md)
+- [Alert Rules](./alerting/alert-rules.md)
+- [Delays on Alerting](./alerting/delays-on-alerting.md)
 
-- [Alertmanager time-based alert](./alertmanager-time-based-alert.md)
+## Performance
 
-- [Pushgateway](./pushgateway.md)
+- [Capacity Planning](./performance/capacity-planning.md) - Storage, RAM, CPU estimates
+- [Manage Performance](./performance/manage-performance.md)
+- [Analysing](./performance/analysing.md) - Memory profiling, cardinality analysis
+- [Memory Monitoring](./performance/memory-monitoring.md) - Golang pprof
+- [WAL](./performance/wal.md) - Write-Ahead Log internals
 
-- [Prometheus Self Monitoring](./prometheus-self-monitoring.md)
+## Scaling
 
-- [Prometheus Federation](./prometheus-federation.md)
+- [Federation](./scaling/federation.md)
+- [Long-term Storage](./scaling/lts.md) - Solutions for durable storage
+- [Remote APIs](./scaling/remote-apis.md)
+- [Self Monitoring](./scaling/self-monitoring.md) - "Who watches the watchmen?"
 
-- [Prometheus Manage Performance](./prometheus-manage-performance.md)
+## Operations
 
-- [Prometheus Instrumentation](./prometheus-instrumentation.md)
+- [Labels & Relabel](./operations/labels-relabel.md)
+- [Pushgateway](./operations/pushgateway.md)
+- [Docker Metrics](./operations/docker-metrics.md)
 
-- [Prometheus Capacity Planning](./prometheus-capacity-planning.md)
+## Security
 
-- [Prometheus Alert rules collection](./prometheus-alert-rules.md)
+- [Hacking Kubernetes via Prometheus](./security/hacking-kubernetes.md)
 
-- [Prometheus Remote APIs](./prometheus-remote-apis.md)
+## Critiques & Comparisons
 
-- [Prometheus WAL size](./prometheus-wal.md)
+- [Prometheus Sucks?](./critiques/prometheus-sucks.md) - Honest assessment of limitations
+- [Zabbix vs Prometheus](./critiques/zabbix-prometheus.md)
 
-- [Prometheus join](./prometheus-promql-join.md)
+## References (PDFs)
 
-- [Prometheus memory leak troubleshooting](./prometheus-golang-memory-monitoring.md)
+See [refs/](./refs/) for conference slides and papers.
 
-- [Tips](./tips.md)
+## External Resources
 
-- [Tools](./tools.md)
-
-## 2. Refs
-
-- [RobustPerception](https://www.robustperception.io/)
-- [Prometheus official documentation](https://prometheus.io/docs/)
-- [YunLong's Blog](http://ylzheng.com/categories/Prometheus/). Give that man some credits!
-- [Wikitech Prometheus](https://wikitech.wikimedia.org/wiki/Prometheus)
+- [RobustPerception](https://www.robustperception.io/) - Brian Brazil's blog
+- [Prometheus Official Docs](https://prometheus.io/docs/)
 - [PromLabs](https://promlabs.com)
 - [Awesome-prometheus](https://github.com/roaldnefs/awesome-prometheus)
