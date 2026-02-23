@@ -20,6 +20,8 @@ In practice OLAP and OLTP aren't viewed as binary categories, but more like a sp
 
 Even if a DBMS started out as a pure OLAP or pure OLTP, it is forced to move in the HTAP direction to keep up with the competition. ClickHouse is no exception. Initially, it has been designed as a fast-as-possible OLAP system and it still doesn't have full-fledged transaction support, but some features like consistent read/writes and mutations for updating/deleting data have been added.
 
+- [read consistency](https://clickhouse.com/docs/knowledgebase/read_consistency)
+
 The fundamental trade-off between OLAP and OLTP systems remains:
 
 - To build analytical reports efficiently it's crucial to be able to read columns separately, thus most OLAP databases are columnar;
