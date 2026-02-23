@@ -4,6 +4,7 @@ Source:
 
 - <https://estuary.dev/blog/columnar-database-vs-row-database/>
 - <https://www.fivetran.com/learn/columnar-database-vs-row-database>
+- <https://clickhouse.com/resources/engineering/what-is-columnar-database>
 
 Table of contents:
 
