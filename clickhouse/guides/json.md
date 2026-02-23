@@ -23,3 +23,8 @@ Important trade-offs:
 - JSON documents are treated as opaque blobs that are only stored and retrieved in their entirety without field-level analysis
 - You don't need to query or filter on individual JSON fields within the database
 - The JSON is simply a transport/storage format, not analyzed within ClickHouse
+
+In-depth:
+
+- <https://clickhouse.com/blog/a-new-powerful-json-data-type-for-clickhouse>
+- <https://clickhouse.com/blog/json-data-type-gets-even-better>
