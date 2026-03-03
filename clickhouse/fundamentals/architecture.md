@@ -215,6 +215,18 @@ Nodes advance table state using 3 operations (performed locally, recorded as sta
 - Merges can be replayed locally or by fetching result from another node
 - Mutually independent log entries replayed in parallel
 
+| Command         | Replicated? | ON CLUSTER? | Notes                                        |
+| --------------- | ----------- | ----------- | -------------------------------------------- |
+| CREATE TABLE    | No          | Yes         | Creates ZK path for table                    |
+| DROP TABLE      | No          | Yes         | Deletes ZK path for table                    |
+| SELECT          | No          | No          | Use distributed table to apply across shards |
+| INSERT          | Yes         | No          | Use distributed table to apply across shards |
+| ALTER TABLE     | Yes         | Yes         |                                              |
+| OPTIMIZE TABLE  | Yes         | Yes         |                                              |
+| TRUNCATE TABLE  | Yes         | Yes         |                                              |
+| CREATE DATABASE | No          | Yes         |                                              |
+| DROP DATABASE   | No          | Yes         | Deletes ZK path for all tables in database   |
+
 ### 4.7. ACID compliance
 
 ClickHouse is generally not fully ACID-compliant (prioritizes OLAP performance over OLTP transactional guarantees).
