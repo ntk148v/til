@@ -1,6 +1,7 @@
 # Cache types
 
 When performing queries, ClickHouse uses different caches to speed up queries and reduce the need to read from or write to disk.
+
 - `mark_cache`: Cache of marks used by table engines of the `MergeTree` family.
 - `uncompressed_cache`: Cache of uncompressed data used by table engines of the `MergeTree` family.
 - OS page cache (used indirectly, for files with actual data).
