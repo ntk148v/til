@@ -14,6 +14,7 @@ Source: <https://promlabs.com/blog/2025/07/17/why-i-recommend-native-prometheus-
 ![](https://promlabs.com/images/otel-prometheus-exporters.svg)
 
 From the Collector, the metrics can make it into Prometheus in a few different ways:
+
 - The Prometheus exporter.
 - The Prometheus remote write exporter.
 - Most common: The OTLP exporter uses OpenTelemetry's OTLP to push metrics to Prometheus.
@@ -39,6 +40,7 @@ From the Collector, the metrics can make it into Prometheus in a few different w
 ### 3.3. Reason 3: Resource labels vs. target labels - same name but different?
 
 Both Prometheus and OpenTelemetry like to attach a set of labels (or attributes, in OTel terminology) that give you information about the source of a metric, such as the application or service that generated it. In OpenTelemetry, these are called resource attributes, while Prometheus calls them target labels.
+
 - Prometheus target labels are attached to scraped metrics by the Prometheus server based on the target's metadata, which usually originates from a dynamic service discovery mechanism
 - OpenTelemetry resource attributes are chosen by the application that generates the metrics and are usually way more numerous and detailed.
 
