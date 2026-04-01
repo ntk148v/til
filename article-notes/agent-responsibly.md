@@ -22,5 +22,3 @@ Source: <https://vercel.com/blog/agent-responsibly>
   - What does this do? How does it behave once rolled out?
   - How can this adversely impact production or customers?
   - Am I comfortable owning an incident tied to this code?
-
-
