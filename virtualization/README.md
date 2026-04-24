@@ -1,5 +1,57 @@
 # Linux Virtualization Stack
 
+Table of contents:
+
+- [Linux Virtualization Stack](#linux-virtualization-stack)
+  - [1. Introduction](#1-introduction)
+  - [2. Virtualization fundamentals](#2-virtualization-fundamentals)
+    - [2.1. The Virtual machine monitor (Hypervisor)](#21-the-virtual-machine-monitor-hypervisor)
+      - [2.1.1. The three properties of an Effective VMM\*\*](#211-the-three-properties-of-an-effective-vmm)
+      - [2.1.2. Type 1 and Type 2 Hypervisor](#212-type-1-and-type-2-hypervisor)
+    - [2.2. x86 virtualization](#22-x86-virtualization)
+    - [2.3. CPU virtualization: The core challenge](#23-cpu-virtualization-the-core-challenge)
+      - [2.3.1. The hardware mechanism behind "Trap-and-Emulate"](#231-the-hardware-mechanism-behind-trap-and-emulate)
+      - [2.3.2. The classic "Trap-and-Emulate" model](#232-the-classic-trap-and-emulate-model)
+    - [2.4. Software-based virtualization: Full virtualization and Paravirtualization](#24-software-based-virtualization-full-virtualization-and-paravirtualization)
+      - [2.4.1. Full virtualization](#241-full-virtualization)
+      - [2.4.2. Paravirtualization](#242-paravirtualization)
+    - [2.5. Hardware-assisted virtualization](#25-hardware-assisted-virtualization)
+  - [3. The Linux Virtualization Architecture (Big Picture)](#3-the-linux-virtualization-architecture-big-picture)
+    - [3.1 Layered Model](#31-layered-model)
+    - [3.2 Core Components Overview](#32-core-components-overview)
+- [Core Stack (Bottom → Up)](#core-stack-bottom--up)
+  - [4. Hypervisor Layer (Kernel-Level Execution)](#4-hypervisor-layer-kernel-level-execution)
+    - [Focus:](#focus)
+    - [Key Points:](#key-points)
+  - [5. User-Space VMM / Runtime Layer](#5-user-space-vmm--runtime-layer)
+    - [Examples:](#examples)
+    - [Key Points:](#key-points-1)
+  - [6. Host-Level Virtualization Control](#6-host-level-virtualization-control)
+    - [Example:](#example)
+    - [Key Points:](#key-points-2)
+- [Control Plane (Above the Host)](#control-plane-above-the-host)
+  - [7. Datacenter Virtualization Management](#7-datacenter-virtualization-management)
+    - [Example:](#example-1)
+    - [Key Points:](#key-points-3)
+  - [8. Cloud Orchestration Platforms](#8-cloud-orchestration-platforms)
+    - [Example:](#example-2)
+    - [Key Points:](#key-points-4)
+- [Parallel \& Emerging Approaches](#parallel--emerging-approaches)
+  - [9. MicroVM / Lightweight Virtualization](#9-microvm--lightweight-virtualization)
+    - [Examples:](#examples-1)
+    - [Key Points:](#key-points-5)
+    - [Positioning:](#positioning)
+  - [10. Containers (Contrast, Not Part of VM Stack)](#10-containers-contrast-not-part-of-vm-stack)
+    - [Examples:](#examples-2)
+    - [Key Points:](#key-points-6)
+    - [Important Contrast:](#important-contrast)
+- [Integration \& Flow](#integration--flow)
+  - [11. How Everything Works Together](#11-how-everything-works-together)
+    - [Typical Execution Flow:](#typical-execution-flow)
+    - [Key Insight:](#key-insight)
+  - [12. Advanced Topics (Optional but High Value)](#12-advanced-topics-optional-but-high-value)
+  - [13. Conclusion](#13-conclusion)
+
 ## 1. Introduction
 
 The modern era of distributed computing, encompassing everything from hyperscale public cloud infrastructure to localized edge computing deployments, relies entirely on the foundational technology of virtualization. By mathematically and logically abstracting physical hardware resources into isolated, programmable units, virtualization directly addresses the historical inefficiencies of single-tenant server architectures, where physical machines frequently operated at a mere fraction of their computational capacity. The ability to multiplex compute, memory, storage, and networking resources across disparate workloads enables massive economies of scale, strict multi-tenant isolation, and highly dynamic resource allocation.
@@ -38,7 +90,7 @@ The **Virtual machine monitor (VMM)**, or **Hypervisor** (_we will use two terms
 - It acts as a "traffic cop", abstracting the underlying hardware and presenting a virtualized hardware platform to each VM.
 - This **decouples** the software (guest OS + applications) from the physical hardware.
 
-**The three properties of an Effective VMM**
+#### 2.1.1. The three properties of an Effective VMM\*\*
 
 For a VMM to be considered effective, it must satisfy three essential properties as originally defined by [Popek and Goldberd (1974)](https://en.wikipedia.org/wiki/Popek_and_Goldberg_virtualization_requirements):
 
@@ -46,7 +98,7 @@ For a VMM to be considered effective, it must satisfy three essential properties
 - **Performance**: The VMM should introduce minimal overhead. A statistically dominant subset of the guest's instructions must be executed directly on the host processor at native speed.
 - **Safety (Isolation)**: The VMM must retain complete control of all system resources. Guest VMs are strictly isolated from one another; a crash or security breach in one VM cannot affect the hypervisor or other VMs.
 
-**Type 1 and Type 2 Hypervisor**
+#### 2.1.2. Type 1 and Type 2 Hypervisor
 
 - **Type 1 (Bare-metal hypervisor)**:
   - Architecture: install directly onto the physical hardware without a conventional host operating system layer mediating their access (examples include VMware ESXi and the original Xen architecture). They independently manage system resources and schedule guest virtual machines
@@ -59,14 +111,14 @@ For a VMM to be considered effective, it must satisfy three essential properties
   - Primary use case: ideal for desktop environments, such as developers running multiple OSes for testing or individuals needing cross-platform application access.
   - Examples: Oracle VirtualBox, VMware Workstation/Fusion.
 
-![](https://www.researchgate.net/publication/310620289/figure/fig1/AS:431165384466439@1479809246583/Type-1-and-Type-2-Hypervisor.png)
+![type1-type2](https://www.researchgate.net/publication/310620289/figure/fig1/AS:431165384466439@1479809246583/Type-1-and-Type-2-Hypervisor.png)
 
 ### 2.2. x86 virtualization
 
 - **Ring 0 (Kernel mode)** represents the highest privilege level, strictly reserved for the OS kernel, allowing it to configure the memory management unit (MMU), govern physical memory allocation, and directly manipulate input/output (I/O) peripherals.
 - Conversely, user-space applications execute in **Ring 3 (User mode)**, confined to their own virtual address spaces and required to invoke system calls to request privileged services from the kernel.
 
-![](https://media.geeksforgeeks.org/wp-content/uploads/Untitled-drawing-6-2.png)
+![x86-architecture](https://media.geeksforgeeks.org/wp-content/uploads/Untitled-drawing-6-2.png)
 
 ### 2.3. CPU virtualization: The core challenge
 
@@ -136,9 +188,9 @@ As we already understand the challenge, let see how the engineer deal with it us
 
 This architectural limitation gave rise to two primary software-based virtualization strategies.
 
-**Full virtualization**
+#### 2.4.1. Full virtualization
 
-![](https://media.geeksforgeeks.org/wp-content/uploads/20200519134803/Full-Virualization.png)
+![full-virtualization](https://media.geeksforgeeks.org/wp-content/uploads/20200519134803/Full-Virualization.png)
 
 - Full virtualization allows a guest OS to run **without any modification**. The hypervisor presents a complete virtual copy of the hardware, making the guest OS believe it owns a real physical machine.
 - The hypervisor uses a technique called **binary translation**. It continuously **intercept and scans** the guest OS code during execution. Whenever it detects a privileged instruction, it replaces (**translate**) it with a safe alternative before allowing it to run. The translated, "safe" block of code is stored in a **translation cache**. The hypervisor then executes this new block. On subsequent executions of the same guest code, the hypervisor uses the fast, cached version, avoiding the translation overhead.
@@ -150,9 +202,9 @@ This architectural limitation gave rise to two primary software-based virtualiza
   - Complexity: the hypervisor must maintain a complex binary translator capable of understanding and correctly rewriting parts of another OS's kernel.
 - Examples: Early versions of VMware ESX and Microsoft Virtual Server relied on this approach.
 
-**Paravirtualization**
+#### 2.4.2. Paravirtualization
 
-![](https://media.geeksforgeeks.org/wp-content/uploads/20200519134631/Paravirtualization.png)
+![paravirtualization](https://media.geeksforgeeks.org/wp-content/uploads/20200519134631/Paravirtualization.png)
 
 - Paravirtualization takes a more cooperative approach. Instead of hiding the fact that the OS is virtualized, it makes the guest OS aware of it.
 - The guest OS kernel is modified to replace privileged instructions with direct calls to the hypervisor, known as **hypercalls**. Rather than forcing the hypervisor to intercept instructions, the guest OS politely requests help when needed.
@@ -221,25 +273,28 @@ Pros: The best of both worlds.
 
 ## 3. The Linux Virtualization Architecture (Big Picture)
 
-### 3.1 Layered Model
+Source:
 
-```id="arch_overview"
-Management → Runtime → Hypervisor → Hardware
-```
+- <https://docs.netapp.com/us-en/netapp-solutions-virtualization/kvm/kvm-overview.html>
 
-### 3.2 Core Components Overview
+The Linux virtualization stack is best understood not as a single monolithic application, but as a highly sophisticated, multi-layered architecture. Within this paradigm, distinctly specialized software components interact hierarchically to transform a standard, general-purpose Linux server into a highly optimized, hardware-accelerated hypervisor environment.
 
-- KVM
-- QEMU
-- libvirt
+![linux-virtualization-overview](./images/virtualization-overview.png)
 
-👉 Briefly explain how they interact before diving deeper.
+The Linux virtualization stack is best understood not as a single monolithic application, but as a highly sophisticated, multi-layered architecture. Within this paradigm, distinctly specialized software components interact hierarchically to transform a standard, general-purpose Linux server into a highly optimized, hardware-accelerated hypervisor environment.
 
----
-
-# Core Stack (Bottom → Up)
+- At the foundation, the physical hardware supplies the raw computational horsepower, memory modules, and critical virtualization instruction sets.
+- Hypervisor layer integrates into the OS kernel (KVM module), functioning as the ultimate arbiter of CPU and memory access.
+- The runtime layer operates in user space, tasked with emulating physical hardware peripherals and orchestrating the execution loop of the guest virtual machine processes.
+- The management layer (host-level virtualization control and data-center/cloud platform) provides external, standardized interfaces for administrative control, abstracting the extreme complexity of the lower layers of facilitate automation and lifecycle management.
 
 ## 4. Hypervisor Layer (Kernel-Level Execution)
+
+Source:
+
+- <https://bitgrounds.tech/posts/kvm-qemu-libvirt-virtualization/>
+
+Kernel-based Virtual Machine (KVM) is a Linux kernel module, which has been part of the mainline kernel since version 2.6.20 which was released on Feb 5th, 2007. Before this point, the [prevailing open-source virtualization platform was Xen](https://en.wikipedia.org/wiki/Timeline_of_virtualization_technologies). The Xen architecture required a highly specialized, paravirtualized guest kernel to achieve acceptable performance, and its design philosophy necessitated a separate, highly privileged administrative OS known as the "Dom0" management domain to control hardware and orchestrate unprivileged guest domains. This architecture was inherently complex and required maintaining substantial out-of-tree kernel patches.
 
 ### Focus:
 
