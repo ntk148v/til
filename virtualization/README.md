@@ -4,6 +4,16 @@
 
 The modern era of distributed computing, encompassing everything from hyperscale public cloud infrastructure to localized edge computing deployments, relies entirely on the foundational technology of virtualization. By mathematically and logically abstracting physical hardware resources into isolated, programmable units, virtualization directly addresses the historical inefficiencies of single-tenant server architectures, where physical machines frequently operated at a mere fraction of their computational capacity. The ability to multiplex compute, memory, storage, and networking resources across disparate workloads enables massive economies of scale, strict multi-tenant isolation, and highly dynamic resource allocation.
 
+> [!NOTE]
+> **Virtualization is Core Enabler (IaaS layer)**
+>
+> - Cloud providers like AWS, Azure, and GCP present **virtual machines** (EC2, Virtual machines, Compute engine) instead of raw servers.
+> - A **hypervisor** multiplexes each physical server into many isolated **virtual machines**, one per tenant or workload.
+> - This allows providers to:
+>   - Safely run workloads from mutually untrusted customers on the same hardware.
+>   - Improve utilization by packing many VMs onto a single physical host.
+>   - Implement "pay-as-you-go" pricing at the VM level.
+
 The evolution of virtualization is a multi-decade trajectory that originated with mainframe systems. The paradigm began with the IBM CP-40 and CP-67 architectures in the late 1960s, introducing the conceptual framework of virtual machines and virtual memory hardware to the IBM System/360 Model 67. However, as the computing industry transitioned toward commodity x86 architectures in the 1980s and 1990s, virtualization became a formidable technical challenge due to the lack of native hardware support for virtualization in the x86 instruction set. The early 2000s saw the industry rely on complex, software-heavy emulation techniques or heavily modified paravirtualized guest kernels, championed by hypervisors like Xen (released in 2003) and early VMware iterations. A pivotal paradigm shift occurred in 2005 and 2006 when Intel and AMD introduced hardware-assisted virtualization extensions, fundamentally changing the trajectory of the ecosystem by enabling the processor itself to handle virtualization boundaries.
 
 Following the integration of the Kernel-based Virtual Machine (KVM) module into the mainline Linux kernel in 2007, Linux rapidly became the de facto standard for open-source virtualization. As cloud computing architectures matured, the ecosystem observed an aggressive push toward lighter, faster deployment models. This resulted in the widespread adoption of operating system-level containerization technologies—tracing back to OpenVZ in 2005 and LXC in 2008—which bypassed the hypervisor layer entirely by sharing the host operating system (OS) kernel, thereby prioritizing operational agility and extreme deployment density over strict cryptographic isolation. Most recently, the emergence of microVMs has bridged the dichotomy between traditional, heavyweight virtual machines and lightweight containers, offering the stringent hardware-enforced isolation of full virtualization alongside the sub-second boot times typically associated with containerized workloads.
@@ -20,16 +30,45 @@ Source:
 - <https://en.wikipedia.org/wiki/Hardware-assisted_virtualization>
 - <https://www.slideshare.net/slideshow/virtualization-1-virtual-machine-hypervisor-virtual-machine-monitor/285954190>
 
-### 2.1. x86 virtualization
+### 2.1. The Virtual machine monitor (Hypervisor)
 
-To appropriately contextualize the architecture of the Linux virtualization stack, it is imperative to deeply understand the foundational mechanisms that dictate how OSs interact with physical hardware. Traditionally, the x86 processor architecture operates on a hierarchical privilege ring system, ranging from Ring 0 to Ring 3.
+The **Virtual machine monitor (VMM)**, or **Hypervisor** (_we will use two terms interchangeably_) is a specialized software layer that sits between the physical hardware and one or more guest OS.
+
+- Its primary job is to create, run, and manage virtual machines.
+- It acts as a "traffic cop", abstracting the underlying hardware and presenting a virtualized hardware platform to each VM.
+- This **decouples** the software (guest OS + applications) from the physical hardware.
+
+**The three properties of an Effective VMM**
+
+For a VMM to be considered effective, it must satisfy three essential properties as originally defined by [Popek and Goldberd (1974)](https://en.wikipedia.org/wiki/Popek_and_Goldberg_virtualization_requirements):
+
+- **Fidelity**: A program running under the VMM should execute identically to how it would on native hardware, barring minor timing differences. The guest OS should be unaware it is virtualized.
+- **Performance**: The VMM should introduce minimal overhead. A statistically dominant subset of the guest's instructions must be executed directly on the host processor at native speed.
+- **Safety (Isolation)**: The VMM must retain complete control of all system resources. Guest VMs are strictly isolated from one another; a crash or security breach in one VM cannot affect the hypervisor or other VMs.
+
+**Type 1 and Type 2 Hypervisor**
+
+- **Type 1 (Bare-metal hypervisor)**:
+  - Architecture: install directly onto the physical hardware without a conventional host operating system layer mediating their access (examples include VMware ESXi and the original Xen architecture). They independently manage system resources and schedule guest virtual machines
+  - Performance: generally offers higher performance, lower overhead, and better security as it does not compete for resources with a general-purpose host OS.
+  - Primary use case: The standard for enterprise data centers and cloud computing infrastructure (e.g., AWS, Azure).
+  - Examples: VMware ESXi, Microsoft Hyper-V, Xen.
+- **Type 2 (Hosted hypervisor)**:
+  - Architecture: runs as a regular software application on top of a conventional host OS. It relies on the host OS to manage hardware interactions.
+  - Performance: incurs more overhead because hardware access is mediated by the host OS kernel, creating an extra layer of translation.
+  - Primary use case: ideal for desktop environments, such as developers running multiple OSes for testing or individuals needing cross-platform application access.
+  - Examples: Oracle VirtualBox, VMware Workstation/Fusion.
+
+![](https://www.researchgate.net/publication/310620289/figure/fig1/AS:431165384466439@1479809246583/Type-1-and-Type-2-Hypervisor.png)
+
+### 2.2. x86 virtualization
 
 - **Ring 0 (Kernel mode)** represents the highest privilege level, strictly reserved for the OS kernel, allowing it to configure the memory management unit (MMU), govern physical memory allocation, and directly manipulate input/output (I/O) peripherals.
 - Conversely, user-space applications execute in **Ring 3 (User mode)**, confined to their own virtual address spaces and required to invoke system calls to request privileged services from the kernel.
 
 ![](https://media.geeksforgeeks.org/wp-content/uploads/Untitled-drawing-6-2.png)
 
-### 2.2. CPU virtualization: The core challenge
+### 2.3. CPU virtualization: The core challenge
 
 The fundamental problem is with the CPU. Contemporary processors are constructed with the aim of being dominated by a special OS. Some of the most important instructions, the ones that directly access the hardware, can only be run in a special mode of the OS - Ring 0.
 
@@ -42,7 +81,7 @@ So, **what happens when you try to run a guest OS inside a VM?**
 
 The first solution is "Trap-and-Emulate" model, but let's deep dive in the hardware mechanism.
 
-#### 2.2.1. The hardware mechanism behind "Trap-and-Emulate"
+#### 2.3.1. The hardware mechanism behind "Trap-and-Emulate"
 
 - Interrupts & Exceptions (CPU "forces" entry):
   - Asynchronous interrupts: timer, NIC, disk, etc.
@@ -72,11 +111,11 @@ flowchart TD
 
 A user program executes a trap instruction, causing the CPU to switch to kernel mode and jump to the OS system call handler. After servicing the request, control returns to user mode.
 
-#### 2.2.2. The classic "Trap-and-Emulate" model
+#### 2.3.2. The classic "Trap-and-Emulate" model
 
 The classic solution is to **deprivilege** the guest OS. The hypervisor uses the CPU's protection mechanism to its advantage.
 
-1. The hypervisor runs in true Ring 0, with full hardaware control.
+1. The hypervisor runs in true Ring 0, with full hardware control.
 2. It forces the guest OS kernel to run in a less privileged ring.
 3. When the guest OS attempts a **privileged instruction**, it is no longer in Ring 0, so the CPU hardware triggers a **trap (an exception)** to the hypervisor.
 4. The hypervisor catches the trap, inspects the failed instruction, **emulates** the operation on behalf of the guest against its virtual state, and then returns control to the guest.
@@ -91,7 +130,7 @@ Legacy x86 architecture violates this requirement. It had a class of instruction
 - These instructions behave differently depending on the CPU privilege level.
 - Crucially, when executed in a deprivileged mode (e.g., Ring 3), they would **fail silently** instead of causing a trap. The hypervisor would never be notified.
 
-### 2.3. Software-based virtualization: Full virtualization and Paravirtualization
+### 2.4. Software-based virtualization: Full virtualization and Paravirtualization
 
 As we already understand the challenge, let see how the engineer deal with it using software-based strategies.
 
@@ -131,7 +170,7 @@ This architectural limitation gave rise to two primary software-based virtualiza
 
 While both approaches worked, they were complex, inefficient, and difficult to scale. The industry needed a cleaner solution.
 
-### 2.3. Hardware-assisted virtualization
+### 2.5. Hardware-assisted virtualization
 
 The technological landscape was permanently altered by the introduction of hardware-assisted virtualization, manifested specifically in:
 
@@ -175,17 +214,8 @@ flowchart TD
 Pros: The best of both worlds.
 
 - Full fidelity & compatibility.
-- High perofrmance.
+- High performance.
 - The industry standard.
-
-### 2.4. Type 1 & Type 2
-
-Historically, the industry categorized hypervisors into two rigid classifications: Type 1 and Type 2.
-
-- Type 1 hypervisors, often referred to as "bare-metal" hypervisors, install directly onto the physical hardware without a conventional host operating system layer mediating their access (examples include VMware ESXi and the original Xen architecture). They independently manage system resources and schedule guest virtual machines
-- Type 2 hypervisors, or "hosted" hypervisors, run as standard applications atop a conventional host operating system such as Windows or macOS (examples include Oracle VirtualBox or VMware Workstation), relying entirely on the host OS kernel for memory allocation and hardware I/O management.
-
-![](https://www.researchgate.net/publication/310620289/figure/fig1/AS:431165384466439@1479809246583/Type-1-and-Type-2-Hypervisor.png)
 
 ---
 
