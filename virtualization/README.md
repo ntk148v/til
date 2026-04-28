@@ -76,6 +76,7 @@ The scope of this research report is to provide an exhaustive, structural analys
 
 Source:
 
+- <https://en.wikipedia.org/wiki/Hypervisor>
 - <https://en.wikipedia.org/wiki/X86_virtualization>
 - <https://www.geeksforgeeks.org/operating-systems/virtualization-vmware-full-virtualization/>
 - <https://www.geeksforgeeks.org/operating-systems/difference-between-full-virtualization-and-paravirtualization>
@@ -84,13 +85,18 @@ Source:
 
 ### 2.1. The Virtual machine monitor (Hypervisor)
 
-The **Virtual machine monitor (VMM)**, or **Hypervisor** (_we will use two terms interchangeably_) is a specialized software layer that sits between the physical hardware and one or more guest OS.
+The **Virtual machine monitor (VMM)**, or **Hypervisor** is a specialized software layer that sits between the physical hardware and one or more guest OS.
 
 - Its primary job is to create, run, and manage virtual machines.
 - It acts as a "traffic cop", abstracting the underlying hardware and presenting a virtualized hardware platform to each VM.
 - This **decouples** the software (guest OS + applications) from the physical hardware.
 
-#### 2.1.1. The three properties of an Effective VMM\*\*
+> [!IMPORTANT]
+> Some literature, especially in microkernel contexts, makes a distinction between _hypervisor_ and _virtual machine monitor (VMM)_. There, both components form the overall virtualization stack of a certain system. _Hypervisor_ refers to kernel-space functionality and VMM to user-space functionality.
+> Applying this terminology to Linux, KVM is a hypervisor and QEMU or Cloud Hypervisor are VMMs utilizing KVM as hypervisor.
+> In the context of this guide, the term VMM (hypervisor) refers specifically to the kernel-space component. User-space VMMs will be introduced later.
+
+#### 2.1.1. The three properties of an Effective VMM
 
 For a VMM to be considered effective, it must satisfy three essential properties as originally defined by [Popek and Goldberd (1974)](https://en.wikipedia.org/wiki/Popek_and_Goldberg_virtualization_requirements):
 
@@ -293,19 +299,37 @@ The Linux virtualization stack is best understood not as a single monolithic app
 Source:
 
 - <https://bitgrounds.tech/posts/kvm-qemu-libvirt-virtualization/>
+- <https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine>
+- <https://docs.kernel.org/virt/kvm/>
 
-Kernel-based Virtual Machine (KVM) is a Linux kernel module, which has been part of the mainline kernel since version 2.6.20 which was released on Feb 5th, 2007. Before this point, the [prevailing open-source virtualization platform was Xen](https://en.wikipedia.org/wiki/Timeline_of_virtualization_technologies). The Xen architecture required a highly specialized, paravirtualized guest kernel to achieve acceptable performance, and its design philosophy necessitated a separate, highly privileged administrative OS known as the "Dom0" management domain to control hardware and orchestrate unprivileged guest domains. This architecture was inherently complex and required maintaining substantial out-of-tree kernel patches.
+Kernel-based Virtual Machine (KVM) is a Linux kernel module, which has been part of the mainline kernel since version 2.6.20 which was released on Feb 5th, 2007.
 
-### Focus:
+```sh
+# Check what's loaded right now
+lsmod | grep kvm
+kvm_intel             458752  0
+kvm                  1363968  1 kvm_intel
+```
 
-- KVM
-- (Optional mention: Xen for comparison)
+Before this point, the [prevailing open-source virtualization platform was Xen](https://en.wikipedia.org/wiki/Timeline_of_virtualization_technologies). The Xen architecture required a highly specialized, paravirtualized guest kernel to achieve acceptable performance, and its design philosophy necessitated a separate, highly privileged administrative OS known as the "Dom0" management domain to control hardware and orchestrate unprivileged guest domains. This architecture was inherently complex and required maintaining substantial out-of-tree kernel patches.
 
-### Key Points:
+KVM provides device abstraction but no processor emulation. It exposes the `/dev/kvm` interface, which a user mode host can then use to:
 
-- Turns Linux into a hypervisor
-- Handles CPU + memory virtualization
-- Uses hardware extensions
+- Set up the guest VM's address space. The host must also supply a firmware image (usually a custom BIOS when emulating PCs) that the guest can use to bootstrap into its main OS.
+- Feed the guest simulated I/O.
+- Map the guest's video display back onto the system host.
+
+```sh
+ls -l /dev/kvm
+crw-rw---- 1 root kvm 10, 232 Sep 28 10:30 /dev/kvm
+```
+
+![](https://en.wikipedia.org/wiki/File:Kernel-based_Virtual_Machine.svg)
+
+KVM itself emulates very little hardware, instead deferring to a higher level client application such - what we call **User-Space VMM / Runtime Layer**. KVM provides the following emulated devices:
+
+- Virtual CPU and memory.
+- VirtIO.
 
 ---
 
