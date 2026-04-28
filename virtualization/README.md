@@ -304,6 +304,10 @@ Source:
 
 Kernel-based Virtual Machine (KVM) is a Linux kernel module, which has been part of the mainline kernel since version 2.6.20 which was released on Feb 5th, 2007.
 
+Before this point, the [prevailing open-source virtualization platform was Xen](https://en.wikipedia.org/wiki/Timeline_of_virtualization_technologies). The Xen architecture required a highly specialized, paravirtualized guest kernel to achieve acceptable performance, and its design philosophy necessitated a separate, highly privileged administrative OS known as the "Dom0" management domain to control hardware and orchestrate unprivileged guest domains. This architecture was inherently complex and required maintaining substantial out-of-tree kernel patches.
+
+Instead of attempting to engineer a massive, monolithic hypervisor from scratch, the architects of KVM recognized a profound reality: the standard Linux kernel already performed the exact functions required of a modern hypervisor. The Linux kernel was already highly optimized to schedule competing processes across multiple CPU cores, manage complex physical memory allocations, and handle a vast array of hardware device drivers. Therefore, KVM was simply developed as a loadable kernel module (`kvm.ko`) that extends Linux's inherent native capabilities
+
 ```sh
 # Check what's loaded right now
 lsmod | grep kvm
@@ -311,22 +315,24 @@ kvm_intel             458752  0
 kvm                  1363968  1 kvm_intel
 ```
 
-Before this point, the [prevailing open-source virtualization platform was Xen](https://en.wikipedia.org/wiki/Timeline_of_virtualization_technologies). The Xen architecture required a highly specialized, paravirtualized guest kernel to achieve acceptable performance, and its design philosophy necessitated a separate, highly privileged administrative OS known as the "Dom0" management domain to control hardware and orchestrate unprivileged guest domains. This architecture was inherently complex and required maintaining substantial out-of-tree kernel patches.
+By loading the KVM module, the host Linux kernel effectively transforms into a Type 1 hypervisor. Under the KVM paradigm, every VM is treated by the Linux kernel's Completely Fair Scheduler (CFS) as a standard, schedulable process, and every virtual CPU (vCPU) within that VM is treated as a standard, schedulable execution thread. This minimalist design allows KVM to effortlessly inherit decades of extensive Linux kernel optimizations regarding CPU scheduling, Non-Uniform Memory Access (NUMA) awareness, transparent huge pages, and power management.
 
-KVM provides device abstraction but no processor emulation. It exposes the `/dev/kvm` interface, which a user mode host can then use to:
+![](https://en.wikipedia.org/wiki/File:Kernel-based_Virtual_Machine.svg)
 
-- Set up the guest VM's address space. The host must also supply a firmware image (usually a custom BIOS when emulating PCs) that the guest can use to bootstrap into its main OS.
-- Feed the guest simulated I/O.
-- Map the guest's video display back onto the system host.
+The responsibilities of the KVM module are strictly confined to the absolute lowest-level hardware interactions:
+
+1. Initializing and managing the hardware virtualization extensions (Intel VT-x or AMD-V).
+2. Handling the complex context switches between host execution mode and guest execution mode, commonly referred to as VM Entries and VM Exits.
+3. Mapping guest physical memory directly to host physical memory utilizing hardware-assisted paging mechanisms
+
+To facilitate communication with higher-level software, KVM exposes a character device file at `/dev/kvm`.
 
 ```sh
 ls -l /dev/kvm
 crw-rw---- 1 root kvm 10, 232 Sep 28 10:30 /dev/kvm
 ```
 
-![](https://en.wikipedia.org/wiki/File:Kernel-based_Virtual_Machine.svg)
-
-KVM itself emulates very little hardware, instead deferring to a higher level client application such - what we call **User-Space VMM / Runtime Layer**. KVM provides the following emulated devices:
+User-space applications interact with KVM by sending standard `ioctl()`system calls to this specific device file. KVM itself emulates very little hardware, instead deferring to a higher level client application such - what we call **User-Space VMM / Runtime Layer**. KVM provides the following emulated devices:
 
 - Virtual CPU and memory.
 - VirtIO.
@@ -334,6 +340,8 @@ KVM itself emulates very little hardware, instead deferring to a higher level cl
 ---
 
 ## 5. User-Space VMM / Runtime Layer
+
+While KVM handles the raw, high-speed execution of CPU instructions and memory accesses, a functional virtual machine requires far more than just a processor and RAM. It requires a virtualized motherboard, storage controllers, network adapters, serial consoles, and input devices. The critical task of provisioning this emulated hardware, alongside the management of the virtual machine process execution loop itself, occurs entirely within the **User-space Virtual Machine Monitor (VMM)**.
 
 ### Examples:
 
