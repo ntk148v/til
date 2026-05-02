@@ -10,132 +10,170 @@ On top of that tmux keeps these windows and panes in a session. You can exit a s
 
 ## 2. Quick start
 
-All commands in tmux are triggered by a **prefix key** (by default it is `C-b`) followed by a **command key**.
+Source: <https://gist.github.com/MohamedAlaa/2961058>
 
-Check out [cheatsheet](https://tmuxcheatsheet.com).
+### 2.1. tmux shortcuts & cheatsheet
 
-```text
-C-b %       Split panes
-C-b <arrow> Move between panes
-C-d         Close panes
-C-b c       Create windows
-C-b n       Switch the next window
-C-b p       Switch the previous window
-C-b d       Detach session
+start new:
+
+    tmux
+
+start new with session name:
+
+    tmux new -s myname
+
+attach:
+
+    tmux a  #  (or at, or attach)
+
+attach to named:
+
+    tmux a -t myname
+
+list sessions:
+
+    tmux ls
+
+<a name="killSessions"></a>kill session:
+
+    tmux kill-session -t myname
+
+<a name="killAllSessions"></a>Kill all the tmux sessions:
+
+    tmux ls | grep : | cut -d. -f1 | awk '{print substr($1, 0, length($1)-1)}' | xargs kill
+
+In tmux, hit the prefix `ctrl+b` (my modified prefix is ctrl+a) and then:
+
+#### 2.2. List all shortcuts
+
+to see all the shortcuts keys in tmux simply use the `bind-key ?` in my case that would be `CTRL-B ?`
+
+#### 2.3. Sessions
+
+    :new<CR>  new session
+    s  list sessions
+    $  name session
+
+#### 2.4. <a name="WindowsTabs"></a>Windows (tabs)
+
+    c  create window
+    w  list windows
+    n  next window
+    p  previous window
+    f  find window
+    ,  name window
+    &  kill window
+
+#### 2.5. <a name="PanesSplits"></a>Panes (splits)
+
+    %  vertical split
+    "  horizontal split
+
+    o  swap panes
+    q  show pane numbers
+    x  kill pane
+    +  break pane into window (e.g. to select text by mouse to copy)
+    -  restore pane from window
+    ⍽  space - toggle between layouts
+    <prefix> q (Show pane numbers, when the numbers show up type the key to goto that pane)
+    <prefix> { (Move the current pane left)
+    <prefix> } (Move the current pane right)
+    <prefix> z toggle pane zoom
+
+#### 2.6. <a name="syncPanes"></a>Sync Panes
+
+You can do this by switching to the appropriate window, typing your Tmux prefix (commonly Ctrl-B or Ctrl-A) and then a colon to bring up a Tmux command line, and typing:
+
+```
+:setw synchronize-panes
 ```
 
-## 3. Customize
+You can optionally add on or off to specify which state you want; otherwise the option is simply toggled. This option is specific to one window, so it won’t change the way your other sessions or windows operate. When you’re done, toggle it off again by repeating the command. [tip source](http://blog.sanctum.geek.nz/sync-tmux-panes/)
 
-Tmux uses a file called `~/.tmux.conf`.
+#### 2.7. Resizing Panes
 
-```tmux
-# change the prefix from 'C-b' to 'C-a'
-# (remap capslock to CTRL for easy access)
-unbind C-b
-set -g prefix C-a
-bind C-a send-prefix
+You can also resize panes if you don’t like the layout defaults. I personally rarely need to do this, though it’s handy to know how. Here is the basic syntax to resize panes:
 
-# start with window 1 (instead of 0)
-set -g base-index 1
+    PREFIX : resize-pane -D (Resizes the current pane down)
+    PREFIX : resize-pane -U (Resizes the current pane upward)
+    PREFIX : resize-pane -L (Resizes the current pane left)
+    PREFIX : resize-pane -R (Resizes the current pane right)
+    PREFIX : resize-pane -D 20 (Resizes the current pane down by 20 cells)
+    PREFIX : resize-pane -U 20 (Resizes the current pane upward by 20 cells)
+    PREFIX : resize-pane -L 20 (Resizes the current pane left by 20 cells)
+    PREFIX : resize-pane -R 20 (Resizes the current pane right by 20 cells)
+    PREFIX : resize-pane -t 2 -L 20 (Resizes the pane with the id of 2 left by 20 cells)
 
-# start with pane 1
-set -g pane-base-index 1
+#### 2.8 Copy mode:
 
-# split panes using h and v, make sure they open in the same path
-bind h split-window -h -c "#{pane_current_path}"
-bind v split-window -v -c "#{pane_current_path}"
+Pressing PREFIX [ places us in Copy mode. We can then use our movement keys to move our cursor around the screen. By default, the arrow keys work. we set our configuration file to use Vim keys for moving between windows and resizing panes so we wouldn’t have to take our hands off the home row. tmux has a vi mode for working with the buffer as well. To enable it, add this line to .tmux.conf:
 
-unbind '"'
-unbind %
+    setw -g mode-keys vi
 
-# open new windows in the current path
-bind c new-window -c "#{pane_current_path}"
+With this option set, we can use h, j, k, and l to move around our buffer.
 
-# reload config file
-bind r source-file ~/.tmux.conf
+To get out of Copy mode, we just press the ENTER key. Moving around one character at a time isn’t very efficient. Since we enabled vi mode, we can also use some other visible shortcuts to move around the buffer.
 
-unbind p
-bind p previous-window
+For example, we can use "w" to jump to the next word and "b" to jump back one word. And we can use "f", followed by any character, to jump to that character on the same line, and "F" to jump backwards on the line.
 
-# shorten command delay
-set -sg escape-time 1
+       Function                vi             emacs
+       Back to indentation     ^              M-m
+       Clear selection         Escape         C-g
+       Copy selection          Enter          M-w
+       Cursor down             j              Down
+       Cursor left             h              Left
+       Cursor right            l              Right
+       Cursor to bottom line   L
+       Cursor to middle line   M              M-r
+       Cursor to top line      H              M-R
+       Cursor up               k              Up
+       Delete entire line      d              C-u
+       Delete to end of line   D              C-k
+       End of line             $              C-e
+       Goto line               :              g
+       Half page down          C-d            M-Down
+       Half page up            C-u            M-Up
+       Next page               C-f            Page down
+       Next word               w              M-f
+       Paste buffer            p              C-y
+       Previous page           C-b            Page up
+       Previous word           b              M-b
+       Quit mode               q              Escape
+       Scroll down             C-Down or J    C-Down
+       Scroll up               C-Up or K      C-Up
+       Search again            n              n
+       Search backward         ?              C-r
+       Search forward          /              C-s
+       Start of line           0              C-a
+       Start selection         Space          C-Space
+       Transpose chars                        C-t
 
-# don't rename windows automatically
-set -g allow-rename off
+#### 2.8. Misc
 
-# mouse control (clickable windows, panes, resizable panes)
-set -g mouse on
+    d  detach
+    t  big clock
+    ?  list shortcuts
+    :  prompt
 
-# Use Alt-arrow keys without prefix key to switch panes
-bind -n M-Left select-pane -L
-bind -n M-Right select-pane -R
-bind -n M-Up select-pane -U
-bind -n M-Down select-pane -D
+#### 2.9. Configurations Options:
 
-# enable vi mode keys
-set-window-option -g mode-keys vi
+    # Mouse support - set to on if you want to use the mouse
+    * setw -g mode-mouse off
+    * set -g mouse-select-pane off
+    * set -g mouse-resize-pane off
+    * set -g mouse-select-window off
 
-# set default terminal mode to 256 colors
-set -g default-terminal "xterm-256color"
-set -ga terminal-overrides ",xterm-256color:Tc"
+    # Set the default terminal mode to 256color mode
+    set -g default-terminal "screen-256color"
 
-# allow focus events to get through to applications running in tmux
-set -g focus-events on
-set -sg escape-time 0
-set -g status-interval 0
-set -g status-position top
-set -g mode-keys vi
+    # enable activity alerts
+    setw -g monitor-activity on
+    set -g visual-activity on
 
-# Design Tweaks
-# -------------
+    # Center the window list
+    set -g status-justify centre
 
-# don't do anything when a 'bell' rings
-set -g visual-activity off
-set -g visual-bell off
-set -g visual-silence off
-setw -g monitor-activity off
-set -g bell-action none
-
-# clock mode
-setw -g clock-mode-colour yellow
-
-# copy mode
-setw -g mode-style 'fg=black bg=red bold'
-
-# panes
-set -g pane-border-style 'fg=red'
-set -g pane-active-border-style 'fg=yellow'
-
-# statusbar
-set -g status-position bottom
-set -g status-justify left
-set -g status-style 'fg=red'
-
-set -g status-left ''
-set -g status-left-length 10
-
-set -g status-right-style 'fg=black bg=yellow'
-set -g status-right '%Y-%m-%d %H:%M '
-set -g status-right-length 50
-
-setw -g window-status-current-style 'fg=black bg=red'
-setw -g window-status-current-format ' #I #W #F '
-
-setw -g window-status-style 'fg=red bg=black'
-setw -g window-status-format ' #I #[fg=white]#W #[fg=yellow]#F '
-setw -g window-status-bell-style 'fg=yellow bg=red bold'
-
-# messages
-set -g message-style 'fg=yellow bg=red bold'
-
-# plugins
-set -g @plugin 'rose-pine/tmux'
-set -g @rose_pine_bar_bg_disable 'on'
-
-set -g @plugin 'tmux-plugins/tpm'
-set -g @plugin 'tmux-plugins/tmux-sensible'
-set -g @plugin 'tmux-plugins/tmux-resurrect'
-set -g @plugin 'christoomey/vim-tmux-navigator'
-
-run '~/.tmux/plugins/tpm/tpm'
-```
+    # Maximize and restore a pane
+    unbind Up bind Up new-window -d -n tmp \; swap-pane -s tmp.1 \; select-window -t tmp
+    unbind Down
+    bind Down last-window \; swap-pane -s tmp.1 \; kill-window -t tmp
