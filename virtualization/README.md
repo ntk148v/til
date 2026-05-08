@@ -317,13 +317,47 @@ kvm                  1363968  1 kvm_intel
 
 By loading the KVM module, the host Linux kernel effectively transforms into a Type 1 hypervisor. Under the KVM paradigm, every VM is treated by the Linux kernel's Completely Fair Scheduler (CFS) as a standard, schedulable process, and every virtual CPU (vCPU) within that VM is treated as a standard, schedulable execution thread. This minimalist design allows KVM to effortlessly inherit decades of extensive Linux kernel optimizations regarding CPU scheduling, Non-Uniform Memory Access (NUMA) awareness, transparent huge pages, and power management.
 
-![](https://en.wikipedia.org/wiki/File:Kernel-based_Virtual_Machine.svg)
+As mentioned before, a normal Linux process has two modes of execution: kernel and user. KVM adds a third mode: guest mode (which has its own kernel and user modes, but these do not interest the hypervisor at all).'
+
+![](https://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/102/10251/10251f1.jpg)
+
+The division of labor among the different modes is:
+
+- Guest mode: execute non-I/O guest code.
+- Kernel mode: switch into guest mode, and handles any exists from guest mode due to I/O or special instructions.
+- User mode: perform I/O on behalf of the guest.
+
+```mermaid
+sequenceDiagram
+    participant G as Guest System (Guest Mode)
+    participant K as KVM (Kernel Mode)
+    participant E as I/O Emulator
+
+    loop Normal Execution
+        G->>G: Execute non-sensitive instructions
+    end
+
+    G->>K: Execute sensitive instruction (e.g. I/O call)
+    Note over G,K: VM Exit (switch to kernel mode)
+
+    alt CPU / Memory Operation
+        K->>K: Handle internally (vCPU, memory mgmt)
+        K-->>G: Return control
+    else I/O Operation
+        K->>E: Delegate I/O emulation
+        E->>E: Emulate device (disk, serial, PCIe, etc.)
+        E-->>K: Return result
+        K-->>G: Return control
+    end
+```
 
 The responsibilities of the KVM module are strictly confined to the absolute lowest-level hardware interactions:
 
 1. Initializing and managing the hardware virtualization extensions (Intel VT-x or AMD-V).
 2. Handling the complex context switches between host execution mode and guest execution mode, commonly referred to as VM Entries and VM Exits.
 3. Mapping guest physical memory directly to host physical memory utilizing hardware-assisted paging mechanisms
+
+![](https://en.wikipedia.org/wiki/File:Kernel-based_Virtual_Machine.svg)
 
 To facilitate communication with higher-level software, KVM exposes a character device file at `/dev/kvm`.
 
@@ -332,16 +366,26 @@ ls -l /dev/kvm
 crw-rw---- 1 root kvm 10, 232 Sep 28 10:30 /dev/kvm
 ```
 
-User-space applications interact with KVM by sending standard `ioctl()`system calls to this specific device file. KVM itself emulates very little hardware, instead deferring to a higher level client application such - what we call **User-Space VMM / Runtime Layer**. KVM provides the following emulated devices:
-
-- Virtual CPU and memory.
-- VirtIO.
+User-space applications interact with KVM by sending standard `ioctl()`system calls to this specific device file. KVM itself emulates very little hardware, instead deferring to a higher level client application such - what we call **User-Space VMM / Runtime Layer**.
 
 ---
 
 ## 5. User-Space VMM / Runtime Layer
 
 While KVM handles the raw, high-speed execution of CPU instructions and memory accesses, a functional virtual machine requires far more than just a processor and RAM. It requires a virtualized motherboard, storage controllers, network adapters, serial consoles, and input devices. The critical task of provisioning this emulated hardware, alongside the management of the virtual machine process execution loop itself, occurs entirely within the **User-space Virtual Machine Monitor (VMM)**.
+
+### 5.1. QEMU
+
+The homepage of the official website of the QEMU project describes it as:
+
+> A generic and open source machine emulator and virtualizer
+
+Let's talk about the difference between _emulation_ and _virtualization_. The two terms are sometimes used interchangeably, as they achieve a similar result. Namely, the execution of a guest system on a host system. However, the way in which end-result is achieved is different between the two processes:
+
+- **Emulation** relies on the _interpretation_ of the instruction of the guest system. These interpreted instructions are then _translated_ into instructions compatible with the host systems, before being executed. The end effect being the guest system's behavior is _emulated_. Emulation achieves this without relying on any specific pre-requisite of the host hardware.
+- **Virtualization** is built upon the creation of a complete _virtual environment_ on top of the physical hardware of the host system. Instructions of a guest system are then passed down to this virtual environment and executed without interpretation. Virtualization requires support from the underlying hardware.
+
+![cloudwithease-virtualization-emulation](https://cloudwithease.com/wp-content/uploads/2023/01/Difference-Between-Virtualization-Emulation-dp.jpg)
 
 ### Examples:
 
