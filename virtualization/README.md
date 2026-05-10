@@ -383,9 +383,113 @@ The homepage of the official website of the QEMU project describes it as:
 Let's talk about the difference between _emulation_ and _virtualization_. The two terms are sometimes used interchangeably, as they achieve a similar result. Namely, the execution of a guest system on a host system. However, the way in which end-result is achieved is different between the two processes:
 
 - **Emulation** relies on the _interpretation_ of the instruction of the guest system. These interpreted instructions are then _translated_ into instructions compatible with the host systems, before being executed. The end effect being the guest system's behavior is _emulated_. Emulation achieves this without relying on any specific pre-requisite of the host hardware.
+
+```text
+        ┌──────────────────────────────┐
+        │          EMULATION           │
+        └──────────────────────────────┘
+                         │
+                         ▼
+        Guest Instructions (Foreign ISA)
+                         │
+                         ▼
+            [ Interpreter / Translator ]
+                         │
+                         ▼
+        Host-Compatible Instructions
+                         │
+                         ▼
+                    Host CPU
+
+Key idea: Translation layer in between
+→ Slower, but hardware-agnostic
+```
+
 - **Virtualization** is built upon the creation of a complete _virtual environment_ on top of the physical hardware of the host system. Instructions of a guest system are then passed down to this virtual environment and executed without interpretation. Virtualization requires support from the underlying hardware.
 
-![cloudwithease-virtualization-emulation](https://cloudwithease.com/wp-content/uploads/2023/01/Difference-Between-Virtualization-Emulation-dp.jpg)
+```text
+        ┌──────────────────────────────┐
+        │        VIRTUALIZATION        │
+        └──────────────────────────────┘
+                         │
+                         ▼
+        Guest Instructions (Same ISA)
+                         │
+                         ▼
+               [ Hypervisor Layer ]
+                         │
+                         ▼
+                    Host CPU
+
+Key idea: Direct execution via hardware support
+→ Faster, but requires compatible CPU features
+```
+
+Let's go back to QEMU, QEMU can be used in several different ways:
+
+- **System emulation**: it provides a virtual model of an entire machine (CPU, memory and emulated devices) to run a guest OS. In this mode the CPU may be fully emulated, or it may work with a hypervisor such as KVM, Xen or Hypervisor.Framework to allow the guest to run directly on the host CPU.
+- **User mode emulation**: it can lauch processes compiled for one CPU on another CPU. In this mode the CPU is alway emulated.
+
+#### 5.1.1. System emulation
+
+QEMU’s system emulation provides a virtual model of a machine (CPU, memory and emulated devices) to run a guest OS. It supports a number of hypervisors (known as accelerators) as well as a _JIT known as the Tiny Code Generator (TCG)_ capable of emulating many CPUs.
+
+**Supported accelerators**
+
+| Accelerators                          | Host OS                            | Host Architecture                                |
+| ------------------------------------- | ---------------------------------- | ------------------------------------------------ |
+| KVM                                   | Linux                              | Arm, MIPS, PPC, RISC-V, s390x, x86               |
+| Xen                                   | Linux (as dom0)                    | Arm, x86                                         |
+| MSHV                                  | Linux (as dom0)                    | x86                                              |
+| Hypervisor Framework (hvf)            | MacOS                              | x86, Arm                                         |
+| Windows Hypervisor Platform (whpx)    | Windows                            | Arm, x86                                         |
+| NetBSD Virtual Machine Monitor (nvmm) | NetBSD                             | x86                                              |
+| Tiny Code Generator (tcg)             | Linux, other POSIX, Windows, MacOS | Arm, x86, Loongarch64, MIPS, PPC, s390x, Sparc64 |
+
+Let's start with the default accelerator - Tiny Code Generator
+
+```sh
+qemu-system-x86_64 \
+  -machine accel=tcg \
+  -cpu max \
+  -m 512 \
+  -cdrom alpine-virt-3.23.4-x86_64.iso \
+  -boot d \
+  -nographic
+
+# Wait a few minutes ...
+Welcome to Alpine!
+
+The Alpine Wiki contains a large amount of how-to guides and general
+information about administrating Alpine systems.
+See <https://wiki.alpinelinux.org/>.
+
+You can setup the system with the command: setup-alpine
+
+You may change this message by editing /etc/motd.
+# !!!! The different kernel version !!!!
+localhost:~# uname -r
+6.18.22-0-virt
+localhost:~# cat /etc/os-release
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.23.4
+PRETTY_NAME="Alpine Linux v3.23"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://gitlab.alpinelinux.org/alpine/aports/-/issues"
+# !!!! CPU Model is QEMU TCG !!!!
+localhost:~# strings /proc/cpuinfo | grep -i qemu
+model name      : QEMU TCG CPU version 2.5+
+```
+
+```sh
+qemu-system-x86_64 \
+  -machine accel=tcg \
+  -cpu qemu64 \
+  -m 256 \
+  -cdrom TinyCorePure64-17.0.iso \
+  -boot d
+```
 
 ### Examples:
 
