@@ -428,7 +428,11 @@ Key idea: Direct execution via hardware support
 Let's go back to QEMU, QEMU can be used in several different ways:
 
 - **System emulation**: it provides a virtual model of an entire machine (CPU, memory and emulated devices) to run a guest OS. In this mode the CPU may be fully emulated, or it may work with a hypervisor such as KVM, Xen or Hypervisor.Framework to allow the guest to run directly on the host CPU.
+  - If use KVM as accelerator, QEMU turns to **virtualizer**.
+  - Allows emulation of a full system, including processor and assorted peripherals.
+  - _QEMU as a "System VM"_.
 - **User mode emulation**: it can lauch processes compiled for one CPU on another CPU. In this mode the CPU is alway emulated.
+  - _QEMU as a "Process VM"_.
 
 #### 5.1.1. System emulation
 
