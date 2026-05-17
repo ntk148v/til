@@ -378,11 +378,15 @@ While KVM handles the raw, high-speed execution of CPU instructions and memory a
 
 The homepage of the official website of the QEMU project describes it as:
 
-> A generic and open source machine emulator and virtualizer
+> A generic and open source machine emulator and virtualizer. It translates code written for one **Instruction Set Architecture (ISA)** - such as ARM, RISC-V, or MIPS - into the native instructions of your host system's processor.
 
 Let's talk about the difference between _emulation_ and _virtualization_. The two terms are sometimes used interchangeably, as they achieve a similar result. Namely, the execution of a guest system on a host system. However, the way in which end-result is achieved is different between the two processes:
 
-- **Emulation** relies on the _interpretation_ of the instruction of the guest system. These interpreted instructions are then _translated_ into instructions compatible with the host systems, before being executed. The end effect being the guest system's behavior is _emulated_. Emulation achieves this without relying on any specific pre-requisite of the host hardware.
+- **Emulation**:
+  - Everything of Guest ISA are realized by software.
+    - Register, Memory, I/O
+  - Host ISA can be differ from Guest ISA.
+  - Guest operations are translated into operations to the emulated devices -> Slow.
 
 ```text
         ┌──────────────────────────────┐
@@ -405,7 +409,10 @@ Key idea: Translation layer in between
 → Slower, but hardware-agnostic
 ```
 
-- **Virtualization** is built upon the creation of a complete _virtual environment_ on top of the physical hardware of the host system. Instructions of a guest system are then passed down to this virtual environment and executed without interpretation. Virtualization requires support from the underlying hardware.
+- **Virtualization**:
+  - Share the underlying hardware as disjoin set for each VM instance.
+  - Host ISA is the same as Guest ISA.
+  - Guest operations can be directly dispatched to hardware -> Fast.
 
 ```text
         ┌──────────────────────────────┐
@@ -434,7 +441,107 @@ Let's go back to QEMU, QEMU can be used in several different ways:
 - **User mode emulation**: it can lauch processes compiled for one CPU on another CPU. In this mode the CPU is alway emulated.
   - _QEMU as a "Process VM"_.
 
-#### 5.1.1. System emulation
+#### 5.1.1. QEMU emulation internals
+
+Source:
+
+- <https://www.csd.uoc.gr/~hy428/vm-labs/qemu-internals-slides-apr26_2023.pdf>
+- <https://www.slideshare.net/slideshow/qemu-introduction/54765349>
+
+QEMU adopts an abstraction layer between the translation - **Tiny Code Generator (TCG)**, an intermediate representation (IR) code.
+
+![curiouslearnerblog TCG generation layer](https://curiouslearnerblog.wordpress.com/wp-content/uploads/2016/05/tcg-dr2.jpg)
+
+- After version 0.9.1, QEMU uses TCG as replacement of DynGen and GCC.
+- Rather than statically translating an entire binary upfront or interpreting it instruction-by-instruction, QEMU uses **Dynamic Binary Translation**. It translates code sequences at run-time as they are discovered.
+- The TCG separates the emulation process into a front-end and a back-end, allowing QEMU to be highly modular and CPU-independent.
+  - To achieve the execution speeds necessary for viable system emulation, TCG does not translate code on an instruction-by-instruction basis. Instead, it processes code in basic blocks, referred to in the QEMU architecture as **Translation Blocks (TBs)**. A Translation Block consists of a sequential execution path of instructions that terminates in a branch, jump, or exception-generating instruction
+  - Front-End Translation: QEMU converts the guest (target) instructions into a series of micro-operations. These micro-operations are RISC-style, CPU-independent instructions.
+  - Back-End Code Generation: The TCG back-end takes these intermediate micro-operations, optimizes them (including mapping guest registers to host registers), and compiles them down to the native instructions of the host architecture.
+
+```mermaid
+graph TD
+    classDef guest fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef tcg fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+    classDef host fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+
+    A[Guest Binary Instruction Stream]:::guest -->|Fetch Basic Block| B(TCG Front-end):::tcg
+    B -->|Decode & Translate| C[TCG Intermediate Representation <br> Micro-operations / IR]:::tcg
+    C -->|Optimize & Register Map| D(TCG Back-end):::tcg
+    D -->|Generate| E[Host Native Instructions]:::host
+    E -->|Store| F[(Translation Block Cache)]:::host
+    F -->|Execute| G((Host CPU)):::host
+
+    %% Styling notes
+    style C stroke-dasharray: 5 5
+```
+
+Since executing code doesn't change often, why don't we stop translating the code previously translated? Yeah, QEMU heavily relies on caching. It operates similarly to a Just-In-Time (JIT) compiler: it translates a block exactly once and saves it for future use - **Translation Cache**.
+
+- Fast Retrieval: Cached blocks are indexed using their target physical address or guest virtual address for highly efficient lookups.
+- Cache Management: The translation cache has a variable size (defaulting to 32 MB). To manage memory bounds, once the cache runs out of space, the entire cache is simply purged and repopulated dynamically as the guest continues to execute.
+
+```mermaid
+flowchart TD
+    Start([Fetch Next Guest PC]) --> Hash[Hash Address for Cache Index]
+    Hash --> Lookup{Is Block in <br> Translation Cache?}
+
+    Lookup -->|Cache Hit| Exec[Execute Translated Host Code]
+
+    Lookup -->|Cache Miss| Translate[Invoke TCG Pipeline <br> Translate Guest to Host Code]
+    Translate --> CheckLimit{Is Cache Full?}
+
+    CheckLimit -->|Yes| Flush[Flush Entire Cache] --> Store
+    CheckLimit -->|No| Store[Store new Translation Block in Cache]
+    Store --> Exec
+
+    Exec --> End([Return to Emulation Loop / Next PC])
+
+    classDef action fill:#ede7f6,stroke:#512da8;
+    classDef decision fill:#fbe9e7,stroke:#d84315;
+    class Lookup decision;
+    class CheckLimit decision;
+    class Translate action;
+    class Store action;
+```
+
+Even with caching, returning control to the emulator after every single block introduces significant delays. One of the most critical performance optimizations in QEMU is **block chaining**.
+
+- The Emulation Loop Overhead: Usually, when a translated block finishes executing, it must return control to the main CPU emulation loop (e.g., cpu_exec()). This requires passing through an "epilogue" that restores the normal state, and entering the next block requires a "prologue." This constant context-switching adds severe overhead.
+  - The execution of every translation block is surrounded by the execution of special code blocks.
+    - prologue: initializes the processor for generated host code execution and jumps to the code block.
+    - epilogue: restores normal state and returns to the main loop.
+  - Returning to the main loop after each block adds significant overhead .. which adds up quickly.
+
+![](./images/dynamic-translation.png)
+
+- Chaining Blocks Together: To avoid this, QEMU dynamically patches translated blocks. When a block finishes and the next execution target is known and already translated, QEMU patches the original block to jump directly into the newly discovered block, bypassing the main loop entirely.
+- Handling Interrupts: Because chained blocks skip the main loop, QEMU handles asynchronous hardware interrupts by unlinking (unchaining) the currently executing block. This forces the control flow to fall back out to the main emulator loop to handle the interrupt.
+
+```mermaid
+graph TD
+    classDef loop fill:#eeeeee,stroke:#616161,stroke-width:2px;
+    classDef tb fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef patch fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+
+    subgraph "Scenario A: Execution Without Chaining (High Overhead)"
+        L1((Main QEMU Loop <br> cpu_exec)):::loop -->|Prologue & Context Switch| TB1[Translation Block 1]:::tb
+        TB1 -->|Epilogue & Context Switch| L1
+        L1 -->|Prologue & Context Switch| TB2[Translation Block 2]:::tb
+        TB2 -->|Epilogue & Context Switch| L1
+    end
+
+    subgraph "Scenario B: Execution With Block Chaining (High Performance)"
+        L2((Main QEMU Loop <br> cpu_exec)):::loop -->|Prologue & Context Switch| TB3[Translation Block 1]:::tb
+        TB3 -->|Patch: Direct Jump| TB4[Translation Block 2]:::patch
+        TB4 -->|Patch: Direct Jump| TB5[Translation Block 3]:::patch
+
+        TB5 -.->|Hardware Interrupt <br> or Memory Fault| Unchain[Unchain / Exit]
+        Unchain -->|Epilogue| L2
+    end
+```
+
+#### 5.1.2. System emulation
 
 QEMU’s system emulation provides a virtual model of a machine (CPU, memory and emulated devices) to run a guest OS. It supports a number of hypervisors (known as accelerators) as well as a _JIT known as the Tiny Code Generator (TCG)_ capable of emulating many CPUs.
 
