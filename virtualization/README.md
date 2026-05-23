@@ -6,7 +6,7 @@ Table of contents:
   - [1. Introduction](#1-introduction)
   - [2. Virtualization fundamentals](#2-virtualization-fundamentals)
     - [2.1. The Virtual machine monitor (Hypervisor)](#21-the-virtual-machine-monitor-hypervisor)
-      - [2.1.1. The three properties of an Effective VMM\*\*](#211-the-three-properties-of-an-effective-vmm)
+      - [2.1.1. The three properties of an Effective VMM](#211-the-three-properties-of-an-effective-vmm)
       - [2.1.2. Type 1 and Type 2 Hypervisor](#212-type-1-and-type-2-hypervisor)
     - [2.2. x86 virtualization](#22-x86-virtualization)
     - [2.3. CPU virtualization: The core challenge](#23-cpu-virtualization-the-core-challenge)
@@ -17,35 +17,32 @@ Table of contents:
       - [2.4.2. Paravirtualization](#242-paravirtualization)
     - [2.5. Hardware-assisted virtualization](#25-hardware-assisted-virtualization)
   - [3. The Linux Virtualization Architecture (Big Picture)](#3-the-linux-virtualization-architecture-big-picture)
-    - [3.1 Layered Model](#31-layered-model)
-    - [3.2 Core Components Overview](#32-core-components-overview)
-- [Core Stack (Bottom → Up)](#core-stack-bottom--up)
   - [4. Hypervisor Layer (Kernel-Level Execution)](#4-hypervisor-layer-kernel-level-execution)
-    - [Focus:](#focus)
-    - [Key Points:](#key-points)
   - [5. User-Space VMM / Runtime Layer](#5-user-space-vmm--runtime-layer)
-    - [Examples:](#examples)
-    - [Key Points:](#key-points-1)
+    - [5.1. QEMU](#51-qemu)
+      - [5.1.1. QEMU emulation internals](#511-qemu-emulation-internals)
+      - [5.1.2. System emulation - TCG](#512-system-emulation---tcg)
+      - [5.1.3. KVM accelerator](#513-kvm-accelerator)
+      - [5.1.4. User emulation](#514-user-emulation)
+    - [5.2. Firecracker](#52-firecracker)
+    - [5.3. Cloud hypervisor](#53-cloud-hypervisor)
   - [6. Host-Level Virtualization Control](#6-host-level-virtualization-control)
     - [Example:](#example)
-    - [Key Points:](#key-points-2)
-- [Control Plane (Above the Host)](#control-plane-above-the-host)
+    - [Key Points:](#key-points)
   - [7. Datacenter Virtualization Management](#7-datacenter-virtualization-management)
     - [Example:](#example-1)
-    - [Key Points:](#key-points-3)
+    - [Key Points:](#key-points-1)
   - [8. Cloud Orchestration Platforms](#8-cloud-orchestration-platforms)
     - [Example:](#example-2)
-    - [Key Points:](#key-points-4)
-- [Parallel \& Emerging Approaches](#parallel--emerging-approaches)
+    - [Key Points:](#key-points-2)
   - [9. MicroVM / Lightweight Virtualization](#9-microvm--lightweight-virtualization)
-    - [Examples:](#examples-1)
-    - [Key Points:](#key-points-5)
+    - [Examples:](#examples)
+    - [Key Points:](#key-points-3)
     - [Positioning:](#positioning)
   - [10. Containers (Contrast, Not Part of VM Stack)](#10-containers-contrast-not-part-of-vm-stack)
-    - [Examples:](#examples-2)
-    - [Key Points:](#key-points-6)
+    - [Examples:](#examples-1)
+    - [Key Points:](#key-points-4)
     - [Important Contrast:](#important-contrast)
-- [Integration \& Flow](#integration--flow)
   - [11. How Everything Works Together](#11-how-everything-works-together)
     - [Typical Execution Flow:](#typical-execution-flow)
     - [Key Insight:](#key-insight)
@@ -541,7 +538,7 @@ graph TD
     end
 ```
 
-#### 5.1.2. System emulation
+#### 5.1.2. System emulation - TCG
 
 QEMU’s system emulation provides a virtual model of a machine (CPU, memory and emulated devices) to run a guest OS. It supports a number of hypervisors (known as accelerators) as well as a _JIT known as the Tiny Code Generator (TCG)_ capable of emulating many CPUs.
 
@@ -602,17 +599,244 @@ qemu-system-x86_64 \
   -boot d
 ```
 
-### Examples:
+#### 5.1.3. KVM accelerator
 
-- QEMU
-- crosvm
-- Cloud Hypervisor
+Ok, now let's switch to KVM - turn qemu to virtualizer (yeah, it's really confusing at this point).
 
-### Key Points:
+```sh
+qemu-system-x86_64 \
+  -machine accel=kvm \
+  -cpu host \
+  -m 512 \
+  -cdrom alpine-virt-3.23.4-x86_64.iso \
+  -boot d \
+  -nographic
 
-- Device emulation (disk, NIC via virtio)
-- Runs VM processes
-- Works with KVM for performance
+Welcome to Alpine Linux 3.23
+Kernel 6.18.22-0-virt on x86_64 (/dev/ttyS0)
+
+localhost login: root
+Welcome to Alpine!
+
+The Alpine Wiki contains a large amount of how-to guides and general
+information about administrating Alpine systems.
+See <https://wiki.alpinelinux.org/>.
+
+You can setup the system with the command: setup-alpine
+
+You may change this message by editing /etc/motd.
+
+localhost:~# strings /proc/cpuinfo | grep -i qemu
+localhost:~# strings /proc/cpuinfo
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 60
+model name      : Intel(R) Core(TM) i5-4200M CPU @ 2.50GHz
+stepping        : 3
+microcode       : 0x28
+cpu MHz         : 2494.228
+cache size      : 16384 KB
+physical id     : 0
+siblings        : 1
+core id         : 0
+cpu cores       : 1
+apicid          : 0
+initial apicid  : 0
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ss
+vmx flags       : vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb flexpriority tsc_offset vtpr mtf vapic ept vpil
+bugs            : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs srbds bhi ibpb_no_ret spectre_v2_s
+bogomips        : 4988.45
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 39 bits physical, 48 bits virtual
+power management:
+localhost:~#
+```
+
+You can see the model is hardware-model, we have switch from software emulation (TCG) to hardware accelerator. When you run a virtual machine with QEMU and KVM enabled, QEMU provides the device emulation and machine abstraction, while KVM handles CPU and memory virtualization using hardware extensions. The result is a fully functional virtual machine with near-native CPU performance and complete hardware device support.
+
+- KVM knows how to run CPU instructions blazingly fast, but it knows absolutely nothing about disks, keyboards, or screens.
+  - CPU Virtualization: KVM uses hardware virtualization extensions (Intel VT-x or AMD-V) to let the virtual machine run its instructions directly on the physical host CPU.
+  - Memory Isolation: KVM handles the hardware-level translation of virtual memory to physical memory (via Extended Page Tables/EPT). It ensures the VM cannot access the host machine's memory or the memory of other VMs.
+  - Context Switching: It handles the low-level transitions between the host operating system and the guest operating system (known as VMEntry and VMExit).
+  - Virtual Interrupt Handling: KVM contains a virtual interrupt controller (like the in-kernel APIC) to deliver hardware interrupts to the virtual CPU at near-native speeds.
+- QEMU:
+  - Device Emulation: QEMU fakes all the hardware peripherals. When your virtual machine thinks it is writing to a SATA hard drive, reading a USB drive, sending packets out of an Intel network card, or drawing to a VGA monitor, QEMU is the software pretending to be those physical devices.
+  - Machine Emulation: QEMU provides the foundational motherboard architecture, including the BIOS/UEFI, ACPI tables, and the PCI bus.
+  - Disk Image Management: QEMU handles the virtual disk files (like .qcow2 or .raw images) and translates the VM's disk read/write requests into actual file operations on the host machine's storage.
+  - VM Lifecycle Management: QEMU is the actual Linux process that starts up. It allocates the memory for the VM, sets up the virtual CPUs, and creates the thread structure.
+  - CPU Emulation (Fallback): If KVM is unavailable (e.g., you don't have hardware virtualization), QEMU uses its Tiny Code Generator (TCG) to translate CPU instructions in software. When KVM is enabled, QEMU happily turns this task over to KVM.
+
+**How they work together**
+
+They communicate using a special device file in Linux: `/dev/kvm`.
+
+1. QEMU starts up and says, "I need to build a virtual machine with 4 CPUs and 4GB of RAM."
+2. QEMU talks to KVM (via `ioctl` system calls to `/dev/kvm`) and asks KVM to carve out the memory and initialize 4 virtual CPUs on the hardware.
+3. KVM executes the guest OS directly on the host processor.
+4. When the guest OS needs to do something outside the CPU—like write a file to the hard drive or draw a pixel on the screen—the physical CPU triggers a "VMExit" and traps the action.
+5. KVM pauses the virtual CPU and hands the request back to QEMU.
+6. QEMU handles the I/O request (e.g., writing the data to the .qcow2 file).
+7. QEMU tells KVM the job is done, and KVM resumes running the virtual CPU.
+
+![QEMU & KVM architecture](https://wiki.qemu.org/images/4/4f/Kvm_model.png)
+
+The typical stack looks like this: physical host CPU with Intel VT-x or AMD-V, Linux kernel with the KVM module loaded, QEMU running in user space as the VMM, guest operating system running inside the VM. KVM enforces the hardware boundary between the guest and the host kernel. QEMU manages everything the guest sees as its hardware.
+
+This combination is what most production hypervisors use under the hood. libvirt, Proxmox, and OpenStack all manage QEMU/KVM virtual machines at scale. We will talk about these later.
+
+#### 5.1.4. User emulation
+
+While system-mode emulation builds an entire "fake" computer (motherboard, BIOS, virtual hard drives), user-mode emulation completely ignores the hardware.
+
+Instead, it allows you to run a single Linux application compiled for one CPU architecture (like ARM) directly on a completely different CPU architecture (like x86_64), right alongside your normal host applications.
+
+**How user-mode works**
+
+To achieve this, QEMU performs two distinct tasks simultaneously:
+
+- **Instruction Translation (via TCG)**: It uses the Tiny Code Generator we discussed earlier to translate the target architecture's CPU instructions into your host's CPU instructions on the fly.
+- **System Call Translation (Thunking)**: When the foreign binary tries to talk to the Linux kernel (e.g., to read a file, allocate memory, or print to the screen), QEMU intercepts the architecture-specific system call, translates the memory pointers and register layouts into the x86_64 equivalent, passes it to your host Linux kernel, and then hands the result back to the application.
+
+Because it relies on your host OS kernel, **user-mode emulation only works for Linux-on-Linux (or BSD-on-BSD)**. You cannot use it to run Windows .exe files on Linux.
+
+**Hands-on example: running an ARM64 app on x86_64**
+
+> Prerequisites: You need an ARM64 cross-compiler like `gcc-aarch64-linux-gnu` and `qemu-user-static` installed on your x86_64 host.
+
+1. Write the 'Matrix Glitch' program
+
+We will use a terminal block to write the C code to avoid any text editor stripping out our header brackets. This program asks the kernel for hardware info using `uname` and includes a deliberate segmentation fault if we pass an argument.
+
+```sh
+cat << 'EOF' > expose_qemu.c
+#include <sys/utsname.h>
+#include <stddef.h>
+
+int main(int argc, char **argv) {
+    struct utsname sys_info;
+    uname(&sys_info);
+
+    printf("Welcome to the Matrix.\n");
+    printf("The OS tells me my hardware CPU is: %s\n", sys_info.machine);
+
+    // If we pass any argument, crash the program
+    if (argc > 1) {
+        printf("\nInitiating deliberate crash...\n");
+        int *crash = NULL;
+        *crash = 42;
+    }
+    return 0;
+}
+EOF
+```
+
+2. Cross-compile for ARM64
+
+Compile the binary statically. This bundles the C standard library directly into the executable, making it completely self-contained so we don't have to worry about missing ARM shared libraries (`.so` files) on our x86 host.
+
+```sh
+aarch64-linux-gnu-gcc -static expose_qemu.c -o expose_qemu_arm
+```
+
+3. Run normally (catching the lie)
+
+Execute the program as if it were a normal native binary. Because of `binfmt_misc`, the kernel silently hands it to QEMU.
+
+```sh
+./expose_qemu_arm
+# Output
+Welcome to the Matrix.
+The OS tells me my hardware CPU is: aarch64
+```
+
+The Proof: If QEMU let the binary talk directly to your host kernel, the kernel would return x86_64, which might cause the ARM binary to panic. Instead, QEMU intercepts the `uname` system call and manually injects the string aarch64 to keep the binary happy.
+
+4. Crash it (making QEMU break character)
+
+Now, trigger the deliberate segmentation fault by passing an argument.
+
+```sh
+./expose_qemu_arm crash
+# Output
+Welcome to the Matrix.
+The OS tells me my hardware CPU is: aarch64
+
+Initiating deliberate crash...
+qemu: uncaught target signal 11 (Segmentation fault) - core dumped
+[1]    23377 segmentation fault (core dumped)  ./expose_qemu_arm crash
+```
+
+The Proof: When an application crashes natively, the kernel simply prints `Segmentation fault`. But because this is a guest binary, the host kernel sends the crash signal to QEMU. QEMU must then translate that crash for you, explicitly printing its own name (`qemu: uncaught target signal...`) in the process.
+
+5. Expose the translation engine directly
+
+Finally, force QEMU to dump its real-time system call translation logs using the hidden `QEMU_STRACE` environment variable. Native binaries ignore this variable completely, so if it works, QEMU is definitely running the show.
+
+```sh
+QEMU_STRACE=1 ./expose_qemu_arm
+# Output
+23521 brk(NULL) = 0x000000000049a000
+23521 brk(0x000000000049ab78) = 0x000000000049ab78
+23521 set_tid_address(4825296,4821032,4825280,4825536,4778064,4827120) = 23521
+23521 set_robust_list(4825312,24,4825312,1,0,4825360) = -1 errno=38 (Function not implemented)
+23521 Unknown syscall 293
+23521 uname(0x55007ff818) = 0
+23521 prlimit64(0,3,0,365080607112,4827160,88) = 0
+23521 readlinkat(AT_FDCWD,"/proc/self/exe",0x00000055007fe8d0,4096) = 76
+23521 getrandom(4820680,8,1,4825088,4786664,0) = 8
+23521 brk(0x00000000004bbb78) = 0x00000000004bbb78
+23521 brk(0x00000000004bc000) = 0x00000000004bc000
+23521 mprotect(0x000000000048e000,16384,PROT_READ) = 0
+23521 uname(0x55007ff6f0) = 0
+23521 newfstatat(1,"",0x00000055007ff568,0x1000) = 0
+Welcome to the Matrix.
+23521 write(1,0x49b040,23) = 23
+The OS tells me my hardware CPU is: aarch64
+23521 write(1,0x49b040,44) = 44
+23521 exit_group(0)
+```
+
+- The memory setup: Before your program's `main()` function even runs, the bundled C standard library needs memory space. These `brk` and `mprotect` calls are QEMU asking your x86_64 host kernel to allocate safe memory boundaries for the ARM binary to use.
+
+```sh
+brk(NULL) = 0x000000000049a000
+mprotect(0x000000000048e000,16384,PROT_READ) = 0
+```
+
+- The intercepted `uname` call: This is the exact moment QEMU intercepts the `uname(&sys_info)` function. It intercepts the call before it hits the host kernel, returns 0 (indicating success), and silently fills memory address `0x55007ff818` with the spoofed aarch64 string.
+
+```sh
+uname(0x55007ff818) = 0
+```
+
+- A harmless glitch: System call 293 on ARM64 is `rseq` (Restartable Sequences), an advanced optimization used by modern C libraries. QEMU user-mode emulation does not implement every obscure system call perfectly. When it encounters one it doesn't support, it logs it and continues. The standard library handles the failure gracefully.
+
+```sh
+Unknown syscall 293
+```
+
+- Translating the output: The `printf` function formats text and uses the `write()` system call to push it to the screen. QEMU translates this request perfectly: it tells the host kernel to write to File Descriptor 1 (Standard Output), reading from memory address `0x49b040`, for exactly 23 bytes.
+
+```sh
+Welcome to the Matrix.
+write(1,0x49b040,23) = 23
+```
+
+- Clean Shutdown: When your C program reaches return 0;, QEMU catches it, translates it into an `exit_group` system call, and cleanly shuts down both the emulator and the guest process.
+
+```sh
+exit_group(0)
+```
+
+### 5.2. Firecracker
+
+### 5.3. Cloud hypervisor
 
 ---
 
@@ -629,8 +853,6 @@ qemu-system-x86_64 \
 - Tools: `virsh`, `virt-manager`
 
 ---
-
-# Control Plane (Above the Host)
 
 ## 7. Datacenter Virtualization Management
 
@@ -664,8 +886,6 @@ qemu-system-x86_64 \
   - OpenStack → libvirt → QEMU → KVM
 
 ---
-
-# Parallel & Emerging Approaches
 
 ## 9. MicroVM / Lightweight Virtualization
 
@@ -709,8 +929,6 @@ qemu-system-x86_64 \
 | Startup   | Slower   | Fast          |
 
 ---
-
-# Integration & Flow
 
 ## 11. How Everything Works Together
 
