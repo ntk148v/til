@@ -23,7 +23,8 @@ Table of contents:
       - [5.1.1. QEMU emulation internals](#511-qemu-emulation-internals)
       - [5.1.2. System emulation - TCG](#512-system-emulation---tcg)
       - [5.1.3. KVM accelerator](#513-kvm-accelerator)
-      - [5.1.4. User emulation](#514-user-emulation)
+      - [5.1.4. TCG vs. KVM accelerators](#514-tcg-vs-kvm-accelerators)
+      - [5.1.5. User emulation](#515-user-emulation)
     - [5.2. Firecracker](#52-firecracker)
     - [5.3. Cloud hypervisor](#53-cloud-hypervisor)
   - [6. Host-Level Virtualization Control](#6-host-level-virtualization-control)
@@ -690,7 +691,94 @@ The typical stack looks like this: physical host CPU with Intel VT-x or AMD-V, L
 
 This combination is what most production hypervisors use under the hood. libvirt, Proxmox, and OpenStack all manage QEMU/KVM virtual machines at scale. We will talk about these later.
 
-#### 5.1.4. User emulation
+#### 5.1.4. TCG vs. KVM accelerators
+
+To truly appreciate the performance leap KVM provides, there is nothing quite like a side-by-side benchmark: QEMU’s software-based Tiny Code Generator (TCG) against the hardware-accelerated raw power of KVM.
+
+> Prerequisite: You must run this on a Linux host with KVM enabled. Check if /dev/kvm exists.
+
+1. Download the Alpine Linux ISO.
+
+```sh
+wget https://dl-cdn.alpinelinux.org/alpine/v3.23/releases/x86_64/alpine-virt-3.23.4-x86_64.iso
+```
+
+2. Run the TCG benchmark
+
+Force QEMU to use TCG, QEMU will manually translate every single x86_64 instruction in software.
+
+```sh
+qemu-system-x86_64 \
+  -accel tcg \
+  -m 512 \
+  -cdrom alpine-virt-3.23.4-x86_64.iso \
+  -nic none \
+  -nographic
+
+# You may need to wait for like 10 seconds.
+Welcome to Alpine Linux 3.23
+Kernel 6.18.22-0-virt on x86_64 (/dev/ttyS0)
+
+localhost login: root
+Welcome to Alpine!
+
+The Alpine Wiki contains a large amount of how-to guides and general
+information about administrating Alpine systems.
+See <https://wiki.alpinelinux.org/>.
+
+You can setup the system with the command: setup-alpine
+
+You may change this message by editing /etc/motd.
+
+localhost:~# time awk 'BEGIN { for (i=1; i<=10000000; i++) sqrt(i); print "Done"
+ }'
+
+Done
+real    3m 27.66s
+user    2m 55.78s
+sys     0m 0.64s
+```
+
+3. Run the KVM benchmark
+
+Now, switch to KVM (`-machine accel=kvm -cpu host`). This allows the VM to execute its instructions natively on your physical processor.
+
+```sh
+qemu-system-x86_64 \
+  -machine accel=kvm \
+  -cpu host \
+  -m 512 \
+  -cdrom alpine-virt-3.23.4-x86_64.iso \
+  -nic none \
+  -nographic
+# significantly faster
+
+Welcome to Alpine Linux 3.23
+Kernel 6.18.22-0-virt on x86_64 (/dev/ttyS0)
+
+localhost login: root
+Welcome to Alpine!
+
+The Alpine Wiki contains a large amount of how-to guides and general
+information about administrating Alpine systems.
+See <https://wiki.alpinelinux.org/>.
+
+You can setup the system with the command: setup-alpine
+
+You may change this message by editing /etc/motd.
+
+
+localhost:~# time awk 'BEGIN { for (i=1; i<=10000000; i++) sqrt(i); print "Done"
+ }'
+Done
+real    0m 7.05s
+user    0m 6.98s
+sys     0m 0.00s
+```
+
+4. You may notice the gaps between two boot times, also the 10M square roots benchmark.
+
+#### 5.1.5. User emulation
 
 While system-mode emulation builds an entire "fake" computer (motherboard, BIOS, virtual hard drives), user-mode emulation completely ignores the hardware.
 
