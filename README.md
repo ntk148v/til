@@ -1,7 +1,7 @@
 <h1 align="center">TIL - Today I Learned (and probably forgot by tomorrow)</h1>
 
 <p align="center">
-  <img alt="merlin" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Arthur-Pyle_The_Enchanter_Merlin.JPG/800px-Arthur-Pyle_The_Enchanter_Merlin.JPG" width="30%"/>
+  <img alt="merlin" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Arthur-Pyle_The_Enchanter_Merlin.JPG/960px-Arthur-Pyle_The_Enchanter_Merlin.JPG" width="30%"/>
   <h4>Channeling my inner Merlin (minus the beard and pointy hat): <a href="https://www.amazon.jobs/en/principles">Learn and Be Curious</a> - because who knows what magical knowledge awaits!</h4>
 </p>
 
