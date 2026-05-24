@@ -934,6 +934,7 @@ It's worth to mention about MicroVM.
 We will talk about Firecracker right after this section. Now, let's focus on QEMU microvms target: <https://www.qemu.org/docs/master/system/i386/microvm.html>
 
 Currently, microvm does not support the following features:
+
 - PCI-only devices.
 - Hotplug of any kind.
 - Live migration across QEMU versions.
