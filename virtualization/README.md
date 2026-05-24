@@ -604,6 +604,8 @@ qemu-system-x86_64 \
 
 Ok, now let's switch to KVM - turn qemu to virtualizer (yeah, it's really confusing at this point).
 
+![ubicloud - RedHat reference architecture](https://cdn.prod.website-files.com/64f9d9b4e737e7b37d4e39a4/6793577671e6148615d5743b_Red%20hat-min-p-1600.jpg)
+
 ```sh
 qemu-system-x86_64 \
   -machine accel=kvm \
@@ -922,7 +924,66 @@ write(1,0x49b040,23) = 23
 exit_group(0)
 ```
 
+##### 5.1.6. MicroVM and QEMU
+
+It's worth to mention about MicroVM.
+
+> [!IMPORTANT]
+> MicroVMs are lightweight virtual machines designed to provide the isolation and security of traditional VMs while approaching the speed and efficiency of containers. Essentially, a microVM strips away all extraneous virtualization features (legacy device emulation, expansive hardware support, etc.) and runs with minimal overhead. The concept was popularized by the open-source Firecracker MicroVM, which was built to power services like AWS Lambda and Fargate. Firecracker and similar MicroVM VMMs (Virtual Machine Monitors) utilize the Linux KVM hypervisor under the hood but launch VMs with a much smaller footprint and faster startup time than conventional cloud VMs.
+
+We will talk about Firecracker right after this section. Now, let's focus on QEMU microvms target: <https://www.qemu.org/docs/master/system/i386/microvm.html>
+
+Currently, microvm does not support the following features:
+- PCI-only devices.
+- Hotplug of any kind.
+- Live migration across QEMU versions.
+
+By default, microvm aims for maximum compatibility, enabling both legacy and non-legacy devices. In this example, a VM is created without passing any additional machine-specific option, using the legacy ISA serial device as console:
+
+```sh
+qemu-system-x86_64 -M microvm \
+   -enable-kvm -cpu host -m 512m -smp 2 \
+   -kernel vmlinux -append "earlyprintk=ttyS0 console=ttyS0 root=/dev/vda" \
+   -nodefaults -no-user-config -nographic \
+   -serial stdio \
+   -drive id=test,file=test.img,format=raw,if=none \
+   -device virtio-blk-device,drive=test \
+   -netdev tap,id=tap0,script=no,downscript=no \
+   -device virtio-net-device,netdev=tap0
+```
+
+While the example above works, you might be interested in reducing the footprint further by disabling some legacy devices. If you’re using KVM, you can disable the RTC, making the Guest rely on kvmclock exclusively. Additionally, if your host’s CPUs have the TSC_DEADLINE feature, you can also disable both the i8259 PIC and the i8254 PIT (make sure you’re also emulating a CPU with such feature in the guest).
+
+This is an example of a VM with all optional legacy features disabled:
+
+```sh
+qemu-system-x86_64 \
+   -M microvm,x-option-roms=off,pit=off,pic=off,isa-serial=off,rtc=off \
+   -enable-kvm -cpu host -m 512m -smp 2 \
+   -kernel vmlinux -append "console=hvc0 root=/dev/vda" \
+   -nodefaults -no-user-config -nographic \
+   -chardev stdio,id=virtiocon0 \
+   -device virtio-serial-device \
+   -device virtconsole,chardev=virtiocon0 \
+   -drive id=test,file=test.img,format=raw,if=none \
+   -device virtio-blk-device,drive=test \
+   -netdev tap,id=tap0,script=no,downscript=no \
+   -device virtio-net-device,netdev=tap0
+```
+
 ### 5.2. Firecracker
+
+[AWS Firecracker](https://www.usenix.org/system/files/nsdi20-paper-agache.pdf) is an open source VMM specialized for serverless workloads. It’s arguably Amazon’s most influential open source contribution.
+
+![ubicloud - firecracker](https://cdn.prod.website-files.com/64f9d9b4e737e7b37d4e39a4/67935776bd52e5ef4f0ab9cb_Firecracker-min-p-1600.jpg)
+
+Firecracker aims to provide VM-level isolation guarantees and solve three challenges associated with virtualization. These are: (a) VMM and the kernel have high CPU and memory overhead for VMs, (b) VM startup takes seconds, and (c) hypervisors and VMMs can be large and complex, with a significant attack surface. They are also typically written in memory unsafe programming languages.
+
+AWS solves the challenges by keeping Linux KVM, but swapping QEMU with a super lightweight alternative called Firecracker, written in Rust. In particular, Firecracker provides:
+
+- Device emulation for disk, networking, and serial console (keyboard)
+- REST based configuration API to configure, manage, start and stop MicroVMs. This replaces some of the functionality offered by libvirt
+- Rate limiting for network and disk. Can configure throughput and request rates. For this Firecracker implements its own solution for simplicity, rather than using cgroups
 
 ### 5.3. Cloud hypervisor
 
