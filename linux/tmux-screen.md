@@ -1,8 +1,10 @@
 # Tmux vs Screen
 
-<https://github.com/tmux/tmux/wiki>
+> [!IMPORTANT]
+> Move to [tmux](/tmux/README.md)
 
-<https://www.gnu.org/software/screen/>
+- <https://github.com/tmux/tmux/wiki>
+- <https://www.gnu.org/software/screen/>
 
 ## What are they?
 
