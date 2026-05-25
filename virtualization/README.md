@@ -26,6 +26,8 @@ Table of contents:
       - [5.1.4. TCG vs. KVM accelerators](#514-tcg-vs-kvm-accelerators)
       - [5.1.5. User emulation](#515-user-emulation)
     - [5.2. Firecracker](#52-firecracker)
+      - [5.2.1. The problem Firecracker solves](#521-the-problem-firecracker-solves)
+      - [5.2.2. How Firecracker works](#522-how-firecracker-works)
     - [5.3. Cloud hypervisor](#53-cloud-hypervisor)
   - [6. Host-Level Virtualization Control](#6-host-level-virtualization-control)
     - [Example:](#example)
@@ -924,67 +926,109 @@ write(1,0x49b040,23) = 23
 exit_group(0)
 ```
 
-##### 5.1.6. MicroVM and QEMU
-
-It's worth to mention about MicroVM.
-
-> [!IMPORTANT]
-> MicroVMs are lightweight virtual machines designed to provide the isolation and security of traditional VMs while approaching the speed and efficiency of containers. Essentially, a microVM strips away all extraneous virtualization features (legacy device emulation, expansive hardware support, etc.) and runs with minimal overhead. The concept was popularized by the open-source Firecracker MicroVM, which was built to power services like AWS Lambda and Fargate. Firecracker and similar MicroVM VMMs (Virtual Machine Monitors) utilize the Linux KVM hypervisor under the hood but launch VMs with a much smaller footprint and faster startup time than conventional cloud VMs.
-
-We will talk about Firecracker right after this section. Now, let's focus on QEMU microvms target: <https://www.qemu.org/docs/master/system/i386/microvm.html>
-
-Currently, microvm does not support the following features:
-
-- PCI-only devices.
-- Hotplug of any kind.
-- Live migration across QEMU versions.
-
-By default, microvm aims for maximum compatibility, enabling both legacy and non-legacy devices. In this example, a VM is created without passing any additional machine-specific option, using the legacy ISA serial device as console:
-
-```sh
-qemu-system-x86_64 -M microvm \
-   -enable-kvm -cpu host -m 512m -smp 2 \
-   -kernel vmlinux -append "earlyprintk=ttyS0 console=ttyS0 root=/dev/vda" \
-   -nodefaults -no-user-config -nographic \
-   -serial stdio \
-   -drive id=test,file=test.img,format=raw,if=none \
-   -device virtio-blk-device,drive=test \
-   -netdev tap,id=tap0,script=no,downscript=no \
-   -device virtio-net-device,netdev=tap0
-```
-
-While the example above works, you might be interested in reducing the footprint further by disabling some legacy devices. If you’re using KVM, you can disable the RTC, making the Guest rely on kvmclock exclusively. Additionally, if your host’s CPUs have the TSC_DEADLINE feature, you can also disable both the i8259 PIC and the i8254 PIT (make sure you’re also emulating a CPU with such feature in the guest).
-
-This is an example of a VM with all optional legacy features disabled:
-
-```sh
-qemu-system-x86_64 \
-   -M microvm,x-option-roms=off,pit=off,pic=off,isa-serial=off,rtc=off \
-   -enable-kvm -cpu host -m 512m -smp 2 \
-   -kernel vmlinux -append "console=hvc0 root=/dev/vda" \
-   -nodefaults -no-user-config -nographic \
-   -chardev stdio,id=virtiocon0 \
-   -device virtio-serial-device \
-   -device virtconsole,chardev=virtiocon0 \
-   -drive id=test,file=test.img,format=raw,if=none \
-   -device virtio-blk-device,drive=test \
-   -netdev tap,id=tap0,script=no,downscript=no \
-   -device virtio-net-device,netdev=tap0
-```
-
 ### 5.2. Firecracker
+
+Source:
+
+- <https://firecracker-microvm.github.io>
+- <https://northflank.com/blog/what-is-aws-firecracker>
+- <https://www.amazon.science/blog/how-awss-firecracker-virtual-machines-work>
+
+#### 5.2.1. The problem Firecracker solves
 
 [AWS Firecracker](https://www.usenix.org/system/files/nsdi20-paper-agache.pdf) is an open source VMM specialized for serverless workloads. It’s arguably Amazon’s most influential open source contribution.
 
-![ubicloud - firecracker](https://cdn.prod.website-files.com/64f9d9b4e737e7b37d4e39a4/67935776bd52e5ef4f0ab9cb_Firecracker-min-p-1600.jpg)
+Initially released in 2018 and built specifically to power services like AWS Lambda and AWS Fargate, Firecracker introduced the concept of the **microVM**.
 
-Firecracker aims to provide VM-level isolation guarantees and solve three challenges associated with virtualization. These are: (a) VMM and the kernel have high CPU and memory overhead for VMs, (b) VM startup takes seconds, and (c) hypervisors and VMMs can be large and complex, with a significant attack surface. They are also typically written in memory unsafe programming languages.
+> [!IMPORTANT]
+> MicroVMs are lightweight virtual machines designed to provide the isolation and security of traditional VMs while approaching the speed and efficiency of containers. Essentially, a microVM strips away all extraneous virtualization features (legacy device emulation, expansive hardware support, etc.) and runs with minimal overhead.
+>
+> - minimal device model
+> - direct Linux kernel boot
+> - no BIOS/UEFI
+> - no PCI bus
+> - only virtio devices
+> - extremely reduced attack surface
+>
+> Most cloud workloads do **not** need:
+>
+> - sound cards
+> - USB
+> - VGA
+> - PCI hotplug
+> - firmware compatibility
+> - legacy hardware
+
+Before Firecracker, cloud providers facing the challenge of running serverless functions (like AWS Lambda) had to choose between two imperfect isolation models:
+
+- **Traditional Virtual Machines (e.g., QEMU/KVM)**: Highly secure. They provide hardware-level isolation, meaning a compromised tenant cannot easily break out and affect others on the same host. However, they are incredibly heavy. Traditional VMs carry a lot of legacy baggage (emulating BIOS, PCI buses, floppy drives, etc.), leading to high memory overhead and slow boot times (often taking seconds to start). This makes them unsuited for the rapid scaling required by serverless computing.
+- **Containers (e.g., Docker, Linux namespaces/cgroups)**: Fast and lightweight. Containers share the host operating system's kernel, allowing them to start in milliseconds and pack densely onto a server. The trade-off is security. Because they share a kernel, a kernel-level vulnerability could potentially allow a malicious payload to break out of the container and access other tenants' data on the same host.
+
+AWS needed a solution that offered the hardware-level security of a VM with the density and boot speed of a container. The answer was to build a custom VMM from scratch.
+
+> [!NOTE]
+>
+> QEMU microvms target: <https://www.qemu.org/docs/master/system/i386/microvm.html>
+>
+> By default, microvm aims for maximum compatibility, enabling both legacy and non-legacy devices. In this example, a VM is created without passing any additional machine-specific option, using the legacy ISA serial device as console:
+>
+> ```sh
+> qemu-system-x86_64 -M microvm \
+>    -enable-kvm -cpu host -m 512m -smp 2 \
+>    -kernel vmlinux -append "earlyprintk=ttyS0 console=ttyS0 root=/dev/vda" \
+>    -nodefaults -no-user-config -nographic \
+>    -serial stdio \
+>    -drive id=test,file=test.img,format=raw,if=none \
+>    -device virtio-blk-device,drive=test \
+>    -netdev tap,id=tap0,script=no,downscript=no \
+>    -device virtio-net-device,netdev=tap0
+> ```
+>
+> While the example above works, you might be interested in reducing the footprint further by disabling some legacy devices. If you’re using KVM, you can disable the RTC, making the Guest rely on kvmclock exclusively. Additionally, if your host’s CPUs have the TSC_DEADLINE feature, you can also disable both the i8259 PIC and the i8254 PIT (make sure you’re also emulating a CPU with such feature in the guest).
+>
+> This is an example of a VM with all optional legacy features disabled:
+>
+> ```sh
+> qemu-system-x86_64 \
+>    -M microvm,x-option-roms=off,pit=off,pic=off,isa-serial=off,rtc=off \
+>    -enable-kvm -cpu host -m 512m -smp 2 \
+>    -kernel vmlinux -append "console=hvc0 root=/dev/vda" \
+>    -nodefaults -no-user-config -nographic \
+>    -chardev stdio,id=virtiocon0 \
+>    -device virtio-serial-device \
+>    -device virtconsole,chardev=virtiocon0 \
+>    -drive id=test,file=test.img,format=raw,if=none \
+>    -device virtio-blk-device,drive=test \
+>    -netdev tap,id=tap0,script=no,downscript=no \
+>    -device virtio-net-device,netdev=tap0
+> ```
+
+#### 5.2.2. How Firecracker works
+
+Firecracker aims to provide VM-level isolation guarantees and solve three challenges associated with virtualization. These are:
+
+1. VMM and the kernel have high CPU and memory overhead for VMs.
+2. VM startup takes seconds.
+3. Hypervisors and VMMs can be large and complex, with a significant attack surface. They are also typically written in memory unsafe programming languages.
+
+![ubicloud - firecracker](https://cdn.prod.website-files.com/64f9d9b4e737e7b37d4e39a4/67935776bd52e5ef4f0ab9cb_Firecracker-min-p-1600.jpg)
 
 AWS solves the challenges by keeping Linux KVM, but swapping QEMU with a super lightweight alternative called Firecracker, written in Rust. In particular, Firecracker provides:
 
 - Device emulation for disk, networking, and serial console (keyboard)
-- REST based configuration API to configure, manage, start and stop MicroVMs. This replaces some of the functionality offered by libvirt
+- REST based configuration API to configure, manage, start and stop MicroVMs. This replaces some of the functionality offered by libvirt.
 - Rate limiting for network and disk. Can configure throughput and request rates. For this Firecracker implements its own solution for simplicity, rather than using cgroups
+- Firecracker also provides a metadata service that securely shares configuration information between the host and guest operating system.
+
+![](https://firecracker-microvm.github.io/img/diagram-desktop@3x.png)
+
+For network and block devices, Firecracker uses `virtio` (specifically virtio-net for networking, virtio-block for storage, and virtio-vsock for socket communication). Virtio provides an open API for exposing emulated devices from hypervisors. Virtio is simple, scalable, and offers good performance through its use of paravirtualization.
+
+On the networking side, Firecracker uses a TAP virtual network interface and encapsulates the guest OS (and the TAP device) inside their own network namespace.
+
+For storage, AWS chooses to support block devices, rather than filesystem passthrough, as a security consideration. Filesystems are large and complex code bases, and providing only block IO to the guest protects a substantial part of the host kernel surface area.
+
+Finally, Firecracker also has a jailer around it to provide an additional level of protection against unwanted VMM behavior (such as a bug). The jailer implements a restrictive sandbox around the guest by using a set of Linux primitives. These include chroot, pid, and network namespaces. The jailer also uses seccomp-bpf to whitelist the set of system calls that can drop to the host. This, rather than using libvirt as the jailer, also diverges from Red Hat’s architecture.
 
 ### 5.3. Cloud hypervisor
 
