@@ -150,3 +150,53 @@ The cloud-init package includes a daemon process, configuration files stored in 
   - EC2 (Amazon Web Services metadata service).
   - Azure (Microsoft Azure’s instance metadata).
   - ...
+- Once cloud-init identifies its datasource, it uses that plugin to retrieve all metadata, user data, and vendor data. This abstraction layer is why the same cloud image can boot on OpenStack, AWS, and Azure without modification.
+- cloud-init uses only the first matching datasource and ignores the others.
+
+> [!NOTE]
+> While cloud-init is designed for Linux systems, Windows instances use Cloudbase-Init, a compatible implementation written specifically for Windows.
+
+## 3. Cloud-init details
+
+Cloud-init operates through a series of boot stages, each executing at a specific point in the system initialization process.
+
+- A **stage** is a phase in the boot process when cloud-init runs (local, network, config, final). Each stage is implemented as a systemd service unit.
+- A **module** is a specific configuration task that runs within a stage (for example, the `user_groups` module creates user accounts, the `ssh` module manages SSH keys). Modules are defined in `/etc/cloud/cloud.cfg` and organized into lists that execute during specific stages.
+
+### 3.1. Boot stages
+
+Cloud-init’s execution is controlled by a systemd generator and four main service stages. The generator runs first to determine if cloud-init should execute at all, then the four stages execute sequentially during the boot process.
+
+Before any cloud-init services run, the cloud-init generator checks if cloud-init should execute (`/etc/cloud/cloud-init.disabled`).
+
+![](https://firstcloud.pl/assets/images/posts/2026/2026-02-cloud-init-boot-timeline.svg)
+
+**Local stage (cloud-init-local.service)**
+
+The local stage runs before networking is configured and its primary purpose is to detect local datasources and apply network configuration to the system.
+
+**Network stage (cloud-init.service)**
+
+The network stage runs after basic networking is configured and its primary purpose is to query network-based datasources and process user data. If no local datasource was found in the local stage, this stage queries the metadata service at 169.254.169.254 to retrieve all metadata, user data, and vendor data.
+
+**Config state (cloud-config.service)**
+
+The config stage runs after the network is available and user data has been processed, and this is where system-wide configuration and package management happens.
+
+**Final stage (cloud-final.service)**
+
+The final stage runs last in the boot process, after all other services have started, and its purpose is to execute user scripts, install packages, and run configuration management tools. This stage runs as late as possible in the boot sequence to ensure that the system is fully initialized and all dependencies are available.
+
+### 3.2. Modules
+
+Modules are the building blocks of cloud-init functionality. Each module performs a specific configuration task, such as creating users, installing packages, or configuring SSH. Modules are defined in `/etc/cloud/cloud.cfg` and organized into three lists that determine when they execute during the boot process:
+
+- `cloud_init_modules`: modules that run in the network stage (early boot, after datasource detection and network initialization)
+- `cloud_config_modules`: modules that run in the config stage (after network is available, system configuration)
+- `cloud_final_modules`: modules that run in the final stage (last phase, user scripts and package installation)
+
+Modules are idempotent and platform-agnostic, meaning they produce the same result when run multiple times and work across different Linux distributions without modification.
+
+Each module can be configured through cloud-config YAML.
+
+Modules run in a specific order within each stage as defined in `/etc/cloud/cloud.cfg`.
