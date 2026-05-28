@@ -48,3 +48,4 @@ container_memory_working_set_bytes{container_env_foo_env="prod",container_label_
 - This explanation makes everything in context be clear now. The difference between `docker stats` result and `container_memory_usage_bytes` is cache!
 
 - So using `container_memory_usage_bytes` is not suitable now. The better metric is `container_memory_working_set_bytes` as this is what the OOM killer is watching for. Memory working set is the bytes of memory that the kernel deems to be necessary for continuing to run the processes in the container. Kernel cnanot tolerate overcommitment of the sum total of working set (Refer [github issue](https://github.com/google/cadvisor/issues/913)).
+- [Linux OOM Killer: A detailed guide to memory management](https://last9.io/blog/understanding-the-linux-oom-killer/)
