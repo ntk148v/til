@@ -1005,6 +1005,8 @@ AWS needed a solution that offered the hardware-level security of a VM with the 
 
 #### 5.2.2. How Firecracker works
 
+Source: <https://github.com/firecracker-microvm/firecracker/blob/main/docs/design.md>
+
 Firecracker aims to provide VM-level isolation guarantees and solve three challenges associated with virtualization. These are:
 
 1. VMM and the kernel have high CPU and memory overhead for VMs.
@@ -1018,17 +1020,323 @@ AWS solves the challenges by keeping Linux KVM, but swapping QEMU with a super l
 - Device emulation for disk, networking, and serial console (keyboard)
 - REST based configuration API to configure, manage, start and stop MicroVMs. This replaces some of the functionality offered by libvirt.
 - Rate limiting for network and disk. Can configure throughput and request rates. For this Firecracker implements its own solution for simplicity, rather than using cgroups
-- Firecracker also provides a metadata service that securely shares configuration information between the host and guest operating system.
+- Firecracker also provides a metadata service - MicroVM-Metadata Service (MMDS) that securely shares configuration information between the host and guest operating system.
 
 ![](https://firecracker-microvm.github.io/img/diagram-desktop@3x.png)
 
 For network and block devices, Firecracker uses `virtio` (specifically virtio-net for networking, virtio-block for storage, and virtio-vsock for socket communication). Virtio provides an open API for exposing emulated devices from hypervisors. Virtio is simple, scalable, and offers good performance through its use of paravirtualization.
+
+![firacracker host integration](https://github.com/firecracker-microvm/firecracker/blob/main/docs/images/firecracker_host_integration.png?raw=true)
 
 On the networking side, Firecracker uses a TAP virtual network interface and encapsulates the guest OS (and the TAP device) inside their own network namespace.
 
 For storage, AWS chooses to support block devices, rather than filesystem passthrough, as a security consideration. Filesystems are large and complex code bases, and providing only block IO to the guest protects a substantial part of the host kernel surface area.
 
 Finally, Firecracker also has a jailer around it to provide an additional level of protection against unwanted VMM behavior (such as a bug). The jailer implements a restrictive sandbox around the guest by using a set of Linux primitives. These include chroot, pid, and network namespaces. The jailer also uses seccomp-bpf to whitelist the set of system calls that can drop to the host. This, rather than using libvirt as the jailer, also diverges from Red Hat’s architecture.
+
+**Threat containment**
+
+From a security perspective, all vCPU threads are considered to be running malicious code as soon as they have been started; these malicious threads need to be contained. Containment is achieved by nesting several trust zones which increment from least trusted or least safe (guest vCPU threads) to most trusted or safest (host). These trusted zones are separated by barriers that enforce aspects of Firecracker security. For example, all outbound network traffic data is copied by the Firecracker I/O thread from the emulated network interface to the backing host TAP device, and I/O rate limiting is applied at this point. These barriers are marked in the diagram below.
+
+![firecracker threat containment](https://github.com/firecracker-microvm/firecracker/raw/main/docs/images/firecracker_threat_containment.png?raw=true)
+
+#### 5.2.3. Hands-on guide
+
+Source: <https://github.com/firecracker-microvm/firecracker/blob/main/docs/getting-started.md>
+
+To fully master Firecracker, you must understand both the user-space operations (interacting with its REST API) and the host-space operations (how KVM and the Linux kernel partition resources).
+
+This guide provides a comprehensive, production-style walkthrough to configure, network, boot, and analyze a Firecracker microVM using the exact assets and versions from the official repository. It is taken from Firecracker getting started guide
+
+**Step 1: Environment Verification & Hardware Virtualization**
+
+Firecracker relies on the Linux Kernel-based Virtual Machine (KVM) subsystem. It uses hardware execution blocks (Intel VT-x or AMD-V) to run guest code directly on the host CPU.
+
+```sh
+#!/bin/bash
+set -euo pipefail
+
+echo "==> Verifying KVM virtualization support..."
+if ! lsmod | grep -q kvm; then
+    echo "ERROR: KVM kernel module is not loaded. Ensure hardware virtualization is enabled in BIOS." >&2
+    exit 1
+fi
+
+echo "==> Configuring permissions for /dev/kvm..."
+# Check if current user has RW access to KVM character device
+if [ ! -r /dev/kvm ] || [ ! -w /dev/kvm ]; then
+    echo "Current user lacks permissions for /dev/kvm. Adjusting via group management..."
+    if [ "$(stat -c "%G" /dev/kvm)" = "kvm" ]; then
+        sudo usermod -aG kvm "${USER}"
+        echo "SUCCESS: User added to 'kvm' group. Please log out and back in for changes to apply."
+    else
+        echo "Fallback: Granting access via Access Control Lists (ACL)..."
+        sudo setfacl -m u:${USER}:rw /dev/kvm
+    fi
+else
+    echo "KVM Permissions: OK"
+fi
+```
+
+When the KVM module is active, it exposes `/dev/kvm`. Firecracker uses this file descriptor to perform setup actions via ioctl system calls. When a microVM runs, the physical CPU core transitions out of host execution mode (Root Mode) into guest execution mode (Non-Root Mode). The guest OS runs at ring 0 inside its isolated hardware execution context.
+
+**Step 2: Asset Provisioning & Rootfs Construction**
+
+Instead of multi-gigabyte ISO files or complex disk partition maps, Firecracker requires exactly two raw components: an uncompressed raw Linux kernel image (vmlinux) and a linear ext4 filesystem image.
+
+Execute this script to download the exact latest binaries from the Firecracker CI pipeline, generate custom SSH keys, and provision a mountable loop device to inject credentials directly into the root filesystem:
+
+```sh
+#!/bin/bash
+set -euo pipefail
+
+ARCH="$(uname -m)"
+RELEASE_URL="https://github.com/firecracker-microvm/firecracker/releases"
+LATEST_TAG=$(basename "$(curl -fsSLI -o /dev/null -w "%{url_effective}" ${RELEASE_URL}/latest)")
+CI_VERSION=${LATEST_TAG%.*}
+
+echo "==> Downloading Firecracker ${LATEST_TAG} binary..."
+curl -L "${RELEASE_URL}/download/${LATEST_TAG}/firecracker-${LATEST_TAG}-${ARCH}.tgz" | tar -xz
+mv "release-${LATEST_TAG}-${ARCH}/firecracker-${LATEST_TAG}-${ARCH}" firecracker
+rm -rf "release-${LATEST_TAG}-${ARCH}"
+chmod +x firecracker
+
+echo "==> Fetching latest compatible upstream guest kernel image..."
+KERNEL_KEY=$(curl -s "http://spec.ccfc.min.s3.amazonaws.com/?prefix=firecracker-ci/$CI_VERSION/$ARCH/vmlinux-&list-type=2" \
+  | grep -oP "(?<=<Key>)(firecracker-ci/$CI_VERSION/$ARCH/vmlinux-[0-9]+\.[0-9]+\.[0-9]{1,3})(?=</Key>)" \
+  | sort -V | tail -1)
+wget -O vmlinux "https://s3.amazonaws.com/spec.ccfc.min/${KERNEL_KEY}"
+
+echo "==> Fetching guest Ubuntu rootfs container..."
+UBUNTU_KEY=$(curl -s "http://spec.ccfc.min.s3.amazonaws.com/?prefix=firecracker-ci/$CI_VERSION/$ARCH/ubuntu-&list-type=2" \
+  | grep -oP "(?<=<Key>)(firecracker-ci/$CI_VERSION/$ARCH/ubuntu-[0-9]+\.[0-9]+\.squashfs)(?=</Key>)" \
+  | sort -V | tail -1)
+UBUNTU_VER=$(basename "$UBUNTU_KEY" .squashfs | grep -oE '[0-9]+\.[0-9]+')
+wget -O "ubuntu-${UBUNTU_VER}.squashfs.upstream" "https://s3.amazonaws.com/spec.ccfc.min/${UBUNTU_KEY}"
+
+echo "==> Unpacking filesystem and inject credentials..."
+rm -rf squashfs-root
+unsquashfs "ubuntu-${UBUNTU_VER}.squashfs.upstream"
+
+# Generate non-interactive SSH Key pair
+rm -f microvm_key*
+ssh-keygen -f microvm_key -N "" -t rsa -b 4096
+mkdir -p squashfs-root/root/.ssh
+cp microvm_key.pub squashfs-root/root/.ssh/authorized_keys
+chmod 700 squashfs-root/root/.ssh
+chmod 600 squashfs-root/root/.ssh/authorized_keys
+
+echo "==> Compiling optimized raw ext4 filesystem disk block..."
+sudo chown -R root:root squashfs-root
+truncate -s 1G rootfs.ext4
+sudo mkfs.ext4 -d squashfs-root -F rootfs.ext4
+sudo chown "${USER}:${USER}" rootfs.ext4
+
+echo "==> Cleanup intermediate directories..."
+sudo rm -rf squashfs-root
+echo "Assets prepared successfully."
+```
+
+**Step 3: Configuring Host-Side Networking**
+
+Firecracker does not implement a virtual network switch. It relies on a paravirtualized network layer (`virtio-net`) linked directly to a Linux TAP interface on the host machine.
+
+Run the following configuration block to create the network tunnel, establish a network bridge space, and set up network address translation (NAT) to route the guest's outbound Internet traffic through your primary network card:
+
+```sh
+#!/bin/bash
+set -euo pipefail
+
+TAP_DEV="tap0"
+TAP_IP="172.16.0.1"
+GUEST_IP="172.16.0.2"
+NETMASK_SHORT="/30"
+
+echo "==> Tearing down old interface states if present..."
+sudo ip link del "$TAP_DEV" 2>/dev/null || true
+
+echo "==> Initializing virtual TAP interface..."
+sudo ip tuntap add dev "$TAP_DEV" mode tap
+sudo ip addr add "${TAP_IP}${NETMASK_SHORT}" dev "$TAP_DEV"
+sudo ip link set dev "$TAP_DEV" up
+
+echo "==> Provisioning Host Kernel routing matrices..."
+sudo sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
+
+# Clear conflicting old rules and establish NAT Masquerading
+HOST_INTERFACE=$(ip -j route list default | grep -oP '(?<="dev":")[^"]+')
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -t nat -D POSTROUTING -o "$HOST_INTERFACE" -j MASQUERADE 2>/dev/null || true
+sudo iptables -t nat -A POSTROUTING -o "$HOST_INTERFACE" -j MASQUERADE
+
+echo "Host Network Matrix Initialized. Topology: Host [${TAP_IP}] <---> Guest [${GUEST_IP}]"
+```
+
+**Step 4: The REST API Interactive Bootstrap Guide**
+
+With your assets compiled and network tunnels listening, you can configure your MicroVM. Firecracker acts as an HTTP server bound to a local Unix Domain Socket file descriptor.
+
+To visualize how these configuration inputs assemble your execution state, use the interactive panel below to select resources, view real-time API schema updates, and track the internal VMM state transitions.
+
+**Step 5: Manual Orchestration and Connection**
+
+If you want to spin up the machine manually using individual API endpoints, execute the following shell script. It pipes sequential configuration parameters directly into Firecracker's listening socket file descriptor:
+
+```sh
+#!/bin/bash
+set -euo pipefail
+
+SOCKET="/tmp/firecracker.socket"
+sudo rm -f "$SOCKET"
+
+echo "==> Initializing Firecracker core listener process in background..."
+sudo ./firecracker --api-sock "$SOCKET" > firecracker.log 2>&1 &
+FIRECRACKER_PID=$!
+
+# Ensure cleanup on terminal termination
+trap 'sudo kill -9 $FIRECRACKER_PID 2>/dev/null || true' EXIT
+
+echo "==> Waiting for socket allocation..."
+while [ ! -S "$SOCKET" ]; do sleep 0.1; done
+
+echo "==> 1. Binding Guest Compute Engine configuration..."
+sudo curl -X PUT --unix-socket "$SOCKET" \
+  --data '{
+    "vcpu_count": 2,
+    "mem_size_mib": 512
+  }' "http://localhost/machine-config"
+
+echo "==> 2. Registering Uncompressed Kernel Image payload..."
+sudo curl -X PUT --unix-socket "$SOCKET" \
+  --data '{
+    "kernel_image_path": "vmlinux",
+    "boot_args": "console=ttyS0 reboot=k panic=1 pci=off"
+  }' "http://localhost/boot-source"
+
+echo "==> 3. Mapping raw ext4 linear block root storage drive..."
+sudo curl -X PUT --unix-socket "$SOCKET" \
+  --data '{
+    "drive_id": "rootfs",
+    "path_on_host": "rootfs.ext4",
+    "is_root_device": true,
+    "is_read_only": false
+  }' "http://localhost/drives/rootfs"
+
+echo "==> 4. Linking paravirtualized network abstraction boundary..."
+sudo curl -X PUT --unix-socket "$SOCKET" \
+  --data '{
+    "iface_id": "net1",
+    "guest_mac": "06:00:AC:10:00:02",
+    "host_dev_name": "tap0"
+  }' "http://localhost/network-interfaces/net1"
+
+echo "==> 5. Instantiating MicroVM (Triggering KVM Hardware Execution)..."
+sudo curl -X PUT --unix-socket "$SOCKET" \
+  --data '{
+    "action_type": "InstanceStart"
+  }' "http://localhost/actions"
+
+echo "==> VM execution initiated. Establishing SSH control connection..."
+sleep 1.5
+
+# Provision network address and gateway inside guest space via automated SSH injections
+sudo ssh -i microvm_key -o StrictHostKeyChecking=no root@172.16.0.2 "ip route add default via 172.16.0.1 dev eth0; echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
+
+echo "==> Connecting to interactive session. Type 'reboot' to terminate microVM securely."
+sudo ssh -i microvm_key -o StrictHostKeyChecking=no root@172.16.0.2
+```
+
+When configuring and running your microVM, Firecracker performs several key memory and input/output (I/O) setup actions behind the scenes:
+
+```text
++-----------------------------------------------------------------------+
+|                             HOST MACHINE                              |
+|                                                                       |
+|  +---------------------------+       +-----------------------------+  |
+|  |    Firecracker Process    |       |      Host Linux Kernel      |  |
+|  |     (User Space, Rust)    |       |        (Kernel Space)       |  |
+|  |                           |       |                             |  |
+|  |  +---------------------+  |       |  +-----------------------+  |  |
+|  |  | API Listener Thread |  |       |  |     KVM Subsystem     |  |  |
+|  |  +---------------------+  |       |  +-----------------------+  |  |
+|  |                           |       |              ^              |  |
+|  |  +---------------------+  |       |              |              |  |
+|  |  |     VMM Thread      |--|-------|--------------+              |  |
+|  |  +---------------------+  |       |         ioctl system calls  |  |
+|  |                           |       |                             |  |
+|  |  +---------------------+  |       |  +-----------------------+  |  |
+|  |  |    vCPU Threads     |--|-------|--|--> KVM_RUN            |  |  |
+|  |  +---------------------+  |       |  +-----------------------+  |  |
+|  +--|------------------------+       +-----------------------------+  |
+|     |                                                                 |
+|     | mmap()                                                          |
+|     v                                                                 |
+|  +-----------------------------------------------------------------+  |
+|  |                    Host RAM (Allocated Address Space)           |  |
+|  |                                                                 |  |
+|  |  +-----------------------------------------------------------+  |  |
+|  |  |                      GUEST MICROVM                        |  |  |
+|  |  |                                                           |  |  |
+|  |  |  +----------------------+       +----------------------+  |  |  |
+|  |  |  |   Guest OS Kernel    |       |     Shared Memory    |  |  |  |
+|  |  |  | (Direct Kernel Boot) |       |      Virtqueues      |  |  |  |
+|  |  |  +----------------------+       +----------------------+  |  |  |
+|  |  +-----------------------------------------------------------+  |  |
+|  +-----------------------------------------------------------------+  |
++-----------------------------------------------------------------------+
+```
+
+- Memory mapping via `mmap`:
+  - When the `mem_size_mib` value is parsed from your JSON configuration, Firecracker calls `mmap` to allocate that exact amount of continuous virtual memory from the host system.
+  - This entire block is registered with KVM using the `KVM_SET_USER_MEMORY_REGION` system call. The guest operating system treats this mapped address space as its raw physical memory layout.
+- Zero-copy storage and ring buffers: Firecracker avoids the overhead of traditional hardware storage emulation. Instead, it uses VirtIO shared-memory ring buffers (Virtqueues). When the guest operating system writes data to disk:
+  - The guest kernel writes the data block into a memory page shared with the host.
+  - The guest registers the write request inside the descriptor ring buffer.
+  - The guest vCPU signals Firecracker by executing an I/O instruction, which triggers a hardware-level exit (VMExit).
+  - The host KVM module catches the exit event and passes control to the Firecracker VMM thread using a fast Linux `eventfd` notification.
+  - Firecracker reads the data directly out of host memory and writes it to the backing file (`rootfs.ext4`) on the host filesystem. This process bypasses complex emulation code layers, maximizing I/O performance.
+
+**Step 6: Production Scaling (Using Declarative Blueprints)**
+
+To scale workloads, bypassing individual HTTP calls avoids network overhead. Firecracker can process a single declarative configuration file during startup.
+
+Save this file as `vm_config.json`:
+
+```json
+{
+  "boot-source": {
+    "kernel_image_path": "vmlinux",
+    "boot_args": "console=ttyS0 reboot=k panic=1 pci=off"
+  },
+  "drives": [
+    {
+      "drive_id": "rootfs",
+      "path_on_host": "rootfs.ext4",
+      "is_root_device": true,
+      "is_read_only": false
+    }
+  ],
+  "network-interfaces": [
+    {
+      "iface_id": "net1",
+      "guest_mac": "06:00:AC:10:00:02",
+      "host_dev_name": "tap0"
+    }
+  ],
+  "machine-config": {
+    "vcpu_count": 2,
+    "mem_size_mib": 512,
+    "smt": false
+  }
+}
+```
+
+To execute this microVM using your configuration blueprint, simply run:
+
+```sh
+sudo rm -f /tmp/firecracker.socket
+sudo ./firecracker --api-sock /tmp/firecracker.socket --config-file vm_config.json
+```
 
 ### 5.3. Cloud hypervisor
 

@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firecracker Architecture Simulator</title>
+    <style>
+      :root {
+        --aws-orange: #ff9900;
+        --aws-blue: #232f3e;
+        --bg-color: #f4f4f9;
+        --border-radius: 8px;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 30px;
+        display: flex;
+        gap: 20px;
+        color: #333;
+        flex-wrap: wrap;
+      }
+      .panel {
+        background: white;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      #controls {
+        flex: 1;
+        min-width: 250px;
+        max-width: 350px;
+        height: fit-content;
+      }
+      #visualization {
+        flex: 2;
+        min-width: 400px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+        border-bottom: 2px solid var(--aws-orange);
+        padding-bottom: 8px;
+        color: var(--aws-blue);
+      }
+      label {
+        display: block;
+        margin-top: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      select,
+      input,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+      }
+      button {
+        background-color: var(--aws-orange);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        margin-top: 25px;
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #e88a00;
+      }
+
+      .box {
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        padding: 20px 15px 15px 15px;
+        position: relative;
+        background: #fafafa;
+      }
+      .box-title {
+        position: absolute;
+        top: -12px;
+        left: 15px;
+        background: white;
+        padding: 0 8px;
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #555;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .thread {
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 4px;
+        background: #e1f5fe;
+        border: 2px solid #81d4fa;
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.9rem;
+        opacity: 0.5;
+        transition: all 0.3s ease;
+      }
+      .thread.active {
+        opacity: 1;
+        border-color: #0288d1;
+        font-weight: bold;
+        background: #b3e5fc;
+        box-shadow: 0 0 8px rgba(2, 136, 209, 0.4);
+      }
+
+      .vcpu-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      #log {
+        background: #1e1e1e;
+        color: #4af626;
+        font-family: 'Courier New', Courier, monospace;
+        padding: 15px;
+        height: 200px;
+        overflow-y: auto;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .highlight {
+        background-color: #fff9c4 !important;
+        border-color: #fbc02d !important;
+        transition: all 0.5s;
+      }
+      .status-text {
+        text-align: center;
+        font-family: monospace;
+        font-size: 0.95rem;
+        margin-top: 5px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls" class="panel">
+      <h2>MicroVM Configuration</h2>
+
+      <label>vCPU Cores</label>
+      <select id="vcpu">
+        <option value="1">1 Core</option>
+        <option value="2" selected>2 Cores</option>
+        <option value="4">4 Cores</option>
+        <option value="8">8 Cores</option>
+      </select>
+
+      <label>Memory Footprint (MiB)</label>
+      <input
+        type="range"
+        id="memory"
+        min="128"
+        max="2048"
+        step="128"
+        value="512"
+      />
+      <div
+        style="
+          text-align: right;
+          font-size: 0.85rem;
+          color: #666;
+          font-weight: bold;
+        "
+        id="mem-display"
+      >
+        512 MiB
+      </div>
+
+      <button id="btn-start" onclick="startBootSequence()">
+        Send PUT /actions (InstanceStart)
+      </button>
+      <button
+        id="btn-reset"
+        onclick="resetSim()"
+        style="background-color: #d32f2f; display: none"
+      >
+        Halt & Reset VM
+      </button>
+    </div>
+
+    <div id="visualization" class="panel">
+      <h2>Internal State Architecture</h2>
+
+      <div
+        class="box"
+        id="host-os"
+        style="background: #eceff1; border-color: #cfd8dc"
+      >
+        <span class="box-title">Host Server (Linux)</span>
+
+        <div
+          class="box"
+          id="fc-process"
+          style="margin-top: 15px; border-color: #b0bec5"
+        >
+          <span class="box-title">Firecracker Process (User Space)</span>
+          <div class="thread" id="th-api">
+            API Server Thread (Unix Socket Listener)
+          </div>
+          <div class="thread" id="th-vmm">VMM Thread (Control Plane)</div>
+
+          <div class="vcpu-container" id="vcpu-zone"></div>
+        </div>
+
+        <div
+          class="box"
+          id="kvm-module"
+          style="margin-top: 20px; border-color: #ffb74d; background: #fff8e1"
+        >
+          <span class="box-title">KVM Kernel Module (/dev/kvm)</span>
+          <div class="status-text" style="color: #e65100" id="kvm-status">
+            Idle. Waiting for ioctl calls...
+          </div>
+        </div>
+
+        <div
+          class="box"
+          id="guest-mem"
+          style="margin-top: 20px; border-color: #81c784; background: #e8f5e9"
+        >
+          <span class="box-title"
+            >mmap() Allocated Physical Memory (Guest RAM)</span
+          >
+          <div class="status-text" style="color: #2e7d32" id="mem-status">
+            0 MiB Allocated
+          </div>
+        </div>
+      </div>
+
+      <div id="log">
+        > Firecracker VMM initialized.<br />
+        > Waiting for API configuration payloads...
+      </div>
+    </div>
+
+    <script>
+      const memSlider = document.getElementById('memory')
+      const memDisplay = document.getElementById('mem-display')
+      const logWindow = document.getElementById('log')
+      let isRunning = false
+
+      memSlider.oninput = function () {
+        memDisplay.innerText = this.value + ' MiB'
+      }
+
+      function log(msg) {
+        const time = new Date().toISOString().split('T')[1].slice(0, 12)
+        logWindow.innerHTML += `<br><span style="color:#888;">[${time}]</span> ${msg}`
+        logWindow.scrollTop = logWindow.scrollHeight
+      }
+
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+      async function startBootSequence() {
+        if (isRunning) return
+        isRunning = true
+
+        document.getElementById('btn-start').style.display = 'none'
+        document.getElementById('btn-reset').style.display = 'block'
+
+        const vcpuCount = parseInt(document.getElementById('vcpu').value)
+        const memSize = parseInt(document.getElementById('memory').value)
+
+        // Setup vCPU UI elements
+        const vcpuZone = document.getElementById('vcpu-zone')
+        vcpuZone.innerHTML = ''
+        for (let i = 0; i < vcpuCount; i++) {
+          vcpuZone.innerHTML += `<div class="thread vcpu-th" id="vcpu-${i}">vCPU ${i} Thread</div>`
+        }
+
+        // Step 1: API Request arrives
+        log(
+          `<span style="color:#fff;">HTTP PUT /actions (InstanceStart) received on /tmp/firecracker.socket</span>`,
+        )
+        document.getElementById('th-api').classList.add('active')
+        await sleep(1000)
+        document.getElementById('th-api').classList.remove('active')
+
+        // Step 2: VMM Thread takes over validation
+        log(`VMM Thread activated. Validating machine config...`)
+        document.getElementById('th-vmm').classList.add('active')
+        await sleep(1200)
+
+        // Step 3: Memory Allocation via mmap
+        log(
+          `VMM mapping ${memSize} MiB of host RAM for Guest OS via <span style="color:#569cd6;">mmap()</span>...`,
+        )
+        log(`Loading raw vmlinux kernel directly into mapped memory...`)
+        document.getElementById('mem-status').innerText =
+          `${memSize} MiB Mapped (Kernel Loaded at 0x100000)`
+        document.getElementById('guest-mem').classList.add('highlight')
+        await sleep(1500)
+
+        // Step 4: KVM Device & CPU Creation
+        log(
+          `VMM executing <span style="color:#569cd6;">ioctl(KVM_CREATE_VCPU)</span> x${vcpuCount} to provision hardware boundaries...`,
+        )
+        document.getElementById('kvm-status').innerText =
+          `Allocated hardware VMCS blocks for ${vcpuCount} cores.`
+        document.getElementById('kvm-module').classList.add('highlight')
+        await sleep(1500)
+
+        // Step 5: Context Switch & Boot
+        log(`VMM writing Linux Zero Page (boot_args) to Guest RAM...`)
+        await sleep(800)
+        log(
+          `Executing <span style="color:#569cd6;">ioctl(KVM_RUN)</span>. Context switching CPU to Guest Mode...`,
+        )
+
+        document
+          .querySelectorAll('.vcpu-th')
+          .forEach((el) => el.classList.add('active'))
+        document.getElementById('th-vmm').classList.remove('active')
+
+        await sleep(600)
+        document.getElementById('kvm-status').innerText =
+          `LOCKED: Hardware Execution in Guest Mode`
+        log(
+          `<span style="color:#fbc02d;">[Guest Console] Linux version booting...</span>`,
+        )
+        log(
+          `<span style="color:#fbc02d;">[Guest Console] Kernel command line: console=ttyS0 reboot=k panic=1</span>`,
+        )
+        log(
+          `<span style="color:#fbc02d;">[Guest Console] Run /sbin/init as init process</span>`,
+        )
+        log(
+          `<span style="color:#00e676; font-weight:bold;">Boot complete in ~130ms. MicroVM is online.</span>`,
+        )
+      }
+
+      function resetSim() {
+        isRunning = false
+        document.getElementById('btn-start').style.display = 'block'
+        document.getElementById('btn-reset').style.display = 'none'
+
+        document.getElementById('vcpu-zone').innerHTML = ''
+        document
+          .querySelectorAll('.thread')
+          .forEach((el) => el.classList.remove('active'))
+        document
+          .querySelectorAll('.highlight')
+          .forEach((el) => el.classList.remove('highlight'))
+
+        document.getElementById('kvm-status').innerText =
+          `Idle. Waiting for ioctl calls...`
+        document.getElementById('mem-status').innerText = `0 MiB Allocated`
+
+        logWindow.innerHTML = `> VMM Process Terminated.<br>> Simulator Reset. Ready for new configuration.`
+      }
+    </script>
+  </body>
+</html>
