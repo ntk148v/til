@@ -28,6 +28,7 @@ Table of contents:
     - [5.2. Firecracker](#52-firecracker)
       - [5.2.1. The problem Firecracker solves](#521-the-problem-firecracker-solves)
       - [5.2.2. How Firecracker works](#522-how-firecracker-works)
+      - [5.2.3. Hands-on guide](#523-hands-on-guide)
     - [5.3. Cloud hypervisor](#53-cloud-hypervisor)
   - [6. Host-Level Virtualization Control](#6-host-level-virtualization-control)
     - [Example:](#example)
@@ -1026,7 +1027,7 @@ AWS solves the challenges by keeping Linux KVM, but swapping QEMU with a super l
 
 For network and block devices, Firecracker uses `virtio` (specifically virtio-net for networking, virtio-block for storage, and virtio-vsock for socket communication). Virtio provides an open API for exposing emulated devices from hypervisors. Virtio is simple, scalable, and offers good performance through its use of paravirtualization.
 
-![firacracker host integration](https://github.com/firecracker-microvm/firecracker/blob/main/docs/images/firecracker_host_integration.png?raw=true)
+![firecracker host integration](https://github.com/firecracker-microvm/firecracker/blob/main/docs/images/firecracker_host_integration.png?raw=true)
 
 On the networking side, Firecracker uses a TAP virtual network interface and encapsulates the guest OS (and the TAP device) inside their own network namespace.
 
@@ -1046,7 +1047,7 @@ Source: <https://github.com/firecracker-microvm/firecracker/blob/main/docs/getti
 
 To fully master Firecracker, you must understand both the user-space operations (interacting with its REST API) and the host-space operations (how KVM and the Linux kernel partition resources).
 
-This guide provides a comprehensive, production-style walkthrough to configure, network, boot, and analyze a Firecracker microVM using the exact assets and versions from the official repository. It is taken from Firecracker getting started guide
+This guide provides a comprehensive, production-style walkthrough to configure, network, boot, and analyze a Firecracker microVM using the exact assets and versions from the official repository. It is taken from Firecracker getting started guide and enrich.
 
 **Step 1: Environment Verification & Hardware Virtualization**
 
@@ -1097,9 +1098,10 @@ CI_VERSION=${LATEST_TAG%.*}
 
 echo "==> Downloading Firecracker ${LATEST_TAG} binary..."
 curl -L "${RELEASE_URL}/download/${LATEST_TAG}/firecracker-${LATEST_TAG}-${ARCH}.tgz" | tar -xz
-mv "release-${LATEST_TAG}-${ARCH}/firecracker-${LATEST_TAG}-${ARCH}" firecracker
-rm -rf "release-${LATEST_TAG}-${ARCH}"
-chmod +x firecracker
+sudo cp "release-${LATEST_TAG}-${ARCH}/firecracker-${LATEST_TAG}-${ARCH}" /usr/local/bin/firecracker
+sudo cp "release-${LATEST_TAG}-${ARCH}/jailer-${LATEST_TAG}-${ARCH}" /usr/local/bin/jailer
+sudo chmod +x /usr/local/bin/firecracker
+sudo chmod +x /usr/local/bin/jailer
 
 echo "==> Fetching latest compatible upstream guest kernel image..."
 KERNEL_KEY=$(curl -s "http://spec.ccfc.min.s3.amazonaws.com/?prefix=firecracker-ci/$CI_VERSION/$ARCH/vmlinux-&list-type=2" \
@@ -1178,6 +1180,8 @@ With your assets compiled and network tunnels listening, you can configure your 
 
 To visualize how these configuration inputs assemble your execution state, use the interactive panel below to select resources, view real-time API schema updates, and track the internal VMM state transitions.
 
+<iframe src="./firecracker.html" width="100%" height="500px" style="border:none;"></iframe>
+
 **Step 5: Manual Orchestration and Connection**
 
 If you want to spin up the machine manually using individual API endpoints, execute the following shell script. It pipes sequential configuration parameters directly into Firecracker's listening socket file descriptor:
@@ -1190,7 +1194,7 @@ SOCKET="/tmp/firecracker.socket"
 sudo rm -f "$SOCKET"
 
 echo "==> Initializing Firecracker core listener process in background..."
-sudo ./firecracker --api-sock "$SOCKET" > firecracker.log 2>&1 &
+sudo firecracker --api-sock "$SOCKET" > firecracker.log 2>&1 &
 FIRECRACKER_PID=$!
 
 # Ensure cleanup on terminal termination
@@ -1335,7 +1339,146 @@ To execute this microVM using your configuration blueprint, simply run:
 
 ```sh
 sudo rm -f /tmp/firecracker.socket
-sudo ./firecracker --api-sock /tmp/firecracker.socket --config-file vm_config.json
+sudo firecracker --api-sock /tmp/firecracker.socket --config-file vm_config.json
+```
+
+**Step 7: The "Jailer" Architecture & Prerequisites**
+
+Running Firecracker as a raw process on your host is great for testing, but in a production environment (like AWS Lambda), you cannot trust the guest code. If a vulnerability in the guest kernel allows an attacker to break out into the Firecracker VMM process, they would have access to your host machine.
+
+This is where the Jailer comes in. The Jailer is a wrapper program that constructs an impenetrable fortress (a "jail") around the Firecracker process _before_ it even boots the microVM. It aggressively strips away privileges, isolates the network, and restricts file system access.
+
+The Jailer requires a specific non-root user and group to run the Firecracker process. It drops root privileges immediately after setting up the jail.
+
+```sh
+#!/bin/bash
+set -euo pipefail
+
+echo "==> Creating dedicated system group and user for Jailer..."
+sudo groupadd -r jailer 2>/dev/null || true
+sudo useradd -r -g jailer -s /sbin/nologin -c "Firecracker Jailer Execution Daemon" jailer 2>/dev/null || true
+
+# Extract identifiers for automation variables
+JAILER_UID=$(id -u jailer)
+JAILER_GID=$(id -g jailer)
+
+echo "Identity Ready -> UID: ${JAILER_UID} | GID: ${JAILER_GID}"
+```
+
+**Step 8: Constructing the Jail File System Layout**
+
+The Jailer expects a deterministic, hardcoded directory matrix under `/srv/jailer`. It utilizes the chroot (change root) system call to redefine the root directory for the Firecracker process.
+
+Because a jailed process is blind to any files outside its assigned directory, **all microVM assets (kernels, root filesystems) must be copied into the internal jail matrix before boot**.
+
+```sh
+#!/bin/bash
+set -euo pipefail
+
+VM_ID="test-vm-01"
+JAILER_UID=$(id -u jailer)
+JAILER_GID=$(id -g jailer)
+
+# Hardcoded structural layout required by Firecracker Jailer
+JAIL_ROOT="/srv/jailer/firecracker/${VM_ID}/root"
+
+echo "==> Building secure chroot node directory structure..."
+sudo mkdir -p "${JAIL_ROOT}"
+
+echo "==> Migrating raw infrastructure assets into the jail boundary..."
+# Copy your existing vmlinux kernel and ext4 rootfs into the target chroot zone
+sudo cp vmlinux "${JAIL_ROOT}/vmlinux"
+sudo cp rootfs.ext4 "${JAIL_ROOT}/rootfs.ext4"
+
+echo "==> Enforcing restrictive DAC permissions inside the jail node..."
+# Firecracker must own its files to manipulate storage blocks and read the kernel image
+sudo chown -R ${JAILER_UID}:${JAILER_GID} "/srv/jailer/firecracker/${VM_ID}"
+sudo chmod 750 "/srv/jailer/firecracker/${VM_ID}"
+
+echo "Jail asset tree compiled successfully at ${JAIL_ROOT}."
+```
+
+**Step 9: Launching the Daemonized Jailer Container**
+
+```sh
+#!/bin/bash
+set -euo pipefail
+
+JAILER_UID=$(id -u jailer)
+JAILER_GID=$(id -g jailer)
+VM_ID="test-vm-01"
+
+echo "==> Purging stale jail state for ${VM_ID}..."
+sudo rm -rf "/srv/jailer/firecracker/${VM_ID}"
+
+echo "==> Launching Jailer isolation boundary..."
+sudo jailer --id "${VM_ID}" \
+            --exec-file /usr/local/bin/firecracker \
+            --uid ${JAILER_UID} \
+            --gid ${JAILER_GID} \
+            --daemonize
+
+echo "Jailer wrapper executed successfully."
+```
+
+To verify that the process is completely isolated and running under the unprivileged identity, inspect the active process table properties:
+
+```sh
+# Check the active namespaces, user mapping, and chroot base of the daemonized worker
+ps -eo user,pid,args | grep firecracker
+```
+
+**Step 10: Interacting with the Jailed REST API Engine**
+
+Now that Firecracker is running inside the jail, your interaction layer shifts. You must navigate two major architectural constraints:
+
+- Socket Paths: The UNIX domain socket is managed inside the jail file tree. The host must target `/srv/jailer/firecracker/<VM_ID>/root/run/firecracker.socket`.
+- Relative Path Resolution: When executing PUT configurations to the API engine, do not use absolute host paths. To Firecracker, the jail is the root directory (`/`). Therefore, `/srv/jailer/firecracker/test-vm-01/root/vmlinux` must be referenced simply as `vmlinux`.
+
+Execute this sequential script to boot the microVM inside the secure perimeter:
+
+```sh
+#!/bin/bash
+set -euo pipefail
+
+VM_ID="test-vm-01"
+SOCKET="/srv/jailer/firecracker/${VM_ID}/root/run/firecracker.socket"
+
+echo "==> Waiting for API socket to bind..."
+while [ ! -S "$SOCKET" ]; do sleep 0.1; done
+
+echo "==> 1. Mapping boot kernel source (Using Absolute Jail Path)..."
+sudo curl -X PUT --unix-socket "$SOCKET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "kernel_image_path": "/vmlinux",
+    "boot_args": "console=ttyS0 reboot=k panic=1 pci=off"
+  }' "http://localhost/boot-source"
+
+echo "==> 2. Mounting linear ext4 root filesystem..."
+sudo curl -X PUT --unix-socket "$SOCKET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "drive_id": "rootfs",
+    "path_on_host": "/rootfs.ext4",
+    "is_root_device": true,
+    "is_read_only": false
+  }' "http://localhost/drives/rootfs"
+
+echo "==> 3. Configuring compute topology..."
+sudo curl -X PUT --unix-socket "$SOCKET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vcpu_count": 2,
+    "mem_size_mib": 512
+  }' "http://localhost/machine-config"
+
+echo "==> 4. Igniting MicroVM..."
+sudo curl -X PUT --unix-socket "$SOCKET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action_type": "InstanceStart"
+  }' "http://localhost/actions"
 ```
 
 ### 5.3. Cloud hypervisor

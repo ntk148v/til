@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firecracker Jailer Path Translation</title>
+    <style>
+      :root {
+        --aws-orange: #ff9900;
+        --aws-blue: #232f3e;
+        --host-color: #37474f;
+        --jail-color: #d32f2f;
+        --bg-color: #f4f4f9;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 30px;
+        display: flex;
+        gap: 20px;
+        color: #333;
+        flex-wrap: wrap;
+      }
+      .panel {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      #controls {
+        flex: 1;
+        min-width: 300px;
+        max-width: 350px;
+      }
+      #visualization {
+        flex: 2;
+        min-width: 450px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+        border-bottom: 2px solid var(--aws-orange);
+        padding-bottom: 8px;
+        color: var(--aws-blue);
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      input[type='text'] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+        font-family: monospace;
+      }
+      .radio-group {
+        margin-top: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: #f9f9f9;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #eee;
+      }
+      .radio-group label {
+        margin: 0;
+        font-weight: normal;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Perspective Toggle Styling */
+      .toggle-container {
+        display: flex;
+        margin-top: 20px;
+        border: 2px solid var(--host-color);
+        border-radius: 6px;
+        overflow: hidden;
+        transition: border-color 0.3s;
+      }
+      .toggle-btn {
+        flex: 1;
+        padding: 12px;
+        text-align: center;
+        background: #eee;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+      }
+      .toggle-btn.active.host {
+        background: var(--host-color);
+        color: white;
+      }
+      .toggle-btn.active.jail {
+        background: var(--jail-color);
+        color: white;
+      }
+
+      /* File Tree Styling */
+      .file-tree {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 20px;
+        border-radius: 6px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1rem;
+        line-height: 1.6;
+        overflow-x: auto;
+        position: relative;
+      }
+      .folder {
+        color: #569cd6;
+        font-weight: bold;
+      }
+      .file {
+        color: #ce9178;
+      }
+      .socket {
+        color: #4af626;
+      }
+
+      .jail-boundary {
+        border: 2px dashed var(--jail-color);
+        padding: 10px;
+        margin-left: -12px;
+        border-radius: 4px;
+        background: rgba(211, 47, 47, 0.05);
+        transition: all 0.4s ease;
+      }
+
+      .highlight-item {
+        background-color: rgba(255, 255, 0, 0.3);
+        color: white;
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+
+      /* Perspective Transitions */
+      .hide-in-jail {
+        transition:
+          opacity 0.3s,
+          height 0.3s;
+      }
+      .jailed-view .hide-in-jail {
+        opacity: 0.2;
+        text-decoration: line-through;
+      }
+      .jailed-view .jail-boundary {
+        border: 2px solid var(--jail-color);
+        background: rgba(211, 47, 47, 0.1);
+        transform: scale(1.02);
+        transform-origin: left top;
+        box-shadow: 0 0 15px rgba(211, 47, 47, 0.3);
+      }
+
+      /* Payload / Explainer Styling */
+      .code-block {
+        background: #f5f5f5;
+        border-left: 4px solid var(--aws-orange);
+        padding: 15px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        border-radius: 0 4px 4px 0;
+        color: #333;
+      }
+      .explainer {
+        background: #e3f2fd;
+        border: 1px solid #90caf9;
+        padding: 15px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+      .explainer strong {
+        color: #1565c0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls" class="panel">
+      <h2>Sandbox Controls</h2>
+
+      <label>Virtual Machine ID</label>
+      <input type="text" id="vm-id" value="test-vm-01" onkeyup="updateUI()" />
+
+      <label>Target Asset</label>
+      <div class="radio-group" onchange="updateUI()">
+        <label
+          ><input type="radio" name="asset" value="kernel" checked /> Kernel
+          Binary (vmlinux)</label
+        >
+        <label
+          ><input type="radio" name="asset" value="rootfs" /> Root Drive
+          (rootfs.ext4)</label
+        >
+        <label
+          ><input type="radio" name="asset" value="socket" /> API Socket
+          (firecracker.socket)</label
+        >
+      </div>
+
+      <label>Execution Perspective</label>
+      <div class="toggle-container" id="perspective-border">
+        <div
+          class="toggle-btn active host"
+          id="btn-host"
+          onclick="setPerspective('host')"
+        >
+          Host OS<br /><small>(DevOps View)</small>
+        </div>
+        <div class="toggle-btn" id="btn-jail" onclick="setPerspective('jail')">
+          Jailed Daemon<br /><small>(Firecracker View)</small>
+        </div>
+      </div>
+    </div>
+
+    <div id="visualization" class="panel">
+      <h2>File System Reality Matrix</h2>
+
+      <div class="file-tree" id="tree-container">
+        <div class="hide-in-jail">
+          / <span style="color: #888">(Host Root)</span>
+        </div>
+        <div class="hide-in-jail">└── <span class="folder">srv</span>/</div>
+        <div class="hide-in-jail">
+          &nbsp;&nbsp;&nbsp;&nbsp;└── <span class="folder">jailer</span>/
+        </div>
+        <div class="hide-in-jail">
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──
+          <span class="folder">firecracker</span>/
+        </div>
+        <div class="hide-in-jail">
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──
+          <span class="folder vmid-text">test-vm-01</span>/
+        </div>
+
+        <div class="jail-boundary" id="jail-zone">
+          <div
+            style="
+              color: #ef5350;
+              font-size: 0.8rem;
+              font-weight: bold;
+              margin-bottom: 5px;
+            "
+          >
+            ▼ JAIL BOUNDARY (chroot point)
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──
+            <span class="folder">root</span>/
+            <span id="root-alias" style="color: #ef5350; display: none"
+              >→ acts as /</span
+            >
+          </div>
+          <div id="line-kernel">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──
+            <span class="file">vmlinux</span>
+          </div>
+          <div id="line-rootfs">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──
+            <span class="file">rootfs.ext4</span>
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──
+            <span class="folder">run</span>/
+          </div>
+          <div id="line-socket">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──
+            <span class="socket">firecracker.socket</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="explainer" id="explainer-box"></div>
+
+      <div class="code-block" id="code-box"></div>
+    </div>
+
+    <script>
+      let currentPerspective = 'host'
+
+      function setPerspective(persp) {
+        currentPerspective = persp
+        const container = document.getElementById('tree-container')
+        const border = document.getElementById('perspective-border')
+
+        document.getElementById('btn-host').classList.remove('active', 'host')
+        document.getElementById('btn-jail').classList.remove('active', 'jail')
+
+        if (persp === 'host') {
+          container.classList.remove('jailed-view')
+          document.getElementById('btn-host').classList.add('active', 'host')
+          border.style.borderColor = 'var(--host-color)'
+          document.getElementById('root-alias').style.display = 'none'
+        } else {
+          container.classList.add('jailed-view')
+          document.getElementById('btn-jail').classList.add('active', 'jail')
+          border.style.borderColor = 'var(--jail-color)'
+          document.getElementById('root-alias').style.display = 'inline'
+        }
+        updateUI()
+      }
+
+      function updateUI() {
+        const vmId = document.getElementById('vm-id').value || 'test-vm-01'
+        const asset = document.querySelector(
+          'input[name="asset"]:checked',
+        ).value
+
+        // Update all VM ID text elements
+        document
+          .querySelectorAll('.vmid-text')
+          .forEach((el) => (el.innerText = vmId))
+
+        // Reset Highlights
+        document
+          .getElementById('line-kernel')
+          .classList.remove('highlight-item')
+        document
+          .getElementById('line-rootfs')
+          .classList.remove('highlight-item')
+        document
+          .getElementById('line-socket')
+          .classList.remove('highlight-item')
+        document.getElementById(`line-${asset}`).classList.add('highlight-item')
+
+        const explainer = document.getElementById('explainer-box')
+        const codeBox = document.getElementById('code-box')
+
+        const hostSocket = `/srv/jailer/firecracker/${vmId}/root/run/firecracker.socket`
+        const hostKernel = `/srv/jailer/firecracker/${vmId}/root/vmlinux`
+        const hostRootfs = `/srv/jailer/firecracker/${vmId}/root/rootfs.ext4`
+
+        if (currentPerspective === 'host') {
+          // HOST PERSPECTIVE
+          if (asset === 'socket') {
+            explainer.innerHTML = `<strong>Host OS Perspective:</strong> You are the DevOps engineer on the host server. To send commands to the Firecracker API, your <code>curl</code> command must target the absolute path where the socket physically exists on the host disk.`
+            codeBox.innerHTML = `curl -X PUT --unix-socket <span style="color:#D32F2F; font-weight:bold;">${hostSocket}</span> \\<br>  http://localhost/actions`
+          } else if (asset === 'kernel') {
+            explainer.innerHTML =
+              `<strong>Host OS Perspective:</strong> When copying the kernel into the microVM directory, you must use the absolute path on the host system. However, you <strong>cannot</strong> send this absolute path in the JSON payload, because the Firecracker process inside the jail cannot see ` /
+              srv`.`
+            codeBox.innerHTML = `# Copying asset into the jail before boot:<br>sudo cp ./vmlinux <span style="color:#D32F2F; font-weight:bold;">${hostKernel}</span>`
+          } else if (asset === 'rootfs') {
+            explainer.innerHTML = `<strong>Host OS Perspective:</strong> Similar to the kernel, the root filesystem must be physically placed into the jail directory from the host's perspective before the jailer is executed.`
+            codeBox.innerHTML = `# Copying asset into the jail before boot:<br>sudo cp ./rootfs.ext4 <span style="color:#D32F2F; font-weight:bold;">${hostRootfs}</span>`
+          }
+        } else {
+          // JAIL PERSPECTIVE
+          if (asset === 'socket') {
+            explainer.innerHTML = `<strong>Jailed Perspective:</strong> From inside the chroot jail, the Firecracker process binds its socket to <code>/run/firecracker.socket</code>. The host translates this automatically, but the VMM process has no idea it's living in <code>/srv/jailer/...</code>.`
+            codeBox.innerHTML = `// Firecracker Internal Rust Logger:<br>[firecracker:INFO] API server listening on <span style="color:#D32F2F; font-weight:bold;">/run/firecracker.socket</span>`
+          } else if (asset === 'kernel') {
+            explainer.innerHTML = `<strong>Jailed Perspective:</strong> When configuring the boot-source, you must tell Firecracker where the kernel is. Because of the <code>chroot()</code> system call, Firecracker's root directory is the host's <code>/root</code> folder. Therefore, the path is simply <code>vmlinux</code>.`
+            codeBox.innerHTML = `curl -X PUT --unix-socket ${hostSocket} \\<br>  -d '{<br>    "kernel_image_path": "<span style="color:#D32F2F; font-weight:bold;">vmlinux</span>",<br>    "boot_args": "console=ttyS0 reboot=k panic=1 pci=off"<br>  }'`
+          } else if (asset === 'rootfs') {
+            explainer.innerHTML = `<strong>Jailed Perspective:</strong> The same <code>chroot()</code> rules apply to the block drive. If you tell Firecracker the drive is at <code>/srv/jailer/...</code>, the API will return a <strong>"File not found"</strong> error because that directory structure does not exist inside the jail.`
+            codeBox.innerHTML = `curl -X PUT --unix-socket ${hostSocket} \\<br>  -d '{<br>    "drive_id": "rootfs",<br>    "path_on_host": "<span style="color:#D32F2F; font-weight:bold;">rootfs.ext4</span>",<br>    "is_root_device": true<br>  }'`
+          }
+        }
+      }
+
+      // Initialize UI
+      updateUI()
+    </script>
+  </body>
+</html>
