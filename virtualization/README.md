@@ -320,7 +320,7 @@ By loading the KVM module, the host Linux kernel effectively transforms into a T
 
 As mentioned before, a normal Linux process has two modes of execution: kernel and user. KVM adds a third mode: guest mode (which has its own kernel and user modes, but these do not interest the hypervisor at all).'
 
-![](https://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/102/10251/10251f1.jpg)
+![source: linuxjournal](https://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/102/10251/10251f1.jpg)
 
 The division of labor among the different modes is:
 
@@ -358,7 +358,7 @@ The responsibilities of the KVM module are strictly confined to the absolute low
 2. Handling the complex context switches between host execution mode and guest execution mode, commonly referred to as VM Entries and VM Exits.
 3. Mapping guest physical memory directly to host physical memory utilizing hardware-assisted paging mechanisms
 
-![](https://en.wikipedia.org/wiki/File:Kernel-based_Virtual_Machine.svg)
+![source: wikipedia.org](https://en.wikipedia.org/wiki/File:Kernel-based_Virtual_Machine.svg)
 
 To facilitate communication with higher-level software, KVM exposes a character device file at `/dev/kvm`.
 
@@ -514,7 +514,7 @@ Even with caching, returning control to the emulator after every single block in
     - epilogue: restores normal state and returns to the main loop.
   - Returning to the main loop after each block adds significant overhead .. which adds up quickly.
 
-![](./images/dynamic-translation.png)
+![dynamic translation](./images/dynamic-translation.png)
 
 - Chaining Blocks Together: To avoid this, QEMU dynamically patches translated blocks. When a block finishes and the next execution target is known and already translated, QEMU patches the original block to jump directly into the newly discovered block, bypassing the main loop entirely.
 - Handling Interrupts: Because chained blocks skip the main loop, QEMU handles asynchronous hardware interrupts by unlinking (unchaining) the currently executing block. This forces the control flow to fall back out to the main emulator loop to handle the interrupt.
@@ -690,7 +690,7 @@ They communicate using a special device file in Linux: `/dev/kvm`.
 6. QEMU handles the I/O request (e.g., writing the data to the .qcow2 file).
 7. QEMU tells KVM the job is done, and KVM resumes running the virtual CPU.
 
-![QEMU & KVM architecture](https://wiki.qemu.org/images/4/4f/Kvm_model.png)
+![QEMU & KVM architecture  source: qemu.org](https://wiki.qemu.org/images/4/4f/Kvm_model.png)
 
 The typical stack looks like this: physical host CPU with Intel VT-x or AMD-V, Linux kernel with the KVM module loaded, QEMU running in user space as the VMM, guest operating system running inside the VM. KVM enforces the hardware boundary between the guest and the host kernel. QEMU manages everything the guest sees as its hardware.
 
@@ -1014,7 +1014,7 @@ Firecracker aims to provide VM-level isolation guarantees and solve three challe
 2. VM startup takes seconds.
 3. Hypervisors and VMMs can be large and complex, with a significant attack surface. They are also typically written in memory unsafe programming languages.
 
-![ubicloud - firecracker](https://cdn.prod.website-files.com/64f9d9b4e737e7b37d4e39a4/67935776bd52e5ef4f0ab9cb_Firecracker-min-p-1600.jpg)
+![firecracker - source: ubicloud](https://cdn.prod.website-files.com/64f9d9b4e737e7b37d4e39a4/67935776bd52e5ef4f0ab9cb_Firecracker-min-p-1600.jpg)
 
 AWS solves the challenges by keeping Linux KVM, but swapping QEMU with a super lightweight alternative called Firecracker, written in Rust. In particular, Firecracker provides:
 
@@ -1023,11 +1023,11 @@ AWS solves the challenges by keeping Linux KVM, but swapping QEMU with a super l
 - Rate limiting for network and disk. Can configure throughput and request rates. For this Firecracker implements its own solution for simplicity, rather than using cgroups
 - Firecracker also provides a metadata service - MicroVM-Metadata Service (MMDS) that securely shares configuration information between the host and guest operating system.
 
-![](https://firecracker-microvm.github.io/img/diagram-desktop@3x.png)
+![source: firecracker-microvm.github.io](https://firecracker-microvm.github.io/img/diagram-desktop@3x.png)
 
 For network and block devices, Firecracker uses `virtio` (specifically virtio-net for networking, virtio-block for storage, and virtio-vsock for socket communication). Virtio provides an open API for exposing emulated devices from hypervisors. Virtio is simple, scalable, and offers good performance through its use of paravirtualization.
 
-![firecracker host integration](https://github.com/firecracker-microvm/firecracker/blob/main/docs/images/firecracker_host_integration.png?raw=true)
+![firecracker host integration - source: firecracker-microvm.github.io](https://github.com/firecracker-microvm/firecracker/blob/main/docs/images/firecracker_host_integration.png?raw=true)
 
 On the networking side, Firecracker uses a TAP virtual network interface and encapsulates the guest OS (and the TAP device) inside their own network namespace.
 
@@ -1035,11 +1035,9 @@ For storage, AWS chooses to support block devices, rather than filesystem passth
 
 Finally, Firecracker also has a jailer around it to provide an additional level of protection against unwanted VMM behavior (such as a bug). The jailer implements a restrictive sandbox around the guest by using a set of Linux primitives. These include chroot, pid, and network namespaces. The jailer also uses seccomp-bpf to whitelist the set of system calls that can drop to the host. This, rather than using libvirt as the jailer, also diverges from Red Hat’s architecture.
 
-**Threat containment**
+![firecracker threat containment - source: firecracker-microvm.github.io](https://github.com/firecracker-microvm/firecracker/raw/main/docs/images/firecracker_threat_containment.png?raw=true)
 
 From a security perspective, all vCPU threads are considered to be running malicious code as soon as they have been started; these malicious threads need to be contained. Containment is achieved by nesting several trust zones which increment from least trusted or least safe (guest vCPU threads) to most trusted or safest (host). These trusted zones are separated by barriers that enforce aspects of Firecracker security. For example, all outbound network traffic data is copied by the Firecracker I/O thread from the emulated network interface to the backing host TAP device, and I/O rate limiting is applied at this point. These barriers are marked in the diagram below.
-
-![firecracker threat containment](https://github.com/firecracker-microvm/firecracker/raw/main/docs/images/firecracker_threat_containment.png?raw=true)
 
 #### 5.2.3. Hands-on guide
 
@@ -1179,8 +1177,6 @@ echo "Host Network Matrix Initialized. Topology: Host [${TAP_IP}] <---> Guest [$
 With your assets compiled and network tunnels listening, you can configure your MicroVM. Firecracker acts as an HTTP server bound to a local Unix Domain Socket file descriptor.
 
 To visualize how these configuration inputs assemble your execution state, use the interactive panel below to select resources, view real-time API schema updates, and track the internal VMM state transitions.
-
-<iframe src="./firecracker.html" width="100%" height="500px" style="border:none;"></iframe>
 
 **Step 5: Manual Orchestration and Connection**
 
@@ -1378,27 +1374,62 @@ set -euo pipefail
 VM_ID="test-vm-01"
 JAILER_UID=$(id -u jailer)
 JAILER_GID=$(id -g jailer)
-
-# Hardcoded structural layout required by Firecracker Jailer
 JAIL_ROOT="/srv/jailer/firecracker/${VM_ID}/root"
 
-echo "==> Building secure chroot node directory structure..."
+echo "==> 1. Assassinating zombie processes..."
+sudo pkill -9 -f firecracker || true
+sleep 1
+
+echo "==> 2. Purging stale jail state for ${VM_ID}..."
+sudo rm -rf "/srv/jailer/firecracker/${VM_ID}"
+
+echo "Teardown complete. Environment is clean."
+
+echo "==> 3. Building secure chroot node directory structure..."
 sudo mkdir -p "${JAIL_ROOT}"
 
-echo "==> Migrating raw infrastructure assets into the jail boundary..."
-# Copy your existing vmlinux kernel and ext4 rootfs into the target chroot zone
+echo "==> 4. Migrating raw infrastructure assets into the jail boundary..."
 sudo cp vmlinux "${JAIL_ROOT}/vmlinux"
 sudo cp rootfs.ext4 "${JAIL_ROOT}/rootfs.ext4"
 
-echo "==> Enforcing restrictive DAC permissions inside the jail node..."
-# Firecracker must own its files to manipulate storage blocks and read the kernel image
+echo "==> 5. Enforcing restrictive DAC permissions inside the jail node..."
 sudo chown -R ${JAILER_UID}:${JAILER_GID} "/srv/jailer/firecracker/${VM_ID}"
 sudo chmod 750 "/srv/jailer/firecracker/${VM_ID}"
 
 echo "Jail asset tree compiled successfully at ${JAIL_ROOT}."
 ```
 
-**Step 9: Launching the Daemonized Jailer Container**
+**Step 9: Provisioning the Network Namespace Boundary**
+
+To allow network traffic in and out of the microVM without compromising the host's security, we must create an isolated Network Namespace. We will generate a virtual ethernet (TAP) device and push it across the namespace boundary so the jailed Firecracker process can access it.
+
+```sh
+#!/bin/bash
+set -euo pipefail
+
+NETNS="fc-net"
+TAP_DEV="tap0"
+TAP_IP="172.16.0.1"
+
+echo "==> 1. Creating isolated network namespace..."
+sudo ip netns add $NETNS 2>/dev/null || true
+
+echo "==> 2. Creating TAP device and pushing it across the boundary..."
+sudo ip link del $TAP_DEV 2>/dev/null || true
+sudo ip tuntap add dev $TAP_DEV mode tap
+sudo ip link set dev $TAP_DEV netns $NETNS
+
+echo "==> 3. Configuring TAP interface inside the namespace..."
+sudo ip netns exec $NETNS ip addr add "${TAP_IP}/30" dev $TAP_DEV
+sudo ip netns exec $NETNS ip link set dev $TAP_DEV up
+sudo ip netns exec $NETNS ip link set dev lo up
+
+echo "Network namespace isolated and ready."
+```
+
+**Step 10: Launching the Daemonized Jailer Container**
+
+When launching the jailer, we now pass the `--netns` flag to explicitly bind the Firecracker process inside the network namespace we just created.
 
 ```sh
 #!/bin/bash
@@ -1408,17 +1439,18 @@ JAILER_UID=$(id -u jailer)
 JAILER_GID=$(id -g jailer)
 VM_ID="test-vm-01"
 
-echo "==> Purging stale jail state for ${VM_ID}..."
-sudo rm -rf "/srv/jailer/firecracker/${VM_ID}"
-
 echo "==> Launching Jailer isolation boundary..."
 sudo jailer --id "${VM_ID}" \
             --exec-file /usr/local/bin/firecracker \
             --uid ${JAILER_UID} \
             --gid ${JAILER_GID} \
+            --netns /var/run/netns/fc-net \
+            --cgroup-version 2 \
+            --cgroup cpuset.cpus=1 \
             --daemonize
 
 echo "Jailer wrapper executed successfully."
+
 ```
 
 To verify that the process is completely isolated and running under the unprivileged identity, inspect the active process table properties:
@@ -1426,16 +1458,17 @@ To verify that the process is completely isolated and running under the unprivil
 ```sh
 # Check the active namespaces, user mapping, and chroot base of the daemonized worker
 ps -eo user,pid,args | grep firecracker
+
 ```
 
-**Step 10: Interacting with the Jailed REST API Engine**
+**Step 11: Interacting with the Jailed REST API Engine**
 
 Now that Firecracker is running inside the jail, your interaction layer shifts. You must navigate two major architectural constraints:
 
-- Socket Paths: The UNIX domain socket is managed inside the jail file tree. The host must target `/srv/jailer/firecracker/<VM_ID>/root/run/firecracker.socket`.
-- Relative Path Resolution: When executing PUT configurations to the API engine, do not use absolute host paths. To Firecracker, the jail is the root directory (`/`). Therefore, `/srv/jailer/firecracker/test-vm-01/root/vmlinux` must be referenced simply as `vmlinux`.
+- **Socket Paths:** The UNIX domain socket is managed inside the jail file tree. The host must target `/srv/jailer/firecracker/<VM_ID>/root/run/firecracker.socket`.
+- **Relative Path Resolution:** When executing PUT configurations to the API engine, do not use absolute host paths. To Firecracker, the jail is the root directory (`/`). Therefore, `/srv/jailer/firecracker/test-vm-01/root/vmlinux` must be referenced simply as `vmlinux`.
 
-Execute this sequential script to boot the microVM inside the secure perimeter:
+Execute this sequential script to configure the network interface and boot the microVM inside the secure perimeter:
 
 ```sh
 #!/bin/bash
@@ -1447,38 +1480,112 @@ SOCKET="/srv/jailer/firecracker/${VM_ID}/root/run/firecracker.socket"
 echo "==> Waiting for API socket to bind..."
 while [ ! -S "$SOCKET" ]; do sleep 0.1; done
 
-echo "==> 1. Mapping boot kernel source (Using Absolute Jail Path)..."
-sudo curl -X PUT --unix-socket "$SOCKET" \
+echo "==> 1. Mapping boot kernel source..."
+sudo curl -s -X PUT --unix-socket "$SOCKET" \
   -H "Content-Type: application/json" \
   -d '{
-    "kernel_image_path": "/vmlinux",
+    "kernel_image_path": "vmlinux",
     "boot_args": "console=ttyS0 reboot=k panic=1 pci=off"
   }' "http://localhost/boot-source"
 
 echo "==> 2. Mounting linear ext4 root filesystem..."
-sudo curl -X PUT --unix-socket "$SOCKET" \
+sudo curl -s -X PUT --unix-socket "$SOCKET" \
   -H "Content-Type: application/json" \
   -d '{
     "drive_id": "rootfs",
-    "path_on_host": "/rootfs.ext4",
+    "path_on_host": "rootfs.ext4",
     "is_root_device": true,
     "is_read_only": false
   }' "http://localhost/drives/rootfs"
 
-echo "==> 3. Configuring compute topology..."
-sudo curl -X PUT --unix-socket "$SOCKET" \
+echo "==> 3. Binding paravirtualized network interface..."
+sudo curl -s -X PUT --unix-socket "$SOCKET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "iface_id": "net1",
+    "guest_mac": "06:00:AC:10:00:02",
+    "host_dev_name": "tap0"
+  }' "http://localhost/network-interfaces/net1"
+
+echo "==> 4. Configuring compute topology..."
+sudo curl -s -X PUT --unix-socket "$SOCKET" \
   -H "Content-Type: application/json" \
   -d '{
     "vcpu_count": 2,
     "mem_size_mib": 512
   }' "http://localhost/machine-config"
 
-echo "==> 4. Igniting MicroVM..."
-sudo curl -X PUT --unix-socket "$SOCKET" \
+echo "==> 5. Igniting MicroVM..."
+sudo curl -s -X PUT --unix-socket "$SOCKET" \
   -H "Content-Type: application/json" \
   -d '{
     "action_type": "InstanceStart"
   }' "http://localhost/actions"
+
+echo "MicroVM execution triggered!"
+```
+
+Because the VM is running inside an isolated namespace, a normal `ping 172.16.0.2` from your host will fail. The host root namespace has no route to it. To talk to the VM, you must execute your SSH client inside the jail's network namespace using the ip netns exec command.
+
+```sh
+ping 172.16.0.2
+# fail
+sudo ip netns exec fc-net ping 172.16.0.2
+# PING 172.16.0.2 (172.16.0.2) 56(84) bytes of data.
+# 64 bytes from 172.16.0.2: icmp_seq=1 ttl=127 time=0.392 ms
+# 64 bytes from 172.16.0.2: icmp_seq=2 ttl=127 time=0.393 ms
+```
+
+Use the SSH key you generated in the very first setup phases to log in:
+
+```sh
+sudo ip netns exec fc-net ssh -i microvm_key root@172.16.0.2
+```
+
+**Step 12: Jailer verification checklist**
+
+- The identity boundary: verify it dropped root priviledges.
+
+```sh
+# Find the Process ID (PID)
+FC_PID=$(pgrep firecracker | head -n 1)
+echo "Firecracker PID: $FC_PID"
+
+# Check the user executing the process
+ps -o user,pid,comm -p $FC_PID
+
+# Firecracker PID: 1652360
+# USER         PID COMMAND
+# jailer   1652360 firecracker
+```
+
+- The chroot boundary: Firecracker uses [`pivot_root`](https://man7.org/linux/man-pages/man2/pivot_root.2.html) instead of `chroot` system call.
+  - When a process uses `chroot`, the Linux kernel simply places a cosmetic blindfold over it. It changes the perceived root directory, but the underlying mount namespace remains identical to the host. If a process inside a standard `chroot` gains root privileges, it can easily break out (e.g., by creating a nested `chroot` directory, using `fchdir` to step out of it, or exploiting open file descriptors) to traverse right back to the host’s physical `/` directory.
+  - Firecracker’s Jailer does not rely on this blindfold. It utilizes Linux Mount Namespaces combined with the `pivot_root` system call.
+  - Instead of just changing the directory string, `pivot_root` physically amputates the process from the host's mount tree. It swaps the root mount point of the namespace with the `/srv/jailer/.../root` directory, and then completely unmounts the old host filesystem.
+  - From the Firecracker process's perspective, the host's hard drive does not exist. It wasn't just hidden; it was mathematically detached from the process's universe. That is why `/proc/[PID]/root resolves` to `/`.
+  - Julia Evans has a very clear [zine](https://wizardzines.com/comics/pivot-root/).
+
+```sh
+sudo ls -l /proc/$FC_PID/root
+# lrwxrwxrwx 1 jailer jailer 0 Jun  3 10:50 /proc/1652360/root -> /
+```
+
+- The seccomp-bpf boundaryr: we need to verify that BPF are actively restricting the system calls Firecracker is allowed to make to the host kernel.
+  - 1: Strict (Only allows `read, write, exit, sigreturn` - too restrictive for a VMM)
+  - 2: Filter Mode (Perfect). This proves the Jailer successfully attached the custom BPF program blocking unauthorized syscalls like execve.
+
+```sh
+grep Seccomp /proc/$FC_PID/status
+# Seccomp:        2
+# Seccomp_filters:        1
+```
+
+- The cgroup boundary: to ensure the microVM cannot eat all your host's CPU and RAM, verify it was placed in its own control group.
+
+```sh
+cat /proc/$FC_PID/cgroup
+# 0::/firecracker/test-vm-01
 ```
 
 ### 5.3. Cloud hypervisor
