@@ -1588,9 +1588,17 @@ cat /proc/$FC_PID/cgroup
 # 0::/firecracker/test-vm-01
 ```
 
-### 5.3. Cloud hypervisor
+### 5.3. Cloud Hypervisor
 
----
+#### 5.3.1. What is Cloud Hypervisor
+
+Cloud Hypervisor is a Virtual Machine Monitor that creates and manages lightweight virtual machines for cloud workloads.
+
+Unlike traditional hypervisors designed for flexibility and legacy hardware support, Cloud Hypervisor focuses exclusively on modern operating systems running in cloud environments. The project started as Intel's contribution to the Rust VMM ecosystem, building on lessons learned from both Firecracker and crosvm.
+
+While Firecracker prioritizes minimalism for serverless workloads and QEMU prioritizes completeness for every possible use case, Cloud Hypervisor aims for the middle ground: enough features to handle production workloads without unnecessary complexity.
+
+Cloud Hypervisor implements modern virtualization features that cloud applications actually need: paravirtualized I/O through virtio devices, CPU and memory hotplugging, device passthrough via VFIO, and integration with container orchestration platforms.
 
 ## 6. Host-Level Virtualization Control
 
