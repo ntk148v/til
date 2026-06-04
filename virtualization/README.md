@@ -29,7 +29,11 @@ Table of contents:
       - [5.2.1. The problem Firecracker solves](#521-the-problem-firecracker-solves)
       - [5.2.2. How Firecracker works](#522-how-firecracker-works)
       - [5.2.3. Hands-on guide](#523-hands-on-guide)
-    - [5.3. Cloud hypervisor](#53-cloud-hypervisor)
+    - [5.3. Cloud Hypervisor](#53-cloud-hypervisor)
+      - [5.3.1. What is Cloud Hypervisor](#531-what-is-cloud-hypervisor)
+      - [5.3.2. Cloud Hypervisor architecture](#532-cloud-hypervisor-architecture)
+      - [5.3.3. Hands-on guide](#533-hands-on-guide)
+      - [5.3.3. Hands-on guide](#533-hands-on-guide-1)
   - [6. Host-Level Virtualization Control](#6-host-level-virtualization-control)
     - [Example:](#example)
     - [Key Points:](#key-points)
@@ -1618,30 +1622,81 @@ Cloud Hypervisor is built on the [rust-vmm](https://github.com/rust-vmm) project
 | Hypervisor backend | KVM, Microsoft Hypervisor (MSHV) |
 
 #### 5.3.3. Hands-on guide
+To give your Cloud Hypervisor VM internet access, we need to bridge the gap between the host's network and the VM's isolated environment.
 
-Of course, you need a Linux host with KVM enabled. Do the same thing as firecracker section.
+This requires three additions to your guide:
 
-**Step 1: Download the Cloud Hypervisor binary**
+1. **Host NAT:** Configuring your Linux host to act as a router (forwarding packets via `iptables`).
+2. **Cloud-init Networking:** Injecting a static IP configuration into the guest OS before generating the cloud-init ISO.
+3. **The `--net` Flag:** Telling Cloud Hypervisor to create the TAP device and assign the host-side IP address.
+
+Here is the complete, updated section ready for your article:
+
+---
+
+#### 5.3.3. Hands-on guide
+
+Of course, you need a Linux host with KVM enabled. Do the same thing as the Firecracker section. To give the VM internet access, we also need to configure the host machine to route its traffic.
+
+**Step 0: Enable Host Network Routing (NAT)**
+
+Before starting the VM, enable IP forwarding on your host and set up masquerading. This allows the host to act as a router for the VM's virtual network interface.
+
+```sh
+# Enable IPv4 forwarding
+sudo sysctl -w net.ipv4.ip_forward=1
+
+# Find your host's main outbound interface (e.g., eth0, wlan0, enp3s0)
+ip route get 8.8.8.8 | grep -Po 'dev \K\w+'
+
+# Replace 'eth0' in the command below with the interface name returned above
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+```
+
+**Step 1: Download Cloud Hypervisor and Create Cloud-Init**
 
 ```sh
 wget https://github.com/cloud-hypervisor/cloud-hypervisor/releases/latest/download/cloud-hypervisor-static
 
 # Make it executable and move it to your path
 chmod +x ./cloud-hypervisor-static
+# This capability is crucial: it allows Cloud Hypervisor to create TAP network devices automatically
 sudo setcap cap_net_admin+ep ./cloud-hypervisor-static
 sudo mv cloud-hypervisor-static /usr/local/bin/cloud-hypervisor
 cloud-hypervisor --version
 
 git clone https://github.com/cloud-hypervisor/cloud-hypervisor.git /tmp/cloud-hypervisor
 cd /tmp/cloud-hypervisor
+```
+
+Configure the VM's Network via Cloud-Init: Before running the cloud-init script, we must overwrite the default network configuration to assign a static IP. This config binds a specific MAC address to the IP `192.168.249.2` inside the VM and sets the host as its gateway.
+
+```sh
+cat <<EOF > test_data/cloud-init/ubuntu/local/network-config
+version: 2
+ethernets:
+  eth0:
+    match:
+      macaddress: "12:34:56:78:90:ab"
+    addresses:
+      - 192.168.249.2/24
+    routes:
+      - to: default
+        via: 192.168.249.1
+    nameservers:
+      addresses:
+        - 8.8.8.8
+EOF
+
 ./scripts/create-cloud-init.sh
+
 ```
 
 You now have a `/tmp/ubuntu-cloudinit.img` file.
 
 **Step 2: Download a Kernel and Root filesystem**
 
-Cloud Hypervisor uses a direct Linux kernel boot to achieve its blazing-fast start times, which means we need an uncompressed kernel (vmlinux) and a root disk image. We will grab the official Ubuntu 24.04 cloud image and a compatible uncompressed kernel.
+Cloud Hypervisor uses a direct Linux kernel boot to achieve its blazing-fast start times, which means we need an uncompressed kernel (`vmlinux`) and a root disk image. We will grab the official Ubuntu 24.04 cloud image and a compatible uncompressed kernel.
 
 ```sh
 mkdir ~/cloud-hypervisor && cd ~/cloud-hypervisor
@@ -1654,29 +1709,51 @@ wget https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.i
 
 # 3. Convert it to a raw disk image
 qemu-img convert -p -f qcow2 -O raw noble-server-cloudimg-amd64.img noble-server-cloudimg-amd64.raw
+
 ```
 
 You can get a specific ubuntu image from the [ubuntu cloud images page](https://cloud-images.ubuntu.com/).
 
 **Step 3: Boot the virtual machine**
 
-Now we assemble the pieces. We will assign 4 vCPUs, 1024 MB of RAM, and attach the Ubuntu 24.04 disk we just downloaded.
+Now we assemble the pieces. We will assign 4 vCPUs, 1024 MB of RAM, and attach the Ubuntu 24.04 disk.
 
-Cloud Hypervisor natively supports the `qcow2` format that Canonical uses for these cloud images. We will also define an API socket (`/tmp/ch-api.sock`) so you can manage the VM while it runs.
+Crucially, we populate the `--net` flag. This tells Cloud Hypervisor to create an anonymous TAP interface on the host, assign the host side the IP `192.168.249.1`, and enforce the MAC address so our cloud-init configuration recognizes it.
 
 ```sh
 cloud-hypervisor \
-	--kernel vmlinux \
-	--disk path=noble-server-cloudimg-amd64.raw path=/tmp/ubuntu-cloudinit.img \
-	--cmdline "console=hvc0 root=/dev/vda1 rw" \
-	--cpus boot=4 \
-	--memory size=1024M \
-	--net "tap=,mac=,ip=,mask="
+  --kernel vmlinux \
+  --disk path=noble-server-cloudimg-amd64.raw path=/tmp/ubuntu-cloudinit.img \
+  --cmdline "console=hvc0 root=/dev/vda1 rw" \
+  --cpus boot=4 \
+  --memory size=1024M \
+  --net "tap=,mac=12:34:56:78:90:ab,ip=192.168.249.1,mask=255.255.255.0"
+
 ```
 
-The VM boot up and be prompted for the Ubuntu username and password. With the default cloud-init image, the username is **cloud** and the password is **cloud123**.
+Once the VM boots and reaches the login prompt, you can log in (the default user/password generated by the script is `cloud` / `cloud123`) and ping `8.8.8.8` to verify your external network access.
 
 Do whatever you want with the your new microVM.
+
+```sh
+cloud@cloud:~$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: ens4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 12:34:56:78:90:ab brd ff:ff:ff:ff:ff:ff
+    altname enp0s4
+    inet 192.168.249.2/24 brd 192.168.249.255 scope global ens4
+       valid_lft forever preferred_lft forever
+
+cloud@cloud:~$ ip r
+default via 192.168.249.1 dev ens4 proto static
+192.168.249.0/24 dev ens4 proto kernel scope link src 192.168.249.2
+
+cloud@cloud:~$ uname -a
+Linux cloud 6.16.9+ #3 SMP Fri May  8 13:58:25 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+```
 
 You can shutdown the VM with:
 
