@@ -1622,6 +1622,7 @@ Cloud Hypervisor is built on the [rust-vmm](https://github.com/rust-vmm) project
 | Hypervisor backend | KVM, Microsoft Hypervisor (MSHV) |
 
 #### 5.3.3. Hands-on guide
+
 To give your Cloud Hypervisor VM internet access, we need to bridge the gap between the host's network and the VM's isolated environment.
 
 This requires three additions to your guide:
