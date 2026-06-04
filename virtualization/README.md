@@ -1598,7 +1598,95 @@ Unlike traditional hypervisors designed for flexibility and legacy hardware supp
 
 While Firecracker prioritizes minimalism for serverless workloads and QEMU prioritizes completeness for every possible use case, Cloud Hypervisor aims for the middle ground: enough features to handle production workloads without unnecessary complexity.
 
-Cloud Hypervisor implements modern virtualization features that cloud applications actually need: paravirtualized I/O through virtio devices, CPU and memory hotplugging, device passthrough via VFIO, and integration with container orchestration platforms.
+Cloud Hypervisor implements modern virtualization features that cloud applications actually need:
+
+- Paravirtualized I/O through virtio devices.
+- CPU and memory hotplugging.
+- Device passthrough via VFIO.
+- Integration with container orchestration platforms.
+
+#### 5.3.2. Cloud Hypervisor architecture
+
+Cloud Hypervisor is built on the [rust-vmm](https://github.com/rust-vmm) project—a collaborative initiative by Intel, Amazon, Google, and Red Hat to create modular, reusable virtualization crates. Rather than building a VMM from scratch, Cloud Hypervisor imports specific `rust-vmm` components (like the KVM wrapper and virtio devices) and stitches them together into a cohesive VMM designed specifically for modern workloads.
+
+| Feature            | Specification                    |
+| ------------------ | -------------------------------- |
+| Language           | Rust (memory-safe)               |
+| Boot time          | ~200ms                           |
+| Architectures      | x86-64, AArch64                  |
+| Guest OS support   | Linux, Windows 10/Server 2019    |
+| Hypervisor backend | KVM, Microsoft Hypervisor (MSHV) |
+
+#### 5.3.3. Hands-on guide
+
+Of course, you need a Linux host with KVM enabled. Do the same thing as firecracker section.
+
+**Step 1: Download the Cloud Hypervisor binary**
+
+```sh
+wget https://github.com/cloud-hypervisor/cloud-hypervisor/releases/latest/download/cloud-hypervisor-static
+
+# Make it executable and move it to your path
+chmod +x ./cloud-hypervisor-static
+sudo setcap cap_net_admin+ep ./cloud-hypervisor-static
+sudo mv cloud-hypervisor-static /usr/local/bin/cloud-hypervisor
+cloud-hypervisor --version
+
+git clone https://github.com/cloud-hypervisor/cloud-hypervisor.git /tmp/cloud-hypervisor
+cd /tmp/cloud-hypervisor
+./scripts/create-cloud-init.sh
+```
+
+You now have a `/tmp/ubuntu-cloudinit.img` file.
+
+**Step 2: Download a Kernel and Root filesystem**
+
+Cloud Hypervisor uses a direct Linux kernel boot to achieve its blazing-fast start times, which means we need an uncompressed kernel (vmlinux) and a root disk image. We will grab the official Ubuntu 24.04 cloud image and a compatible uncompressed kernel.
+
+```sh
+mkdir ~/cloud-hypervisor && cd ~/cloud-hypervisor
+
+# 1. Download the vmlinux
+wget https://github.com/cloud-hypervisor/linux/releases/latest/download/vmlinux-x86_64 -O vmlinux
+
+# 2. Download the official Ubuntu 24.04 (Noble Numbat) cloud image
+wget https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+
+# 3. Convert it to a raw disk image
+qemu-img convert -p -f qcow2 -O raw noble-server-cloudimg-amd64.img noble-server-cloudimg-amd64.raw
+```
+
+You can get a specific ubuntu image from the [ubuntu cloud images page](https://cloud-images.ubuntu.com/).
+
+**Step 3: Boot the virtual machine**
+
+Now we assemble the pieces. We will assign 4 vCPUs, 1024 MB of RAM, and attach the Ubuntu 24.04 disk we just downloaded.
+
+Cloud Hypervisor natively supports the `qcow2` format that Canonical uses for these cloud images. We will also define an API socket (`/tmp/ch-api.sock`) so you can manage the VM while it runs.
+
+```sh
+cloud-hypervisor \
+	--kernel vmlinux \
+	--disk path=noble-server-cloudimg-amd64.raw path=/tmp/ubuntu-cloudinit.img \
+	--cmdline "console=hvc0 root=/dev/vda1 rw" \
+	--cpus boot=4 \
+	--memory size=1024M \
+	--net "tap=,mac=,ip=,mask="
+```
+
+The VM boot up and be prompted for the Ubuntu username and password. With the default cloud-init image, the username is **cloud** and the password is **cloud123**.
+
+Do whatever you want with the your new microVM.
+
+You can shutdown the VM with:
+
+```sh
+# from inside the VM
+sudo shutdown -h now
+
+# or from the host
+pkill cloud-hypervisor
+```
 
 ## 6. Host-Level Virtualization Control
 
