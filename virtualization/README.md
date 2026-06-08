@@ -31,9 +31,7 @@ Table of contents:
       - [5.2.3. Hands-on guide](#523-hands-on-guide)
     - [5.3. Cloud Hypervisor](#53-cloud-hypervisor)
       - [5.3.1. What is Cloud Hypervisor](#531-what-is-cloud-hypervisor)
-      - [5.3.2. Cloud Hypervisor architecture](#532-cloud-hypervisor-architecture)
-      - [5.3.3. Hands-on guide](#533-hands-on-guide)
-      - [5.3.3. Hands-on guide](#533-hands-on-guide-1)
+      - [5.3.2. Hands-on guide](#532-hands-on-guide)
   - [6. Host-Level Virtualization Control](#6-host-level-virtualization-control)
     - [Example:](#example)
     - [Key Points:](#key-points)
@@ -1609,7 +1607,7 @@ Cloud Hypervisor implements modern virtualization features that cloud applicatio
 - Device passthrough via VFIO.
 - Integration with container orchestration platforms.
 
-#### 5.3.2. Cloud Hypervisor architecture
+In contrast to Firecracker, Cloud Hypervisor directly targets long-lived, stateful VMs (but can also slim down to ‘microvm’ territory), and thus supports other features that Firecracker will most likely never add.
 
 Cloud Hypervisor is built on the [rust-vmm](https://github.com/rust-vmm) project—a collaborative initiative by Intel, Amazon, Google, and Red Hat to create modular, reusable virtualization crates. Rather than building a VMM from scratch, Cloud Hypervisor imports specific `rust-vmm` components (like the KVM wrapper and virtio devices) and stitches them together into a cohesive VMM designed specifically for modern workloads.
 
@@ -1621,21 +1619,15 @@ Cloud Hypervisor is built on the [rust-vmm](https://github.com/rust-vmm) project
 | Guest OS support   | Linux, Windows 10/Server 2019    |
 | Hypervisor backend | KVM, Microsoft Hypervisor (MSHV) |
 
-#### 5.3.3. Hands-on guide
+**UEFI boot support**
 
-To give your Cloud Hypervisor VM internet access, we need to bridge the gap between the host's network and the VM's isolated environment.
+Unlike Firecracker, which only supports direct Linux boot, Cloud Hypervisor can boot a [minimal UEFI firmware](https://github.com/cloud-hypervisor/rust-hypervisor-firmware). This gives your guest VM direct control of the kernel upgrade lifecycle from within the guest. It also allows running OS types other than Linux. If you’re running long-lived stateful VMs that expect to manage their own kernel version upgrades over time, then this is what you want.
 
-This requires three additions to your guide:
+**Qcow2 disk images**
 
-1. **Host NAT:** Configuring your Linux host to act as a router (forwarding packets via `iptables`).
-2. **Cloud-init Networking:** Injecting a static IP configuration into the guest OS before generating the cloud-init ISO.
-3. **The `--net` Flag:** Telling Cloud Hypervisor to create the TAP device and assign the host-side IP address.
+Firecracker only ships with raw disk image support. Instead, Cloud Hypervisor has direct Qcow2 support.
 
-Here is the complete, updated section ready for your article:
-
----
-
-#### 5.3.3. Hands-on guide
+#### 5.3.2. Hands-on guide
 
 Of course, you need a Linux host with KVM enabled. Do the same thing as the Firecracker section. To give the VM internet access, we also need to configure the host machine to route its traffic.
 
