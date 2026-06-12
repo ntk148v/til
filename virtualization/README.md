@@ -1544,6 +1544,174 @@ Use the SSH key you generated in the very first setup phases to log in:
 sudo ip netns exec fc-net ssh -i microvm_key root@172.16.0.2
 ```
 
+**Alternative Approach: Building Rootfs from a Container Image**
+
+The workflow above uses an official Ubuntu rootfs from the Firecracker CI pipeline. Another practical approach, demonstrated by [alexellis/firecracker-init-lab](https://github.com/alexellis/firecracker-init-lab), is to **build the rootfs from a container image** with a custom init process. This gives you full control over what runs inside the microVM and is closer to how you'd integrate Firecracker into a real CI/CD pipeline.
+
+**How it works**
+
+This approach, from the [alexellis/firecracker-init-lab](https://github.com/alexellis/firecracker-init-lab) project, uses a container image to build the rootfs instead of downloading a pre-built one:
+
+Source: <https://github.com/alexellis/firecracker-init-lab>
+
+Instead of downloading a pre-built rootfs, the lab:
+
+1. Writes a custom **init process in Go** (`init/main.go`) that mounts essential filesystems (`/proc`, `/sys`, `/dev/pts`, `/dev/shm`, `/sys/fs/cgroup`), sets a hostname, and spawns `/bin/sh`.
+2. Packages this init binary into an Alpine-based Docker container via a multi-stage build.
+3. Exports the container filesystem using `docker export` into a tarball.
+4. Allocates a raw ext4 disk image and extracts the tarball into it (via a loopback mount).
+5. Boots the microVM with `init=/init` passed as a kernel boot argument, along with static IP configuration
+
+**Key differences from the official workflow**
+
+| Aspect          | Official Workflow                                    | Container-Based Workflow                      |
+| --------------- | ---------------------------------------------------- | --------------------------------------------- |
+| Rootfs source   | Pre-built Ubuntu squashfs from S3                    | Alpine container, exported to ext4            |
+| Init process    | `/sbin/init` (systemd/OpenRC)                        | Custom Go binary (`/init`)                    |
+| Network config  | Guest configures DHCP/static via SSH                 | Static IP passed via kernel `ip=` parameter   |
+| Boot complexity | Two terminals (Firecracker server + `curl` commands) | Makefile targets (`make start` + `make boot`) |
+| Disk format     | `.squashfs` unpacked → `rootfs.ext4`                 | `docker export` → tarball → ext4              |
+
+**Container-based workflow in detail**
+
+**Step 13: Build the custom init process and rootfs**
+
+```sh
+# Build the Docker image containing the Go init binary
+docker build -t custom-init .
+
+# Export the container filesystem into a tarball
+docker create --name extract custom-init
+docker export extract -o rootfs.tar
+docker rm -f extract
+
+# Allocate a 5 GB raw disk image and extract the rootfs into it
+sudo fallocate -l 5G ./rootfs.img
+sudo mkfs.ext4 ./rootfs.img
+TMP=$(mktemp -d)
+sudo mount -o loop ./rootfs.img "$TMP"
+sudo tar -xvf rootfs.tar -C "$TMP"
+sudo umount "$TMP"
+```
+
+**Step 14: Understanding the Go init process**
+
+```go
+// init/main.go (simplified)
+func main() {
+    // Mount virtual filesystems the kernel expects
+    mount("none", "/proc", "proc", 0)
+    mount("none", "/dev/pts", "devpts", 0)
+    mount("none", "/dev/shm", "tmpfs", 0)
+    mount("none", "/sys", "sysfs", 0)
+
+    setHostname("lab-vm")
+
+    // Start the shell — this becomes the interactive session
+    cmd := exec.Command("/bin/sh")
+    cmd.Stdin = os.Stdin
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    cmd.Wait()
+}
+
+func mount(source, target, fstype string, flags uintptr) {
+    if _, err := os.Stat(target); os.IsNotExist(err) {
+        os.MkdirAll(target, 0755)
+    }
+    syscall.Mount(source, target, fstype, flags, "")
+}
+```
+
+This replaces the full init system (systemd/OpenRC) with a minimal Go binary that only does what's needed: mount kernel virtual filesystems and start a shell. The result is a microVM that boots in under a second and has no unnecessary processes.
+
+> [!TIP]
+> The init binary must be **statically compiled** (notice the `--tags netgo --ldflags '-s -w -extldflags "-lm -lstdc++ -static"'` flags) so it does not depend on shared libraries that may not exist inside the microVM's rootfs.
+
+**Step 15: Passing network configuration via kernel boot args**
+
+Instead of configuring networking via SSH after boot, Firecracker supports the Linux kernel's built-in `ip=` parameter for static IP assignment:
+
+```json
+{
+  "kernel_image_path": "./vmlinux",
+  "boot_args": "console=ttyS0 reboot=k panic=1 pci=off init=/init ip=172.16.0.2::172.16.0.1:255.255.255.0::eth0:off"
+}
+```
+
+Breakdown of the `ip=` parameter:
+
+| Token         | Value           | Purpose                                        |
+| ------------- | --------------- | ---------------------------------------------- |
+| `<client-ip>` | `172.16.0.2`    | Guest's static IP                              |
+| `<peer>`      | _(empty)_       | Point-to-point peer (not needed in /30 or /24) |
+| `<gateway>`   | `172.16.0.1`    | Default gateway (the host TAP interface)       |
+| `<netmask>`   | `255.255.255.0` | Subnet mask                                    |
+| `<name>`      | _(empty)_       | Interface name placeholder                     |
+| `<device>`    | `eth0`          | Network interface name                         |
+| `<onboot>`    | `off`           | Don't autoconfigure; use these static values   |
+
+This eliminates the need to SSH in just to set up networking — the kernel configures the interface before userspace even starts.
+
+**Step 16: Launch and boot**
+
+```sh
+# Terminal 1: Start Firecracker as an API server
+sudo rm -f /tmp/firecracker.socket
+sudo firecracker --api-sock /tmp/firecracker.socket
+
+# Terminal 2: Configure and boot
+sudo ./boot.sh   # sends curl commands to the API socket
+```
+
+**Step 17: Snapshot and restore**
+
+Firecracker supports snapshot/restore for live migration and faster cold starts. The `firecracker-init-lab` shows the workflow:
+
+```sh
+# Pause the running VM
+sudo curl -X PATCH --unix-socket /tmp/firecracker.socket \
+  -H 'Content-Type: application/json' \
+  -d '{"state": "Paused"}' \
+  http://localhost/vm
+
+# Create a full snapshot (memory + disk)
+sudo curl -X PUT --unix-socket /tmp/firecracker.socket \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "snapshot_type": "Full",
+    "snapshot_path": "./snapshot_file",
+    "mem_file_path": "./mem_file"
+  }' \
+  http://localhost/snapshot/create
+
+# Restore from snapshot on a new Firecracker process
+sudo curl -X PUT --unix-socket /tmp/firecracker.socket \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "snapshot_path": "./snapshot_file",
+    "mem_backend": {
+      "backend_path": "./mem_file",
+      "backend_type": "File"
+    },
+    "enable_diff_snapshots": true,
+    "resume_vm": false
+  }' \
+  http://localhost/snapshot/load
+
+# Resume the restored VM
+sudo curl -X PATCH --unix-socket /tmp/firecracker.socket \
+  -H 'Content-Type: application/json' \
+  -d '{"state": "Resumed"}' \
+  http://localhost/vm
+```
+
+**When to use each approach**
+
+- **Official workflow (Ubuntu rootfs + SSH)**: Best for learning Firecracker's REST API, testing with a familiar Ubuntu environment, and production-like setups where you need a full init system.
+- **Container-based workflow (custom Go init + kernel IP config)**: Best for understanding the minimal boot path, building custom microVM images from containers, avoiding SSH overhead, and scenarios where every millisecond of boot time matters (e.g., serverless functions, CI runners).
+- **Snapshot/restore**: Essential for pre-warming VM pools — boot once, snapshot, then clone rapidly for Lambda/Fargate-style workloads.
+
 **Step 12: Jailer verification checklist**
 
 - The identity boundary: verify it dropped root priviledges.
