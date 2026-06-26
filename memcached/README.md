@@ -1,82 +1,113 @@
 # Memcached
 
-Source:
-
-- <https://docs.memcached.org/>
-- <https://hnasr.substack.com/p/memcached-architecture>
-- <https://www.geeksforgeeks.org/system-design/what-is-memcached/>
-- <https://deepwiki.com/memcached/memcached>
-
-Table of contents:
-- [Memcached](#memcached)
-  - [1. What is memcached?](#1-what-is-memcached)
-  - [2. Memcached deep dive](#2-memcached-deep-dive)
-    - [2.1. Memory Management](#21-memory-management)
-    - [2.2. Threading](#22-threading)
-    - [2.3. Least Recently Used (LRU)](#23-least-recently-used-lru)
-    - [2.4. LRU Locking](#24-lru-locking)
-    - [2.5. LRU Crawler](#25-lru-crawler)
-
-## 1. What is memcached?
-
 > [!IMPORTANT]
 > Memcached is an in-memory key-value store for small chunks of arbitrary data (strings, objects) from results of database calls, API calls, or page rendering. Latest stable: **1.6.42** (2025).
 
-Memcached operates as a high-performance, distributed memory caching system that can significantly improve the speed and scalability of web applications.
+Sources:
 
-Memcached is simple yet powerful. Its simple design promotes quick deployment, ease of development, and solves many problems facing large data caches. The server does not care what your data looks like - items are made up of a key, an expiration time, optional flags, and raw data. Logic is split between client (server selection, routing, failover) and server (storage, eviction, memory management). Servers are disconnected from each other - no crosstalk, no synchronization, no broadcasting, no replication. All commands aim for O(1) performance.
+- [docs.memcached.org](https://docs.memcached.org/)
+- [Hussein Nasser - Memcached Architecture](https://hnasr.substack.com/p/memcached-architecture)
+- [deepwiki.com/memcached](https://deepwiki.com/memcached/memcached)
+- [UserInternals wiki](https://github.com/memcached/memcached/wiki/UserInternals)
+
+## Table of Contents
+
+- [1. What is memcached?](#1-what-is-memcached)
+- [2. Memcached deep dive](#2-memcached-deep-dive)
+  - [2.1. Memory Management](#21-memory-management)
+  - [2.2. Threading](#22-threading)
+  - [2.3. Least Recently Used (LRU)](#23-least-recently-used-lru)
+  - [2.4. LRU Locking](#24-lru-locking)
+  - [2.5. LRU Crawler](#25-lru-crawler)
+  - [2.6. Reads and Writes](#26-reads-and-writes)
+  - [2.7. Collisions](#27-collisions)
+
+## 1. What is memcached?
+
+Memcached is a high-performance, distributed memory caching system that speeds up dynamic web applications by caching results of database queries, API calls, or page rendering in RAM.
+
+It is intentionally minimal. The server treats all data as opaque blobs - items are just a key, expiration time, optional flags, and raw bytes. Clients handle server selection and routing via consistent hashing. Memcached servers are completely independent: no replication, no synchronization, no broadcasting between them. All operations target O(1) time with minimal locking.
+
+A cache, not a database. If the process dies, the data is gone. There is no persistence.
 
 ![](https://media.geeksforgeeks.org/wp-content/uploads/20240530170747/memcached-1024.png)
 
-- Keys in Memcached are strings, and they're limited to 250 characters. Values can be any type, but they are limited to 1MB by default.
-- Keys also have an expiration date or time to live (TTL). However, this should not be relied on, as the least recently used (LRU) algorithm may remove expired keys before they are accessed.
-- Memcached does not persist data. If the process dies, the cache is gone. This is by design - it is a cache, not a database.
+- Keys are strings, limited to 250 characters. Values can be any type, capped at 1 MB by default.
+- Keys have a TTL (time-to-live), but this should not be relied upon - the LRU algorithm may evict items before expiry when memory fills up.
+- Memcached does not persist data. If the process dies, the cache is gone. Cache, not database.
 
 ## 2. Memcached deep dive
 
-> Shoot out to the great article: <https://hnasr.substack.com/p/memcached-architecture>
-> Additional details from [deepwiki.com/memcached](https://deepwiki.com/memcached/memcached) with source references to the actual code.
+> Deep dive based on [Hussein Nasser's article](https://hnasr.substack.com/p/memcached-architecture) and [deepwiki.com/memcached](https://deepwiki.com/memcached/memcached) with source references to the actual code.
 
-Memcached follows a client-server architecture. The core components are:
+Memcached is built from these core components:
 
-1. **Main thread** — handles initial setup, accepts connections, dispatches to worker threads
-2. **Connection handler** — manages client connections via libevent, reads and writes data
-3. **Protocol parsing** — processes both ASCII (text) and binary protocol (auto-negotiated)
-4. **Command processing** — executes get, set, delete, incr/decr, etc.
-5. **Item management** — storage, retrieval, expiration of cached items
-6. **Slab allocator** — efficient memory management with size-specific chunks
-7. **Hash table** — O(1) lookup by key, dynamically resizable
-8. **Optional proxy system** — Lua-configurable request routing to backend servers
-9. **Optional TLS** — encrypted client connections with certificate verification
-10. **Optional external storage** — keep metadata in memory, large items on disk
+1. **Main thread** - accepts connections, dispatches to worker threads
+2. **Connection handler** - manages client connections via libevent
+3. **Protocol parsing** - ASCII (text) and binary protocol, auto-negotiated
+4. **Command processing** - executes get, set, delete, incr/decr, etc.
+5. **Item management** - storage, retrieval, expiration of cached items
+6. **Slab allocator** - memory management with size-specific chunks, avoids fragmentation
+7. **Hash table** - O(1) key lookup, dynamically resizable
+8. **Optional proxy system** - Lua-configurable request routing to backend servers
+9. **Optional TLS** - encrypted client connections
+10. **Optional external storage** - metadata in memory, large items on disk
 
 ### 2.1. Memory Management
 
-When allocating items like arrays, strings or integers, they usually go to random places in the process memory. This leaves small gaps of unused memory scattered across the physical memory, a problem referred to as fragmentation.
+When allocating items like arrays, strings or integers, they usually go to random places in the process memory. This leaves small gaps of unused memory scattered across the physical memory. This is fragmentation.
 
-![](https://substackcdn.com/image/fetch/$s_!HsMs!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff44d352a-5d26-4b48-bc1c-e90179ea4b9c_293x432.png)
+![](https://substackcdn.com/image/fetch/$s_!HsMs!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F44d352a-5d26-4b48-bc1c-e90179ea4b9c_293x432.png)
 
-Fragmentation occurs when the gaps between allocated items continue to increase. This makes it difficult to find a contiguous block of memory that is large enough to hold new items. Technically, there might be enough memory to hold the item, but the memory is scattered all over the physical space.
+As gaps grow, finding a contiguous block large enough for a new allocation gets harder. Total free memory may be sufficient, but it's scattered across physical space.
 
-Does that mean that the item fails to store if no contiguous memory exists? Not really, with the help of virtual memory, the OS gives the illusion that the app is using a contiguous block of memory. Behind the scenes, this block is mapped to tiny areas in physical memory.
+Does an item fail if no contiguous block exists? Not exactly. Virtual memory gives the illusion of contiguous space by mapping to scattered physical pages behind the scenes. But this comes at a cost - TLB pressure, page-table walks, and multiple I/Os to fetch what could have been a single memory block. That cost adds up, which is why we avoid fragmentation.
 
-When fragmentation occurs, it can cause a program to run more slowly, as the system assembles the memory fragments. The cost of virtual memory mapping and the cost of multiple I/Os to fetch what could have been a single block of memory is relatively high. That is why we try to avoid memory fragmentation.
+Memcached avoids fragmentation by pre-allocating 1 MB memory pages and managing memory itself instead of relying on the OS allocator. This is also why values are capped at 1 MB by default.
 
-Memcached avoids fragmentation by pre-allocating 1 MB-sized memory pages, which is why values are capped to 1 MB by default.
+Run with `-vv` to see the chunk layout:
+
+```
+$ memcached -vv
+slab class   1: chunk size        80 perslab   13107
+slab class   2: chunk size       104 perslab   10082
+slab class   3: chunk size       136 perslab    7710
+slab class   4: chunk size       176 perslab    5957
+slab class   5: chunk size       224 perslab    4681
+slab class   6: chunk size       280 perslab    3744
+slab class   7: chunk size       352 perslab    2978
+slab class   8: chunk size       440 perslab    2383
+slab class   9: chunk size       552 perslab    1899
+slab class  10: chunk size       696 perslab    1506
+[... up to class 43 (1 MB chunk)]
+```
 
 ![](https://substackcdn.com/image/fetch/$s_!8ufq!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbbbeeaca-f865-4fc5-ad89-cb6131ed3105_338x314.png)
 
-The OS thinks that Memcached is using the allocated memory, but Memcached isn't storing anything in it yet. As new items are created, Memcached will write item to the allocated page, forcing the item to be next to each other. This avoids fragmentation by moving memory management to Memcached instead of the OS.
+The OS believes Memcached is using the allocated memory, but nothing is stored yet. As new items arrive, Memcached writes them sequentially into the page, packing them next to each other. This moves memory management from the OS to Memcached, eliminating external fragmentation.
 
-The pages are divided into equal-sized **Chunks**. The chunk has a fixed size determined by the **slab class**. A slab class defines the chunk size, for example, Slab class 1 has a chunk size of 72 bytes while Slab class 43 has a chunk size of a 1MB.
+Each page is divided into equal-sized **chunks**. The chunk size is determined by the **slab class**. For example, slab class 1 has 72-byte chunks, slab class 43 has 1 MB chunks. The sizes grow by a power-of-N factor (default 1.25) to balance granularity vs waste.
 
 ![](https://substackcdn.com/image/fetch/$s_!R8DJ!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb484e1e0-0fac-40bb-ab0d-d6fc5a68ad94_700x211.png)
 
 ![](https://substackcdn.com/image/fetch/$s_!y1jx!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdd0de457-c490-4abe-9c1b-1e1842ca8c6b_700x227.png)
 
-Items consist of a key, value, and some metadata, and they are stored in chunks. For example, if the item size is 40 bytes in size, a whole chunk is used to store the item. The closest chunk size to the 40-byte item is 72 bytes, which is slab class 1, leaving 32 bytes unused in the chunk. That is why the client should be smart to pick items that fit nicely in chunks, leaving as little unused space as possible.
+Items consist of a key, value, and metadata, stored in chunks. If an item is 40 bytes, the closest chunk size is 72 bytes (slab class 1), wasting 32 bytes per chunk. This is internal fragmentation - the trade-off for avoiding external fragmentation. Clients should size their values to land near chunk boundaries to minimize waste.
 
-Memcached tries to minimize the unused space by putting the item in the most appropriate slab class. Each slab class has multiple 1MB pages. In Slab class 1, there are 14,564 chunks per page since each chunk is 72 bytes. Slab classes follow a power-of-N factor (default 1.25) to balance granularity vs waste. If an item is less than or equal to 72 bytes, it'll fit nicely in the chunk. But if the item is larger, say 900 kilobytes, it doesn't fit the slab class 1. So, Memcached finds a slab class appropriate for the item. Slab class 43 of chunk size 1MB is the closest one, and the item will be put in that chunk. The entire item fits on a single page.
+Memcached places each item in the most appropriate slab class. Each slab class has multiple 1 MB pages. In slab class 1, each page contains 14,564 chunks (1 MB / 72 bytes). If an item is larger, say 900 KB, it doesn't fit class 1. Memcached finds class 43 (1 MB chunk size), the closest fit. The entire item fits on a single page.
+
+Check slab usage at runtime:
+
+```
+$ echo "stats slabs" | nc localhost 11211
+STAT 1:chunk_size 80
+STAT 1:chunks_per_page 13107
+STAT 1:total_pages 1
+STAT 1:total_chunks 13107
+STAT 1:used_chunks 2
+STAT 1:free_chunks 13105
+END
+```
 
 ![](https://substackcdn.com/image/fetch/$s_!N_Fw!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7f3cdba3-d4cf-45e7-a0e5-2d0cbf9355c7_700x384.png)
 
@@ -92,50 +123,67 @@ Memcached handles this by allocating a new page and storing the item in a free c
 
 ### 2.2. Threading
 
-Memcached uses a multi-threaded architecture to efficiently utilize multiple CPU cores and handle concurrent connections. The number of worker threads defaults to 4, configurable via `-t`.
+Memcached uses multiple threads (default 4, configurable via `-t`) to handle concurrent connections across CPU cores.
 
-Memcached accepts remote clients; it has to have networking. Memcached uses TCP as its native transport. UDP is also supported, but was disabled by default because of an attack that happened in [2018 called the reflection attack](https://www.cloudflare.com/learning/ddos/memcached-ddos-attack/).
+Memcached accepts remote clients over TCP. UDP is also supported but disabled by default since the [2018 reflection attack](https://www.cloudflare.com/learning/ddos/memcached-ddos-attack/).
 
-The Memcached listener thread creates a TCP socket to listen on port 11211. It has one thread that spins up and listens for incoming connections. This thread creates a socket and accepts incoming connections.
+A listener thread creates a TCP socket on port 11211, accepts incoming connections, and distributes them to a pool of worker threads. Each worker receives the connection's file descriptor and handles all I/O for it via libevent event loops.
 
-Memcached then distributes the connections to a pool of threads. When a new connection is established, Memcached allocates a thread from the pool and gives the connection file descriptor to that thread. That worker thread is now responsible for reading data from the connection.
+Each worker thread can host multiple connections. Workers share the hash table and LRU structures through mutexes.
 
-If a stream of data or a request to get a key is sent to the connection, the thread polls the file descriptor to read the request. Each thread can host one or more connections, and the number of threads in the pool can be configured.
+```
+$ echo "stats" | nc localhost 11211 | grep threads
+STAT threads 4
+```
 
 ![](https://substackcdn.com/image/fetch/$s_!78h3!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F065d679f-dd7b-4725-b226-8572beb026b7_382x417.png)
 
 ### 2.3. Least Recently Used (LRU)
 
-Memcached uses a Least Recently Used (LRU) algorithm to manage item eviction when memory is full. Memcached releases anything in memory that hasn't been used for a very long time. That's another reason why Memcached is called transient memory. Even if you set the expiration for an hour, you can't rely on the key being there before the hour expires.
+Memcached uses a Least Recently Used (LRU) algorithm to manage eviction when memory is full. Data that hasn't been accessed in a while is released. This is why Memcached is considered transient memory - even with a TTL of one hour, a key may not survive if the cache is under pressure.
 
-Memcached uses a data structure called a linked list LRU (Least Recently Used) to release items when memory is full.
+The LRU is implemented as a linked list:
 
-- Every item in the Memcached key-value store is in a linked list.
-- Every slab class has its own LRU.
-- If an item is accessed, it is moved from its current position to the head. This process is repeated every time an item is accessed. As a result, items that are not used frequently will be pushed down to the tail of the list and eventually removed if the memory becomes full.
+- Every item in the store belongs to a linked list.
+- Each slab class has its own LRU.
+- On access, the item moves to the head. Unused items drift toward the tail and get evicted when memory fills.
 
 ![](https://substackcdn.com/image/fetch/$s_!2gsq!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa0d36f7c-4631-4c40-a131-03d52d011d6d_422x211.png)
 
-While the LRU is useful, it can also be quite costly in terms of performance. The locks that are necessary to maintain LRU can slow down throughput and complicate the application.
+LRU operations require locks, which creates a performance bottleneck under high concurrency — the original single-LRU-per-class design meant only one thread could update the LRU at a time.
+
+Monitor evictions with `stats items`:
+
+```
+$ echo "stats items" | nc localhost 11211
+STAT items:1:number 2
+STAT items:1:age 345
+STAT items:1:evicted 0
+STAT items:1:evicted_nonzero 0
+STAT items:1:evicted_time 0
+END
+```
+
+If `evicted` is growing, the slab class is under memory pressure — items are being evicted before their TTL expires.
 
 ### 2.4. LRU Locking
 
-No two threads can update the same data structure concurrently. To solve this, the thread that needs to update any data structure in memory must obtain a mutex, and other threads wait for the mutex to be freed. This is the basic locking model, and it is used in all applications. Memcached is no different from the LRU data structures.
+Concurrent access to shared data structures requires mutexes. No two threads can modify the same LRU at the same time. This is the basic locking model, and it applies to all LRU operations.
 
-In [2018](https://memcached.org/blog/modern-lru/), Memcached completely redesigned the LRU to introduce sub-LRUs per slab class breaking it by temperature - Segmented LRU.
+In [2018](https://memcached.org/blog/modern-lru/), Memcached redesigned the LRU to split each slab class into four sub-LRUs by access temperature, each with its own mutex. This is called **Segmented LRU**.
 
-An LRU is split into four sub-LRU's. Each sub-LRU has its own mutex lock. They are all governed by a single background thread called the "LRU maintainer", detailed below.
+A background thread called the **LRU maintainer** governs all sub-LRUs.
 
-Each item has two bit flags indicating activity level.
+Each item has two bit flags tracking activity:
 
-- FETCHED: Set if an item has ever been requested
-- ACTIVE: set if an item has been accessed for a second time. Removed when an item is bumped or moved.
+- **FETCHED**: set if the item has ever been requested
+- **ACTIVE**: set if the item has been accessed a second time. Cleared when the item is bumped or moved.
 
 ![](https://memcached.org/blog/modern-lru/img/state_machine.png)
 
 **HOT** acts as a probationary queue, since items are likely to exhibit strong temporal locality or very short TTLs (time-to-live). As a result, items are never bumped within HOT: once an item reaches the tail of the queue, it will be moved to WARM if the item is active (3), or COLD if it is inactive (5).
 
-**WARM** acts as a buffer for scanning workloads, like web crawlers reading old posts. Items which never get hit twice cannot enter WARM. WARM items are given a greater chance of living out their TTL's, while also reducing lock contention. If a tail item has is active, we bump it back to the head (4). Otherwise, we move the inactive item to COLD (7).
+**WARM** acts as a buffer for scanning workloads, like web crawlers reading old posts. Items which never get hit twice cannot enter WARM. WARM items are given a greater chance of living out their TTLs, while also reducing lock contention. If a tail item is active, it gets bumped back to the head (4). Otherwise, the inactive item moves to COLD (7).
 
 **COLD** contains the least active items. Inactive items will flow from HOT (5) and WARM (7) to COLD. Items are evicted from the tail of COLD once memory is full. If an item becomes active, it will be queued to be asynchronously moved to WARM (6). In the case of a burst or large volume of hits to COLD, the bump queue can overflow, and items will remain inactive. In overload scenarios, bumps from COLD become probabilistic, rather than block worker threads.
 
@@ -150,13 +198,31 @@ This is all tied together by the **LRU maintainer background thread**. It has a 
 - Reclaim expired tail items.
 - Process any asynchronous bumps from the COLD LRU.
 
+```
+# Check LRU tail ages at runtime
+$ echo "stats lru" | nc localhost 11211
+STAT lru_hot_max_age 413
+STAT lru_warm_max_age 1202
+STAT lru_cold_max_age 7509
+END
+```
+
 ### 2.5. LRU Crawler
 
 This implementation still has some outstanding issues: Sizing the cache is hard. Do I have too much RAM? Too little? With all that waste in the middle, it's hard to tell. Items with inconsistent access patterns (e.g. a user goes out to lunch or to sleep) may cause excessive misses. Larger (multi-kilobyte) expired items could make room for hundreds of smaller items, or allow them to be stored for longer.
 
 Solving these issues lead to the LRU crawler, which is a mechanism for asynchronously walking through items in the cache. It is able to reclaim expired items, and can examine the entire cache or subsets of it.
 
-The LRU crawler also supports an **eviction mode** where it will forcefully evict COLD items when memory is low, going beyond just reclaiming expired items.
+The LRU crawler also supports an **eviction mode** - when memory is extremely low, it can proactively evict COLD items instead of waiting for a write to trigger eviction.
+
+```
+# Enable the LRU crawler
+$ echo "lru_crawler enable" | nc localhost 11211
+OK
+
+# Check crawler stats
+$ echo "stats lru_crawler" | nc localhost 11211 | head -5
+```
 
 ![](https://memcached.org/blog/modern-lru/img/concurrentcrawler.png)
 
@@ -175,3 +241,93 @@ Combined with segmented LRU, the LRU crawler may learn that "HOT" is never worth
 This secondary process covers most of the remaining inefficiencies of managing an LRU with TTL'ed data. A pure LRU has no concept of holes or expired items, and filesystem buffer pools often keep data around in similar sizes (say, 8k chunks).
 
 Using a background process to pick at dead data, while self-focusing where it can be the most effective, reclaims almost all of the dead memory. It is now much easier to gauge how much memory a cache is actually taking.
+
+### Item size and overhead
+
+Each item consumes `sizeof(item struct) + key length + value length + flags` bytes. On 64-bit systems the item struct is 40 bytes with CAS enabled (default). The `sizes` utility shipped with the source shows the exact breakdown:
+
+```
+$ ./sizes
+Item (no cas)   32
+Item (cas)      40
+Connection      320
+Thread stats    176
+```
+
+A 100-byte value with a 20-byte key uses roughly `40 + 20 + 100 + 4 = 164` bytes total. This lands in slab class 4 (176-byte chunks, 5,957 items per page). Knowing your item overhead helps choose the right class.
+
+### 2.6. Reads and Writes
+
+#### 2.6.1. Reads
+
+To locate an item for a given key, Memcached uses a hash table - an associative array where every element is equally fast to access once you know the index.
+
+Given only a key, the server converts it to an index: hash the key, take modulo N (the hash table size). The result is a slot index between 0 and N-1, used to look up the item in O(1) time.
+
+The slot points to memory on the appropriate slab class page. On a read hit, the item is moved to the head of its sub-LRU under a mutex lock.
+
+```
+$ echo "get mykey" | nc localhost 11211
+VALUE mykey 0 5
+hello
+END
+```
+
+![](https://substackcdn.com/image/fetch/$s_!2alB!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4f5a920b-035d-4390-a587-c27e2c7bb163_600x338.gif)
+
+When the key test is read, and we get item d, the LRU is updated so that d is now at the head of the linked list.
+
+![](https://substackcdn.com/image/fetch/$s_!2gsq!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa0d36f7c-4631-4c40-a131-03d52d011d6d_422x211.png)
+
+What happens if we read the key buzz pointing to item c? The LRU is updated so that c is now the head right after d.
+
+![](https://substackcdn.com/image/fetch/$s_!mtTN!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F00b204de-69c4-427d-9c6f-5f63a9aba34d_517x229.png)
+
+#### 2.6.2. Writes
+
+To write a key with a new value of 44 bytes, the server hashes the key, finds its index in the hash table. If the slot is empty, a new pointer is created, a slab class chunk is allocated, and the item is stored.
+
+```
+$ echo "set mykey 0 3600 5" | nc localhost 11211
+hello
+STORED
+```
+
+The second argument (0) is the flags field - opaque to the server, returned on reads for the client to interpret. Common uses: serialization format or compression hint.
+
+```
+$ echo "set flagtest 1 300 4" | nc localhost 11211
+test
+STORED
+
+$ echo "get flagtest" | nc localhost 11211
+VALUE flagtest 1 4
+test
+END
+```
+
+![](https://substackcdn.com/image/fetch/$s_!foRh!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F43fcebf0-85be-4a22-b2f6-2106ba5e37eb_600x338.gif)
+
+### 2.7. Collisions
+
+Hash collisions are unavoidable. Two different keys can hash to the same slot. Memcached handles this with **chaining** - each hash slot points to a linked list of items sharing that hash.
+
+![](https://substackcdn.com/image/fetch/$s_!JnMb!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F03739f18-28bf-48e1-bd0d-4e3593a0c857_600x338.gif)
+
+When reading a key, the server walks the chain comparing keys until it finds a match. In the worst case this becomes O(N) within a chain.
+
+Memcached measures chain depth using DTrace probes. If chains grow too long, read performance suffers.
+
+```
+$ echo "stats hash" | nc localhost 11211
+STAT hash_power_level 16
+STAT hash_bytes 524288
+STAT hash_is_expanding 0
+STAT hash_expand_count 1
+END
+```
+
+When chain depth exceeds a threshold, Memcached resizes the hash table (doubles it) and rehashes all items. This runs on a background thread so worker threads aren't blocked.
+
+- Hash table size is always a power of 2 for fast bitwise masking
+- A separate maintenance thread handles hash table growth
