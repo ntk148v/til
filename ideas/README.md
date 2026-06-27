@@ -11,3 +11,4 @@
 9. leanpack.nvim -> finish?
 10. microvm, and how it is relatable to agent?
 11. build eco system around firecracker/cloud-hypervisor.
+12. all fun: <https://github.com/ajalt/fuckitpy>
