@@ -12,3 +12,4 @@
 10. microvm, and how it is relatable to agent?
 11. build eco system around firecracker/cloud-hypervisor.
 12. all fun: <https://github.com/ajalt/fuckitpy>
+13. visualize wiki information as map, and user can take adventure through the map, expand their land.
