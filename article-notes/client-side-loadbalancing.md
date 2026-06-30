@@ -540,4 +540,4 @@ The article highlights several benefits beyond raw latency:
 
 For most systems, a server-side load balancer (or Kubernetes `Service`) is the right choice because it's simpler and operationally mature. Client-side load balancing becomes attractive when the routing overhead itself is measurable—as in Zalando's case, where each incoming request fans out into dozens of internal calls and the service processes traffic at the scale of **millions of requests per second**. At that scale, eliminating even a few hundred microseconds per hop and optimizing cache locality translates into meaningful gains in latency, resilience, and infrastructure cost.
 
-[1]: https://engineering.zalando.com/posts/2026/06/client-side-load-balancing.html?utm_source=chatgpt.com 'Client-Side Load Balancing at a Million Requests Per Second'
+[1]: https://engineering.zalando.com/posts/2026/06/client-side-load-balancing.html?utm_source=chatgpt.com "Client-Side Load Balancing at a Million Requests Per Second"
