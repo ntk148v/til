@@ -1,8 +1,8 @@
 # Ideas (which might be never be done)
 
 1. Everything is a file -> manually read /proc/net/tcp <https://staaldraad.github.io/2017/12/20/netstat-without-netstat/>
-2. ~Pomodoro written in Rust -> not fun anymore~``
-3. ~Strava Rewind! -> done~
+2. ~~Pomodoro written in Rust -> not fun anymore~~``
+3. ~~Strava Rewind! -> done~~
 4. <https://interpreterbook.com>
 5. LLM observability -> Langfuse
 6. Skill manager - simple. just like [lazyskills](https://github.com/alvinunreal/lazyskills/).
