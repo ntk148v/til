@@ -14,3 +14,4 @@
 12. all fun: <https://github.com/ajalt/fuckitpy>
 13. visualize wiki information as map, and user can take adventure through the map, expand their land.
 14. nvim plugin to do i-copy, copy to the actual markdown preview. for example, a link -> [text](link), just like Github issue/PR comment support.
+15. Grafana logs drill-down https://github.com/grafana/logs-drilldown -> but for other sources, like ClickHouse.
