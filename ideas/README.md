@@ -10,8 +10,16 @@
 8. plaintextsportstui
 9. leanpack.nvim -> finish?
 10. microvm, and how it is relatable to agent?
+
+- <https://github.com/weaveworks/ignite>
+- <https://github.com/kernel/hypeman>
+- <https://github.com/rivet-dev/agentos>
+- <https://rivet.dev/blog/2026-06-29-sandboxless-coding-agents/>
+- <https://microsandbox.dev>
+
 11. build eco system around firecracker/cloud-hypervisor.
 12. all fun: <https://github.com/ajalt/fuckitpy>
 13. visualize wiki information as map, and user can take adventure through the map, expand their land.
 14. nvim plugin to do i-copy, copy to the actual markdown preview. for example, a link -> [text](link), just like Github issue/PR comment support.
-15. Grafana logs drill-down https://github.com/grafana/logs-drilldown -> but for other sources, like ClickHouse.
+15. Grafana logs drill-down <https://github.com/grafana/logs-drilldown> -> but for other sources, like ClickHouse.
+16. unikernels: <https://labs.iximiuz.com/tutorials/unikernels-intro-93976514>
