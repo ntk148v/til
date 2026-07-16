@@ -29,6 +29,7 @@ Table of contents:
       - [5.2.1. The problem Firecracker solves](#521-the-problem-firecracker-solves)
       - [5.2.2. How Firecracker works](#522-how-firecracker-works)
       - [5.2.3. Hands-on guide](#523-hands-on-guide)
+      - [5.2.4. Firectl](#524-firectl)
     - [5.3. Cloud Hypervisor](#53-cloud-hypervisor)
       - [5.3.1. What is Cloud Hypervisor](#531-what-is-cloud-hypervisor)
       - [5.3.2. Hands-on guide](#532-hands-on-guide)
@@ -1756,6 +1757,78 @@ grep Seccomp /proc/$FC_PID/status
 ```sh
 cat /proc/$FC_PID/cgroup
 # 0::/firecracker/test-vm-01
+```
+
+#### 5.2.4. Firectl
+
+Source:
+
+- <https://s8sg.medium.com/quick-start-with-firecracker-and-firectl-in-ubuntu-f58aeedae04b>
+- <https://github.com/firecracker-microvm/firectl>
+
+There are way too many steps and scripts, fortunately, AWS has provided [firectl](https://github.com/firecracker-microvm/firectl) to make our life easier.
+
+```sh
+go install github.com/firecracker-microvm/firectl@latest
+
+firectl --version
+Version: 0.2.0
+SupportedFirecrackerVersion: 1.0.0
+```
+
+Assume that you already installed firecracker binary before:
+
+```sh
+curl -fsSL -o hello-vmlinux.bin https://s3.amazonaws.com/spec.ccfc.min/img/hello/kernel/hello-vmlinux.bin
+curl -fsSL -o hello-rootfs.ext4 https://s3.amazonaws.com/spec.ccfc.min/img/hello/fsfiles/hello-rootfs.ext4
+
+firectl \
+ --kernel=hello-vmlinux.bin \
+ --root-drive=hello-rootfs.ext4 \
+ --kernel-opts="console=ttyS0 noapic reboot=k panic=1 pci=off nomodules rw"
+
+# Login with user root/root
+```
+
+**Add external drive**
+
+- Create a separate qcow2 image:
+
+```sh
+qemu-img create -f qcow2 file.qcow2 100M
+sudo mkfs.ext4 file.qcow2
+
+firectl \                                                                                                                                                                                                                                      t/firectl  
+--kernel=hello-vmlinux.bin \
+--root-drive=hello-rootfs.ext4 \
+--kernel-opts="console=ttyS0 noapic reboot=k panic=1 pci=off nomodules rw" \
+--add-drive=file.qcow2:rw
+
+```
+
+```sh
+Welcome to Alpine!
+
+The Alpine Wiki contains a large amount of how-to guides and general
+information about administrating Alpine systems.
+See <http://wiki.alpinelinux.org>.
+
+You can setup the system with the command: setup-alpine
+
+You may change this message by editing /etc/motd.
+
+login[862]: root login on 'ttyS0'
+localhost:~# fdisk -l
+Disk /dev/vda: 30 MiB, 31457280 bytes, 61440 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+Disk /dev/vdb: 192 KiB, 196608 bytes, 384 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
 ```
 
 ### 5.3. Cloud Hypervisor
