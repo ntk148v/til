@@ -1,6 +1,7 @@
 # Enterprise AI Infrastructure 101: From Proof of Concept to Production
 
 Source:
+
 - <https://youtu.be/9cDnHMIWsMQ>
 - <https://www.onesourcecloud.net/blog/enterprise-ai-infrastructure-poc-to-production-4096b>
 
