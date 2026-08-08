@@ -25,7 +25,7 @@ metadata:
 spec:
   dataStore: etcd-primary-kamaji-etcd
   dataStoreOverrides:
-    - resource: '/events' # Store events in the secondary ETCD
+    - resource: "/events" # Store events in the secondary ETCD
       dataStore: etcd-secondary-kamaji-etcd
   controlPlane:
     deployment:
@@ -33,7 +33,7 @@ spec:
     service:
       serviceType: LoadBalancer
   kubernetes:
-    version: 'v1.35.0'
+    version: "v1.35.0"
   addons:
     coreDNS: {}
     kubeProxy: {}
