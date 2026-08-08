@@ -4,6 +4,7 @@ Source:
 
 - <https://cluster-api.sigs.k8s.io/>
 - <https://speakerdeck.com/erkanerol/kubernetes-cluster-api>
+- <https://nohup.no/posts/cluster-api-on-openstack/>
 
 ## 1. Introduction
 
@@ -29,3 +30,19 @@ What do we need to create a k8s cluster?
 - external or managed control planes are offered and controlled by some system other then ClusterAPI, such as GKE, AKS, EKS, ...
 
 ![](https://cluster-api.sigs.k8s.io/images/management-cluster.svg)
+
+```text
+Cluster
+├── infrastructureRef → OpenStackCluster
+│   (API endpoint, external network, DNS, subnets)
+│
+├── controlPlaneRef → KubeadmControlPlane
+│   ├── machineTemplate.infrastructureRef → OpenStackMachineTemplate
+│   │   (flavor, image, rootVolume, security groups)
+│   └── creates → Machine → OpenStackMachine
+│
+└── MachineDeployment (workers)
+    ├── infrastructureRef → OpenStackMachineTemplate
+    ├── bootstrap.configRef → KubeadmConfigTemplate
+    └── creates → MachineSet → Machine → OpenStackMachine
+```
