@@ -4,7 +4,7 @@ This demonstrates the core Kubernetes pattern:
 
 **CRD → Custom Resource → Watch → Reconcile → Managed Kubernetes resource → Status**
 
-Kubernetes CRDs extend the API server with new resource types, while a custom controller turns that stored declarative data into actual behavior. ([Kubernetes](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/?utm_source=chatgpt.com 'Custom Resources | Kubernetes'))
+Kubernetes CRDs extend the API server with new resource types, while a custom controller turns that stored declarative data into actual behavior. ([Kubernetes](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/?utm_source=chatgpt.com "Custom Resources | Kubernetes"))
 
 ## 1. What we're building
 
@@ -31,7 +31,7 @@ And the CR will eventually report:
       ready: true
       configMapName: hello-greeting
 
-The important part is that we aren't coding around individual create/update events. A Kubernetes reconciler should repeatedly compare **desired state** with **actual state** and make the latter converge on the former. controller-runtime explicitly describes reconciliation as level-based rather than event-driven business logic. ([Go Packages](https://pkg.go.dev/sigs.k8s.io/controller-runtime?utm_source=chatgpt.com 'controllerruntime package - sigs.k8s.io/controller-runtime - Go Packages'))
+The important part is that we aren't coding around individual create/update events. A Kubernetes reconciler should repeatedly compare **desired state** with **actual state** and make the latter converge on the former. controller-runtime explicitly describes reconciliation as level-based rather than event-driven business logic. ([Go Packages](https://pkg.go.dev/sigs.k8s.io/controller-runtime?utm_source=chatgpt.com "controllerruntime package - sigs.k8s.io/controller-runtime - Go Packages"))
 
 ---
 
@@ -47,7 +47,7 @@ You need:
 
 For local development, `kind` or `minikube` works well.
 
-The current Kubebuilder quick start uses the standard workflow of `kubebuilder init`, `kubebuilder create api`, `make install`, and `make run`. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com 'Quick Start - The Kubebuilder Book'))
+The current Kubebuilder quick start uses the standard workflow of `kubebuilder init`, `kubebuilder create api`, `make install`, and `make run`. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com "Quick Start - The Kubebuilder Book"))
 
 Install Kubebuilder:
 
@@ -130,7 +130,7 @@ This should give you files roughly like:
     ├── Makefile
     └── go.mod
 
-Current Kubebuilder scaffolding likewise puts API definitions under `api/...` and reconciliation code under `internal/controller`. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com 'Quick Start - The Kubebuilder Book'))
+Current Kubebuilder scaffolding likewise puts API definitions under `api/...` and reconciliation code under `internal/controller`. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com "Quick Start - The Kubebuilder Book"))
 
 ---
 
@@ -226,7 +226,7 @@ Run:
     make generate
     make manifests
 
-`make manifests` converts Kubebuilder markers into CRDs, RBAC manifests, and related generated configuration. This is the standard Kubebuilder workflow after changing API definitions or RBAC markers. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com 'Quick Start - The Kubebuilder Book'))
+`make manifests` converts Kubebuilder markers into CRDs, RBAC manifests, and related generated configuration. This is the standard Kubebuilder workflow after changing API definitions or RBAC markers. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com "Quick Start - The Kubebuilder Book"))
 
 You'll now have a generated CRD under something similar to:
 
@@ -281,7 +281,7 @@ Modern CRDs use:
 
     apiVersion: apiextensions.k8s.io/v1
 
-and contain an OpenAPI schema for the custom resource. ([Kubernetes](https://kubernetes.io/docs/reference/kubernetes-api/apiextensions/custom-resource-definition-v1/?utm_source=chatgpt.com 'CustomResourceDefinition | Kubernetes'))
+and contain an OpenAPI schema for the custom resource. ([Kubernetes](https://kubernetes.io/docs/reference/kubernetes-api/apiextensions/custom-resource-definition-v1/?utm_source=chatgpt.com "CustomResourceDefinition | Kubernetes"))
 
 ---
 
@@ -443,7 +443,7 @@ Instead design it as:
     read actual state
     make actual state equal desired state
 
-The reconcile request generally contains only the resource's namespace/name; the reconciler examines current state to determine what action is required. ([Go Packages](https://pkg.go.dev/sigs.k8s.io/controller-runtime/pkg/reconcile?utm_source=chatgpt.com 'reconcile package - sigs.k8s.io/controller-runtime/pkg/reconcile - Go Packages'))
+The reconcile request generally contains only the resource's namespace/name; the reconciler examines current state to determine what action is required. ([Go Packages](https://pkg.go.dev/sigs.k8s.io/controller-runtime/pkg/reconcile?utm_source=chatgpt.com "reconcile package - sigs.k8s.io/controller-runtime/pkg/reconcile - Go Packages"))
 
 ---
 
@@ -474,7 +474,7 @@ means:
 
 > Also reconcile the parent `Greeting` when a ConfigMap owned by it changes.
 
-Kubebuilder/controller-runtime supports precisely this owner-resource relationship through the controller builder's `Owns` mechanism. ([Kubebuilder Book](https://book-v3.book.kubebuilder.io/reference/watching-resources/externally-managed?utm_source=chatgpt.com 'Externally Managed Resources - The Kubebuilder Book'))
+Kubebuilder/controller-runtime supports precisely this owner-resource relationship through the controller builder's `Owns` mechanism. ([Kubebuilder Book](https://book-v3.book.kubebuilder.io/reference/watching-resources/externally-managed?utm_source=chatgpt.com "Externally Managed Resources - The Kubebuilder Book"))
 
 So your controller reacts both to:
 
@@ -594,7 +594,7 @@ At this point the **CRD exists**, but the controller isn't running yet.
 
 ## 11. Run the controller locally
 
-Kubebuilder supports running the controller on your workstation while it communicates with the cluster selected by your current kubeconfig. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com 'Quick Start - The Kubebuilder Book'))
+Kubebuilder supports running the controller on your workstation while it communicates with the cluster selected by your current kubeconfig. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com "Quick Start - The Kubebuilder Book"))
 
 Run:
 
@@ -830,7 +830,7 @@ There are effectively three layers:
     │
     └── ConfigMap
 
-The manager supplied by controller-runtime handles shared facilities such as caches, Kubernetes clients, controllers, and graceful shutdown. ([Go Packages](https://pkg.go.dev/sigs.k8s.io/controller-runtime?utm_source=chatgpt.com 'controllerruntime package - sigs.k8s.io/controller-runtime - Go Packages'))
+The manager supplied by controller-runtime handles shared facilities such as caches, Kubernetes clients, controllers, and graceful shutdown. ([Go Packages](https://pkg.go.dev/sigs.k8s.io/controller-runtime?utm_source=chatgpt.com "controllerruntime package - sigs.k8s.io/controller-runtime - Go Packages"))
 
 ---
 
@@ -899,7 +899,7 @@ Deploy:
 
     make deploy IMG=$IMG
 
-Kubebuilder's generated deployment includes the manager, RBAC, service account, CRD/Kustomize configuration, and related resources. The current official workflow likewise uses `make docker-build docker-push` followed by `make deploy`. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com 'Quick Start - The Kubebuilder Book'))
+Kubebuilder's generated deployment includes the manager, RBAC, service account, CRD/Kustomize configuration, and related resources. The current official workflow likewise uses `make docker-build docker-push` followed by `make deploy`. ([Kubebuilder Book](https://book.kubebuilder.io/quick-start.html?utm_source=chatgpt.com "Quick Start - The Kubebuilder Book"))
 
 Check:
 
@@ -1041,4 +1041,4 @@ The key concept to retain is:
                 status
 ```
 
-**`spec` says what should be true. The reconciler makes it true. `status` reports what is true.** That's the foundation of CRD/controller development in Kubernetes. ([Kubernetes](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/?utm_source=chatgpt.com 'Custom Resources | Kubernetes'))
+**`spec` says what should be true. The reconciler makes it true. `status` reports what is true.** That's the foundation of CRD/controller development in Kubernetes. ([Kubernetes](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/?utm_source=chatgpt.com "Custom Resources | Kubernetes"))
