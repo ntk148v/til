@@ -31,9 +31,18 @@ Table of Contents:
   - [4. Security](#4-security)
     - [4.1. Kubernetes API Server Control access](#41-kubernetes-api-server-control-access)
     - [4.2. Secure Pod and Container](#42-secure-pod-and-container)
+    - [4.3. Multi-tenancy](#43-multi-tenancy)
   - [5. Troubleshooting Deployments](#5-troubleshooting-deployments)
     - [5.1. Recap](#51-recap)
     - [5.2. Troubleshooting](#52-troubleshooting)
+  - [Additional Resources](#additional-resources)
+    - [Best Practices](#best-practices)
+    - [Security](#security)
+    - [Troubleshooting](#troubleshooting)
+    - [Tools](#tools)
+    - [Package Management](#package-management)
+    - [Templates](#templates)
+    - [Articles \& References](#articles--references)
 
 ## 1. Introduction
 
@@ -1091,6 +1100,22 @@ spec:
 
   - Isolate the network between Kubernetes namespace.
   - Isolate using CIDR notation.
+
+### 4.3. Multi-tenancy
+
+- Tenants: a group of users who share a single workload.
+- Isolation:
+  - Control plane isolation: ensures that different tenants cannot access or affect each others' Kubernetes API resources.
+    - Namespaces: provides a mechanism for isolating groups of API resources within a single cluster. This isolation has two key dimensions:
+      - Object names within a namespace can overlap with names in other namespaces, similar to files in folders. This allows tenants to name their resources without having to consider what other tenants are doing.
+      - Many Kubernetes security policies are scoped to namespaces. For example, RBAC Roles and Network Policies are namespace-scoped resources. Using RBAC, Users and Service Accounts can be restricted to a namespace.
+    - Access controls: Role-based access control (RBAC) is commonly used to enforce authorization in the Kubernetes control plane, for both users and workloads (service accounts). [Roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole) and [RoleBindings](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#rolebinding-and-clusterrolebinding) are Kubernetes objects that are used at a namespace level to enforce access control in your application; similar objects exist for authorizing access to cluster-level objects, though these are less useful for multi-tenant clusters.
+    - Quotas: Kubernetes workloads consume node resources, like CPU and memory. In a multi-tenant environment, you can use [Resource Quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) to manage resource usage of tenant workloads.
+  - Data plane isolation: ensures that pods and workloads for different tenants are sufficiently isolated.
+    - Network isolation: By default, all pods in a Kubernetes cluster are allowed to communicate with each other, and all network traffic is unencrypted. Pod-to-pod communication can be controlled using [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/), which restrict communication between pods using namespace labels or IP address ranges.
+    - Storage isolation: Kubernetes offers several types of volumes that can be used as persistent storage for workloads. For security and data-isolation, [dynamic volume provisioning](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/) is recommended and volume types that use node resources should be avoided.
+    - Sandboxing containers: Kubernetes pods are composed of one or more containers that execute on worker nodes. Containers utilize OS-level virtualization and hence offer a weaker isolation boundary than virtual machines that utilize hardware-based virtualization. Sandboxing provides a way to isolate workloads running in a shared cluster. It typically involves running each pod in a separate execution environment such as a virtual machine or a userspace kernel. Sandboxing is often recommended when you are running untrusted code, where workloads are assumed to be malicious.
+    - Node isolation: Node isolation is another technique that you can use to isolate tenant workloads from each other. With node isolation, a set of nodes is dedicated to running pods from a particular tenant and co-mingling of tenant pods is prohibited. This configuration reduces the noisy tenant issue, as all pods running on a node will belong to a single tenant.
 
 ## 5. Troubleshooting Deployments
 
