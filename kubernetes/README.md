@@ -287,20 +287,38 @@ kubectl get ev --field-selector type=Warning
 
 ### 2.9. Networking
 
-![](https://chunqi.li/images/flannel-01.png)
+Source:
 
-- Each pods gets its own unique IP address and can communicate with all other pods through a flat, NAT-less network.
-- The network is set up by the system administrator or by a Container Network Interface (CNI) plugin, not by Kubernetes itself.
-- For example, CNI Flannel:
-  - Read more [here](https://chunqi.li/2015/10/10/Flannel-for-Docker-Overlay-Network/)
-  - Network communicate - multihost.
-  - Flannel also uses etcd to configure the settings and store the status.
+- <https://kubernetes.io/docs/concepts/cluster-administration/networking/#the-kubernetes-network-model>
+- <https://medium.com/@h.stoychev87/kubernetes-networking-a-deep-dive-6081d794e97c>
 
-  ```bash
-  curl -L "http://10.0.0.1:2379/v2/keys/coreos.com/network/config"
-  ```
-
-![](https://chunqi.li/images/flannel-01.png)
+- Kubernetes defines a network model that helps provide simplicity and consistency across a range of networking environments and network implementations.
+  - Every pod gets its own IP address.
+  - Containers within a pod share the pod IP address and can communicate freely with each other.
+  - Pods can communicate with all other pods in the cluster using pod IP addresses (without NAT).
+  - Isolation (restricting what each pod can communicate with) is defined using network policies.
+- Kubernetes built-in network support, kubenet, can provide some basic network connectivity. However, it is more common to use 3rd party network implementations which plugin into Kubernetes using the CNI (Container Network Interface) API. There are lots of different kinds of CNI plugins, but the two main ones are:
+  - network plugins, which are responsible for connecting pod to the network
+  - IPAM (IP Address Management) plugins, which are responsible for allocating pod IP addresses.
+- Kubernetes Services provide a way of abstracting access to a group of pods as a network service. The group of pods is usually defined using a [label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels)
+  - Within the cluster the network service is usually represented as virtual IP address, and kube-proxy load balances connections to the virtual IP across the group of pods backing the service
+  - The virtual IP is discoverable through Kubernetes DNS.
+  - Kubernetes Services can also define how a service is accessed from outside of the cluster, for example using
+    - a node port, where the service can be accessed via a specific port on every node
+    - or a load balancer, whether a network load balancer provides a virtual IP address that the service can be accessed via from outside the cluster.
+- Each Kubernetes cluster provides a DNS service. Every pod and every service is discoverable through the Kubernetes DNS service.
+- The Kubernetes network model specifies that pods must be able to communicate with each other directly using pod IP addresses. But it does not mandate that pod IP addresses are routable beyond the boundaries of the cluster. Many Kubernetes network implementations use [overlay networks](https://docs.tigera.io/calico/latest/about/kubernetes-training/about-networking#overlay-networks). Typically for these deployments, when a pod initiates a connection to an IP address outside of the cluster, the node hosting the pod will SNAT (Source Network Address Translation) map the source address of the packet from the pod IP to the node IP. This enables the connection to be routed across the rest of the network to the destination (because the node IP is routable). Return packets on the connection are automatically mapped back by the node replacing the node IP with the pod IP before forwarding the packet to the pod.
+- Network policy is the primary tool for securing a Kubernetes network. It allows you to easily restrict the network traffic in your cluster so only the traffic that you want to flow is allowed.
+  - The Kubernetes network model defines a "flat" network in which every pod can communicate with all other pods in the cluster using pod IP addresses
+  - In this model, rather than network security being defined by network topology boundaries, it is defined using network policies that are independent of the network topology.
+  - Kubernetes network policies are defined using the Kubernetes [NetworkPolicy](https://kubernetes.io/docs/reference/kubernetes-api/policy-resources/network-policy-v1/) resource.The main features of Kubernetes network policies are:
+    - Policies are namespace scoped (i.e. you create them within the context of a specific namespace just like, for example, pods)
+    - Policies are applied to pods using label selectors
+    - Policy rules can specify the traffic that is allowed to/from other pods, namespaces, or CIDRs
+    - Policy rules can specify protocols (TCP, UDP, SCTP), named ports or port numbers
+- Determine best networking option:
+  - <https://docs.tigera.io/calico/latest/networking/determine-best-networking>
+  - <https://www.tigera.io/blog/when-to-use-bgp-vxlan-or-ip-in-ip-a-practical-guide-for-kubernetes-networking/>
 
 ## 3. Concepts
 
@@ -389,12 +407,30 @@ spec:
   - When using **Deployments**, when **updating** the image version, pods are **terminated** and new pods take the place of older posts.
 - That's why Pods should never be accessed directly, but always through a **Service**.
 - It is an abstraction which defines a logical set of Pods and a policy by which to access them - sometimes called a micro-service. A service is the **logical service** between the "mortal" pods and other **services** or **end-users**.
+
+![](https://docs.tigera.io/assets/images/k8s-service-concept-77a22aa6f22a4048f2aacaccca788656.svg)
+
 - Use `kubectl expose` command.
 - The set of Pods targeted by a **Service** is (usually) determined by Label Selector.
   - **ClusterIP**: Exposes the service on a cluster-internal IP. A virtual IP address only reachable from within the cluster (_default_).
+    - In a typical Kubernetes deployment, kube-proxy runs on every node and is responsible for intercepting connections to Cluster IP addresses and load balancing across the group of pods backing each service.
+    - As part of this process DNAT is used to map the destination IP address from the Cluster IP to the chosen backing pod. Response packets on the connection then have the NAT reverse on their way back to the pod that initiated the connection.
+
+  ![](https://docs.tigera.io/assets/images/kube-proxy-cluster-ip-da828a9e8ef7c825261c2a87852ed1ac.svg)
+
   - **NodePort**: Exposes the service on each Node's IP at a static port. A porta that is the same on each node that is also reachable externally.
-  - **LoadBalancer**: Exposes the service externally using a cloud provider's load balancer. A LoadBalancer created by the cloud provider that route external traffic to every node on the NodePort (ELB on AWS for example)
+    - In a typical Kubernetes deployment, kube-proxy is responsible for intercepting connections to Node Ports and load balancing them across the pods backing each service.
+    - As part of this process NAT is used to map the destination IP address and port from the node IP and Node Port, to the chosen backing pod and service port. In addition the source IP address is mapped from the client IP to the node IP, so that response packets on the connection flow back via the original node, where the NAT can be reversed. (It's the node which performed the NAT that has the connection tracking state needed to reverse the NAT.)
+
+  ![](https://docs.tigera.io/assets/images/kube-proxy-node-port-b8daa0296e4e25f65be4892bc45c7fae.svg)
+
+  - **LoadBalancer**: Exposes the service externally using a cloud provider's load balancer. A LoadBalancer created by the cloud provider that route external traffic to every node on the NodePort (ELB on AWS for example).
+    - The service can be accessed from outside of the cluster via a specific IP address on the network load balancer, which by default will load balancer evenly across the nodes using the service node port.
+
+  ![](https://docs.tigera.io/assets/images/kube-proxy-load-balancer-07d81e8c44b28b285157e15f8a75f2b4.svg)
+
   - **ExternalName**: Maps the service to the contents of the externalName. This only works when **DNS add-on** is enabled.
+  - **Advertising service IPs**: One alternative to using node ports or network load balancers is to advertise service IP addresses over BGP. This requires the cluster to be running on an underlying network that supports BGP, which typically means an on-prem deployment with standard Top of Rack routers.
 
 ![Services](./imgs/Services.png)
 
@@ -549,7 +585,7 @@ spec:
         storage: 1Gi
     accessModes: # The volume must support mounting by a single node for both reading and writing
       - ReadWriteOnce
-    storageClassName: "" # Empty to disable dynamic provisioning
+    storageClassName: '' # Empty to disable dynamic provisioning
   ```
 
   ```bash
@@ -596,7 +632,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   annotations:
-    storageclass.kubernetes.io/is-default-class: "true" # This marks the storage class as default
+    storageclass.kubernetes.io/is-default-class: 'true' # This marks the storage class as default
   name: standard # The name of storage class
 # ...
 provisioner: rancher.io/local-path # The name of provisioner that gets called to provision persistent volumes of this class
@@ -718,6 +754,10 @@ kubectl apply -f ns-test2.yaml
 
 ### 3.10. Ingress
 
+Source:
+
+- <https://docs.tigera.io/calico/latest/about/kubernetes-training/about-kubernetes-ingress>
+
 - Typically, services and pods have IPs only routable by the cluster network.
 
 ```
@@ -739,6 +779,8 @@ kubectl apply -f ns-test2.yaml
 
 - It's an alternative to the exernal **LoadBalancer** and **NodePort**:
   - Ingress allows you to **easily expose services** that need to be accessible from **outside** to the **cluster**.
+  - Ingress builds on top of Kubernetes Services to provide load balancing at the application layer, mapping HTTP and HTTPS requests with particular domains or URLs to Kubernetes services. Ingress can also be used to terminate SSL / TLS before load balancing to the service.
+  - Unlike Kubernetes services, which are handled at the network layer (L3-L4), ingress load balancers operate at the application layer (L5-L7). Incoming connections are terminated at the load balancer so it can inspect the individual HTTP / HTTPS requests. The requests are then forwarded via separate connections from the load balancer to the chosen service backing pods. As a result, network policy applied to the backing pods can restrict access to only allow connections from the load balancer, but cannot restrict access to specific original clients.
 - With ingress you can run your own **Ingress Controller** (basically a load balancer) within the Kubernetes cluster. There are a default ingress controller avaiable, or you can write your own ingress controller.
 - For example, Nginx Ingress Controller.
 
@@ -899,9 +941,9 @@ spec:
     namespace: foo
     name: service-reader
   rules:
-    - apiGroups: [""] # "" indicates the core API group
-      resources: ["services"]
-      verbs: ["get", "list"]
+    - apiGroups: [''] # "" indicates the core API group
+      resources: ['services']
+      verbs: ['get', 'list']
   ```
 
   ```bash
@@ -948,7 +990,7 @@ spec:
   containers:
     - name: main
       image: alpine
-      command: ["/bin/sleep", "9999999"]
+      command: ['/bin/sleep', '9999999']
 ```
 
 ```bash
@@ -974,7 +1016,7 @@ spec:
   containers:
     - name: main
       image: alpine
-      command: ["/bin/sleep", "999999"]
+      command: ['/bin/sleep', '999999']
       securityContext:
         runAsNonRoot: true # run as non Root
         runAsUser: 405 # Run guestUser
