@@ -57,7 +57,7 @@ Table of Contents:
   - Workload Plane: Node hosts the Pods that are the components of the application workload.
   - Control plane: manages the work nodes and the Pods in the cluster. In the production environments, the control plane usually run across multiple hosts.
 
-![](https://d33wubrfki0l68.cloudfront.net/2475489eaf20163ec0f54ddc1d92aa8d4c87c96b/e7c81/images/docs/components-of-kubernetes.svg)
+![](https://kubernetes.io/images/docs/kubernetes-cluster-architecture.svg)
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.11.png)
 
@@ -291,6 +291,8 @@ Source:
 
 - <https://kubernetes.io/docs/concepts/cluster-administration/networking/#the-kubernetes-network-model>
 - <https://medium.com/@h.stoychev87/kubernetes-networking-a-deep-dive-6081d794e97c>
+- <https://isovalent.com/blog/post/what-is-kubernetes-networking/>
+- <https://cilium.io/blog/2026/04/25/understanding-kubernetes-networking/>
 
 - Kubernetes defines a network model that helps provide simplicity and consistency across a range of networking environments and network implementations.
   - Every pod gets its own IP address.
