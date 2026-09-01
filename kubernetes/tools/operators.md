@@ -60,21 +60,21 @@ kind: ExampleApp
 metadata:
   name: appdelivery-example-app
 spec:
-  appVersion: '0.0.1'
+  appVersion: "0.0.1"
   features:
     exampleFeature1: true
     exampleFeature2: false
   backup:
     enabled: true
-    storageType: 's3'
-    host: 'my-backup.example.com'
-    bucketName: 'example-backup'
+    storageType: "s3"
+    host: "my-backup.example.com"
+    bucketName: "example-backup"
 status:
-  currentVersion: '0.0.1'
-  url: 'https://myloadbalancer/exampleapp/'
-  authSecretName: 'appdelivery-example-app-auth'
+  currentVersion: "0.0.1"
+  url: "https://myloadbalancer/exampleapp/"
+  authSecretName: "appdelivery-example-app-auth"
   backup:
-    lastBackupTime: '12:00'
+    lastBackupTime: "12:00"
 ```
 
 - **`spec`**: Declares the desired state — version, features, backup configuration, etc.
