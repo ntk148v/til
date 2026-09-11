@@ -24,3 +24,4 @@
 15. Grafana logs drill-down <https://github.com/grafana/logs-drilldown> -> but for other sources, like ClickHouse.
 16. unikernels: <https://labs.iximiuz.com/tutorials/unikernels-intro-93976514>
 17. WASM
+18. Lustre HPS
