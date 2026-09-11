@@ -1,13 +1,19 @@
 # Iroh
 
-Source:
+Sources:
 
-- <https://www.iroh.computer/docs/>
+- <https://docs.iroh.computer/quickstart>
+- <https://docs.iroh.computer/how-to/connect>
+- <https://docs.iroh.computer/concepts/tickets>
+- <https://kerkour.com/iroh-v1-p2p>
 
 ## 1. Overview
 
 Iroh is a Rust-based library designed to simplify peer-to-peer (P2P) networking by enabling direct connections between devices. It leverages public key-based addressing, bypassing traditional IP-based systems.
 This approach ensures globally unique identifiers and seamless network traversal, even through NATs.
+
+![](https://kerkour.com/assets/2026/06/iroh_overview.avif)
+
 Built on the [QUIC](https://en.wikipedia.org/wiki/QUIC) protocol, Iroh provides features such as encryption, authentication, stream multiplexing, and low-latency connections.
 
 **Iroh is "dial by public key"**
@@ -19,6 +25,9 @@ Built on the [QUIC](https://en.wikipedia.org/wiki/QUIC) protocol, Iroh provides 
 **peer-to-peer**
 
 - Iroh is built on peer-to-peer QUIC using both relays and holepunching.
+
+![](https://kerkour.com/assets/2026/06/iroh_relay.avif)
+
 - Peer to peer connectivity is established with the help of a relay server.
   - On startup peers register their NodeId with a home relay server.
   - The relay server provides assistance to traverse firewalls, NATs or others alike.
@@ -37,16 +46,33 @@ QUIC gives iroh super-powers:
 - an encrypted, unreliable datagram transport
 - zero round trip time connection establishment if you've connected to another node before
 
-## 2. Concepts
+## 2. Architecture
 
-### 2.1. Endpoints
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#eef1ff', 'primaryTextColor':'#18181b', 'primaryBorderColor':'#6257f7', 'lineColor':'#52525b', 'secondaryColor':'#fafafa', 'tertiaryColor':'#f5f5f5', 'fontFamily':'Space Grotesk, sans-serif'}}}%%
+flowchart LR
+    app_a[Application A] --> endpoint_a[Endpoint A\nNodeId + private key]
+    app_b[Application B] --> router_b[Router B\nALPN dispatch]
+    router_b --> endpoint_b[Endpoint B\nNodeId + private key]
+    endpoint_a -. publish / resolve .-> discovery[Discovery\nDNS, mDNS, pkarr, or DHT]
+    endpoint_b -. publish / resolve .-> discovery
+    endpoint_a --> relay[Home relay\nbootstrap + fallback]
+    relay --> endpoint_b
+    endpoint_a <-- preferred direct QUIC --> endpoint_b
+```
+
+Each application owns an `Endpoint`. Discovery maps a `NodeId` to current dialing information; a relay helps peers meet and carries encrypted traffic only when no direct path is available. Incoming connections reach a `Router`, which selects an application protocol by ALPN.
+
+## 3. Concepts
+
+### 3.1. Endpoints
 
 - An _endpoint_ is the main API interface to create connections to (`connect`), and accept connections (`accept`) from other iroh nodes.
 - Endpoints have a `NodeID` (the public half of an Ed25519 keypair) and the private key used to sign and decrypt messages.
 - Connections are full-fledged QUIC connections, giving you access to most features of QUIC / HTTP3, including bidirectional and unidirectional streams.
 - Endpoints are a low-level primitive that iroh exposes on purpose.
 
-### 2.2. Relay
+### 3.2. Relay
 
 Relays are servers that help establish connections between devices.
 
@@ -55,7 +81,7 @@ Relays are servers that help establish connections between devices.
 - number 0 provides a set of public relays that are free to use, and are configured by default. You're more than welcome to run production systems using the public relays if you find performance acceptable.
 - Relays aren't the only way to find other iroh nodes. Iroh also supports local discovery, where nodes on the same local network can find each other & exchange dialing information without a relay using mDNS.
 
-### 2.3. Discovery
+### 3.3. Discovery
 
 Discovery is the glue that connects a Node Identifier to something we can dial. Discovery services resolve NodeIds to either a home Relay URL or direct-dialing information.
 
@@ -69,7 +95,7 @@ Discovery is the glue that connects a Node Identifier to something we can dial. 
 | Pkarr                    | use Pkarr servers over HTTP                                                         |
 | DHT                      | uses the BitTorrent Mainline DHT                                                    |
 
-### 2.4. Protocol
+### 3.4. Protocol
 
 Iroh is organized into protocols: Composable networking software built on iroh connections.
 
@@ -80,13 +106,13 @@ Iroh is organized into protocols: Composable networking software built on iroh c
   - The accept loop is the entry point for all iroh protocols, and is where you can add your own protocol to the iroh stack.
   - It can run multiple protocols on the same endpoint.
 
-### 2.5. Router
+### 3.5. Router
 
 To make composing protocols easier, iroh includes a router for composing together multiple protocols.
 
 The router implements the accept loop on your behalf, and routes incoming connections to the correct protocol based on the ALPN. We recommend using the router to compose protocols, as it makes it easier to add new protocols to your application.
 
-### 2.6. Tickets
+### 3.6. Tickets
 
 Tickets are a way to share dialing information between iroh nodes. They're a single token that contains everything needed to connect to another node, or to fetch a blob or document.
 
@@ -109,7 +135,7 @@ docaaacarwhmusoqf362j3jpzrehzkw3bqamcp2mmbhn3fmag3mzzfjp4beahj2v7aezhojvfqi5wltr
 - Tickets are sensitive: if you share a ticket with someone, they can use it to connect to your machine.
 - Document tickets are secrets: When you create a document ticket, you're creating a secret that allows someone to read or write to a document. This means that you should be careful about sharing document tickets with people you don't trust.
 
-### 2.7. NodeAddr
+### 3.7. NodeAddr
 
 Node Addresses or `NodeAddrs` are a common struct you'll interact when working with iroh to tell iroh what & where to dial.
 
@@ -123,3 +149,72 @@ pub struct NodeAddr {
 
 - You'll interact with `NodeAddrs` a fair amount when working with iroh.
 - When we call connect on an Endpoint, we need to pass either a `NodeAddr`, or something that can turn into a `NodeAddr`.
+
+## 4. End-to-end workflow
+
+### 4.1. Connect and serve
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#eef1ff', 'primaryTextColor':'#18181b', 'primaryBorderColor':'#6257f7', 'lineColor':'#52525b', 'secondaryColor':'#fafafa', 'tertiaryColor':'#f5f5f5', 'fontFamily':'Space Grotesk, sans-serif'}}}%%
+flowchart TD
+    start([Have a NodeId or NodeAddr]) --> resolve[Endpoint resolves dialing information]
+    resolve --> assist[Relay assists rendezvous and hole punching]
+    assist --> direct{Direct QUIC path available?}
+    direct -->|Yes| p2p[Use authenticated, encrypted P2P QUIC]
+    direct -->|No| fallback[Relay encrypted traffic]
+    p2p --> negotiate[Negotiate ALPN]
+    fallback --> negotiate
+    negotiate --> route[Router or accept loop selects protocol]
+    route --> io[Open QUIC streams or send datagrams]
+```
+
+1. The caller supplies a `NodeId`, `NodeAddr`, or ticket-derived address to `Endpoint::connect`.
+2. Iroh discovers fresh relay/direct addresses, then uses the relay to coordinate NAT traversal.
+3. It prefers a direct QUIC path and automatically falls back to relaying when needed; the path can change as networks change.
+4. QUIC authenticates the peer key and encrypts traffic. ALPN identifies the application protocol, then the router (or your accept loop) handles streams and datagrams.
+
+### 4.2. Share and consume tickets
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#eef1ff', 'primaryTextColor':'#18181b', 'primaryBorderColor':'#6257f7', 'lineColor':'#52525b', 'secondaryColor':'#fafafa', 'tertiaryColor':'#f5f5f5', 'fontFamily':'Space Grotesk, sans-serif'}}}%%
+flowchart LR
+    create[Provider creates ticket] --> share[Share via QR code, message, or service]
+    share --> parse[Consumer parses ticket]
+    parse --> kind{Ticket kind}
+    kind -->|node| node[Node address]
+    kind -->|blob| blob[Hash + node address]
+    kind -->|document| document[Document ID + capability + node address]
+    node --> dial[Dial endpoint]
+    blob --> dial
+    document --> dial
+    dial --> protocol[Use the matching ALPN protocol]
+```
+
+A ticket packages an endpoint address (`NodeId`, optional relay URL, and direct addresses) with optional application data. A node ticket connects to a peer; a blob ticket adds the content hash; a document ticket adds a document ID and read/write capability. Tickets are reusable and may expose IP addresses or grant access, so treat them as sensitive. Their embedded addresses can become stale; cache `NodeId`s for long-lived peers and let discovery refresh the route.
+
+### 4.3. Receive a connection
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#eef1ff', 'primaryTextColor':'#18181b', 'primaryBorderColor':'#6257f7', 'lineColor':'#52525b', 'secondaryColor':'#fafafa', 'tertiaryColor':'#f5f5f5', 'fontFamily':'Space Grotesk, sans-serif'}}}%%
+flowchart LR
+    incoming[Incoming QUIC connection] --> endpoint[Endpoint accepts connection]
+    endpoint --> alpn[Read negotiated ALPN]
+    alpn --> router[Router dispatches protocol]
+    router --> handler[Protocol handler]
+    handler --> streams[Bidirectional / unidirectional streams]
+    handler --> datagrams[Unreliable encrypted datagrams]
+```
+
+Use `Endpoint::accept` and implement the accept loop yourself when you need full control. Otherwise, register protocols on the router; it owns the accept loop and dispatches each incoming connection by ALPN.
+
+## 5. iroh vs.
+
+### 5.1. vs. WireGuard / Tailscale
+
+Tailscale is a company offering managed WireGuard tunnels between devices, whether it be your family's devices or a big organization's. Tailscale (and more generally WireGuard) tunnels work at the device level. It tunnels the traffic for all the applications and Operating System services of your devices. On the other hand, iroh works at the application level, it only tunnels traffic for a specific application.
+
+That being said, you can ansolutely build an alternative to Tailscale that uses iroh under the hood and create a TUN interface on the machines. Actually, an iroh-based VPN would probably be better than Tailscale itself as WireGuard is easy to detect on the network and block while iroh uses standard QUIC packets.
+
+## 6. Use cases
+
+Check it out: <https://www.iroh.computer/solutions/>
