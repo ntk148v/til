@@ -10,8 +10,8 @@ Kubernetes provides a robust API for managing your cluster. API uses a RESTful d
 
 Kubernetes APIs are divided into groups:
 
-1. **core** group: this includes *Nodes*, *Pods*, *Namespaces*, *Services*, *ConfigMaps* and *Secrets*.
-2. **named** groups: These groups categorize related functionalities. For example, the `apps` group contains resources for managing *deployments*, *stateful sets*, *daemon sets*, and *replica sets*, while the `batch` group handles *jobs* and *cron jobs*.
+1. **core** group: this includes _Nodes_, _Pods_, _Namespaces_, _Services_, _ConfigMaps_ and _Secrets_.
+2. **named** groups: These groups categorize related functionalities. For example, the `apps` group contains resources for managing _deployments_, _stateful sets_, _daemon sets_, and _replica sets_, while the `batch` group handles _jobs_ and _cron jobs_.
 
 Each group may have one or more versions that evolve independent of other API groups, and each version within the group has one or more resources.
 
@@ -25,7 +25,7 @@ To summarize:
 2. **Version**: Represent specific API versions within a group. New features or modifications to existing resources might be introduced in different versions. Versioning ensures compatibility and smoother upgrades.
 3. **Resource** type is the name used in the URL (e.g., pods, namespaces, services).
 4. **Kind**: defines the concrete representation (object schema) of a resource type.
-5. **Collection**: refers to a list of instances for a specific resource type. There are distinct collection kinds with "List" appended (e.g., *PodList*, *ServiceList*).
+5. **Collection**: refers to a list of instances for a specific resource type. There are distinct collection kinds with "List" appended (e.g., _PodList_, _ServiceList_).
 6. **Resource**: an individual instance of a resource type, typically representing an object in your cluster.
 7. **Sub-resources:**: for specific resource types, additional functionalities are exposed as sub-resources within the resource URI path.
 
@@ -55,7 +55,7 @@ When we create a deployment for instance, the kube-apiserver validates the conte
 
 [![Deployment controller](https://github.com/gianlucam76/kubernetes-controller-tutorial/raw/main/docs/assets/deployment_controller.png)](https://github.com/gianlucam76/kubernetes-controller-tutorial/blob/main/docs/assets/deployment_controller.png)
 
-Much of the behavior of Kubernetes is implemented by programs called controllers, that are clients of the API server. Kubernetes comes already with a set of built-in controllers. For instance we can look at the `kube-controller-manager` pod's log to see which controllers are started. The *deployment controller* is one of those.
+Much of the behavior of Kubernetes is implemented by programs called controllers, that are clients of the API server. Kubernetes comes already with a set of built-in controllers. For instance we can look at the `kube-controller-manager` pod's log to see which controllers are started. The _deployment controller_ is one of those.
 
 ```notranslate
 kubectl logs -n kube-system                         kube-controller-manager-sveltos-management-control-plane
@@ -98,7 +98,7 @@ Any system that is successful needs to grow and change as new use cases emerge o
 
 [![Kube-aggregator](https://github.com/gianlucam76/kubernetes-controller-tutorial/raw/main/docs/assets/extension_apiserver.png)](https://github.com/gianlucam76/kubernetes-controller-tutorial/blob/main/docs/assets/extension_apiserver.png)
 
-You can register an `extension API server` by creating an *APIService* claiming a URL path in the Kubernetes API. From that point on, `kube-aggregator` will forward any request sent to that API path will be forwarded to the registered APIService.
+You can register an `extension API server` by creating an _APIService_ claiming a URL path in the Kubernetes API. From that point on, `kube-aggregator` will forward any request sent to that API path will be forwarded to the registered APIService.
 
 ### 1.4. Custom Resource Definition
 
@@ -141,7 +141,7 @@ In Kubebuilder projects, two key files play specific roles:
 - **groupversion_info.go**: This file, as its name suggests, holds information about the API group and version for your CRD. It typically defines a variable named GroupVersion with the group (e.g., app.projectsveltos.io) and version (e.g., v1alpha1). This establishes the unique identifier for your CRD within the Kubernetes API.
 - **mykind_types.go**: This file is where you define the actual resource itself. It contains the structure of your CRD, including its fields and any validation rules. This file essentially describes the data your CRD will manage within your Kubernetes cluster.
 
-Now, you are ready to customize the API behavior by defining the **MyKindSpec** and **MyKindStatus** structs in mykind_types.go. Once you've completed these definitions, running `make manifests` will generate the CustomResourceDefinition file in *config/crd/bases/app.viettel.com.vn_mykinds.yaml*.
+Now, you are ready to customize the API behavior by defining the **MyKindSpec** and **MyKindStatus** structs in mykind_types.go. Once you've completed these definitions, running `make manifests` will generate the CustomResourceDefinition file in _config/crd/bases/app.viettel.com.vn_mykinds.yaml_.
 
 ### 1.6.. Example: Cleaner CRD
 
@@ -211,7 +211,7 @@ By monitoring the Status subresource, the platform administrator gains insights 
 
 Once done defining Spec and Status, just run `make generate` target. That will simply properly invoke controller-gen behind the scene.
 
-This will generate the [Cleaner CustomResourceDefinition](https://github.com/gianlucam76/k8s-cleaner/blob/main/config/crd/bases/apps.projectsveltos.io_cleaners.yaml). Use *kubectl* to apply it to your cluster.
+This will generate the [Cleaner CustomResourceDefinition](https://github.com/gianlucam76/k8s-cleaner/blob/main/config/crd/bases/apps.projectsveltos.io_cleaners.yaml). Use _kubectl_ to apply it to your cluster.
 
 #### 1.6..5. Apiextension-apiserver
 
@@ -259,7 +259,7 @@ One common example is immutability. For instance if I wanted to make Cleaner.Spe
     //+kubebuilder:validation:XValidation:rule="self == oldSelf",message="Value is immutable"
     Schedule string `json:"schedule"`
 
-With that, If I tried to update a Cleaner instance changing the *schedule* field, the update would fail
+With that, If I tried to update a Cleaner instance changing the _schedule_ field, the update would fail
 
 ```notranslate
 The Cleaner "list-pods-with-outdated-secret-data" is invalid: spec.schedule: Invalid value: "string": Value is immutable
@@ -282,7 +282,7 @@ The Cleaner "list-pods-with-outdated-secret-data" is invalid: spec.resourcePolic
 
 #### 1.7.3. Name format
 
-To enforce that cleaner instance starts with "my-prefix" (remember the meaning of *self* )
+To enforce that cleaner instance starts with "my-prefix" (remember the meaning of _self_ )
 
     // Cleaner is the Schema for the cleaners API
     type Cleaner struct { //+kubebuilder:validation:XValidation:rule=self.metadata.name.startsWith("my-prefix")
@@ -303,7 +303,7 @@ If you have a string field that requires a valid date and time format, typically
     //+kubebuilder:validation:Format="date-time"
     TimeOfX string `json:"timeOfX"`
 
-then *"2024-06-03T15:29:48Z"* would be a valid value, while "2024" would not be.
+then _"2024-06-03T15:29:48Z"_ would be a valid value, while "2024" would not be.
 
 #### 1.7.4. Comparing different fields
 
@@ -357,9 +357,9 @@ Let's what happens behind the scene when we create a deployment:
 
 [![Deployment Controller](https://github.com/gianlucam76/kubernetes-controller-tutorial/raw/main/docs/assets/deployment_controller.png)](https://github.com/gianlucam76/kubernetes-controller-tutorial/blob/main/docs/assets/deployment_controller.png)
 
-The ReplicaSet instance created has the ownerReferences field in the metadata section set. This essentially indicates the ReplicaSet is *owned* by the Deployment instance specified.
+The ReplicaSet instance created has the ownerReferences field in the metadata section set. This essentially indicates the ReplicaSet is _owned_ by the Deployment instance specified.
 
-The ReplicaSet instance created has the ownerReferences field in the metadata section set. This essentially indicates the ReplicaSet is *owned* by the Deployment instance specified
+The ReplicaSet instance created has the ownerReferences field in the metadata section set. This essentially indicates the ReplicaSet is _owned_ by the Deployment instance specified
 
 ```
     ownerReferences:

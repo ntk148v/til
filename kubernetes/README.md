@@ -596,7 +596,7 @@ spec:
         storage: 1Gi
     accessModes: # The volume must support mounting by a single node for both reading and writing
       - ReadWriteOnce
-    storageClassName: '' # Empty to disable dynamic provisioning
+    storageClassName: "" # Empty to disable dynamic provisioning
   ```
 
   ```bash
@@ -643,7 +643,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   annotations:
-    storageclass.kubernetes.io/is-default-class: 'true' # This marks the storage class as default
+    storageclass.kubernetes.io/is-default-class: "true" # This marks the storage class as default
   name: standard # The name of storage class
 # ...
 provisioner: rancher.io/local-path # The name of provisioner that gets called to provision persistent volumes of this class
@@ -952,9 +952,9 @@ spec:
     namespace: foo
     name: service-reader
   rules:
-    - apiGroups: [''] # "" indicates the core API group
-      resources: ['services']
-      verbs: ['get', 'list']
+    - apiGroups: [""] # "" indicates the core API group
+      resources: ["services"]
+      verbs: ["get", "list"]
   ```
 
   ```bash
@@ -1001,7 +1001,7 @@ spec:
   containers:
     - name: main
       image: alpine
-      command: ['/bin/sleep', '9999999']
+      command: ["/bin/sleep", "9999999"]
 ```
 
 ```bash
@@ -1027,7 +1027,7 @@ spec:
   containers:
     - name: main
       image: alpine
-      command: ['/bin/sleep', '999999']
+      command: ["/bin/sleep", "999999"]
       securityContext:
         runAsNonRoot: true # run as non Root
         runAsUser: 405 # Run guestUser
