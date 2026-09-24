@@ -428,18 +428,15 @@ spec:
     - As part of this process DNAT is used to map the destination IP address from the Cluster IP to the chosen backing pod. Response packets on the connection then have the NAT reverse on their way back to the pod that initiated the connection.
 
   ![](https://docs.tigera.io/assets/images/kube-proxy-cluster-ip-da828a9e8ef7c825261c2a87852ed1ac.svg)
-
   - **NodePort**: Exposes the service on each Node's IP at a static port. A porta that is the same on each node that is also reachable externally.
     - In a typical Kubernetes deployment, kube-proxy is responsible for intercepting connections to Node Ports and load balancing them across the pods backing each service.
     - As part of this process NAT is used to map the destination IP address and port from the node IP and Node Port, to the chosen backing pod and service port. In addition the source IP address is mapped from the client IP to the node IP, so that response packets on the connection flow back via the original node, where the NAT can be reversed. (It's the node which performed the NAT that has the connection tracking state needed to reverse the NAT.)
 
   ![](https://docs.tigera.io/assets/images/kube-proxy-node-port-b8daa0296e4e25f65be4892bc45c7fae.svg)
-
   - **LoadBalancer**: Exposes the service externally using a cloud provider's load balancer. A LoadBalancer created by the cloud provider that route external traffic to every node on the NodePort (ELB on AWS for example).
     - The service can be accessed from outside of the cluster via a specific IP address on the network load balancer, which by default will load balancer evenly across the nodes using the service node port.
 
   ![](https://docs.tigera.io/assets/images/kube-proxy-load-balancer-07d81e8c44b28b285157e15f8a75f2b4.svg)
-
   - **ExternalName**: Maps the service to the contents of the externalName. This only works when **DNS add-on** is enabled.
   - **Advertising service IPs**: One alternative to using node ports or network load balancers is to advertise service IP addresses over BGP. This requires the cluster to be running on an underlying network that supports BGP, which typically means an on-prem deployment with standard Top of Rack routers.
 

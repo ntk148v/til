@@ -587,7 +587,7 @@ shims:
   qemu-nvidia-gpu:
     allowedHypervisorAnnotations: []
     containerd:
-      snapshotter: ''
+      snapshotter: ""
     dropIn: |
       [hypervisor.qemu]
       enable_iommu = true
