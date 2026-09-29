@@ -26,7 +26,7 @@ Pretrained language models have been adapted in two major ways. TypeSafe adds a 
 
 ## 2. Jev
 
-Jev is TypeSafe’s flagship model and the first [System One model](https://docs.typesafe.ai/concepts/system-one). System One models are built to make fast, structured decisions that software can use directly. Jev evaluates typed *questions* against a *state* and returns structured results directly. No text generation, no parsing. You get typed values and probability distributions that your code can branch on, sort by, and route with. Choice and Score also return [confidence](https://docs.typesafe.ai/confidence), which your code can use to decide whether and how to act on an answer.
+Jev is TypeSafe’s flagship model and the first [System One model](https://docs.typesafe.ai/concepts/system-one). System One models are built to make fast, structured decisions that software can use directly. Jev evaluates typed _questions_ against a _state_ and returns structured results directly. No text generation, no parsing. You get typed values and probability distributions that your code can branch on, sort by, and route with. Choice and Score also return [confidence](https://docs.typesafe.ai/confidence), which your code can use to decide whether and how to act on an answer.
 
 ## 3. Use cases
 
