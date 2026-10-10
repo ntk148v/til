@@ -79,35 +79,115 @@ Table of Contents:
   - Scaling and replicating the controller
   - Read and store the configuration
   - Command line interface
-- `kube-api-server`: exposes the Kubernetes API.
-  - The API is the front end for the Kubernetes control plane.
-  - Kubernetes system components communicate only with the API server. API server is the only component that communicates with etcd.
-  - Flow:
 
-  ```bash
-  kubectl -> HTTP POST request -> Authentication plugins -> Authorization plugins -> Admission control plugins -> Resource validation -> etcd
-  ```
+#### 2.1.1. kube-api-server
 
-- `etcd`: Consistent and highly-available key-value store used as Kubernetes's backing store for all cluster data.
-  - Explore the Kubernetes configuration and status in etcd:
+Source:
 
-  ```bash
-  curl -L "http://10.0.0.1:2379/v2/keys/registry"
-  ```
+- <https://learnkube.com/kubernetes-api-explained>
 
-  - Kubernetes stores all its data in etcd under /registry.
+`kube-api-server`: exposes the Kubernetes API.
 
-  ```bash
-  # Top-level entries stored in etcd
-  etcdctl get /registry --prefix=true
-  etcdctl get /registry/pods --prefix=true
-  ```
+- The API is the front end for the Kubernetes control plane.
+- Kubernetes system components communicate only with the API server. API server is the only component that communicates with etcd.
+- Flow:
+
+![](https://static.learnkube.com/b7fdc29f3d556317dcaad3bc01b9d125.svg)
+
+The API server manages API aggregation, which lets some APIs, like Metric Server, look native even if another components serves them.
+The API server checks the request for authentication, authorization, mutation, schema validation, and admission before storing it.
+
+- Authentication answers the question "Who are you?". Kubernetes supports several methods for verfiying your entry: client certificates, tokens, OpenID connect, and more.
+
+![](https://static.learnkube.com/02930778a47a61fc8091651e5d14791f.svg)
+
+![](https://static.learnkube.com/65387927e8044ecb891ce90794552f00.svg)
+
+- Authorization answers "Are you allowed to do this?". The most common method is RBAC (Role-Based Access Control). The API sever also supports webhook authorization (delegating decision making to an external service), ABAC (policies in a static file), and the Node authorizer, a special-purpose authorizer that ensures kubelets can access resources only on their own node.
+
+![](https://static.learnkube.com/f70a37436f5d46794b219c3eeddc9687.svg)
+
+![](https://static.learnkube.com/80c176e53ab19650355daceb8aa7dc83.svg)
+
+- Instead of attaching permissions directly to poeple, you can create a Role that describes what's allowed. Then you create a RoleBinding to associate the Role with a user or group.
+
+![](https://static.learnkube.com/f0c7d4693bc8be8a08e976f170ac6bf5.svg)
+
+- So you're authenticated, and you can create Pods; what's next? The API passes the request to the Mutation Admission Controller. This component is in charge of looking at your YAML and modifying it.
+  - Does your Pod have an image pull policy? -> if not, the adminission controller will add "Always" for you.
+  - Is the resource a Pod? -> it sets the default ServiceAccount (if not is set), add volumes with the token.
+
+![](https://static.learnkube.com/6b45c137269d3d3d78cb270d947a661b.svg)
+
+- After all modifications, does the Pod still look like a Pod? The API performs a quick check to ensure the resource remains valid against the internal schema. It validates the resource in its final, mutated form.
+
+![](https://static.learnkube.com/e4882fcfe490ce3e8e26cda4c6f30dc5.svg)
+
+- If you try to deploy a Pod in a namespace that doesn't exist, is there anyone stopping you? The Validation Admission Controller does. It checks whether the request makes sense: business rules, organizational policies, cluster-level constraints.
+
+![](https://static.learnkube.com/923cadc4725e4fa29c235fb18329e0ec.svg)
+
+- The Validation and the Mutation Admission Controllers also support custom extensions via webhooks. When you register a custom admission controller, you're telling the API serer: "Before you accept this resource, call my webhook first".
+
+![](https://static.learnkube.com/69e482b54fbda806cc4a65a69399403a.svg)
+
+![](https://static.learnkube.com/65887306f39f59c00f1e0bfb30d0c46f.svg)
+
+- Since Kubernetes 1.30, you can write **validation rules that run directly inside the API server**. The `ValidatingAdmissionPolicy` resource let you define policies using CEL (Common Expression Language), a lightweight expression language evaluated inline by the API server.
+- If you managed to pass the Validation Admission Controller, your resource is safely stored in etcd. The write path has several steps:
+  - The API server deserialzies the HTTP request body, parsing the JSON or YAML into a Go struct.
+  - It converts the versioned resource (e.g., `apps/v1 Deployment`) into an internal representation, a version-neutral runtime object that the API server uses internally.
+  - The storage provider serializes this internal object (protobuf) and writes it to etcd.
+  - The storage provider reads the object back to confirm the write succeeded and to populate server-generated fields.
+
+The API server doesn't just store your resource, it also remembers **who set which field**. This is called **field ownership**, and it's at the heart of a mechenism called `Server-Side Apply`.
+
+- Every field in a resource has a field manager: the actor who last set that value. Your `kubectl apply` is one manager, the Horizontal Pod Autoscaler (HPA) is another, and a CI/CD pipeline is a third.
+- Server-Side Apply replaced the old client-side approach, where `kubectl` stored a `kubectl.kubernetes.io/last-applied-configuration` annotation on resources.
+
+The API server supports a special kind of reuest: instead of asking "give me all Pods right now", you can ask "tell me every time a Pod changes". This is called the **Watch API**.
+
+- Every component in Kubernetes uses this mechanism to react to changes:
+  - The kubelet watches for Pods assigned to its node.
+  - Controllers watch for changes to the resources they manage.
+  - The scheduler watches all Pod events and, when it spots a Pod with no node assigned, adds it to a internal scheduling queue. The scheduler then pulls Pods from this queue one at a time and assigns each to the best node.
+- If a component restarts or the connection is dropped, how does it know what it missed? Every Kubernetes resource has a `resourceVersion` field that is incremented every time the resource is updated. When a component restarts, it can use this version to determine what resources it missed.
+
+#### 2.1.2. etcd
+
+Source:
+
+- <https://learnkube.com/etcd-kubernetes>
+
+`etcd` is a strongly consistent, distributed key-value store that provides a reliable way to store data that needs to be accessed by a distributed system or cluster of machines. It is used as Kubernetes's backing store for all cluster data.
+
+- Explore the Kubernetes configuration and status in etcd:
+
+```bash
+curl -L "http://10.0.0.1:2379/v2/keys/registry"
+```
+
+- Kubernetes stores all its data in etcd under /registry.
+
+```bash
+# Top-level entries stored in etcd
+etcdctl get /registry --prefix=true
+etcdctl get /registry/pods --prefix=true
+```
+
+#### 2.1.3. Kube scheduler
 
 - `kube-scheduler`: watches for newly created Pods with no assigned node, and selects a node for them to run on.
+
+#### 2.1.4. Kube controller manager
+
 - `kube-controller-manager`: runs controller processes.
   - A controller is a control loop that watches the shared state of the cluster through the apiserver and makes changes attempting to move the current state towards the desired state.
   - Each controller is a separate process (logically).
   - Some types of these controller: Node controller, Job controller, Endpoints controller, Service account & token controllers.
+
+#### 2.1.5. Cloud controller manager
+
 - `cloud-controller-manager:` embeds cloud-specific control logic, links cluster into cloud provider's API, and separates out the components that interact with that cloud platform from components that only interact with cluster.
 
 ![](https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/images/1.12.png)
