@@ -36,14 +36,14 @@ skill-name/
 
 ```md
 ---
-name: 'dataset-publishing'
-description: 'Publish datasets to Hugging Face Hub. Use when uploading datasets, creating dataset cards, or managing dataset versions.'
-license: 'Apache-2.0'
-compatibility: 'Tested with Python 3.8+ and huggingface_hub 0.16+'
+name: "dataset-publishing"
+description: "Publish datasets to Hugging Face Hub. Use when uploading datasets, creating dataset cards, or managing dataset versions."
+license: "Apache-2.0"
+compatibility: "Tested with Python 3.8+ and huggingface_hub 0.16+"
 metadata:
-  author: 'ml-team'
-  version: '1.0.0'
-allowed-tools: 'Bash(hf:*) Python(huggingface_hub:*)'
+  author: "ml-team"
+  version: "1.0.0"
+allowed-tools: "Bash(hf:*) Python(huggingface_hub:*)"
 ---
 ```
 
